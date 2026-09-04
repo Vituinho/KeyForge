@@ -1,0 +1,76 @@
+export type BattleMechanicType =
+  | "standard"
+  | "precision-strike"
+  | "speed-check"
+  | "consistency"
+  | "combo-scaling"
+  | "focus-genjutsu"
+  | "multi-phase"
+  | "multi-phase-boss"
+
+export interface BaseMechanicConfig {
+  type: BattleMechanicType
+  id: string
+  name: string
+  description: string
+}
+
+export interface PrecisionStrikeConfig extends BaseMechanicConfig {
+  type: "precision-strike"
+  targetAccuracy: number // e.g. 94
+  belowThresholdPenalty: number // e.g. 0.5 (deals 50% damage if under target)
+  aboveThresholdBonus: number // e.g. 1.2 (deals 120% damage if at or above target)
+}
+
+export interface SpeedCheckThreshold {
+  minWpm: number
+  multiplier: number
+  label: string
+}
+
+export interface SpeedCheckConfig extends BaseMechanicConfig {
+  type: "speed-check"
+  thresholds: SpeedCheckThreshold[]
+  slowThreshold: number // below this WPM deals reduced damage
+  slowMultiplier: number // e.g. 0.6
+}
+
+export interface ConsistencyConfig extends BaseMechanicConfig {
+  type: "consistency"
+  maxWpmVariance: number
+  maxAccVariance: number
+  bonusMultiplier: number
+  penaltyMultiplier: number
+}
+
+export interface ComboScalingTier {
+  minCombo: number
+  multiplier: number
+  label?: string
+}
+
+export interface ComboScalingConfig extends BaseMechanicConfig {
+  type: "combo-scaling"
+  tiers: ComboScalingTier[]
+  breakComboCounterAttack?: number // counter damage dealt to player on combo loss
+}
+
+export interface FocusGenjutsuConfig extends BaseMechanicConfig {
+  type: "focus-genjutsu"
+  complexPunctuation: boolean
+}
+
+export interface MultiPhaseConfig extends BaseMechanicConfig {
+  type: "multi-phase" | "multi-phase-boss"
+  totalPhases: number
+  phaseNames: string[]
+  phaseHpRatios: number[]
+}
+
+export type EnemyMechanicConfig =
+  | PrecisionStrikeConfig
+  | SpeedCheckConfig
+  | ConsistencyConfig
+  | ComboScalingConfig
+  | FocusGenjutsuConfig
+  | MultiPhaseConfig
