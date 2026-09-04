@@ -2,7 +2,10 @@
 
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { Swords, Globe, Dumbbell, BookOpen, BarChart2 } from "lucide-react"
+import { Swords, Globe, Dumbbell, BookOpen, BarChart2, User } from "lucide-react"
+import { usePlayer } from "@/hooks/usePlayer"
+import { RANK_METADATA } from "@/lib/progression/calculateRank"
+import { getXpRequiredForLevel } from "@/lib/progression/calculateLevel"
 
 const NAV_ITEMS = [
   {
@@ -48,8 +51,13 @@ const NAV_ITEMS = [
 ]
 
 export default function HomePage() {
+  const { player } = usePlayer()
+  const rankMeta = RANK_METADATA[player.rank]
+  const xpNeeded = getXpRequiredForLevel(player.level)
+  const xpPercent = Math.min(100, Math.round((player.xp / xpNeeded) * 100))
+
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4">
+    <main className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4 py-8">
       {/* Background grid */}
       <div
         className="absolute inset-0 opacity-[0.03]"
@@ -65,9 +73,51 @@ export default function HomePage() {
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-orange-500 blur-[120px]" />
       </div>
 
+      {/* Player Profile Quick Widget */}
+      <motion.div
+        className="relative z-20 w-full max-w-2xl mb-8 p-3 sm:p-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md flex items-center justify-between gap-4"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="flex items-center gap-3">
+          <div
+            className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm border shrink-0"
+            style={{
+              backgroundColor: `${rankMeta.color}20`,
+              borderColor: rankMeta.color,
+              color: rankMeta.color,
+            }}
+          >
+            {player.rank}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold text-white">{player.username}</span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20 font-bold">
+                Lv. {player.level}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-[11px] text-white/40 font-mono mt-0.5">
+              <span>Rank {player.rank} · {rankMeta.label}</span>
+              <span>·</span>
+              <span>{player.xp} / {xpNeeded} XP ({xpPercent}%)</span>
+            </div>
+          </div>
+        </div>
+
+        <Link
+          href="/profile"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-xs font-bold text-white transition-colors shrink-0"
+        >
+          <User size={14} />
+          <span>PROFILE</span>
+        </Link>
+      </motion.div>
+
       {/* Logo */}
       <motion.div
-        className="relative z-10 text-center mb-14"
+        className="relative z-10 text-center mb-10"
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
