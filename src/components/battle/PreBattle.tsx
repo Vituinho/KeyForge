@@ -2,7 +2,9 @@
 
 import { motion } from "framer-motion"
 import { Enemy } from "@/types/character"
-import { Swords, ChevronRight } from "lucide-react"
+import { Swords, ChevronRight, ChevronLeft } from "lucide-react"
+import { usePlayer } from "@/hooks/usePlayer"
+import Link from "next/link"
 
 interface PreBattleProps {
   enemy: Enemy
@@ -10,19 +12,48 @@ interface PreBattleProps {
 }
 
 export function PreBattle({ enemy, onFight }: PreBattleProps) {
+  const { player } = usePlayer()
+
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4">
+      {/* Back button */}
+      <div className="absolute top-6 left-6 z-20">
+        <Link
+          href={enemy.world ? `/anime-world/${enemy.world}` : "/anime-world"}
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-white/50 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/10"
+        >
+          <ChevronLeft size={14} />
+          <span>EXIT BATTLE</span>
+        </Link>
+      </div>
+
       {/* Background glow */}
       <div
-        className="absolute inset-0 opacity-10"
+        className="absolute inset-0 opacity-10 pointer-events-none"
         style={{
           background: `radial-gradient(ellipse at center, ${enemy.themeColor} 0%, transparent 70%)`,
         }}
       />
 
+      {/* Typing focus banner */}
+      {enemy.typingFocus && (
+        <motion.div
+          className="relative z-10 mb-8 px-4 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-widest border"
+          style={{
+            backgroundColor: `${enemy.themeColor}15`,
+            borderColor: `${enemy.themeColor}40`,
+            color: enemy.themeColor,
+          }}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          Stage 0{enemy.stage ?? 1} · {enemy.typingFocus} Trial
+        </motion.div>
+      )}
+
       {/* VS Layout */}
       <motion.div
-        className="relative z-10 flex items-center gap-16"
+        className="relative z-10 flex items-center gap-8 sm:gap-16 flex-wrap justify-center"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, ease: "backOut" }}
@@ -34,11 +65,15 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.6 }}
         >
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-violet-500 to-indigo-700 flex items-center justify-center text-4xl font-black mb-4 mx-auto border-2 border-violet-400/50 shadow-[0_0_30px_rgba(139,92,246,0.5)]">
-            P
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-violet-500 to-indigo-700 flex items-center justify-center text-3xl font-black mb-4 mx-auto border-2 border-violet-400/50 shadow-[0_0_30px_rgba(139,92,246,0.5)]">
+            {player.username[0]?.toUpperCase() ?? "P"}
           </div>
-          <p className="font-black text-xl tracking-wider text-white">PLAYER</p>
-          <p className="text-sm text-white/40">Challenger</p>
+          <p className="font-black text-xl tracking-wider text-white truncate max-w-[150px]">
+            {player.username.toUpperCase()}
+          </p>
+          <p className="text-sm text-white/40 font-mono">
+            Rank {player.rank} · Lv. {player.level}
+          </p>
         </motion.div>
 
         {/* VS */}

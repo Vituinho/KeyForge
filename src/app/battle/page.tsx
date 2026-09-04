@@ -1,14 +1,23 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { PreBattle } from "@/components/battle/PreBattle"
 import { BattleArena } from "@/components/battle/BattleArena"
-import { getCharacterById } from "@/data/characters"
+import { getCharacterById, CHARACTERS } from "@/data/characters"
 import { getTextsForCharacter } from "@/data/texts"
 
-export default function BattlePage() {
-  const enemy = getCharacterById("naruto")!
-  const texts = getTextsForCharacter("naruto")
+function BattleContent() {
+  const searchParams = useSearchParams()
+  const enemyId = searchParams.get("enemy") ?? "naruto"
+
+  // Safe fallback if enemyId is invalid or not found
+  const enemy =
+    getCharacterById(enemyId) ??
+    getCharacterById("naruto") ??
+    CHARACTERS[0]
+
+  const texts = getTextsForCharacter(enemy.id)
   const [started, setStarted] = useState(false)
   // Increment to force BattleArena remount on rematch
   const [battleKey, setBattleKey] = useState(0)
@@ -33,5 +42,19 @@ export default function BattlePage() {
       onRematch={() => setBattleKey((k) => k + 1)}
     />
   )
-
 }
+
+export default function BattlePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-black flex items-center justify-center text-white/40 font-mono text-sm">
+          Summoning battlefield...
+        </div>
+      }
+    >
+      <BattleContent />
+    </Suspense>
+  )
+}
+
