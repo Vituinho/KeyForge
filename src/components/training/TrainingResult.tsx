@@ -1,9 +1,12 @@
 "use client"
 
+import { useState } from "react"
 import { motion } from "framer-motion"
 import { TypingStats } from "@/types/typing"
-import { Dumbbell, RotateCcw, Swords, Home, Target, Zap, Flame, Clock, TrendingUp } from "lucide-react"
+import { Dumbbell, RotateCcw, Swords, Home, Target, Zap, Flame, Clock, TrendingUp, Sparkles, ArrowUpCircle } from "lucide-react"
 import Link from "next/link"
+import { processTrainingRewards, ActivityRewardSummary } from "@/lib/progression/processActivityRewards"
+import { RankUpModal } from "@/components/progression/RankUpModal"
 
 interface TrainingResultProps {
   stats: TypingStats
@@ -18,6 +21,13 @@ export function TrainingResult({
   baselineAccuracies = {},
   onRetry,
 }: TrainingResultProps) {
+  const [rewardSummary] = useState<ActivityRewardSummary>(() =>
+    processTrainingRewards(stats, targetKeys)
+  )
+  const [showRankUpModal, setShowRankUpModal] = useState(
+    () => rewardSummary.didRankUp
+  )
+
   return (
     <motion.div
       className="w-full max-w-2xl px-4 py-8 mx-auto space-y-6"
@@ -25,6 +35,14 @@ export function TrainingResult({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
+      {/* Rank Up Celebration Modal */}
+      <RankUpModal
+        isOpen={showRankUpModal}
+        prevRank={rewardSummary.prevRank}
+        newRank={rewardSummary.newRank}
+        onClose={() => setShowRankUpModal(false)}
+      />
+
       {/* Header */}
       <div className="text-center">
         <motion.div
@@ -42,6 +60,25 @@ export function TrainingResult({
             {targetKeys.join(", ")}
           </span>
         </p>
+
+        {/* XP & Level Up Badges */}
+        <div className="flex items-center justify-center gap-2 mt-3 flex-wrap">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-400 text-xs font-bold font-mono">
+            <Sparkles size={14} />
+            <span>+{rewardSummary.xpGained} XP Earned</span>
+          </div>
+
+          {rewardSummary.didLevelUp && (
+            <motion.div
+              className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-xs font-black"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+            >
+              <ArrowUpCircle size={14} />
+              <span>LEVEL UP! Lv. {rewardSummary.prevLevel} → Lv. {rewardSummary.newLevel}</span>
+            </motion.div>
+          )}
+        </div>
       </div>
 
       {/* Global Performance Cards */}

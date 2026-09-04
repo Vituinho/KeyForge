@@ -28,6 +28,14 @@ export interface PlayerStats {
   academyLessonsCompleted: number
 }
 
+export interface AcademyLessonProgress {
+  completed: boolean
+  attempts: number
+  bestAccuracy: number
+  bestWpm: number
+  lastCompletedAt?: string
+}
+
 export interface PlayerProfile {
   id: string
   username: string
@@ -40,6 +48,7 @@ export interface PlayerProfile {
   attributes: PlayerAttributes
 
   stats: PlayerStats
+  academyProgress?: Record<string, AcademyLessonProgress>
 
   createdAt: string
   updatedAt: string
