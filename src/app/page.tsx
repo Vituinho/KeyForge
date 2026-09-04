@@ -38,11 +38,11 @@ const NAV_ITEMS = [
     color: "#10b981",
   },
   {
-    href: "/",
+    href: "/statistics",
     icon: <BarChart2 size={22} />,
     label: "Statistics",
     description: "Track your progress",
-    active: false,
+    active: true,
     color: "#ec4899",
   },
 ]
