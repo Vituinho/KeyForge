@@ -15,9 +15,9 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
   const { player } = usePlayer()
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4 py-16 sm:py-8">
       {/* Back button */}
-      <div className="absolute top-6 left-6 z-20">
+      <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20">
         <Link
           href={enemy.world ? `/anime-world/${enemy.world}` : "/anime-world"}
           className="inline-flex items-center gap-1.5 text-xs font-bold text-white/50 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/10"
