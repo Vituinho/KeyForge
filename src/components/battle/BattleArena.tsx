@@ -45,13 +45,35 @@ export function BattleArena({ enemy, texts }: BattleArenaProps) {
       const endTime = battleState.battleEndTime
       const elapsed = startTime && endTime ? (endTime - startTime) / 1000 : 0
 
-      const finalStats = cumulativeStatsRef.current ?? {
-        wpm: 0, rawWpm: 0, accuracy: 100, combo: 0, bestCombo: 0,
-        errors: 0, typedCharacters: 0, correctCharacters: 0, incorrectCharacters: 0,
-        elapsedTime: 0, currentStreak: 0, bestStreak: 0,
+      const finalStats: TypingStats = cumulativeStatsRef.current ?? {
+        currentWpm: 0,
+        currentRawWpm: 0,
+        currentAccuracy: 100,
+        currentErrors: 0,
+        currentStreak: 0,
+        battleWpm: 0,
+        battleAccuracy: 100,
+        bestWpm: 0,
+        totalTypingAttempts: 0,
+        totalErrors: 0,
+        combo: 0,
+        bestCombo: 0,
+        bestStreak: 0,
+        typedCharacters: 0,
+        correctCharacters: 0,
+        incorrectCharacters: 0,
+        totalCorrectCharacters: 0,
+        totalIncorrectCharacters: 0,
+        elapsedTime: 0,
+        totalElapsedTime: 0,
+        wpm: 0,
+        rawWpm: 0,
+        accuracy: 100,
+        errors: 0,
         keyStats: cumulativeKeyStatsRef.current,
         errorLog: [],
-        isCompleted: true, currentIndex: 0,
+        isCompleted: true,
+        currentIndex: 0,
       }
 
       const weakKeys = analyzeWeakKeys(cumulativeKeyStatsRef.current)
