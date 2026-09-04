@@ -4,7 +4,20 @@ import { motion } from "framer-motion"
 import { BattleResult as BattleResultType } from "@/types/battle"
 import { WeakKey, TrainingExercise } from "@/types/typing"
 import { Enemy } from "@/types/character"
-import { Trophy, Skull, Zap, Target, Flame, Clock, ChevronRight, RotateCcw, Dumbbell } from "lucide-react"
+import {
+  Trophy,
+  Skull,
+  Zap,
+  Target,
+  Flame,
+  Clock,
+  ChevronRight,
+  RotateCcw,
+  Dumbbell,
+  Swords,
+  ShieldAlert,
+  Gauge,
+} from "lucide-react"
 import Link from "next/link"
 
 interface BattleResultProps {
@@ -16,7 +29,14 @@ interface BattleResultProps {
   onRematch: () => void
 }
 
-export function BattleResult({ victory, enemy, result, weakKeys, exercises, onRematch }: BattleResultProps) {
+export function BattleResult({
+  victory,
+  enemy,
+  result,
+  weakKeys,
+  exercises,
+  onRematch,
+}: BattleResultProps) {
   const { finalStats } = result
 
   return (
@@ -68,25 +88,70 @@ export function BattleResult({ victory, enemy, result, weakKeys, exercises, onRe
           )}
         </div>
 
-        {/* Battle Stats */}
+        {/* Battle Stats — Across the entire battle */}
         <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-5">
           <h2 className="text-xs font-bold tracking-widest text-white/40 uppercase mb-4">
-            Battle Performance
+            Battle Performance (Entire Match)
           </h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <StatBox icon={<Zap size={14} />} label="WPM" value={finalStats.wpm} />
+            <StatBox
+              icon={<Gauge size={14} />}
+              label="Battle WPM"
+              value={finalStats.battleWpm}
+              color={enemy.themeColor}
+            />
+            <StatBox
+              icon={<Zap size={14} />}
+              label="Best WPM"
+              value={finalStats.bestWpm}
+              color="#38bdf8"
+            />
             <StatBox
               icon={<Target size={14} />}
               label="Accuracy"
-              value={`${finalStats.accuracy}%`}
-              color={finalStats.accuracy >= 95 ? "#22c55e" : finalStats.accuracy >= 80 ? "#eab308" : "#ef4444"}
+              value={`${finalStats.battleAccuracy}%`}
+              color={
+                finalStats.battleAccuracy >= 95
+                  ? "#22c55e"
+                  : finalStats.battleAccuracy >= 80
+                    ? "#eab308"
+                    : "#ef4444"
+              }
             />
-            <StatBox icon={<Flame size={14} />} label="Best Combo" value={`×${finalStats.bestCombo}`} />
             <StatBox
               icon={<Clock size={14} />}
               label="Errors"
-              value={finalStats.errors}
-              color={finalStats.errors === 0 ? "#22c55e" : finalStats.errors > 20 ? "#ef4444" : "#eab308"}
+              value={finalStats.totalErrors}
+              color={
+                finalStats.totalErrors === 0
+                  ? "#22c55e"
+                  : finalStats.totalErrors > 15
+                    ? "#ef4444"
+                    : "#eab308"
+              }
+            />
+            <StatBox
+              icon={<Flame size={14} />}
+              label="Best Combo"
+              value={`×${finalStats.bestCombo}`}
+              color="#f59e0b"
+            />
+            <StatBox
+              icon={<Clock size={14} />}
+              label="Battle Time"
+              value={`${Math.round(result.elapsedTime)}s`}
+            />
+            <StatBox
+              icon={<Swords size={14} />}
+              label="Damage Dealt"
+              value={result.totalDamageDealt}
+              color="#a855f7"
+            />
+            <StatBox
+              icon={<ShieldAlert size={14} />}
+              label="Damage Taken"
+              value={result.totalDamageTaken}
+              color="#f87171"
             />
           </div>
         </div>
@@ -127,7 +192,9 @@ export function BattleResult({ victory, enemy, result, weakKeys, exercises, onRe
             {/* All weak keys */}
             {weakKeys.length > 1 && (
               <div className="mt-4 flex gap-2 flex-wrap">
-                <p className="text-xs text-white/30 uppercase tracking-widest w-full mb-1">Also struggling with:</p>
+                <p className="text-xs text-white/30 uppercase tracking-widest w-full mb-1">
+                  Also struggling with:
+                </p>
                 {weakKeys.slice(1).map((wk) => (
                   <span
                     key={wk.key}
@@ -181,7 +248,7 @@ export function BattleResult({ victory, enemy, result, weakKeys, exercises, onRe
         )}
 
         {/* Actions */}
-        <div className="flex gap-3 justify-center">
+        <div className="flex gap-3 justify-center flex-wrap">
           <button
             onClick={onRematch}
             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 font-bold text-sm transition-colors"
@@ -189,6 +256,15 @@ export function BattleResult({ victory, enemy, result, weakKeys, exercises, onRe
             <RotateCcw size={16} />
             REMATCH
           </button>
+          {!victory && weakKeys.length > 0 && (
+            <Link
+              href={`/training?mode=weak-keys&keys=${weakKeys.map((w) => w.key).join(",")}`}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-black font-black text-sm transition-all shadow-[0_0_20px_rgba(249,115,22,0.4)]"
+            >
+              <Dumbbell size={16} />
+              TRAIN MY WEAKNESSES
+            </Link>
+          )}
           <Link
             href="/"
             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 font-bold text-sm transition-colors"

@@ -25,5 +25,13 @@ export default function BattlePage() {
     )
   }
 
-  return <BattleArena key={battleKey} enemy={enemy} texts={texts} />
+  return (
+    <BattleArena
+      key={battleKey}
+      enemy={enemy}
+      texts={texts}
+      onRematch={() => setBattleKey((k) => k + 1)}
+    />
+  )
+
 }
