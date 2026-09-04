@@ -333,11 +333,11 @@ export default function NarutoWorldMapPage() {
                 )}
 
                 {/* XP Rewards section */}
-                <div className="flex items-center justify-between text-xs font-mono text-white/60 pt-2 border-t border-white/10 relative z-10">
+                <div className="flex items-center justify-between flex-wrap gap-2 text-xs font-mono text-white/60 pt-2 border-t border-white/10 relative z-10">
                   <span>Standard Reward: <strong className="text-amber-400 font-bold">+{selectedEnemy.xpReward ?? 50} XP</strong></span>
                   {!isFirstClearClaimed && selectedEnemy.firstClearBonusXp && (
                     <span className="text-emerald-400 font-bold">
-                      +{selectedEnemy.firstClearBonusXp} XP 1st Clear Bonus
+                      +{selectedEnemy.firstClearBonusXp} XP 1st Clear
                     </span>
                   )}
                 </div>

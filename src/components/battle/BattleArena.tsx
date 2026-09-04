@@ -195,8 +195,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
         }}
       />
 
-      <div className="relative z-10 flex flex-col h-screen max-w-4xl mx-auto w-full px-4 py-6 gap-4">
-        {/* Top row: Enemy card + HUD + Player card */}
+      <div className="relative z-10 flex flex-col min-h-screen sm:h-screen justify-between max-w-4xl mx-auto w-full px-4 py-4 sm:py-6 gap-4">
         {/* Top row: Enemy card + HUD + Player card */}
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <EnemyCard
