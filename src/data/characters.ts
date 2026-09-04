@@ -1,5 +1,18 @@
 import { Enemy } from "@/types/character"
 
+/**
+ * KeyForge v2.0: Naruto World Campaign Balancing Configuration
+ *
+ * Difficulty & Combat Progression:
+ * - Stage 1 (Naruto): HP 450, Atk 6, Int 5500ms, RecWpm 30, RecAcc 90, XP 40 (Bonus: 100)
+ * - Stage 2 (Sakura): HP 520, Atk 8, Int 5000ms, RecWpm 35, RecAcc 94, XP 55 (Bonus: 120)
+ * - Stage 3 (Rock Lee): HP 600, Atk 9, Int 4500ms, RecWpm 50, RecAcc 92, XP 70 (Bonus: 150)
+ * - Stage 4 (Kakashi): HP 750, Atk 11, Int 4500ms, RecWpm 55, RecAcc 95, XP 90 (Bonus: 180)
+ * - Stage 5 (Sasuke): HP 900, Atk 13, Int 4200ms, RecWpm 60, RecAcc 95, XP 115 (Bonus: 220)
+ * - Stage 6 (Itachi): HP 1100, Atk 15, Int 4000ms, RecWpm 65, RecAcc 96, XP 145 (Bonus: 260)
+ * - Stage 7 (Pain): HP 1400, Atk 17, Int 3800ms, RecWpm 70, RecAcc 96, XP 180 (Bonus: 320)
+ * - Stage 8 (Madara): HP 1800, Atk 20, Int 3500ms, RecWpm 80, RecAcc 97, XP 250 (Bonus: 500)
+ */
 export const CHARACTERS: Enemy[] = [
   // 1. Naruto Uzumaki — Tutorial / Balanced
   {
