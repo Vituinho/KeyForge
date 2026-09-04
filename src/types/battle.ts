@@ -24,6 +24,7 @@ export interface RoundResult {
   damage: number
   strikeType: StrikeType
   text: string
+  activeEffects?: string[]
 }
 
 export interface BattleState {
@@ -37,6 +38,11 @@ export interface BattleState {
   damageEvents: DamageEvent[]
   battleStartTime: number | null
   battleEndTime: number | null
+  currentPhase: number
+  totalPhases: number
+  phaseName?: string
+  phaseTransitionBanner?: string | null
+  activeMechanicEffects: string[]
 }
 
 export interface BattleResult {

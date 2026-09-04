@@ -197,11 +197,22 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
 
       <div className="relative z-10 flex flex-col h-screen max-w-4xl mx-auto w-full px-4 py-6 gap-4">
         {/* Top row: Enemy card + HUD + Player card */}
+        {/* Top row: Enemy card + HUD + Player card */}
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <EnemyCard
             enemy={enemy}
             currentHp={battleState.enemyHp}
+            maxHp={battleState.maxEnemyHp}
             isUnderAttack={enemyUnderAttack}
+            phaseInfo={
+              battleState.totalPhases > 1
+                ? {
+                    currentPhase: battleState.currentPhase,
+                    totalPhases: battleState.totalPhases,
+                    phaseName: battleState.phaseName,
+                  }
+                : undefined
+            }
           />
 
           {/* Center HUD */}
@@ -229,9 +240,45 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
           />
         </div>
 
+        {/* Phase Transition Banner Overlay */}
+        <AnimatePresence>
+          {battleState.phaseTransitionBanner && (
+            <motion.div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 px-8 py-5 rounded-3xl bg-black/95 border-2 border-red-500 text-center shadow-[0_0_60px_rgba(239,68,68,0.8)] backdrop-blur-md pointer-events-none"
+              initial={{ scale: 0.6, opacity: 0 }}
+              animate={{ scale: 1.05, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ duration: 0.35, ease: "backOut" }}
+            >
+              <span className="text-xs font-mono font-bold tracking-widest text-red-400 uppercase block mb-1">
+                Boss Phase Shift
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-wider">
+                {battleState.phaseTransitionBanner}
+              </h2>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Typing area & damage indicators */}
         <div className="flex-1 flex flex-col justify-center gap-4 relative">
           <DamageIndicator events={battleState.damageEvents} onClear={clearDamageEvent} />
+
+          {/* Active Mechanic Feedback Chips */}
+          {battleState.activeMechanicEffects && battleState.activeMechanicEffects.length > 0 && (
+            <div className="flex items-center justify-center gap-2 flex-wrap min-h-[28px]">
+              {battleState.activeMechanicEffects.map((effect, idx) => (
+                <motion.span
+                  key={`${effect}-${idx}`}
+                  className="text-xs font-mono font-bold px-3 py-0.5 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/40 shadow-sm"
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  {effect}
+                </motion.span>
+              ))}
+            </div>
+          )}
 
           <AnimatePresence mode="wait">
             <motion.div
