@@ -1,0 +1,201 @@
+"use client"
+
+import { motion } from "framer-motion"
+import { TypingStats } from "@/types/typing"
+import { Dumbbell, RotateCcw, Swords, Home, Target, Zap, Flame, Clock, TrendingUp } from "lucide-react"
+import Link from "next/link"
+
+interface TrainingResultProps {
+  stats: TypingStats
+  targetKeys: string[]
+  baselineAccuracies?: Record<string, number> // key -> prior battle accuracy (0-100)
+  onRetry: () => void
+}
+
+export function TrainingResult({
+  stats,
+  targetKeys,
+  baselineAccuracies = {},
+  onRetry,
+}: TrainingResultProps) {
+  return (
+    <motion.div
+      className="w-full max-w-2xl px-4 py-8 mx-auto space-y-6"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* Header */}
+      <div className="text-center">
+        <motion.div
+          className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-black shadow-[0_0_30px_rgba(249,115,22,0.5)]"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", delay: 0.2 }}
+        >
+          <Dumbbell size={32} />
+        </motion.div>
+        <h1 className="text-4xl font-black tracking-wider text-white">TRAINING COMPLETE</h1>
+        <p className="text-white/40 text-sm mt-1">
+          Weakness drills concluded for:{" "}
+          <span className="text-orange-400 font-bold uppercase">
+            {targetKeys.join(", ")}
+          </span>
+        </p>
+      </div>
+
+      {/* Global Performance Cards */}
+      <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-5">
+        <h2 className="text-xs font-bold tracking-widest text-white/40 uppercase mb-4">
+          Training Performance
+        </h2>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <StatBox
+            icon={<Zap size={14} />}
+            label="WPM"
+            value={stats.battleWpm || stats.currentWpm}
+            color="#f97316"
+          />
+          <StatBox
+            icon={<Target size={14} />}
+            label="Accuracy"
+            value={`${stats.battleAccuracy}%`}
+            color={
+              stats.battleAccuracy >= 95
+                ? "#22c55e"
+                : stats.battleAccuracy >= 85
+                  ? "#eab308"
+                  : "#ef4444"
+            }
+          />
+          <StatBox
+            icon={<Clock size={14} />}
+            label="Errors"
+            value={stats.totalErrors}
+            color={stats.totalErrors === 0 ? "#22c55e" : "#ef4444"}
+          />
+          <StatBox
+            icon={<Flame size={14} />}
+            label="Best Combo"
+            value={`×${stats.bestCombo}`}
+            color="#f59e0b"
+          />
+        </div>
+      </div>
+
+      {/* Per-Key Comparison Card */}
+      <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-5">
+        <h2 className="text-xs font-bold tracking-widest text-white/40 uppercase mb-4 flex items-center gap-1.5">
+          <TrendingUp size={14} />
+          Key Accuracy Breakdown
+        </h2>
+
+        <div className="space-y-3">
+          {targetKeys.map((key) => {
+            const normalized = key.toLowerCase()
+            const keyStat = stats.keyStats[normalized]
+            const attempts = keyStat?.attempts ?? 0
+            const errors = keyStat?.errors ?? 0
+            const trainingAcc = attempts > 0 ? Math.round(((attempts - errors) / attempts) * 100) : 100
+
+            const priorAcc = baselineAccuracies[normalized]
+            const hasPrior = typeof priorAcc === "number" && Number.isFinite(priorAcc)
+            const diff = hasPrior ? trainingAcc - priorAcc : null
+
+            return (
+              <div
+                key={key}
+                className="flex items-center justify-between p-3 rounded-xl bg-black/40 border border-white/10"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="w-9 h-9 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-400 font-black text-lg flex items-center justify-center uppercase">
+                    {key}
+                  </span>
+                  <div>
+                    <p className="text-xs text-white/50">
+                      {attempts} attempts · {errors} errors
+                    </p>
+                    <p className="text-sm font-bold text-white">
+                      Training: <span className="text-green-400">{trainingAcc}%</span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* Comparison display */}
+                {hasPrior && diff !== null ? (
+                  <div className="text-right">
+                    <p className="text-xs text-white/40">Before: {priorAcc}%</p>
+                    <p
+                      className={`text-sm font-black ${
+                        diff > 0
+                          ? "text-emerald-400"
+                          : diff < 0
+                            ? "text-red-400"
+                            : "text-white/60"
+                      }`}
+                    >
+                      {diff > 0 ? `+${diff}% Improvement` : diff < 0 ? `${diff}%` : "No Change"}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="text-right text-xs text-white/40">
+                    <span>{attempts > 0 ? "Practiced" : "Untyped"}</span>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex items-center justify-center gap-3 flex-wrap">
+        <button
+          onClick={onRetry}
+          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-black font-black text-sm transition-all shadow-[0_0_20px_rgba(249,115,22,0.4)]"
+        >
+          <RotateCcw size={16} />
+          TRAIN AGAIN
+        </button>
+        <Link
+          href="/battle"
+          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 font-bold text-sm text-white transition-colors"
+        >
+          <Swords size={16} />
+          BACK TO BATTLE
+        </Link>
+        <Link
+          href="/"
+          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 font-bold text-sm text-white/70 transition-colors"
+        >
+          <Home size={16} />
+          HOME
+        </Link>
+      </div>
+    </motion.div>
+  )
+}
+
+function StatBox({
+  icon,
+  label,
+  value,
+  color = "white",
+}: {
+  icon: React.ReactNode
+  label: string
+  value: string | number
+  color?: string
+}) {
+  return (
+    <div className="flex flex-col items-center p-3 rounded-xl bg-black/40 border border-white/10">
+      <div className="flex items-center gap-1 text-white/40 mb-1">
+        {icon}
+        <span className="text-[10px] uppercase tracking-widest">{label}</span>
+      </div>
+      <span className="text-2xl font-black tabular-nums" style={{ color }}>
+        {value}
+      </span>
+    </div>
+  )
+}

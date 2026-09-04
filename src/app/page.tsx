@@ -26,8 +26,8 @@ const NAV_ITEMS = [
     icon: <Dumbbell size={22} />,
     label: "Training",
     description: "Practice your weaknesses",
-    active: false,
-    color: "#3b82f6",
+    active: true,
+    color: "#f97316",
   },
   {
     href: "/academy",
