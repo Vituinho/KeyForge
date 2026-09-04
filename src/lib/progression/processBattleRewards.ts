@@ -2,6 +2,7 @@ import { Enemy } from "@/types/character"
 import { BattleResult as BattleResultType } from "@/types/battle"
 import { PlayerProfile, PlayerRank, PlayerStats } from "@/types/player"
 import { loadPlayerProfile, savePlayerProfile } from "@/lib/storage/playerStorage"
+import { addBattleHistoryEntry } from "@/lib/storage/battleHistoryStorage"
 import { calculateBattleXp, BattleXpResult } from "./calculateXp"
 import { applyXpGain, LevelProgressionResult } from "./calculateLevel"
 import { calculatePlayerAttributes } from "./calculateAttributes"
@@ -97,6 +98,24 @@ export function processBattleRewards(
 
   // 5. Persist to storage
   savePlayerProfile(updatedProfile)
+
+  // 6. Record into persistent battle history
+  addBattleHistoryEntry({
+    enemyId: enemy.id,
+    enemyName: enemy.name,
+    enemyAnime: enemy.anime,
+    enemyLevel: enemy.level,
+    themeColor: enemy.themeColor,
+    victory,
+    battleWpm: finalStats.battleWpm,
+    battleAccuracy: finalStats.battleAccuracy,
+    bestCombo: finalStats.bestCombo,
+    totalErrors: finalStats.totalErrors,
+    damageDealt: result.totalDamageDealt,
+    damageTaken: result.totalDamageTaken,
+    xpEarned: xpResult.totalXp,
+    durationSeconds: Math.round(elapsedTime),
+  })
 
   return {
     xpResult,
