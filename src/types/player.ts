@@ -36,6 +36,23 @@ export interface AcademyLessonProgress {
   lastCompletedAt?: string
 }
 
+export interface StageScore {
+  bestWpm: number
+  bestAccuracy: number
+  bestCombo: number
+  completedAt: string
+}
+
+export interface CampaignWorldProgress {
+  unlocked: boolean
+  completed: boolean
+  currentStage: number // 1 to 8
+  completedStages: number[]
+  defeatedEnemies: string[]
+  bestScores: Record<string, StageScore>
+  firstClearClaimed: Record<string, boolean>
+}
+
 export interface PlayerProfile {
   id: string
   username: string
@@ -49,9 +66,29 @@ export interface PlayerProfile {
 
   stats: PlayerStats
   academyProgress?: Record<string, AcademyLessonProgress>
+  campaignProgress: Record<string, CampaignWorldProgress>
+  achievements?: string[]
 
   createdAt: string
   updatedAt: string
+}
+
+export function createDefaultNarutoWorldProgress(): CampaignWorldProgress {
+  return {
+    unlocked: true,
+    completed: false,
+    currentStage: 1,
+    completedStages: [],
+    defeatedEnemies: [],
+    bestScores: {},
+    firstClearClaimed: {},
+  }
+}
+
+export function createDefaultCampaignProgress(): Record<string, CampaignWorldProgress> {
+  return {
+    naruto: createDefaultNarutoWorldProgress(),
+  }
 }
 
 export function createDefaultPlayerProfile(username = "Player"): PlayerProfile {
@@ -86,6 +123,8 @@ export function createDefaultPlayerProfile(username = "Player"): PlayerProfile {
       trainingSessions: 0,
       academyLessonsCompleted: 0,
     },
+    campaignProgress: createDefaultCampaignProgress(),
+    achievements: [],
     createdAt: now,
     updatedAt: now,
   }
