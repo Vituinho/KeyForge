@@ -1,6 +1,12 @@
 import { Enemy } from "@/types/character"
 import { BattleResult as BattleResultType } from "@/types/battle"
-import { PlayerProfile, PlayerRank, PlayerStats } from "@/types/player"
+import {
+  PlayerProfile,
+  PlayerRank,
+  PlayerStats,
+  CampaignWorldProgress,
+  createDefaultNarutoWorldProgress,
+} from "@/types/player"
 import { loadPlayerProfile, savePlayerProfile } from "@/lib/storage/playerStorage"
 import { addBattleHistoryEntry } from "@/lib/storage/battleHistoryStorage"
 import { calculateBattleXp, BattleXpResult } from "./calculateXp"
@@ -17,6 +23,10 @@ export interface BattleRewardSummary {
   newRank: PlayerRank
   didRankUp: boolean
   updatedProfile: PlayerProfile
+  isFirstClear?: boolean
+  firstClearBonusXp?: number
+  campaignCompleted?: boolean
+  stageUnlocked?: number
 }
 
 /**
@@ -30,7 +40,96 @@ export function processBattleRewards(
   const currentProfile = loadPlayerProfile()
   const { finalStats, victory, elapsedTime } = result
 
-  // 1. Calculate XP earned
+  // 1. Campaign Progression Tracking & First Clear Detection
+  let isFirstClear = false
+  let firstClearBonus = 0
+  let campaignCompleted = false
+  let stageUnlocked: number | undefined = undefined
+
+  const updatedCampaignProgress: Record<string, CampaignWorldProgress> = {
+    ...(currentProfile.campaignProgress ?? {}),
+  }
+
+  const updatedAchievements = [...(currentProfile.achievements ?? [])]
+
+  if (victory && enemy.world) {
+    const worldKey = enemy.world
+    const existingWorldProgress: CampaignWorldProgress =
+      updatedCampaignProgress[worldKey] ??
+      (worldKey === "naruto"
+        ? createDefaultNarutoWorldProgress()
+        : {
+            unlocked: true,
+            completed: false,
+            currentStage: 1,
+            completedStages: [],
+            defeatedEnemies: [],
+            bestScores: {},
+            firstClearClaimed: {},
+          })
+
+    // Check first clear bonus
+    const alreadyClaimed = existingWorldProgress.firstClearClaimed?.[enemy.id] ?? false
+    if (!alreadyClaimed) {
+      isFirstClear = true
+      firstClearBonus = enemy.firstClearBonusXp ?? 0
+    }
+
+    const newFirstClearClaimed = {
+      ...existingWorldProgress.firstClearClaimed,
+      [enemy.id]: true,
+    }
+
+    // Stage progression
+    const stageNum = enemy.stage ?? 1
+    const newCompletedStages = existingWorldProgress.completedStages.includes(stageNum)
+      ? existingWorldProgress.completedStages
+      : [...existingWorldProgress.completedStages, stageNum].sort((a, b) => a - b)
+
+    const newDefeatedEnemies = existingWorldProgress.defeatedEnemies.includes(enemy.id)
+      ? existingWorldProgress.defeatedEnemies
+      : [...existingWorldProgress.defeatedEnemies, enemy.id]
+
+    const nextStage = Math.max(existingWorldProgress.currentStage, stageNum + 1)
+    if (nextStage > existingWorldProgress.currentStage) {
+      stageUnlocked = nextStage
+    }
+
+    // Best scores update
+    const prevBest = existingWorldProgress.bestScores?.[enemy.id]
+    const newBestScores = {
+      ...existingWorldProgress.bestScores,
+      [enemy.id]: {
+        bestWpm: Math.max(prevBest?.bestWpm ?? 0, finalStats.battleWpm),
+        bestAccuracy: Math.max(prevBest?.bestAccuracy ?? 0, finalStats.battleAccuracy),
+        bestCombo: Math.max(prevBest?.bestCombo ?? 0, finalStats.bestCombo),
+        completedAt: new Date().toISOString(),
+      },
+    }
+
+    // Check boss defeat & campaign completion
+    const isBossCleared = enemy.isBoss === true
+    const isWorldCompleted = existingWorldProgress.completed || isBossCleared
+    if (isBossCleared) {
+      campaignCompleted = true
+      if (!updatedAchievements.includes("naruto_world_completed")) {
+        updatedAchievements.push("naruto_world_completed")
+      }
+    }
+
+    updatedCampaignProgress[worldKey] = {
+      ...existingWorldProgress,
+      unlocked: true,
+      completed: isWorldCompleted,
+      currentStage: nextStage,
+      completedStages: newCompletedStages,
+      defeatedEnemies: newDefeatedEnemies,
+      bestScores: newBestScores,
+      firstClearClaimed: newFirstClearClaimed,
+    }
+  }
+
+  // 2. Calculate XP earned
   const xpResult = calculateBattleXp({
     victory,
     enemyLevel: enemy.level,
@@ -38,14 +137,16 @@ export function processBattleRewards(
     accuracy: finalStats.battleAccuracy,
     totalErrors: finalStats.totalErrors,
     bestCombo: finalStats.bestCombo,
+    baseXpOverride: enemy.xpReward,
+    firstClearBonus,
   })
 
-  // 2. Apply Level progression and XP overflow
+  // 3. Apply Level progression and XP overflow
   const prevLevel = currentProfile.level
   const prevXp = currentProfile.xp
   const levelResult = applyXpGain(prevLevel, prevXp, xpResult.totalXp)
 
-  // 3. Update lifetime player stats
+  // 4. Update lifetime player stats
   const prevPlayed = currentProfile.stats.battlesPlayed
   const newBattlesPlayed = prevPlayed + 1
   const newAverageWpm =
@@ -72,14 +173,14 @@ export function processBattleRewards(
     totalCorrectCharacters:
       currentProfile.stats.totalCorrectCharacters + finalStats.totalCorrectCharacters,
     totalErrors: currentProfile.stats.totalErrors + finalStats.totalErrors,
-    bestWpm: Math.max(currentProfile.stats.bestWpm, finalStats.bestWpm),
+    bestWpm: Math.max(currentProfile.stats.bestWpm, finalStats.battleWpm),
     bestCombo: Math.max(currentProfile.stats.bestCombo, finalStats.bestCombo),
     enemiesDefeated: currentProfile.stats.enemiesDefeated + (victory ? 1 : 0),
     averageWpm: newAverageWpm,
     averageAccuracy: newAverageAccuracy,
   }
 
-  // 4. Recalculate performance ratings and rank
+  // 5. Recalculate performance ratings and rank
   const newAttributes = calculatePlayerAttributes(updatedStats)
   const prevRank = currentProfile.rank
   const newRank = calculateRankFromAttributes(newAttributes)
@@ -93,13 +194,15 @@ export function processBattleRewards(
     rank: newRank,
     attributes: newAttributes,
     stats: updatedStats,
+    campaignProgress: updatedCampaignProgress,
+    achievements: updatedAchievements,
     updatedAt: new Date().toISOString(),
   }
 
-  // 5. Persist to storage
+  // 6. Persist to storage
   savePlayerProfile(updatedProfile)
 
-  // 6. Record into persistent battle history
+  // 7. Record into persistent battle history
   addBattleHistoryEntry({
     enemyId: enemy.id,
     enemyName: enemy.name,
@@ -126,5 +229,9 @@ export function processBattleRewards(
     newRank,
     didRankUp,
     updatedProfile,
+    isFirstClear,
+    firstClearBonusXp: firstClearBonus > 0 ? firstClearBonus : undefined,
+    campaignCompleted,
+    stageUnlocked,
   }
 }
