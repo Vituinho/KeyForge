@@ -4,6 +4,7 @@ import { useState } from "react"
 import { usePlayer } from "@/hooks/usePlayer"
 import { RANK_METADATA } from "@/lib/progression/calculateRank"
 import { getXpRequiredForLevel } from "@/lib/progression/calculateLevel"
+import { clearBattleHistory } from "@/lib/storage/battleHistoryStorage"
 import {
   User,
   ChevronLeft,
@@ -14,9 +15,11 @@ import {
   Edit2,
   BarChart2,
   Swords,
+  AlertTriangle,
+  Trash2,
 } from "lucide-react"
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 
 function formatDate(iso: string): string {
   try {
@@ -32,16 +35,27 @@ function formatDate(iso: string): string {
 }
 
 export default function ProfilePage() {
-  const { player, updatePlayer } = usePlayer()
+  const { player, updatePlayer, reset } = usePlayer()
 
   const [usernameInput, setUsernameInput] = useState(player.username)
   const [isEditingUsername, setIsEditingUsername] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [showResetModal, setShowResetModal] = useState(false)
+  const [resetSuccess, setResetSuccess] = useState(false)
 
   const rankMeta = RANK_METADATA[player.rank]
   const xpNeeded = getXpRequiredForLevel(player.level)
   const xpProgress = Math.min(100, Math.round((player.xp / xpNeeded) * 100))
+
+  const handleConfirmReset = () => {
+    reset()
+    clearBattleHistory()
+    setShowResetModal(false)
+    setUsernameInput("Player")
+    setResetSuccess(true)
+    setTimeout(() => setResetSuccess(false), 3000)
+  }
 
   const handleSaveUsername = (e?: React.FormEvent) => {
     if (e) e.preventDefault()
@@ -69,6 +83,60 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-black text-white px-4 py-8 max-w-4xl mx-auto space-y-8">
+      {/* Reset Confirmation Modal */}
+      <AnimatePresence>
+        {showResetModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <motion.div
+              className="relative w-full max-w-md p-6 rounded-3xl border border-red-500/30 bg-neutral-950 text-center shadow-[0_0_50px_rgba(239,68,68,0.2)] space-y-4"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+            >
+              <div className="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center mx-auto">
+                <AlertTriangle size={28} />
+              </div>
+              <h3 className="text-xl font-black text-white tracking-tight">
+                RESET ALL PROGRESS?
+              </h3>
+              <p className="text-xs text-white/60 leading-relaxed">
+                This action is <strong className="text-red-400">permanent and cannot be undone</strong>. Your Level, XP, Rank, Performance Attributes, Lifetime Statistics, Battle History, and Training records will be wiped back to default.
+              </p>
+
+              <div className="flex items-center justify-center gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowResetModal(false)}
+                  className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white font-bold text-xs transition-colors"
+                >
+                  CANCEL
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmReset}
+                  className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-black text-xs transition-colors shadow-[0_0_20px_rgba(239,68,68,0.4)]"
+                >
+                  <Trash2 size={14} />
+                  <span>CONFIRM RESET</span>
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Reset Success Notification */}
+      {resetSuccess && (
+        <motion.div
+          className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold flex items-center justify-center gap-2"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <Check size={16} />
+          <span>All player progress and battle records have been safely reset.</span>
+        </motion.div>
+      )}
+
       {/* Top Header Navigation */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <Link
@@ -275,6 +343,28 @@ export default function ProfilePage() {
             color="#ec4899"
           />
         </div>
+      </div>
+
+      {/* Danger Zone: Progress Reset */}
+      <div className="p-6 rounded-3xl border border-red-500/20 bg-red-500/5 backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h3 className="text-sm font-black text-red-400 flex items-center gap-2">
+            <AlertTriangle size={16} />
+            <span>DANGER ZONE</span>
+          </h3>
+          <p className="text-xs text-white/40 mt-1 max-w-md">
+            Permanently clear all save data, including rank progression, battle history, and training statistics.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowResetModal(true)}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 hover:text-red-300 font-black text-xs transition-colors shrink-0"
+        >
+          <Trash2 size={14} />
+          <span>RESET PROGRESS</span>
+        </button>
       </div>
 
       {/* Account Info Footer */}
