@@ -1,5 +1,6 @@
 "use client"
-
+ 
+import { useState } from "react"
 import { motion } from "framer-motion"
 import { BattleResult as BattleResultType } from "@/types/battle"
 import { WeakKey, TrainingExercise } from "@/types/typing"
@@ -17,8 +18,12 @@ import {
   Swords,
   ShieldAlert,
   Gauge,
+  Sparkles,
+  ArrowUpCircle,
 } from "lucide-react"
 import Link from "next/link"
+import { processBattleRewards, BattleRewardSummary } from "@/lib/progression/processBattleRewards"
+import { RankUpModal } from "@/components/progression/RankUpModal"
 
 interface BattleResultProps {
   victory: boolean
@@ -38,6 +43,14 @@ export function BattleResult({
   onRematch,
 }: BattleResultProps) {
   const { finalStats } = result
+
+  // Process rewards strictly once upon initial mount
+  const [rewardSummary] = useState<BattleRewardSummary>(() =>
+    processBattleRewards(result, enemy)
+  )
+  const [showRankUpModal, setShowRankUpModal] = useState(
+    () => rewardSummary.didRankUp
+  )
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center py-12 relative overflow-hidden">
@@ -87,6 +100,71 @@ export function BattleResult({
             </>
           )}
         </div>
+
+        {/* XP Progression Card */}
+        {rewardSummary && (
+          <motion.div
+            className="rounded-2xl border border-amber-500/20 bg-amber-500/5 backdrop-blur-sm p-5 space-y-3"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono font-bold uppercase text-amber-400 flex items-center gap-1.5">
+                  <Sparkles size={14} />
+                  Level {rewardSummary.levelResult.newLevel}
+                </span>
+
+                {rewardSummary.levelResult.didLevelUp && (
+                  <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold text-[10px] uppercase animate-pulse border border-emerald-500/30 flex items-center gap-1">
+                    <ArrowUpCircle size={10} />
+                    LEVEL UP! (+{rewardSummary.levelResult.levelsGained})
+                  </span>
+                )}
+
+                {rewardSummary.didRankUp && (
+                  <span className="px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 font-bold text-[10px] uppercase border border-orange-500/30">
+                    RANK UP: {rewardSummary.prevRank} → {rewardSummary.newRank}
+                  </span>
+                )}
+              </div>
+
+              <span className="text-sm font-black text-amber-400">
+                +{rewardSummary.xpResult.totalXp} XP
+              </span>
+            </div>
+
+            {/* XP Progress Bar */}
+            <div>
+              <div className="h-3 w-full rounded-full bg-black/60 overflow-hidden border border-white/10 p-0.5">
+                <motion.div
+                  className="h-full rounded-full bg-gradient-to-r from-amber-500 to-orange-500 shadow-[0_0_12px_rgba(245,158,11,0.5)]"
+                  initial={{
+                    width: `${Math.min(
+                      100,
+                      (rewardSummary.prevXp / rewardSummary.levelResult.xpRequired) * 100
+                    )}%`,
+                  }}
+                  animate={{
+                    width: `${Math.min(
+                      100,
+                      (rewardSummary.levelResult.newXp / rewardSummary.levelResult.xpRequired) *
+                        100
+                    )}%`,
+                  }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                />
+              </div>
+              <div className="flex justify-between text-[10px] text-white/40 mt-1 font-mono">
+                <span>XP to next level</span>
+                <span>
+                  {rewardSummary.levelResult.newXp} / {rewardSummary.levelResult.xpRequired} XP
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Battle Stats — Across the entire battle */}
         <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-5">
@@ -275,6 +353,16 @@ export function BattleResult({
           </Link>
         </div>
       </motion.div>
+
+      {/* Rank Up Celebration Modal */}
+      {rewardSummary && (
+        <RankUpModal
+          isOpen={showRankUpModal}
+          prevRank={rewardSummary.prevRank}
+          newRank={rewardSummary.newRank}
+          onClose={() => setShowRankUpModal(false)}
+        />
+      )}
     </div>
   )
 }
