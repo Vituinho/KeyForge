@@ -5,6 +5,8 @@ import { BattlePhase, BattleState, DamageEvent, RoundResult } from "@/types/batt
 import { TypingStats } from "@/types/typing"
 import { Enemy } from "@/types/character"
 import { calculateDamage, DamageCalculationResult } from "@/lib/battle/calculateDamage"
+import { evaluateEnemyMechanics } from "@/lib/battle/mechanicsEngine"
+import { MultiPhaseConfig } from "@/types/mechanics"
 
 interface UseBattleProps {
   enemy: Enemy
@@ -36,17 +38,40 @@ export function useBattle({
   autoStart = true,
   onBattleEnd,
 }: UseBattleProps): UseBattleReturn {
+  const multiPhaseMech = enemy.mechanics?.find(
+    (m) => m.type === "multi-phase" || m.type === "multi-phase-boss"
+  ) as MultiPhaseConfig | undefined
+
+  const totalPhases = multiPhaseMech ? multiPhaseMech.totalPhases : 1
+  const initialPhaseName = multiPhaseMech ? multiPhaseMech.phaseNames[0] : undefined
+
+  const getPhaseHp = useCallback(
+    (phaseNum: number) => {
+      if (!multiPhaseMech) return enemy.maxHp
+      const ratio = multiPhaseMech.phaseHpRatios[phaseNum - 1] ?? 1 / totalPhases
+      return Math.round(enemy.maxHp * ratio)
+    },
+    [enemy.maxHp, multiPhaseMech, totalPhases]
+  )
+
+  const initialHp = getPhaseHp(1)
+
   const [battleState, setBattleState] = useState<BattleState>({
     phase: autoStart ? "fighting" : "pre-battle",
-    enemyHp: enemy.maxHp,
+    enemyHp: initialHp,
     playerHp: playerMaxHp,
-    maxEnemyHp: enemy.maxHp,
+    maxEnemyHp: initialHp,
     maxPlayerHp: playerMaxHp,
     currentTextIndex: 0,
     roundHistory: [],
     damageEvents: [],
     battleStartTime: null,
     battleEndTime: null,
+    currentPhase: 1,
+    totalPhases,
+    phaseName: initialPhaseName,
+    phaseTransitionBanner: null,
+    activeMechanicEffects: [],
   })
 
   const enemyAttackTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -133,20 +158,26 @@ export function useBattle({
   const resetBattle = useCallback(() => {
     stopEnemyAttack()
     const now = Date.now()
+    const firstPhaseHp = getPhaseHp(1)
     setBattleState({
       phase: "fighting",
-      enemyHp: enemy.maxHp,
+      enemyHp: firstPhaseHp,
       playerHp: playerMaxHp,
-      maxEnemyHp: enemy.maxHp,
+      maxEnemyHp: firstPhaseHp,
       maxPlayerHp: playerMaxHp,
       currentTextIndex: 0,
       roundHistory: [],
       damageEvents: [],
       battleStartTime: now,
       battleEndTime: null,
+      currentPhase: 1,
+      totalPhases,
+      phaseName: initialPhaseName,
+      phaseTransitionBanner: null,
+      activeMechanicEffects: [],
     })
     startEnemyAttack()
-  }, [enemy.maxHp, playerMaxHp, startEnemyAttack, stopEnemyAttack])
+  }, [getPhaseHp, initialPhaseName, playerMaxHp, startEnemyAttack, stopEnemyAttack, totalPhases])
 
   // Start attack timer on mount if autoStart is true
   useEffect(() => {
@@ -159,7 +190,7 @@ export function useBattle({
   }, [autoStart, startEnemyAttack, stopEnemyAttack])
 
   /**
-   * Calculates and applies round damage to enemy.
+   * Calculates and applies round damage to enemy, incorporating all character mechanics.
    * Returns calculation details and whether the enemy was defeated.
    */
   const applyRoundDamage = useCallback(
@@ -167,7 +198,7 @@ export function useBattle({
       const state = battleStateRef.current
       const now = Date.now()
 
-      const damageResult = calculateDamage({
+      const baseResult = calculateDamage({
         wpm: roundStats.currentWpm,
         accuracy: roundStats.currentAccuracy,
         combo: roundStats.bestCombo,
@@ -175,13 +206,36 @@ export function useBattle({
         baseDamage: 30,
       })
 
-      const newEnemyHp = Math.max(0, state.enemyHp - damageResult.damage)
-      const isDefeated = newEnemyHp <= 0
+      const mechanicEval = evaluateEnemyMechanics({
+        roundStats,
+        enemy,
+        roundHistory: state.roundHistory,
+        baseCalculatedDamage: baseResult.damage,
+        currentPhase: state.currentPhase,
+      })
 
-      const damageEvent: DamageEvent = {
+      const finalDamage = mechanicEval.modifiedDamage
+      const newEnemyHp = Math.max(0, state.enemyHp - finalDamage)
+
+      let newPlayerHp = state.playerHp
+      const extraDamageEvents: DamageEvent[] = []
+
+      // If enemy mechanic inflicted counter damage (e.g. Sasuke Sharingan break)
+      if (mechanicEval.extraPlayerDamageTaken > 0) {
+        newPlayerHp = Math.max(0, newPlayerHp - mechanicEval.extraPlayerDamageTaken)
+        extraDamageEvents.push({
+          id: `counter-${now}-${Math.random().toString(36).slice(2, 7)}`,
+          amount: mechanicEval.extraPlayerDamageTaken,
+          strikeType: "miss",
+          timestamp: now,
+          targetIsEnemy: false,
+        })
+      }
+
+      const playerDamageEvent: DamageEvent = {
         id: `player-${now}-${Math.random().toString(36).slice(2, 7)}`,
-        amount: damageResult.damage,
-        strikeType: damageResult.strikeType,
+        amount: finalDamage,
+        strikeType: baseResult.strikeType,
         timestamp: now,
         targetIsEnemy: true,
       }
@@ -191,34 +245,103 @@ export function useBattle({
         accuracy: roundStats.currentAccuracy,
         combo: roundStats.bestCombo,
         errors: roundStats.currentErrors,
-        damage: damageResult.damage,
-        strikeType: damageResult.strikeType,
+        damage: finalDamage,
+        strikeType: baseResult.strikeType,
         text: texts[state.currentTextIndex] ?? "",
+        activeEffects: mechanicEval.activeEffects,
       }
 
-      if (isDefeated) {
+      // Check if player died from counter-attack
+      if (newPlayerHp <= 0) {
         stopEnemyAttack()
         setBattleState((prev) => ({
           ...prev,
-          enemyHp: 0,
-          phase: "victory",
+          playerHp: 0,
+          enemyHp: newEnemyHp,
+          phase: "defeat",
           battleEndTime: now,
           roundHistory: [...prev.roundHistory, roundResult],
-          damageEvents: [...prev.damageEvents, damageEvent],
+          damageEvents: [...prev.damageEvents, playerDamageEvent, ...extraDamageEvents],
+          activeMechanicEffects: mechanicEval.activeEffects,
         }))
-        onBattleEnd?.(true)
-      } else {
-        setBattleState((prev) => ({
-          ...prev,
-          enemyHp: newEnemyHp,
-          roundHistory: [...prev.roundHistory, roundResult],
-          damageEvents: [...prev.damageEvents, damageEvent],
-        }))
+        onBattleEnd?.(false)
+        return {
+          damageResult: { ...baseResult, damage: finalDamage },
+          isEnemyDefeated: false,
+        }
       }
 
-      return { damageResult, isEnemyDefeated: isDefeated }
+      // Check if enemy was defeated or transitions to next phase
+      if (newEnemyHp <= 0) {
+        if (state.currentPhase < state.totalPhases) {
+          // Transition to next phase!
+          const nextPhase = state.currentPhase + 1
+          const nextPhaseHp = getPhaseHp(nextPhase)
+          const nextPhaseName =
+            multiPhaseMech?.phaseNames[nextPhase - 1] ?? `Phase ${nextPhase}`
+          const banner = `${nextPhaseName.toUpperCase()}!`
+
+          setBattleState((prev) => ({
+            ...prev,
+            playerHp: newPlayerHp,
+            enemyHp: nextPhaseHp,
+            maxEnemyHp: nextPhaseHp,
+            currentPhase: nextPhase,
+            phaseName: nextPhaseName,
+            phaseTransitionBanner: banner,
+            roundHistory: [...prev.roundHistory, roundResult],
+            damageEvents: [...prev.damageEvents, playerDamageEvent, ...extraDamageEvents],
+            activeMechanicEffects: [
+              ...mechanicEval.activeEffects,
+              `ADVANCED TO PHASE ${nextPhase}`,
+            ],
+          }))
+
+          setTimeout(() => {
+            setBattleState((prev) => ({ ...prev, phaseTransitionBanner: null }))
+          }, 3000)
+
+          return {
+            damageResult: { ...baseResult, damage: finalDamage },
+            isEnemyDefeated: false,
+          }
+        } else {
+          // Final phase: Victory!
+          stopEnemyAttack()
+          setBattleState((prev) => ({
+            ...prev,
+            playerHp: newPlayerHp,
+            enemyHp: 0,
+            phase: "victory",
+            battleEndTime: now,
+            roundHistory: [...prev.roundHistory, roundResult],
+            damageEvents: [...prev.damageEvents, playerDamageEvent, ...extraDamageEvents],
+            activeMechanicEffects: mechanicEval.activeEffects,
+          }))
+          onBattleEnd?.(true)
+          return {
+            damageResult: { ...baseResult, damage: finalDamage },
+            isEnemyDefeated: true,
+          }
+        }
+      } else {
+        // Normal round completion
+        setBattleState((prev) => ({
+          ...prev,
+          playerHp: newPlayerHp,
+          enemyHp: newEnemyHp,
+          roundHistory: [...prev.roundHistory, roundResult],
+          damageEvents: [...prev.damageEvents, playerDamageEvent, ...extraDamageEvents],
+          activeMechanicEffects: mechanicEval.activeEffects,
+        }))
+
+        return {
+          damageResult: { ...baseResult, damage: finalDamage },
+          isEnemyDefeated: false,
+        }
+      }
     },
-    [onBattleEnd, stopEnemyAttack, texts]
+    [enemy, getPhaseHp, multiPhaseMech?.phaseNames, onBattleEnd, stopEnemyAttack, texts]
   )
 
   /**
