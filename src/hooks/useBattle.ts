@@ -4,32 +4,40 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { BattlePhase, BattleState, DamageEvent, RoundResult } from "@/types/battle"
 import { TypingStats } from "@/types/typing"
 import { Enemy } from "@/types/character"
-import { calculateDamage } from "@/lib/battle/calculateDamage"
+import { calculateDamage, DamageCalculationResult } from "@/lib/battle/calculateDamage"
 
 interface UseBattleProps {
   enemy: Enemy
   playerMaxHp?: number
   texts: string[]
+  autoStart?: boolean
   onBattleEnd?: (victory: boolean) => void
 }
 
 interface UseBattleReturn {
   battleState: BattleState
   currentText: string
-  onRoundComplete: (stats: TypingStats) => void
+  applyRoundDamage: (roundStats: TypingStats) => {
+    damageResult: DamageCalculationResult
+    isEnemyDefeated: boolean
+  }
+  advanceToNextSentence: () => void
   clearDamageEvent: (id: string) => void
   phase: BattlePhase
   startBattle: () => void
+  stopBattle: () => void
+  resetBattle: () => void
 }
 
 export function useBattle({
   enemy,
   playerMaxHp = 100,
   texts,
+  autoStart = true,
   onBattleEnd,
 }: UseBattleProps): UseBattleReturn {
   const [battleState, setBattleState] = useState<BattleState>({
-    phase: "pre-battle",
+    phase: autoStart ? "fighting" : "pre-battle",
     enemyHp: enemy.maxHp,
     playerHp: playerMaxHp,
     maxEnemyHp: enemy.maxHp,
@@ -42,31 +50,43 @@ export function useBattle({
   })
 
   const enemyAttackTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  // Keep a ref to battle state for use inside setInterval callbacks
-  // (updated via useEffect to stay in sync — not during render)
   const battleStateRef = useRef(battleState)
 
+  // Keep battleStateRef synced via effect to avoid reading uncommitted state in timers
   useEffect(() => {
     battleStateRef.current = battleState
-  })
+  }, [battleState])
 
+  // Clear enemy attack interval completely
   const stopEnemyAttack = useCallback(() => {
-    if (enemyAttackTimerRef.current) {
+    if (enemyAttackTimerRef.current !== null) {
       clearInterval(enemyAttackTimerRef.current)
       enemyAttackTimerRef.current = null
     }
   }, [])
 
+  // Start periodic enemy attacks — strictly guarded
   const startEnemyAttack = useCallback(() => {
+    // Always clear existing interval first to prevent duplicate timers
     stopEnemyAttack()
+
     enemyAttackTimerRef.current = setInterval(() => {
       const state = battleStateRef.current
-      if (state.phase !== "fighting") return
+
+      // Strict validation: stop immediately if not in fighting phase or if either participant is dead
+      if (
+        state.phase !== "fighting" ||
+        state.enemyHp <= 0 ||
+        state.playerHp <= 0
+      ) {
+        stopEnemyAttack()
+        return
+      }
 
       const newPlayerHp = Math.max(0, state.playerHp - enemy.attack)
       const now = Date.now()
       const damageEvent: DamageEvent = {
-        id: `enemy-${now}`,
+        id: `enemy-${now}-${Math.random().toString(36).slice(2, 7)}`,
         amount: enemy.attack,
         strikeType: "normal",
         timestamp: now,
@@ -79,7 +99,7 @@ export function useBattle({
           ...prev,
           playerHp: 0,
           phase: "defeat",
-          battleEndTime: Date.now(),
+          battleEndTime: now,
           damageEvents: [...prev.damageEvents, damageEvent],
         }))
         onBattleEnd?.(false)
@@ -93,77 +113,123 @@ export function useBattle({
     }, enemy.attackInterval)
   }, [enemy.attack, enemy.attackInterval, onBattleEnd, stopEnemyAttack])
 
+  // Explicit start
   const startBattle = useCallback(() => {
+    const now = Date.now()
     setBattleState((prev) => ({
       ...prev,
       phase: "fighting",
-      battleStartTime: Date.now(),
+      battleStartTime: now,
     }))
     startEnemyAttack()
   }, [startEnemyAttack])
 
-  /**
-   * Called by BattleArena when the player finishes typing a round.
-   * Calculates damage, applies it, advances to next text or ends battle.
-   */
-  const onRoundComplete = useCallback(
-    (stats: TypingStats) => {
-      const state = battleStateRef.current
-      if (state.phase !== "fighting") return
+  // Stop battle manually
+  const stopBattle = useCallback(() => {
+    stopEnemyAttack()
+  }, [stopEnemyAttack])
 
-      const result = calculateDamage({
-        wpm: stats.wpm,
-        accuracy: stats.accuracy,
-        combo: stats.bestCombo,
-        errors: stats.errors,
+  // Reset battle to initial state
+  const resetBattle = useCallback(() => {
+    stopEnemyAttack()
+    const now = Date.now()
+    setBattleState({
+      phase: "fighting",
+      enemyHp: enemy.maxHp,
+      playerHp: playerMaxHp,
+      maxEnemyHp: enemy.maxHp,
+      maxPlayerHp: playerMaxHp,
+      currentTextIndex: 0,
+      roundHistory: [],
+      damageEvents: [],
+      battleStartTime: now,
+      battleEndTime: null,
+    })
+    startEnemyAttack()
+  }, [enemy.maxHp, playerMaxHp, startEnemyAttack, stopEnemyAttack])
+
+  // Start attack timer on mount if autoStart is true
+  useEffect(() => {
+    if (autoStart) {
+      startEnemyAttack()
+    }
+    return () => {
+      stopEnemyAttack()
+    }
+  }, [autoStart, startEnemyAttack, stopEnemyAttack])
+
+  /**
+   * Calculates and applies round damage to enemy.
+   * Returns calculation details and whether the enemy was defeated.
+   */
+  const applyRoundDamage = useCallback(
+    (roundStats: TypingStats) => {
+      const state = battleStateRef.current
+      const now = Date.now()
+
+      const damageResult = calculateDamage({
+        wpm: roundStats.currentWpm,
+        accuracy: roundStats.currentAccuracy,
+        combo: roundStats.bestCombo,
+        errors: roundStats.currentErrors,
         baseDamage: 30,
       })
 
-      const newEnemyHp = Math.max(0, state.enemyHp - result.damage)
-      const now = Date.now()
+      const newEnemyHp = Math.max(0, state.enemyHp - damageResult.damage)
+      const isDefeated = newEnemyHp <= 0
 
       const damageEvent: DamageEvent = {
-        id: `player-${now}`,
-        amount: result.damage,
-        strikeType: result.strikeType,
+        id: `player-${now}-${Math.random().toString(36).slice(2, 7)}`,
+        amount: damageResult.damage,
+        strikeType: damageResult.strikeType,
         timestamp: now,
         targetIsEnemy: true,
       }
 
       const roundResult: RoundResult = {
-        wpm: stats.wpm,
-        accuracy: stats.accuracy,
-        combo: stats.bestCombo,
-        errors: stats.errors,
-        damage: result.damage,
-        strikeType: result.strikeType,
+        wpm: roundStats.currentWpm,
+        accuracy: roundStats.currentAccuracy,
+        combo: roundStats.bestCombo,
+        errors: roundStats.currentErrors,
+        damage: damageResult.damage,
+        strikeType: damageResult.strikeType,
         text: texts[state.currentTextIndex] ?? "",
       }
 
-      if (newEnemyHp <= 0) {
+      if (isDefeated) {
         stopEnemyAttack()
         setBattleState((prev) => ({
           ...prev,
           enemyHp: 0,
           phase: "victory",
-          battleEndTime: Date.now(),
+          battleEndTime: now,
           roundHistory: [...prev.roundHistory, roundResult],
           damageEvents: [...prev.damageEvents, damageEvent],
         }))
         onBattleEnd?.(true)
       } else {
-        const nextIndex = (state.currentTextIndex + 1) % texts.length
         setBattleState((prev) => ({
           ...prev,
           enemyHp: newEnemyHp,
-          currentTextIndex: nextIndex,
           roundHistory: [...prev.roundHistory, roundResult],
           damageEvents: [...prev.damageEvents, damageEvent],
         }))
       }
+
+      return { damageResult, isEnemyDefeated: isDefeated }
     },
     [onBattleEnd, stopEnemyAttack, texts]
   )
+
+  /**
+   * Advances the battle to the next sentence.
+   */
+  const advanceToNextSentence = useCallback(() => {
+    setBattleState((prev) => ({
+      ...prev,
+      currentTextIndex: (prev.currentTextIndex + 1) % texts.length,
+    }))
+  }, [texts.length])
 
   const clearDamageEvent = useCallback((id: string) => {
     setBattleState((prev) => ({
@@ -172,19 +238,17 @@ export function useBattle({
     }))
   }, [])
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => stopEnemyAttack()
-  }, [stopEnemyAttack])
-
   const currentText = texts[battleState.currentTextIndex] ?? texts[0]
 
   return {
     battleState,
     currentText,
-    onRoundComplete,
+    applyRoundDamage,
+    advanceToNextSentence,
     clearDamageEvent,
     phase: battleState.phase,
     startBattle,
+    stopBattle,
+    resetBattle,
   }
 }
