@@ -20,8 +20,8 @@ const NAV_ITEMS = [
     href: "/anime-world",
     icon: <Globe size={22} />,
     label: "Anime World",
-    description: "Campaign coming soon",
-    active: false,
+    description: "Campaign mode & bosses",
+    active: true,
     color: "#8b5cf6",
   },
   {
