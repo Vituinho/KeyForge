@@ -419,13 +419,23 @@ export function useTypingEngine({
     if (!enabled) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Do not hijack typing if focused on an interactive input element outside the typing area
+      // Do not hijack typing if focused on an editable element (input, textarea, select, contenteditable)
       const target = e.target as HTMLElement | null
       if (target && target !== inputRef.current) {
-        if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") {
+        const tagName = target.tagName?.toUpperCase()
+        const isEditable =
+          tagName === "INPUT" ||
+          tagName === "TEXTAREA" ||
+          tagName === "SELECT" ||
+          target.isContentEditable ||
+          target.getAttribute("contenteditable") === "true" ||
+          target.getAttribute("contenteditable") === ""
+
+        if (isEditable) {
           return
         }
-        if (target.tagName === "BUTTON" && (e.key === "Enter" || e.key === " ")) {
+
+        if (tagName === "BUTTON" && (e.key === "Enter" || e.key === " ")) {
           return
         }
       }
