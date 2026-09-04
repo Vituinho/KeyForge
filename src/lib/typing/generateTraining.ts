@@ -38,6 +38,9 @@ const DEFAULT_EXERCISES = [
   "but but but but",
 ]
 
+/**
+ * Generate training exercises for a single list of weak keys.
+ */
 export function generateTrainingExercises(
   weakKeys: WeakKey[],
   exercisesPerKey = 5
@@ -51,6 +54,78 @@ export function generateTrainingExercises(
       description: buildDescription(wk),
     }
   })
+}
+
+/**
+ * Generates a cohesive multi-line training session combining multiple weak keys.
+ * Used by Training Mode (Weak Keys).
+ *
+ * Example with keys ["a", "r", "t"]:
+ *   1. "aaa rrr ttt"
+ *   2. "ara ata rat"
+ *   3. "art tar rar"
+ *   4. "radar atacar tratar"
+ *   5. "arrastar carta prata"
+ */
+export function generateWeakKeysSession(keys: string[]): string[] {
+  const cleanKeys = Array.from(
+    new Set(keys.map((k) => k.toLowerCase().trim()).filter((k) => k.length === 1))
+  )
+
+  if (cleanKeys.length === 0) {
+    return [
+      "the quick brown fox jumps over the lazy dog",
+      "focus on accuracy and fluid finger movement",
+      "rhythm and precision build true typing speed",
+    ]
+  }
+
+  const session: string[] = []
+
+  // 1. Isolated triples of target keys
+  const isolated = cleanKeys.map((k) => `${k}${k}${k}`).join(" ")
+  session.push(`${isolated} ${isolated}`)
+
+  // 2. Cross combinations if multiple keys
+  if (cleanKeys.length >= 2) {
+    const combos: string[] = []
+    for (let i = 0; i < cleanKeys.length; i++) {
+      for (let j = 0; j < cleanKeys.length; j++) {
+        if (i !== j) {
+          combos.push(`${cleanKeys[i]}${cleanKeys[j]}${cleanKeys[i]}`)
+        }
+      }
+    }
+    session.push(combos.slice(0, 6).join(" "))
+  }
+
+  // 3. Word patterns from dictionary containing target keys
+  const wordsForKeys: string[] = []
+  for (const k of cleanKeys) {
+    const list = LETTER_EXERCISES[k] ?? []
+    for (const ex of list) {
+      const parts = ex.split(" ")
+      for (const p of parts) {
+        if (p.length >= 3 && !wordsForKeys.includes(p)) {
+          wordsForKeys.push(p)
+        }
+      }
+    }
+  }
+
+  if (wordsForKeys.length >= 3) {
+    session.push(wordsForKeys.slice(0, 4).join(" "))
+    if (wordsForKeys.length >= 7) {
+      session.push(wordsForKeys.slice(4, 8).join(" "))
+    }
+  }
+
+  // Fallback if session has too few exercises
+  while (session.length < 3) {
+    session.push(cleanKeys.map((k) => `${k} ${k}${k} ${k}${k}${k}`).join(" "))
+  }
+
+  return session.slice(0, 5)
 }
 
 function buildDescription(wk: WeakKey): string {
