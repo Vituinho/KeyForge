@@ -1,6 +1,6 @@
 "use client"
  
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { motion } from "framer-motion"
 import { BattleResult as BattleResultType } from "@/types/battle"
 import { WeakKey, TrainingExercise } from "@/types/typing"
@@ -21,10 +21,12 @@ import {
   Sparkles,
   ArrowUpCircle,
   MapPin,
+  Lightbulb,
 } from "lucide-react"
 import Link from "next/link"
 import { processBattleRewards, BattleRewardSummary } from "@/lib/progression/processBattleRewards"
 import { RankUpModal } from "@/components/progression/RankUpModal"
+import { getDefeatAdvice, DefeatAdvice } from "@/lib/battle/defeatAdvice"
 
 interface BattleResultProps {
   victory: boolean
@@ -51,6 +53,11 @@ export function BattleResult({
   )
   const [showRankUpModal, setShowRankUpModal] = useState(
     () => rewardSummary.didRankUp
+  )
+
+  const defeatAdvice: DefeatAdvice = useMemo(
+    () => getDefeatAdvice(enemy, finalStats),
+    [enemy, finalStats]
   )
 
   return (
@@ -268,6 +275,63 @@ export function BattleResult({
             />
           </div>
         </div>
+
+        {/* Character Tactical Coaching Advice — on defeat */}
+        {!victory && defeatAdvice && (
+          <motion.div
+            className="rounded-2xl border border-orange-500/30 bg-orange-500/5 backdrop-blur-sm p-5 space-y-3"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+          >
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-orange-500/20 text-orange-400">
+                  <Lightbulb size={16} />
+                </div>
+                <div>
+                  <span className="text-[10px] font-mono text-orange-400/80 font-bold uppercase tracking-wider block">
+                    Tactical Analysis vs {enemy.name}
+                  </span>
+                  <h3 className="text-sm font-black text-white">{defeatAdvice.title}</h3>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 text-xs font-mono">
+                <span className="text-white/40">{defeatAdvice.focusMetric.label}:</span>
+                <span
+                  className={`font-black px-2 py-0.5 rounded border ${
+                    defeatAdvice.focusMetric.status === "pass"
+                      ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                      : "bg-red-500/20 text-red-400 border-red-500/30"
+                  }`}
+                >
+                  {defeatAdvice.focusMetric.current} (Target: {defeatAdvice.focusMetric.required})
+                </span>
+              </div>
+            </div>
+
+            <p className="text-xs text-white/70 leading-relaxed">{defeatAdvice.analysis}</p>
+
+            <div className="p-3 rounded-xl bg-black/40 border border-white/10 flex items-start gap-2.5">
+              <Sparkles size={14} className="text-amber-400 shrink-0 mt-0.5" />
+              <div className="text-xs">
+                <span className="font-bold text-amber-300">Tactical Drill: </span>
+                <span className="text-white/80">{defeatAdvice.tacticalTip}</span>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-1">
+              <Link
+                href={defeatAdvice.recommendedLink}
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-orange-400 hover:text-orange-300 transition-colors"
+              >
+                <span>{defeatAdvice.recommendedLinkText}</span>
+                <ChevronRight size={14} />
+              </Link>
+            </div>
+          </motion.div>
+        )}
 
         {/* Weakness Analysis — only on defeat */}
         {!victory && weakKeys.length > 0 && (
