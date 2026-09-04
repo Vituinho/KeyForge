@@ -17,6 +17,8 @@ import {
   Swords,
   AlertTriangle,
   Trash2,
+  Trophy,
+  ChevronRight,
 } from "lucide-react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
@@ -255,6 +257,13 @@ export default function ProfilePage() {
                 <span className="text-xs text-white/40 font-mono">
                   Level <strong className="text-white font-bold">{player.level}</strong>
                 </span>
+
+                {player.title && (
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 flex items-center gap-1 font-mono">
+                    <Sparkles size={11} />
+                    {player.title}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -342,6 +351,89 @@ export default function ProfilePage() {
             desc="Uninterrupted streaks and flow state"
             color="#ec4899"
           />
+        </div>
+      </div>
+
+      {/* Campaign Progression & Achievements Card */}
+      <div className="p-6 sm:p-8 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md space-y-6">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-orange-500/20 border border-orange-500/30 text-orange-400">
+              <Trophy size={20} />
+            </div>
+            <div>
+              <h2 className="text-lg font-black text-white uppercase tracking-wider">
+                Campaign Progression & Shinobi Trials
+              </h2>
+              <p className="text-xs text-white/50">
+                Conquer the Anime World campaigns and defeat legendary bosses
+              </p>
+            </div>
+          </div>
+
+          <Link
+            href="/anime-world/naruto"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/40 text-orange-300 font-bold text-xs uppercase tracking-wider transition-colors"
+          >
+            <span>Open Naruto Map</span>
+            <ChevronRight size={14} />
+          </Link>
+        </div>
+
+        {/* Naruto World Campaign Status */}
+        <div className="p-5 rounded-2xl bg-black/40 border border-white/10 space-y-4">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-2">
+              <span className="text-base font-black text-orange-400">NARUTO WORLD</span>
+              {player.campaignProgress?.naruto?.completed ? (
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
+                  <Check size={10} />
+                  8 / 8 COMPLETED
+                </span>
+              ) : (
+                <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/40 text-[10px] font-black uppercase tracking-wider">
+                  Stage {player.campaignProgress?.naruto?.currentStage ?? 1} / 8
+                </span>
+              )}
+            </div>
+
+            <span className="text-xs font-mono text-white/60">
+              Stages Cleared: {player.campaignProgress?.naruto?.completedStages?.length ?? 0} / 8
+            </span>
+          </div>
+
+          <div className="h-2.5 rounded-full bg-white/10 overflow-hidden">
+            <motion.div
+              className="h-full rounded-full bg-gradient-to-r from-orange-500 to-amber-400"
+              initial={{ width: 0 }}
+              animate={{
+                width: `${Math.min(
+                  100,
+                  (((player.campaignProgress?.naruto?.completedStages?.length ?? 0)) / 8) * 100
+                )}%`,
+              }}
+              transition={{ duration: 0.6 }}
+            />
+          </div>
+
+          {/* Unlocked Achievements list */}
+          <div className="pt-2 border-t border-white/5 flex items-center gap-3 flex-wrap">
+            <span className="text-xs text-white/40 font-mono uppercase tracking-wider">Achievements:</span>
+            {player.achievements && player.achievements.includes("naruto_world_completed") ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-yellow-500/10 border border-yellow-500/30 text-yellow-300 font-mono font-bold text-xs">
+                <Trophy size={13} />
+                Naruto World Champion
+              </span>
+            ) : (
+              <span className="text-xs text-white/30 italic">Defeat Madara Uchiha in Stage 8 to unlock</span>
+            )}
+            {player.title && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 font-mono font-bold text-xs">
+                <Sparkles size={13} />
+                Title: {player.title}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 

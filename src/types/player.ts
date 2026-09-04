@@ -68,6 +68,8 @@ export interface PlayerProfile {
   academyProgress?: Record<string, AcademyLessonProgress>
   campaignProgress: Record<string, CampaignWorldProgress>
   achievements?: string[]
+  title?: string
+  titles?: string[]
 
   createdAt: string
   updatedAt: string

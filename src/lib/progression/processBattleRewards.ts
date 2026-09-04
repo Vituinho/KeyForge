@@ -27,6 +27,7 @@ export interface BattleRewardSummary {
   firstClearBonusXp?: number
   campaignCompleted?: boolean
   stageUnlocked?: number
+  unlockedTitle?: string
 }
 
 /**
@@ -129,6 +130,19 @@ export function processBattleRewards(
     }
   }
 
+  // Check title unlock
+  let unlockedTitle: string | undefined = undefined
+  const updatedTitles = [...(currentProfile.titles ?? [])]
+  let currentTitle = currentProfile.title
+
+  if (campaignCompleted) {
+    if (!updatedTitles.includes("SHINOBI TYPIST")) {
+      updatedTitles.push("SHINOBI TYPIST")
+      unlockedTitle = "SHINOBI TYPIST"
+    }
+    currentTitle = "SHINOBI TYPIST"
+  }
+
   // 2. Calculate XP earned
   const xpResult = calculateBattleXp({
     victory,
@@ -196,6 +210,8 @@ export function processBattleRewards(
     stats: updatedStats,
     campaignProgress: updatedCampaignProgress,
     achievements: updatedAchievements,
+    title: currentTitle,
+    titles: updatedTitles,
     updatedAt: new Date().toISOString(),
   }
 
@@ -233,5 +249,6 @@ export function processBattleRewards(
     firstClearBonusXp: firstClearBonus > 0 ? firstClearBonus : undefined,
     campaignCompleted,
     stageUnlocked,
+    unlockedTitle,
   }
 }
