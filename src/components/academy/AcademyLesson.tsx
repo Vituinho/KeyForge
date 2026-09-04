@@ -19,8 +19,11 @@ import {
   Zap,
   EyeOff,
   Crosshair,
+  ArrowUpCircle,
 } from "lucide-react"
 import Link from "next/link"
+import { processAcademyLessonRewards, ActivityRewardSummary } from "@/lib/progression/processActivityRewards"
+import { RankUpModal } from "@/components/progression/RankUpModal"
 
 interface AcademyLessonProps {
   moduleId: string
@@ -246,82 +249,7 @@ function HomeRowLesson({ onBack }: { onBack: () => void }) {
 
       {/* Result screen if completed */}
       {isCompleted && finalStats ? (
-        <motion.div
-          className="p-8 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md text-center space-y-6"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-        >
-          {finalStats.battleAccuracy >= 95 ? (
-            <div>
-              <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 mx-auto flex items-center justify-center mb-3">
-                <CheckCircle2 size={36} />
-              </div>
-              <h2 className="text-3xl font-black text-white">LESSON COMPLETE</h2>
-              <p className="text-emerald-400 font-bold text-sm mt-1">
-                Accuracy Target Met ({finalStats.battleAccuracy}%)!
-              </p>
-              <p className="text-white/40 text-xs mt-1">
-                You maintained great finger discipline across the Home Row.
-              </p>
-            </div>
-          ) : (
-            <div>
-              <div className="w-16 h-16 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-400 mx-auto flex items-center justify-center mb-3">
-                <AlertTriangle size={36} />
-              </div>
-              <h2 className="text-3xl font-black text-white">GOOD EFFORT</h2>
-              <p className="text-amber-400 font-bold text-sm mt-1">
-                Accuracy was {finalStats.battleAccuracy}% (Target: 95%)
-              </p>
-              <p className="text-white/40 text-xs mt-1">
-                Take your time to feel the bumps on F and J before pressing.
-              </p>
-            </div>
-          )}
-
-          {/* Stats pills */}
-          <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto">
-            <div className="p-3 rounded-xl bg-black/40 border border-white/10">
-              <span className="text-[10px] uppercase text-white/40 block mb-0.5">Accuracy</span>
-              <span
-                className={`text-2xl font-black ${
-                  finalStats.battleAccuracy >= 95 ? "text-emerald-400" : "text-amber-400"
-                }`}
-              >
-                {finalStats.battleAccuracy}%
-              </span>
-            </div>
-            <div className="p-3 rounded-xl bg-black/40 border border-white/10">
-              <span className="text-[10px] uppercase text-white/40 block mb-0.5">WPM</span>
-              <span className="text-2xl font-black text-white">
-                {finalStats.battleWpm || finalStats.currentWpm}
-              </span>
-            </div>
-            <div className="p-3 rounded-xl bg-black/40 border border-white/10">
-              <span className="text-[10px] uppercase text-white/40 block mb-0.5">Errors</span>
-              <span className="text-2xl font-black text-white">
-                {finalStats.totalErrors}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-center gap-3">
-            <button
-              onClick={handleRetry}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white font-bold text-sm transition-colors"
-            >
-              <RotateCcw size={16} />
-              TRY AGAIN
-            </button>
-            <Link
-              href="/battle"
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)]"
-            >
-              <Zap size={16} />
-              TEST IN BATTLE
-            </Link>
-          </div>
-        </motion.div>
+        <HomeRowLessonResult stats={finalStats} onRetry={handleRetry} />
       ) : (
         /* Active practice drill */
         <div className="space-y-4">
@@ -369,5 +297,126 @@ function HomeRowLesson({ onBack }: { onBack: () => void }) {
         </div>
       )}
     </div>
+  )
+}
+
+function HomeRowLessonResult({
+  stats,
+  onRetry,
+}: {
+  stats: TypingStats
+  onRetry: () => void
+}) {
+  const [rewardSummary] = useState<ActivityRewardSummary>(() =>
+    processAcademyLessonRewards("home-row", stats)
+  )
+  const [showRankUpModal, setShowRankUpModal] = useState(
+    () => rewardSummary.didRankUp
+  )
+
+  return (
+    <motion.div
+      className="p-8 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md text-center space-y-6"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+    >
+      {/* Rank Up Celebration Modal */}
+      <RankUpModal
+        isOpen={showRankUpModal}
+        prevRank={rewardSummary.prevRank}
+        newRank={rewardSummary.newRank}
+        onClose={() => setShowRankUpModal(false)}
+      />
+
+      {stats.battleAccuracy >= 95 ? (
+        <div>
+          <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 mx-auto flex items-center justify-center mb-3">
+            <CheckCircle2 size={36} />
+          </div>
+          <h2 className="text-3xl font-black text-white">LESSON COMPLETE</h2>
+          <p className="text-emerald-400 font-bold text-sm mt-1">
+            Accuracy Target Met ({stats.battleAccuracy}%)!
+          </p>
+          <p className="text-white/40 text-xs mt-1">
+            You maintained great finger discipline across the Home Row.
+          </p>
+        </div>
+      ) : (
+        <div>
+          <div className="w-16 h-16 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-400 mx-auto flex items-center justify-center mb-3">
+            <AlertTriangle size={36} />
+          </div>
+          <h2 className="text-3xl font-black text-white">GOOD EFFORT</h2>
+          <p className="text-amber-400 font-bold text-sm mt-1">
+            Accuracy was {stats.battleAccuracy}% (Target: 95%)
+          </p>
+          <p className="text-white/40 text-xs mt-1">
+            Take your time to feel the bumps on F and J before pressing.
+          </p>
+        </div>
+      )}
+
+      {/* XP & Level Up Badges */}
+      <div className="flex items-center justify-center gap-2 flex-wrap">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold font-mono">
+          <Sparkles size={14} />
+          <span>+{rewardSummary.xpGained} XP Earned</span>
+        </div>
+
+        {rewardSummary.didLevelUp && (
+          <motion.div
+            className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-xs font-black"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+          >
+            <ArrowUpCircle size={14} />
+            <span>LEVEL UP! Lv. {rewardSummary.prevLevel} → Lv. {rewardSummary.newLevel}</span>
+          </motion.div>
+        )}
+      </div>
+
+      {/* Stats pills */}
+      <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto">
+        <div className="p-3 rounded-xl bg-black/40 border border-white/10">
+          <span className="text-[10px] uppercase text-white/40 block mb-0.5">Accuracy</span>
+          <span
+            className={`text-2xl font-black ${
+              stats.battleAccuracy >= 95 ? "text-emerald-400" : "text-amber-400"
+            }`}
+          >
+            {stats.battleAccuracy}%
+          </span>
+        </div>
+        <div className="p-3 rounded-xl bg-black/40 border border-white/10">
+          <span className="text-[10px] uppercase text-white/40 block mb-0.5">WPM</span>
+          <span className="text-2xl font-black text-white">
+            {stats.battleWpm || stats.currentWpm}
+          </span>
+        </div>
+        <div className="p-3 rounded-xl bg-black/40 border border-white/10">
+          <span className="text-[10px] uppercase text-white/40 block mb-0.5">Errors</span>
+          <span className="text-2xl font-black text-white">
+            {stats.totalErrors}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-center gap-3">
+        <button
+          onClick={onRetry}
+          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white font-bold text-sm transition-colors"
+        >
+          <RotateCcw size={16} />
+          TRY AGAIN
+        </button>
+        <Link
+          href="/battle"
+          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)]"
+        >
+          <Zap size={16} />
+          TEST IN BATTLE
+        </Link>
+      </div>
+    </motion.div>
   )
 }
