@@ -109,8 +109,39 @@ export function BattleResult({
           )}
         </div>
 
+        {/* Campaign Completion Banner */}
+        {victory && rewardSummary?.campaignCompleted && (
+          <motion.div
+            className="rounded-3xl border-2 border-yellow-500/50 bg-gradient-to-br from-yellow-500/20 via-orange-500/15 to-red-500/20 p-6 text-center space-y-3 shadow-[0_0_50px_rgba(234,179,8,0.3)] backdrop-blur-md"
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", delay: 0.25 }}
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-400/20 border border-yellow-400/40 text-yellow-300 font-mono font-black text-xs uppercase tracking-widest">
+              <Trophy size={14} />
+              NARUTO WORLD CONQUERED!
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-wide">
+              CAMPAIGN CLEARED: 8 / 8 SHINOBI
+            </h2>
+            <p className="text-sm text-white/70 max-w-lg mx-auto">
+              You defeated Madara Uchiha and conquered all 8 trials of the Hidden Leaf!
+            </p>
+            <div className="flex items-center justify-center gap-3 flex-wrap pt-2">
+              <div className="px-4 py-2 rounded-2xl bg-black/50 border border-yellow-400/30 text-yellow-300 text-xs font-mono font-black flex items-center gap-2">
+                <Sparkles size={14} />
+                <span>TITLE: [SHINOBI TYPIST]</span>
+              </div>
+              <div className="px-4 py-2 rounded-2xl bg-black/50 border border-emerald-400/30 text-emerald-300 text-xs font-mono font-black flex items-center gap-2">
+                <Trophy size={14} />
+                <span>ACHIEVEMENT: Naruto World Champion</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Stage Unlocked Banner */}
-        {victory && rewardSummary?.stageUnlocked && (
+        {victory && !rewardSummary?.campaignCompleted && rewardSummary?.stageUnlocked && (
           <motion.div
             className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 flex items-center justify-between flex-wrap gap-3 backdrop-blur-sm"
             initial={{ scale: 0.95, opacity: 0 }}

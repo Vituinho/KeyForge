@@ -97,9 +97,20 @@ export default function HomePage() {
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20 font-bold">
                 Lv. {player.level}
               </span>
+              {player.title && (
+                <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 uppercase">
+                  {player.title}
+                </span>
+              )}
             </div>
             <div className="flex items-center gap-2 text-[11px] text-white/40 font-mono mt-0.5">
               <span>Rank {player.rank} · {rankMeta.label}</span>
+              <span>·</span>
+              {player.campaignProgress?.naruto?.completed ? (
+                <span className="text-emerald-400 font-bold">8/8 COMPLETED 🏆</span>
+              ) : (
+                <span>Naruto: Stage {player.campaignProgress?.naruto?.currentStage ?? 1}/8</span>
+              )}
               <span>·</span>
               <span>{player.xp} / {xpNeeded} XP ({xpPercent}%)</span>
             </div>
@@ -161,12 +172,12 @@ export default function HomePage() {
 
       {/* Version tag */}
       <motion.p
-        className="relative z-10 mt-12 text-white/15 text-xs"
+        className="relative z-10 mt-12 text-white/20 text-xs font-mono"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2 }}
       >
-        v1.0 — First Battle
+        KeyForge v2.0 — Naruto World
       </motion.p>
     </main>
   )
