@@ -20,6 +20,7 @@ import {
   Gauge,
   Sparkles,
   ArrowUpCircle,
+  MapPin,
 } from "lucide-react"
 import Link from "next/link"
 import { processBattleRewards, BattleRewardSummary } from "@/lib/progression/processBattleRewards"
@@ -101,6 +102,33 @@ export function BattleResult({
           )}
         </div>
 
+        {/* Stage Unlocked Banner */}
+        {victory && rewardSummary?.stageUnlocked && (
+          <motion.div
+            className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 flex items-center justify-between flex-wrap gap-3 backdrop-blur-sm"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400">
+                <Trophy size={20} />
+              </div>
+              <div>
+                <h3 className="text-sm font-black text-white uppercase tracking-wider">
+                  Stage {rewardSummary.stageUnlocked} Unlocked!
+                </h3>
+                <p className="text-xs text-white/50">Next Shinobi challenge awaits you on the map</p>
+              </div>
+            </div>
+            <Link
+              href={`/anime-world/${enemy.world ?? "naruto"}`}
+              className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs uppercase tracking-wider transition-colors"
+            >
+              Continue Map →
+            </Link>
+          </motion.div>
+        )}
+
         {/* XP Progression Card */}
         {rewardSummary && (
           <motion.div
@@ -109,8 +137,8 @@ export function BattleResult({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs font-mono font-bold uppercase text-amber-400 flex items-center gap-1.5">
                   <Sparkles size={14} />
                   Level {rewardSummary.levelResult.newLevel}
@@ -128,9 +156,16 @@ export function BattleResult({
                     RANK UP: {rewardSummary.prevRank} → {rewardSummary.newRank}
                   </span>
                 )}
+
+                {rewardSummary.isFirstClear && rewardSummary.firstClearBonusXp && (
+                  <span className="px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-300 font-bold text-[10px] uppercase border border-yellow-500/40 flex items-center gap-1">
+                    <Sparkles size={10} />
+                    FIRST CLEAR (+{rewardSummary.firstClearBonusXp} XP)
+                  </span>
+                )}
               </div>
 
-              <span className="text-sm font-black text-amber-400">
+              <span className="text-sm font-black text-amber-400 font-mono">
                 +{rewardSummary.xpResult.totalXp} XP
               </span>
             </div>
@@ -328,6 +363,15 @@ export function BattleResult({
 
         {/* Actions */}
         <div className="flex gap-3 justify-center flex-wrap">
+          {enemy.world && (
+            <Link
+              href={`/anime-world/${enemy.world}`}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-black font-black text-sm transition-all shadow-[0_0_20px_rgba(249,115,22,0.4)]"
+            >
+              <MapPin size={16} />
+              WORLD MAP
+            </Link>
+          )}
           <button
             onClick={onRematch}
             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 font-bold text-sm transition-colors"
@@ -338,7 +382,7 @@ export function BattleResult({
           {!victory && weakKeys.length > 0 && (
             <Link
               href={`/training?mode=weak-keys&keys=${weakKeys.map((w) => w.key).join(",")}`}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-black font-black text-sm transition-all shadow-[0_0_20px_rgba(249,115,22,0.4)]"
+              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-black text-sm transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)]"
             >
               <Dumbbell size={16} />
               TRAIN MY WEAKNESSES

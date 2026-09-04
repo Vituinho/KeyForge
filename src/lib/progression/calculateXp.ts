@@ -5,6 +5,8 @@ export interface BattleXpParams {
   accuracy: number // 0–100
   totalErrors: number
   bestCombo?: number
+  baseXpOverride?: number
+  firstClearBonus?: number
 }
 
 export interface BattleXpResult {
@@ -13,6 +15,7 @@ export interface BattleXpResult {
   speedBonusXp: number
   accuracyBonusXp: number
   perfectBonusXp: number
+  firstClearBonusXp?: number
   isVictory: boolean
 }
 
@@ -22,6 +25,7 @@ export interface BattleXpResult {
  * - Speed bonus: up to +30% based on WPM.
  * - Accuracy bonus: up to +30% based on accuracy above 70%.
  * - Perfect Strike: flat +25 XP bonus if 0 errors.
+ * - Optional firstClearBonus: flat bonus added for campaign first clears.
  */
 export function calculateBattleXp({
   victory,
@@ -29,9 +33,11 @@ export function calculateBattleXp({
   wpm,
   accuracy,
   totalErrors,
+  baseXpOverride,
+  firstClearBonus = 0,
 }: BattleXpParams): BattleXpResult {
   const safeEnemyLevel = Math.max(1, enemyLevel)
-  const baseXp = safeEnemyLevel * 30
+  const baseXp = baseXpOverride ?? safeEnemyLevel * 30
 
   if (!victory) {
     // Defeat: give learning effort XP based on accuracy (never useless, encourages practice)
@@ -44,6 +50,7 @@ export function calculateBattleXp({
       speedBonusXp: 0,
       accuracyBonusXp: 0,
       perfectBonusXp: 0,
+      firstClearBonusXp: 0,
       isVictory: false,
     }
   }
@@ -61,7 +68,7 @@ export function calculateBattleXp({
   // Perfect strike bonus: +25 XP if zero errors
   const perfectBonusXp = totalErrors === 0 ? 25 : 0
 
-  const totalXp = Math.max(40, baseXp + speedBonusXp + accuracyBonusXp + perfectBonusXp)
+  const totalXp = Math.max(40, baseXp + speedBonusXp + accuracyBonusXp + perfectBonusXp) + firstClearBonus
 
   return {
     totalXp,
@@ -69,6 +76,7 @@ export function calculateBattleXp({
     speedBonusXp,
     accuracyBonusXp,
     perfectBonusXp,
+    firstClearBonusXp: firstClearBonus > 0 ? firstClearBonus : undefined,
     isVictory: true,
   }
 }
