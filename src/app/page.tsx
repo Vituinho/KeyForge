@@ -34,8 +34,8 @@ const NAV_ITEMS = [
     icon: <BookOpen size={22} />,
     label: "Academy",
     description: "Learn touch typing",
-    active: false,
-    color: "#22c55e",
+    active: true,
+    color: "#10b981",
   },
   {
     href: "/",
