@@ -42,7 +42,8 @@ export function getDefeatAdvice(enemy: Enemy, stats: TypingStats): DefeatAdvice 
       }
     }
 
-    case "rock_lee": {
+    case "rock_lee":
+    case "rock-lee": {
       const pass = stats.battleWpm >= 55
       return {
         title: "Speed Gate Check Failed",
