@@ -17,27 +17,51 @@ export interface KeyError {
   typed: string
   position: number
   timestamp: number
-  responseTime: number // ms since last keypress
+  responseTime: number // ms since last keypress (clamped to prevent idle distortion)
   comboBeforeError: number
+  textId?: string
 }
 
 export interface TypingStats {
-  wpm: number
-  rawWpm: number
-  accuracy: number
+  // Current sentence / round metrics
+  currentWpm: number
+  currentRawWpm: number
+  currentAccuracy: number
+  currentErrors: number
+  currentStreak: number
+
+  // Battle / Session cumulative metrics
+  battleWpm: number
+  battleAccuracy: number
+  bestWpm: number
+  totalTypingAttempts: number
+  totalErrors: number
   combo: number
   bestCombo: number
-  errors: number
+  bestStreak: number
+
+  // Counts
   typedCharacters: number
   correctCharacters: number
   incorrectCharacters: number
-  elapsedTime: number // seconds
-  currentStreak: number
-  bestStreak: number
+  totalCorrectCharacters: number
+  totalIncorrectCharacters: number
+
+  // Timing
+  elapsedTime: number // seconds for current sentence
+  totalElapsedTime: number // total active typing seconds across session
+
+  // Engine diagnostics
   keyStats: Record<string, KeyStat>
   errorLog: KeyError[]
   isCompleted: boolean
   currentIndex: number
+
+  // Backwards compatibility aliases
+  wpm: number // aliases currentWpm
+  rawWpm: number // aliases currentRawWpm
+  accuracy: number // aliases currentAccuracy
+  errors: number // aliases currentErrors
 }
 
 export interface WeakKey {
