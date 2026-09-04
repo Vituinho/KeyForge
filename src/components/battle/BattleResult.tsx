@@ -164,50 +164,51 @@ export function BattleResult({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <h2 className="text-xs font-bold tracking-widest text-red-400 uppercase mb-1">
-              Your Biggest Weakness
-            </h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-xs font-bold tracking-widest text-red-400 uppercase flex items-center gap-1.5">
+                <Target size={14} />
+                YOUR WEAKNESSES
+              </h2>
+              <span className="text-[10px] text-white/40 uppercase tracking-wider">
+                Top {Math.min(3, weakKeys.length)} Key Struggles
+              </span>
+            </div>
 
-            {weakKeys.slice(0, 1).map((wk) => (
-              <div key={wk.key}>
-                <div className="flex items-end gap-3 mt-3 mb-1">
-                  <span className="text-6xl font-black text-red-400">
-                    {wk.key.toUpperCase()}
-                  </span>
-                  <div className="pb-2">
-                    <p className="text-sm text-white/60">
-                      Attempts: {wk.attempts} · Errors: {wk.errors}
-                    </p>
-                    <p className="text-sm font-bold text-red-400">
-                      Accuracy: {Math.round((1 - wk.errorRate) * 100)}%
-                    </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {weakKeys.slice(0, 3).map((wk, index) => (
+                <div
+                  key={wk.key}
+                  className="rounded-xl border border-red-500/20 bg-black/40 p-4 flex flex-col justify-between"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-black text-red-400/60">
+                      {index + 1}.
+                    </span>
+                    <span className="text-3xl font-black text-red-400">
+                      {wk.key.toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between text-white/70">
+                      <span>Accuracy:</span>
+                      <span className="font-bold text-white">
+                        {Math.round((1 - wk.errorRate) * 100)}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-white/70">
+                      <span>Errors:</span>
+                      <span className="font-bold text-red-400">{wk.errors}</span>
+                    </div>
+                    <div className="flex justify-between text-white/70">
+                      <span>Avg response:</span>
+                      <span className="font-bold text-white">
+                        {Math.round(wk.averageResponseTime)}ms
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <p className="text-sm text-white/50 mt-2">
-                  {exercises.find((e) => e.targetKey === wk.key)?.description}
-                </p>
-              </div>
-            ))}
-
-            {/* All weak keys */}
-            {weakKeys.length > 1 && (
-              <div className="mt-4 flex gap-2 flex-wrap">
-                <p className="text-xs text-white/30 uppercase tracking-widest w-full mb-1">
-                  Also struggling with:
-                </p>
-                {weakKeys.slice(1).map((wk) => (
-                  <span
-                    key={wk.key}
-                    className="px-3 py-1 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 font-bold text-sm"
-                  >
-                    {wk.key.toUpperCase()}{" "}
-                    <span className="text-white/30 font-normal">
-                      ({Math.round(wk.errorRate * 100)}% err)
-                    </span>
-                  </span>
-                ))}
-              </div>
-            )}
+              ))}
+            </div>
           </motion.div>
         )}
 

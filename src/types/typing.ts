@@ -70,6 +70,23 @@ export interface WeakKey {
   errors: number
   errorRate: number // 0–1
   averageResponseTime: number
+  impactScore?: number
+}
+
+export interface WeakKeyCombination {
+  bigram: string
+  attempts: number
+  errors: number
+  errorRate: number
+  averageResponseTime: number
+}
+
+export interface WeakWord {
+  word: string
+  attempts: number
+  errors: number
+  errorRate: number
+  averageWpm?: number
 }
 
 export interface TrainingExercise {
