@@ -49,3 +49,23 @@ export interface BattleResult {
   roundHistory: RoundResult[]
   elapsedTime: number
 }
+
+export interface BattleHistoryEntry {
+  id: string
+  enemyId: string
+  enemyName: string
+  enemyAnime: string
+  enemyLevel: number
+  themeColor: string
+  victory: boolean
+  battleWpm: number
+  battleAccuracy: number
+  bestCombo: number
+  totalErrors: number
+  damageDealt: number
+  damageTaken: number
+  xpEarned: number
+  durationSeconds: number
+  timestamp: string // ISO string
+}
+
