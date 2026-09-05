@@ -329,6 +329,9 @@ export const en = {
     emailAlreadyRegistered: "An account with this email already exists",
     registrationSuccess: "Account created successfully! Entering the game...",
     registrationError: "Failed to create account. Please try again.",
+    invalidCredentials: "Invalid email or password. Please check your credentials.",
+    loginSuccess: "Signed in successfully! Entering the game...",
+    loginError: "Failed to sign in. Please try again.",
     passwordTooShort: "Password must be at least 8 characters",
   },
 }

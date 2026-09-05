@@ -331,6 +331,9 @@ export const ptBR: TranslationSchema = {
     emailAlreadyRegistered: "Já existe uma conta cadastrada com este e-mail",
     registrationSuccess: "Conta criada com sucesso! Entrando no jogo...",
     registrationError: "Falha ao criar conta. Tente novamente.",
+    invalidCredentials: "E-mail ou senha inválidos. Verifique suas credenciais.",
+    loginSuccess: "Sessão iniciada com sucesso! Entrando no jogo...",
+    loginError: "Falha ao entrar. Tente novamente.",
     passwordTooShort: "A senha deve ter no mínimo 8 caracteres",
   },
 }

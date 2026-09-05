@@ -16,10 +16,10 @@ import {
 } from "@/types/auth"
 import {
   saveStoredUser,
-  clearStoredUser,
   createGuestUser,
   loginWithCredentials,
   registerWithCredentials,
+  logoutUser,
   getStoredUser,
 } from "./authService"
 
@@ -137,7 +137,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const logout = useCallback(() => {
-    clearStoredUser()
+    logoutUser().catch((err) => console.warn("Logout error:", err))
     notifyAuthListeners()
   }, [])
 

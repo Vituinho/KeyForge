@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, type FormEvent } from "react"
+import { useState, type FormEvent, Suspense } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
 import {
   Flame,
@@ -19,10 +19,15 @@ import { useI18n } from "@/lib/i18n/i18nContext"
 import { useAuth } from "@/lib/auth/authContext"
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { t, locale } = useI18n()
   const { login } = useAuth()
+
+  const rawReturnUrl = searchParams.get("returnUrl") || searchParams.get("next") || "/game"
+  const returnUrl =
+    rawReturnUrl.startsWith("/") && !rawReturnUrl.startsWith("//") ? rawReturnUrl : "/game"
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -51,65 +56,28 @@ export default function LoginPage() {
 
     try {
       await login({ email: trimmedEmail, password })
-      setStatusNotice(
-        locale === "pt-BR"
-          ? "Sessão iniciada com sucesso! Entrando no jogo..."
-          : "Signed in successfully! Entering the game..."
-      )
+      setStatusNotice(t("auth.loginSuccess"))
       setTimeout(() => {
-        router.push("/game")
+        router.push(returnUrl)
       }, 800)
-    } catch {
-      setErrorMsg(
-        locale === "pt-BR"
-          ? "Falha ao autenticar. Tente novamente."
-          : "Authentication failed. Please try again."
-      )
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message === "INVALID_CREDENTIALS") {
+        setErrorMsg(t("auth.invalidCredentials"))
+      } else {
+        setErrorMsg(t("auth.loginError"))
+      }
     } finally {
       setIsSubmitting(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col justify-between relative overflow-hidden selection:bg-orange-500/30 selection:text-orange-200">
-      {/* Anime glowing ambient lights */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-b from-orange-500/15 via-purple-600/10 to-transparent blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-10 right-10 w-96 h-96 bg-red-600/10 blur-[130px] pointer-events-none" />
-
-      {/* Top Header */}
-      <header className="relative z-10 w-full max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
-        <Link
-          href="/"
-          className="flex items-center gap-2 group transition-transform active:scale-95"
-        >
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-[0_0_20px_rgba(249,115,22,0.4)] group-hover:shadow-[0_0_25px_rgba(249,115,22,0.6)] transition-all">
-            <Flame className="w-5 h-5 text-black" />
-          </div>
-          <span className="font-black text-xl tracking-wider text-white">
-            KEY<span className="text-orange-500">FORGE</span>
-          </span>
-        </Link>
-
-        <div className="flex items-center gap-4">
-          <LanguageSwitcher />
-          <Link
-            href="/"
-            className="hidden sm:inline-flex items-center gap-1.5 text-xs text-white/50 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/10 font-bold"
-          >
-            <ChevronLeft size={14} />
-            <span>{locale === "pt-BR" ? "Início" : "Home"}</span>
-          </Link>
-        </div>
-      </header>
-
-      {/* Main Login Container */}
-      <main className="relative z-10 w-full max-w-md mx-auto px-6 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="p-6 sm:p-8 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.6)] space-y-6"
-        >
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="p-6 sm:p-8 rounded-3xl border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.6)] space-y-6"
+    >
           {/* Header */}
           <div className="text-center space-y-2">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-orange-500/10 text-orange-400 border border-orange-500/20 font-mono">
@@ -212,7 +180,7 @@ export default function LoginPage() {
               {t("auth.guestNotice")}
             </p>
             <Link
-              href="/game"
+              href={returnUrl}
               className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white font-bold text-xs transition-all flex items-center justify-center gap-2"
             >
               <Gamepad2 size={16} className="text-orange-400" />
@@ -224,18 +192,67 @@ export default function LoginPage() {
           <p className="text-center text-xs text-white/50">
             {t("auth.noAccount")}{" "}
             <Link
-              href="/register"
+              href={returnUrl !== "/game" ? `/register?returnUrl=${encodeURIComponent(returnUrl)}` : "/register"}
               className="text-orange-400 hover:text-orange-300 font-bold transition-colors underline underline-offset-4"
             >
               {t("auth.registerBtn")}
             </Link>
           </p>
-        </motion.div>
+    </motion.div>
+  )
+}
+
+export default function LoginPage() {
+  const { locale } = useI18n()
+
+  return (
+    <div className="min-h-screen bg-black text-white flex flex-col justify-between relative overflow-hidden selection:bg-orange-500/30 selection:text-orange-200">
+      {/* Anime glowing ambient lights */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-b from-orange-500/15 via-purple-600/10 to-transparent blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-10 right-10 w-96 h-96 bg-red-600/10 blur-[130px] pointer-events-none" />
+
+      {/* Top Header */}
+      <header className="relative z-10 w-full max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
+        <Link
+          href="/"
+          className="flex items-center gap-2 group transition-transform active:scale-95"
+        >
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-[0_0_20px_rgba(249,115,22,0.4)] group-hover:shadow-[0_0_25px_rgba(249,115,22,0.6)] transition-all">
+            <Flame className="w-5 h-5 text-black" />
+          </div>
+          <span className="font-black text-xl tracking-wider text-white">
+            KEY<span className="text-orange-500">FORGE</span>
+          </span>
+        </Link>
+
+        <div className="flex items-center gap-4">
+          <LanguageSwitcher />
+          <Link
+            href="/"
+            className="hidden sm:inline-flex items-center gap-1.5 text-xs text-white/50 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/10 font-bold"
+          >
+            <ChevronLeft size={14} />
+            <span>{locale === "pt-BR" ? "Início" : "Home"}</span>
+          </Link>
+        </div>
+      </header>
+
+      {/* Main Login Container */}
+      <main className="relative z-10 w-full max-w-md mx-auto px-6 py-8">
+        <Suspense
+          fallback={
+            <div className="p-8 rounded-3xl border border-white/10 bg-white/[0.03] text-center text-white/50 animate-pulse text-sm">
+              Loading...
+            </div>
+          }
+        >
+          <LoginForm />
+        </Suspense>
       </main>
 
       {/* Footer */}
       <footer className="relative z-10 w-full max-w-6xl mx-auto px-6 py-6 text-center text-xs text-white/30 font-mono">
-        KeyForge v2.1 · {locale === "pt-BR" ? "Todos os direitos reservados" : "All rights reserved"}
+        KeyForge v2.3 · {locale === "pt-BR" ? "Todos os direitos reservados" : "All rights reserved"}
       </footer>
     </div>
   )
