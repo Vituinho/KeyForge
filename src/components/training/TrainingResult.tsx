@@ -202,11 +202,11 @@ export function TrainingResult({
           BACK TO BATTLE
         </Link>
         <Link
-          href="/"
+          href="/game"
           className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 font-bold text-sm text-white/70 transition-colors"
         >
           <Home size={16} />
-          HOME
+          DASHBOARD
         </Link>
       </div>
     </motion.div>
