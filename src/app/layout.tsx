@@ -15,9 +15,42 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "KeyForge — Type. Fight. Evolve.",
+  title: {
+    default: "KeyForge — Anime RPG Typing Battle Experience",
+    template: "%s | KeyForge",
+  },
   description:
-    "Master your keyboard. Defeat the strongest anime characters.",
+    "Master your keyboard and conquer anime worlds. Face iconic shinobi in real-time typing battles with RPG progression, touch typing academy, and telemetry.",
+  keywords: [
+    "KeyForge",
+    "typing game",
+    "touch typing",
+    "anime RPG",
+    "monkeytype",
+    "speed typing",
+    "Naruto typing battle",
+    "jogo de digitação",
+    "anime typing",
+  ],
+  authors: [{ name: "KeyForge Team" }],
+  openGraph: {
+    title: "KeyForge — Anime RPG Typing Battle Experience",
+    description:
+      "Master your keyboard and conquer anime worlds. Face iconic shinobi in real-time typing battles with RPG progression.",
+    type: "website",
+    siteName: "KeyForge",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "KeyForge — Anime RPG Typing Battle Experience",
+    description:
+      "Master your keyboard and conquer anime worlds. Face iconic shinobi in real-time typing battles with RPG progression.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function RootLayout({
