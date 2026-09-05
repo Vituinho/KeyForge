@@ -179,6 +179,7 @@ export const en = {
     cards: {
       battle: { title: "Battle", desc: "Fight anime characters" },
       animeWorld: { title: "Anime World", desc: "Campaign mode & bosses" },
+      multiplayer: { title: "Multiplayer", desc: "PvP duels & online arena" },
       training: { title: "Training", desc: "Practice your weaknesses" },
       academy: { title: "Academy", desc: "Learn touch typing" },
       statistics: { title: "Statistics", desc: "Track your progress" },
@@ -333,6 +334,12 @@ export const en = {
     loginSuccess: "Signed in successfully! Entering the game...",
     loginError: "Failed to sign in. Please try again.",
     passwordTooShort: "Password must be at least 8 characters",
+    multiplayerGuardBadge: "ACCOUNT REQUIRED",
+    multiplayerGuardTitle: "Shinobi Multiplayer Arena",
+    multiplayerGuardDesc: "The Multiplayer Arena requires a registered Shinobi account to save your ranking, ELO, and victories.",
+    multiplayerGuardCreateAccount: "Create Account",
+    multiplayerGuardLogin: "Sign In",
+    multiplayerGuardReturnToDojo: "Back to Dojo",
   },
 }
 
