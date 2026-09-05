@@ -22,6 +22,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
+import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
 
 function formatDate(iso: string): string {
   try {
@@ -149,13 +150,16 @@ export default function ProfilePage() {
           <span>GAME DASHBOARD</span>
         </Link>
 
-        <Link
-          href="/statistics"
-          className="inline-flex items-center gap-2 text-xs font-bold text-pink-400 hover:text-pink-300 transition-colors bg-pink-500/10 hover:bg-pink-500/15 px-3 py-1.5 rounded-lg border border-pink-500/20"
-        >
-          <BarChart2 size={14} />
-          <span>VIEW FULL STATISTICS</span>
-        </Link>
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher />
+          <Link
+            href="/statistics"
+            className="inline-flex items-center gap-2 text-xs font-bold text-pink-400 hover:text-pink-300 transition-colors bg-pink-500/10 hover:bg-pink-500/15 px-3 py-1.5 rounded-lg border border-pink-500/20"
+          >
+            <BarChart2 size={14} />
+            <span>VIEW FULL STATISTICS</span>
+          </Link>
+        </div>
       </div>
 
       {/* Main Profile Card */}

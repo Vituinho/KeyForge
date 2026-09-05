@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { Swords, Menu, X, ArrowRight } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
 
 export function LandingHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -44,6 +45,8 @@ export function LandingHeader() {
 
         {/* Right Action buttons */}
         <div className="hidden sm:flex items-center gap-3">
+          <LanguageSwitcher />
+
           <Link
             href="/login"
             className="px-4 py-2 text-xs font-bold text-white/70 hover:text-white transition-colors"
@@ -108,6 +111,10 @@ export function LandingHeader() {
                 <span>PLAY NOW</span>
                 <ArrowRight size={16} />
               </Link>
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-xs font-mono text-white/40">Language / Idioma</span>
+                <LanguageSwitcher />
+              </div>
               <div className="grid grid-cols-2 gap-2">
                 <Link
                   href="/login"

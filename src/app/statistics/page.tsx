@@ -24,6 +24,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { motion } from "framer-motion"
+import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
 
 function formatDuration(totalSeconds: number): string {
   if (totalSeconds < 60) return `${totalSeconds}s`
@@ -74,9 +75,12 @@ export default function StatisticsPage() {
           <span>GAME DASHBOARD</span>
         </Link>
 
-        <div className="flex items-center gap-2 text-xs text-white/40 font-mono">
-          <Activity size={14} className="text-orange-400" />
-          <span>REAL-TIME PERFORMANCE TELEMETRY</span>
+        <div className="flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-2 text-xs text-white/40 font-mono">
+            <Activity size={14} className="text-orange-400" />
+            <span>REAL-TIME TELEMETRY</span>
+          </div>
+          <LanguageSwitcher />
         </div>
       </div>
 

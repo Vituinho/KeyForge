@@ -6,6 +6,7 @@ import { User } from "lucide-react"
 import { usePlayer } from "@/hooks/usePlayer"
 import { RANK_METADATA } from "@/lib/progression/calculateRank"
 import { getXpRequiredForLevel } from "@/lib/progression/calculateLevel"
+import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
 
 export function PlayerQuickWidget() {
   const { player } = usePlayer()
@@ -61,13 +62,16 @@ export function PlayerQuickWidget() {
         </div>
       </div>
 
-      <Link
-        href="/profile"
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-xs font-bold text-white transition-colors shrink-0"
-      >
-        <User size={14} />
-        <span>PROFILE</span>
-      </Link>
+      <div className="flex items-center gap-2 shrink-0">
+        <LanguageSwitcher />
+        <Link
+          href="/profile"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-xs font-bold text-white transition-colors"
+        >
+          <User size={14} />
+          <span>PROFILE</span>
+        </Link>
+      </div>
     </motion.div>
   )
 }
