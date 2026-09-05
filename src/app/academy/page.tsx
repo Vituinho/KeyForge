@@ -28,11 +28,11 @@ export default function AcademyPage() {
       {/* Top navigation */}
       <div className="w-full max-w-4xl flex items-center justify-between mb-8 z-10">
         <Link
-          href="/"
+          href="/game"
           className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white transition-colors"
         >
           <ChevronLeft size={16} />
-          Back to Home
+          Back to Game
         </Link>
         <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-widest bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
           Touch Typing Academy

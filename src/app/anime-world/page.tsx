@@ -75,11 +75,11 @@ export default function AnimeWorldHubPage() {
       {/* Top Header Navigation */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <Link
-          href="/"
+          href="/game"
           className="inline-flex items-center gap-2 text-xs font-bold text-white/50 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/10"
         >
           <ChevronLeft size={16} />
-          <span>RETURN HOME</span>
+          <span>GAME DASHBOARD</span>
         </Link>
 
         <div className="flex items-center gap-2 text-xs text-white/40 font-mono">
