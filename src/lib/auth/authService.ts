@@ -112,6 +112,21 @@ export function clearStoredUser(): AuthUser {
 }
 
 /**
+ * Signs the user out from Supabase (if connected) and resets local session to guest.
+ */
+export async function logoutUser(): Promise<AuthUser> {
+  const client = getSupabaseClient()
+  if (client) {
+    try {
+      await client.auth.signOut()
+    } catch (err) {
+      console.warn("Supabase signOut error:", err)
+    }
+  }
+  return clearStoredUser()
+}
+
+/**
  * Real / Service layer for user login.
  */
 export async function loginWithCredentials(
@@ -125,6 +140,10 @@ export async function loginWithCredentials(
     })
 
     if (error) {
+      const msg = error.message.toLowerCase()
+      if (msg.includes("invalid") || msg.includes("credentials") || error.status === 400) {
+        throw new Error("INVALID_CREDENTIALS")
+      }
       throw error
     }
 
