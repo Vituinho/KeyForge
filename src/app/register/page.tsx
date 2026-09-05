@@ -55,6 +55,12 @@ export default function RegisterPage() {
       return
     }
 
+    const USERNAME_REGEX = /^[a-zA-Z0-9_-]{3,20}$/
+    if (!USERNAME_REGEX.test(trimmedUser)) {
+      setErrorMsg(t("auth.usernameInvalidFormat"))
+      return
+    }
+
     const trimmedEmail = email.trim()
     if (!trimmedEmail || !trimmedEmail.includes("@") || !trimmedEmail.includes(".")) {
       setErrorMsg(t("auth.emailInvalid"))
@@ -86,20 +92,26 @@ export default function RegisterPage() {
         username: trimmedUser,
       }))
 
-      setStatusNotice(
-        locale === "pt-BR"
-          ? "Guerreiro registrado no perfil local! Redirecionando para o jogo..."
-          : "Warrior registered in local profile! Entering the game..."
-      )
+      setStatusNotice(t("auth.registrationSuccess"))
       setTimeout(() => {
         router.push("/game")
       }, 800)
-    } catch {
-      setErrorMsg(
-        locale === "pt-BR"
-          ? "Falha ao registrar conta. Tente novamente."
-          : "Registration failed. Please try again."
-      )
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        if (err.message === "USERNAME_TAKEN") {
+          setErrorMsg(t("auth.usernameTaken"))
+          return
+        }
+        if (err.message === "EMAIL_EXISTS") {
+          setErrorMsg(t("auth.emailAlreadyRegistered"))
+          return
+        }
+        if (err.message === "INVALID_USERNAME_FORMAT") {
+          setErrorMsg(t("auth.usernameInvalidFormat"))
+          return
+        }
+      }
+      setErrorMsg(t("auth.registrationError"))
     } finally {
       setIsSubmitting(false)
     }

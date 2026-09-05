@@ -324,6 +324,11 @@ export const en = {
     passwordsMismatch: "Passwords do not match",
     emailInvalid: "Please enter a valid email address",
     usernameTooShort: "Username must be at least 3 characters",
+    usernameInvalidFormat: "Username must be 3-20 characters (letters, numbers, _ or -)",
+    usernameTaken: "This username is already claimed by another shinobi",
+    emailAlreadyRegistered: "An account with this email already exists",
+    registrationSuccess: "Account created successfully! Entering the game...",
+    registrationError: "Failed to create account. Please try again.",
     passwordTooShort: "Password must be at least 8 characters",
   },
 }
