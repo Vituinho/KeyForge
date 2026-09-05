@@ -16,11 +16,13 @@ import {
   ChevronLeft,
 } from "lucide-react"
 import { useI18n } from "@/lib/i18n/i18nContext"
+import { useAuth } from "@/lib/auth/authContext"
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
 
 export default function LoginPage() {
   const router = useRouter()
   const { t, locale } = useI18n()
+  const { login } = useAuth()
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -47,18 +49,25 @@ export default function LoginPage() {
 
     setIsSubmitting(true)
 
-    // KeyForge v2.1 safe decoupled authentication
-    setTimeout(() => {
-      setIsSubmitting(false)
+    try {
+      await login({ email: trimmedEmail, password })
       setStatusNotice(
         locale === "pt-BR"
-          ? "Modo convidado ativo com salvamento local. Redirecionando para o jogo..."
-          : "Guest mode active with local progression saves. Entering the game..."
+          ? "Sessão iniciada com sucesso! Entrando no jogo..."
+          : "Signed in successfully! Entering the game..."
       )
       setTimeout(() => {
         router.push("/game")
-      }, 1000)
-    }, 600)
+      }, 800)
+    } catch {
+      setErrorMsg(
+        locale === "pt-BR"
+          ? "Falha ao autenticar. Tente novamente."
+          : "Authentication failed. Please try again."
+      )
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (

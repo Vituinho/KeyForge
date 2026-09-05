@@ -20,12 +20,14 @@ import {
 } from "lucide-react"
 import { useI18n } from "@/lib/i18n/i18nContext"
 import { usePlayer } from "@/hooks/usePlayer"
+import { useAuth } from "@/lib/auth/authContext"
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
 
 export default function RegisterPage() {
   const router = useRouter()
   const { t, locale } = useI18n()
   const { updatePlayer } = usePlayer()
+  const { register } = useAuth()
 
   const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
@@ -71,15 +73,19 @@ export default function RegisterPage() {
 
     setIsSubmitting(true)
 
-    // Update player profile with the chosen shinobi name
-    updatePlayer((prev) => ({
-      ...prev,
-      username: trimmedUser,
-    }))
+    try {
+      await register({
+        username: trimmedUser,
+        email: trimmedEmail,
+        password,
+      })
 
-    // KeyForge v2.1 safe decoupled authentication
-    setTimeout(() => {
-      setIsSubmitting(false)
+      // Update player profile with the chosen shinobi name
+      updatePlayer((prev) => ({
+        ...prev,
+        username: trimmedUser,
+      }))
+
       setStatusNotice(
         locale === "pt-BR"
           ? "Guerreiro registrado no perfil local! Redirecionando para o jogo..."
@@ -87,8 +93,16 @@ export default function RegisterPage() {
       )
       setTimeout(() => {
         router.push("/game")
-      }, 1000)
-    }, 600)
+      }, 800)
+    } catch {
+      setErrorMsg(
+        locale === "pt-BR"
+          ? "Falha ao registrar conta. Tente novamente."
+          : "Registration failed. Please try again."
+      )
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
