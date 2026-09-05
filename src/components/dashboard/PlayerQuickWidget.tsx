@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { User } from "lucide-react"
+import { User, Home } from "lucide-react"
 import { usePlayer } from "@/hooks/usePlayer"
 import { RANK_METADATA } from "@/lib/progression/calculateRank"
 import { getXpRequiredForLevel } from "@/lib/progression/calculateLevel"
@@ -10,7 +10,7 @@ import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
 import { useI18n } from "@/lib/i18n/i18nContext"
 
 export function PlayerQuickWidget() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const { player } = usePlayer()
   const rankMeta = RANK_METADATA[player.rank]
   const xpNeeded = getXpRequiredForLevel(player.level)
@@ -66,6 +66,14 @@ export function PlayerQuickWidget() {
 
       <div className="flex items-center gap-2 shrink-0">
         <LanguageSwitcher />
+        <Link
+          href="/"
+          title={locale === "pt-BR" ? "Ir para a Página Inicial Pública" : "Visit Public Landing Page"}
+          className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/50 hover:text-white transition-colors text-xs font-bold flex items-center gap-1"
+        >
+          <Home size={14} />
+          <span className="hidden sm:inline">{locale === "pt-BR" ? "Início" : "Home"}</span>
+        </Link>
         <Link
           href="/profile"
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-xs font-bold text-white transition-colors"
