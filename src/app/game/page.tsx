@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Swords, Globe, Dumbbell, BookOpen, BarChart2 } from "lucide-react"
+import { Swords, Globe, Dumbbell, BookOpen, BarChart2, Zap } from "lucide-react"
 import { PlayerQuickWidget } from "@/components/dashboard/PlayerQuickWidget"
 import { DashboardNavCard, DashboardNavItem } from "@/components/dashboard/DashboardNavCard"
 
@@ -26,6 +26,14 @@ export default function GameDashboardPage() {
       description: t("dashboard.cards.animeWorld.desc"),
       active: true,
       color: "#8b5cf6",
+    },
+    {
+      href: "/multiplayer",
+      icon: <Zap size={22} />,
+      label: t("dashboard.cards.multiplayer.title"),
+      description: t("dashboard.cards.multiplayer.desc"),
+      active: true,
+      color: "#ef4444",
     },
     {
       href: "/training",

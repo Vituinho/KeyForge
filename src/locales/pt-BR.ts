@@ -181,6 +181,7 @@ export const ptBR: TranslationSchema = {
     cards: {
       battle: { title: "Batalha", desc: "Lute contra personagens de anime" },
       animeWorld: { title: "Mundo de Anime", desc: "Modo campanha e chefes" },
+      multiplayer: { title: "Multiplayer", desc: "Duelos PvP e arena online" },
       training: { title: "Treinamento", desc: "Pratique suas fraquezas" },
       academy: { title: "Academia", desc: "Aprenda touch typing" },
       statistics: { title: "Estatísticas", desc: "Acompanhe sua evolução" },
@@ -335,5 +336,11 @@ export const ptBR: TranslationSchema = {
     loginSuccess: "Sessão iniciada com sucesso! Entrando no jogo...",
     loginError: "Falha ao entrar. Tente novamente.",
     passwordTooShort: "A senha deve ter no mínimo 8 caracteres",
+    multiplayerGuardBadge: "CONTA NECESSÁRIA",
+    multiplayerGuardTitle: "Arena Shinobi Multiplayer",
+    multiplayerGuardDesc: "A Multiplayer Arena exige uma conta Shinobi registrada para salvar seu ranking, ELO e vitórias.",
+    multiplayerGuardCreateAccount: "Criar Conta",
+    multiplayerGuardLogin: "Entrar",
+    multiplayerGuardReturnToDojo: "Voltar ao Dojo",
   },
 }
