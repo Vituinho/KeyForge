@@ -15,6 +15,7 @@ import { BattleHud } from "./BattleHud"
 import { TypingArea } from "./TypingArea"
 import { DamageIndicator } from "./DamageIndicator"
 import { BattleResult } from "./BattleResult"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 interface BattleArenaProps {
   enemy: Enemy
@@ -23,6 +24,7 @@ interface BattleArenaProps {
 }
 
 export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
+  const { t } = useI18n()
   const [enemyUnderAttack, setEnemyUnderAttack] = useState(false)
   const [playerUnderAttack, setPlayerUnderAttack] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
@@ -250,7 +252,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
               transition={{ duration: 0.35, ease: "backOut" }}
             >
               <span className="text-xs font-mono font-bold tracking-widest text-red-400 uppercase block mb-1">
-                Boss Phase Shift
+                {t("battle.hud.bossShift")}
               </span>
               <h2 className="text-2xl sm:text-3xl font-black text-white tracking-wider">
                 {battleState.phaseTransitionBanner}
@@ -300,11 +302,11 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
           {phase === "fighting" && (
             <div className="text-center text-white/20 text-xs flex items-center justify-center gap-2">
               <span>
-                Round {battleState.roundHistory.length + 1} · {texts.length} sentences
+                {t("battle.hud.round", { current: battleState.roundHistory.length + 1, total: texts.length })}
               </span>
               {isTransitioning && (
                 <span className="text-orange-400 font-bold animate-pulse">
-                  · Strike in progress...
+                  · {t("battle.hud.strikeInProgress")}
                 </span>
               )}
             </div>
@@ -314,7 +316,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
         {/* Enemy attack indicator */}
         {phase === "fighting" && (
           <div className="text-center text-white/20 text-xs pb-2">
-            {enemy.name} attacks every {enemy.attackInterval / 1000}s — type faster!
+            {t("battle.hud.attacksEvery", { name: enemy.name, seconds: enemy.attackInterval / 1000 })}
           </div>
         )}
       </div>

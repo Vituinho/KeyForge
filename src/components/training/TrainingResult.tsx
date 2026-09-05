@@ -7,6 +7,7 @@ import { Dumbbell, RotateCcw, Swords, Home, Target, Zap, Flame, Clock, TrendingU
 import Link from "next/link"
 import { processTrainingRewards, ActivityRewardSummary } from "@/lib/progression/processActivityRewards"
 import { RankUpModal } from "@/components/progression/RankUpModal"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 interface TrainingResultProps {
   stats: TypingStats
@@ -21,6 +22,7 @@ export function TrainingResult({
   baselineAccuracies = {},
   onRetry,
 }: TrainingResultProps) {
+  const { t } = useI18n()
   const [rewardSummary] = useState<ActivityRewardSummary>(() =>
     processTrainingRewards(stats, targetKeys)
   )
@@ -89,13 +91,13 @@ export function TrainingResult({
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatBox
             icon={<Zap size={14} />}
-            label="WPM"
+            label={t("common.wpm")}
             value={stats.battleWpm || stats.currentWpm}
             color="#f97316"
           />
           <StatBox
             icon={<Target size={14} />}
-            label="Accuracy"
+            label={t("common.accuracy")}
             value={`${stats.battleAccuracy}%`}
             color={
               stats.battleAccuracy >= 95
@@ -107,13 +109,13 @@ export function TrainingResult({
           />
           <StatBox
             icon={<Clock size={14} />}
-            label="Errors"
+            label={t("common.errors")}
             value={stats.totalErrors}
             color={stats.totalErrors === 0 ? "#22c55e" : "#ef4444"}
           />
           <StatBox
             icon={<Flame size={14} />}
-            label="Best Combo"
+            label={t("common.combo")}
             value={`×${stats.bestCombo}`}
             color="#f59e0b"
           />
@@ -192,21 +194,21 @@ export function TrainingResult({
           className="flex items-center gap-2 px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-black font-black text-sm transition-all shadow-[0_0_20px_rgba(249,115,22,0.4)]"
         >
           <RotateCcw size={16} />
-          TRAIN AGAIN
+          {t("training.trainAgain").toUpperCase()}
         </button>
         <Link
           href="/battle"
           className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 font-bold text-sm text-white transition-colors"
         >
           <Swords size={16} />
-          BACK TO BATTLE
+          {t("training.backToBattle").toUpperCase()}
         </Link>
         <Link
           href="/game"
           className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 font-bold text-sm text-white/70 transition-colors"
         >
           <Home size={16} />
-          DASHBOARD
+          {t("training.dashboard").toUpperCase()}
         </Link>
       </div>
     </motion.div>

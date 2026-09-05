@@ -5,50 +5,54 @@ import { Swords, Globe, Dumbbell, BookOpen, BarChart2 } from "lucide-react"
 import { PlayerQuickWidget } from "@/components/dashboard/PlayerQuickWidget"
 import { DashboardNavCard, DashboardNavItem } from "@/components/dashboard/DashboardNavCard"
 
-const NAV_ITEMS: DashboardNavItem[] = [
-  {
-    href: "/battle",
-    icon: <Swords size={22} />,
-    label: "Battle",
-    description: "Fight anime characters",
-    active: true,
-    color: "#f97316",
-  },
-  {
-    href: "/anime-world",
-    icon: <Globe size={22} />,
-    label: "Anime World",
-    description: "Campaign mode & bosses",
-    active: true,
-    color: "#8b5cf6",
-  },
-  {
-    href: "/training",
-    icon: <Dumbbell size={22} />,
-    label: "Training",
-    description: "Practice your weaknesses",
-    active: true,
-    color: "#f97316",
-  },
-  {
-    href: "/academy",
-    icon: <BookOpen size={22} />,
-    label: "Academy",
-    description: "Learn touch typing",
-    active: true,
-    color: "#10b981",
-  },
-  {
-    href: "/statistics",
-    icon: <BarChart2 size={22} />,
-    label: "Statistics",
-    description: "Track your progress",
-    active: true,
-    color: "#ec4899",
-  },
-]
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 export default function GameDashboardPage() {
+  const { t } = useI18n()
+
+  const navItems: DashboardNavItem[] = [
+    {
+      href: "/battle",
+      icon: <Swords size={22} />,
+      label: t("dashboard.cards.battle.title"),
+      description: t("dashboard.cards.battle.desc"),
+      active: true,
+      color: "#f97316",
+    },
+    {
+      href: "/anime-world",
+      icon: <Globe size={22} />,
+      label: t("dashboard.cards.animeWorld.title"),
+      description: t("dashboard.cards.animeWorld.desc"),
+      active: true,
+      color: "#8b5cf6",
+    },
+    {
+      href: "/training",
+      icon: <Dumbbell size={22} />,
+      label: t("dashboard.cards.training.title"),
+      description: t("dashboard.cards.training.desc"),
+      active: true,
+      color: "#f97316",
+    },
+    {
+      href: "/academy",
+      icon: <BookOpen size={22} />,
+      label: t("dashboard.cards.academy.title"),
+      description: t("dashboard.cards.academy.desc"),
+      active: true,
+      color: "#10b981",
+    },
+    {
+      href: "/statistics",
+      icon: <BarChart2 size={22} />,
+      label: t("dashboard.cards.statistics.title"),
+      description: t("dashboard.cards.statistics.desc"),
+      active: true,
+      color: "#ec4899",
+    },
+  ]
+
   return (
     <main className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4 py-8">
       {/* Background grid */}
@@ -89,7 +93,7 @@ export default function GameDashboardPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
         >
-          Type · Fight · Evolve
+          {t("landing.footer.tagline")}
         </motion.p>
         <motion.p
           className="mt-2 text-sm text-white/20 max-w-sm mx-auto"
@@ -97,7 +101,7 @@ export default function GameDashboardPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          Master your keyboard. Defeat the strongest anime characters.
+          {t("landing.hero.subtitle")}
         </motion.p>
       </motion.div>
 
@@ -108,7 +112,7 @@ export default function GameDashboardPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.6 }}
       >
-        {NAV_ITEMS.map((item, i) => (
+        {navItems.map((item, i) => (
           <DashboardNavCard key={item.label} item={item} index={i} />
         ))}
       </motion.div>

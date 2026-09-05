@@ -5,16 +5,18 @@ import Link from "next/link"
 import { Swords, Menu, X, ArrowRight } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 export function LandingHeader() {
+  const { t } = useI18n()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const navLinks = [
-    { label: "How It Works", href: "#how-it-works" },
-    { label: "Features", href: "#features" },
-    { label: "Training", href: "#training" },
-    { label: "Academy", href: "#academy" },
-    { label: "Anime Worlds", href: "#anime-worlds" },
+    { label: t("nav.howItWorks"), href: "#how-it-works" },
+    { label: t("nav.features"), href: "#features" },
+    { label: t("nav.training"), href: "#training" },
+    { label: t("nav.academy"), href: "#academy" },
+    { label: t("nav.animeWorlds"), href: "#anime-worlds" },
   ]
 
   return (
@@ -51,21 +53,21 @@ export function LandingHeader() {
             href="/login"
             className="px-4 py-2 text-xs font-bold text-white/70 hover:text-white transition-colors"
           >
-            LOGIN
+            {t("common.login").toUpperCase()}
           </Link>
 
           <Link
             href="/register"
             className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-bold text-white transition-colors"
           >
-            CREATE ACCOUNT
+            {t("common.createAccount").toUpperCase()}
           </Link>
 
           <Link
             href="/game"
             className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-black font-black text-xs uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(249,115,22,0.4)]"
           >
-            <span>PLAY NOW</span>
+            <span>{t("common.playNow").toUpperCase()}</span>
             <ArrowRight size={14} />
           </Link>
         </div>
@@ -108,7 +110,7 @@ export function LandingHeader() {
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-black font-black text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(249,115,22,0.4)]"
               >
-                <span>PLAY NOW</span>
+                <span>{t("common.playNow").toUpperCase()}</span>
                 <ArrowRight size={16} />
               </Link>
               <div className="flex items-center justify-between pt-1">
@@ -121,14 +123,14 @@ export function LandingHeader() {
                   onClick={() => setMobileMenuOpen(false)}
                   className="py-2.5 text-center rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-white hover:bg-white/10 transition-colors"
                 >
-                  LOGIN
+                  {t("common.login").toUpperCase()}
                 </Link>
                 <Link
                   href="/register"
                   onClick={() => setMobileMenuOpen(false)}
                   className="py-2.5 text-center rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-white hover:bg-white/10 transition-colors"
                 >
-                  REGISTER
+                  {t("common.register").toUpperCase()}
                 </Link>
               </div>
             </div>

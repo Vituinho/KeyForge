@@ -3,8 +3,11 @@
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Swords, ArrowRight, Sparkles } from "lucide-react"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 export function LandingFinalCta() {
+  const { t } = useI18n()
+
   return (
     <section className="py-28 px-4 relative overflow-hidden text-center">
       {/* Background glow */}
@@ -18,7 +21,7 @@ export function LandingFinalCta() {
           viewport={{ once: true }}
         >
           <Sparkles size={14} />
-          <span>The Ultimate Shinobi Typing Challenge</span>
+          <span>{t("landing.finalCta.tag")}</span>
         </motion.div>
 
         <motion.h2
@@ -27,7 +30,7 @@ export function LandingFinalCta() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          ARE YOU FAST ENOUGH TO DEFEAT THE STRONGEST?
+          {t("landing.finalCta.title")}
         </motion.h2>
 
         <motion.p
@@ -37,8 +40,7 @@ export function LandingFinalCta() {
           viewport={{ once: true }}
           transition={{ delay: 0.1 }}
         >
-          Put your finger speed, accuracy, and endurance to the test. Step into the arena and claim
-          your shinobi rank.
+          {t("landing.finalCta.description")}
         </motion.p>
 
         <motion.div
@@ -53,7 +55,7 @@ export function LandingFinalCta() {
             className="flex items-center gap-2.5 px-9 py-4 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-black font-black text-sm uppercase tracking-wider transition-all shadow-[0_0_35px_rgba(249,115,22,0.45)] group"
           >
             <Swords size={20} />
-            <span>START NOW</span>
+            <span>{t("landing.finalCta.btn").toUpperCase()}</span>
             <ArrowRight
               size={18}
               className="group-hover:translate-x-1.5 transition-transform"

@@ -27,6 +27,7 @@ import Link from "next/link"
 import { processBattleRewards, BattleRewardSummary } from "@/lib/progression/processBattleRewards"
 import { RankUpModal } from "@/components/progression/RankUpModal"
 import { getDefeatAdvice, DefeatAdvice } from "@/lib/battle/defeatAdvice"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 interface BattleResultProps {
   victory: boolean
@@ -45,6 +46,7 @@ export function BattleResult({
   exercises,
   onRematch,
 }: BattleResultProps) {
+  const { t } = useI18n()
   const { finalStats } = result
 
   // Process rewards strictly once upon initial mount
@@ -89,8 +91,12 @@ export function BattleResult({
               >
                 <Trophy size={64} className="mx-auto text-yellow-400 mb-3" />
               </motion.div>
-              <h1 className="text-5xl font-black tracking-wider text-white">VICTORY</h1>
-              <p className="text-white/50 mt-2">You defeated {enemy.name}!</p>
+              <h1 className="text-5xl font-black tracking-wider text-white">
+                {t("battleResult.victory")}
+              </h1>
+              <p className="text-white/50 mt-2">
+                {t("battleResult.victorySub", { name: enemy.name })}
+              </p>
             </>
           ) : (
             <>
@@ -101,9 +107,11 @@ export function BattleResult({
               >
                 <Skull size={64} className="mx-auto text-red-400 mb-3" />
               </motion.div>
-              <h1 className="text-5xl font-black tracking-wider text-red-400">DEFEAT</h1>
+              <h1 className="text-5xl font-black tracking-wider text-red-400">
+                {t("battleResult.defeat")}
+              </h1>
               <p className="text-white/50 mt-2">
-                <span style={{ color: enemy.themeColor }}>{enemy.name}</span> defeated you.
+                {t("battleResult.defeatSub", { name: enemy.name })}
               </p>
             </>
           )}
@@ -119,22 +127,22 @@ export function BattleResult({
           >
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-400/20 border border-yellow-400/40 text-yellow-300 font-mono font-black text-xs uppercase tracking-widest">
               <Trophy size={14} />
-              NARUTO WORLD CONQUERED!
+              {t("battleResult.campaignCompletedTag").toUpperCase()}
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-white tracking-wide">
-              CAMPAIGN CLEARED: 8 / 8 SHINOBI
+              {t("battleResult.campaignCompletedTitle").toUpperCase()}
             </h2>
             <p className="text-sm text-white/70 max-w-lg mx-auto">
-              You defeated Madara Uchiha and conquered all 8 trials of the Hidden Leaf!
+              {t("battleResult.campaignCompletedDesc")}
             </p>
             <div className="flex items-center justify-center gap-3 flex-wrap pt-2">
               <div className="px-4 py-2 rounded-2xl bg-black/50 border border-yellow-400/30 text-yellow-300 text-xs font-mono font-black flex items-center gap-2">
                 <Sparkles size={14} />
-                <span>TITLE: [SHINOBI TYPIST]</span>
+                <span>{t("battleResult.titleUnlocked").toUpperCase()}</span>
               </div>
               <div className="px-4 py-2 rounded-2xl bg-black/50 border border-emerald-400/30 text-emerald-300 text-xs font-mono font-black flex items-center gap-2">
                 <Trophy size={14} />
-                <span>ACHIEVEMENT: Naruto World Champion</span>
+                <span>{t("battleResult.achievementUnlocked")}</span>
               </div>
             </div>
           </motion.div>
@@ -153,16 +161,16 @@ export function BattleResult({
               </div>
               <div>
                 <h3 className="text-sm font-black text-white uppercase tracking-wider">
-                  Stage {rewardSummary.stageUnlocked} Unlocked!
+                  {t("battleResult.stageUnlockedTitle", { stage: rewardSummary.stageUnlocked })}
                 </h3>
-                <p className="text-xs text-white/50">Next Shinobi challenge awaits you on the map</p>
+                <p className="text-xs text-white/50">{t("battleResult.stageUnlockedSub")}</p>
               </div>
             </div>
             <Link
               href={`/anime-world/${enemy.world ?? "naruto"}`}
               className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs uppercase tracking-wider transition-colors"
             >
-              Continue Map →
+              {t("common.continueMap")} →
             </Link>
           </motion.div>
         )}
@@ -179,26 +187,26 @@ export function BattleResult({
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs font-mono font-bold uppercase text-amber-400 flex items-center gap-1.5">
                   <Sparkles size={14} />
-                  Level {rewardSummary.levelResult.newLevel}
+                  {t("common.level")} {rewardSummary.levelResult.newLevel}
                 </span>
 
                 {rewardSummary.levelResult.didLevelUp && (
                   <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold text-[10px] uppercase animate-pulse border border-emerald-500/30 flex items-center gap-1">
                     <ArrowUpCircle size={10} />
-                    LEVEL UP! (+{rewardSummary.levelResult.levelsGained})
+                    {t("battleResult.levelUp", { levels: rewardSummary.levelResult.levelsGained }).toUpperCase()}
                   </span>
                 )}
 
                 {rewardSummary.didRankUp && (
                   <span className="px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 font-bold text-[10px] uppercase border border-orange-500/30">
-                    RANK UP: {rewardSummary.prevRank} → {rewardSummary.newRank}
+                    {t("battleResult.rankUp", { prev: rewardSummary.prevRank, next: rewardSummary.newRank }).toUpperCase()}
                   </span>
                 )}
 
                 {rewardSummary.isFirstClear && rewardSummary.firstClearBonusXp && (
                   <span className="px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-300 font-bold text-[10px] uppercase border border-yellow-500/40 flex items-center gap-1">
                     <Sparkles size={10} />
-                    FIRST CLEAR (+{rewardSummary.firstClearBonusXp} XP)
+                    {t("battleResult.firstClear", { xp: rewardSummary.firstClearBonusXp }).toUpperCase()}
                   </span>
                 )}
               </div>
@@ -230,7 +238,7 @@ export function BattleResult({
                 />
               </div>
               <div className="flex justify-between text-[10px] text-white/40 mt-1 font-mono">
-                <span>XP to next level</span>
+                <span>{t("dashboard.quickWidget.xpToNext")}</span>
                 <span>
                   {rewardSummary.levelResult.newXp} / {rewardSummary.levelResult.xpRequired} XP
                 </span>
@@ -242,24 +250,24 @@ export function BattleResult({
         {/* Battle Stats — Across the entire battle */}
         <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-5">
           <h2 className="text-xs font-bold tracking-widest text-white/40 uppercase mb-4">
-            Battle Performance (Entire Match)
+            {t("battleResult.performanceHeader")}
           </h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <StatBox
               icon={<Gauge size={14} />}
-              label="Battle WPM"
+              label={t("battleResult.battleWpm")}
               value={finalStats.battleWpm}
               color={enemy.themeColor}
             />
             <StatBox
               icon={<Zap size={14} />}
-              label="Best WPM"
+              label={t("battleResult.bestWpm")}
               value={finalStats.bestWpm}
               color="#38bdf8"
             />
             <StatBox
               icon={<Target size={14} />}
-              label="Accuracy"
+              label={t("battleResult.accuracy")}
               value={`${finalStats.battleAccuracy}%`}
               color={
                 finalStats.battleAccuracy >= 95
@@ -271,7 +279,7 @@ export function BattleResult({
             />
             <StatBox
               icon={<Clock size={14} />}
-              label="Errors"
+              label={t("battleResult.errors")}
               value={finalStats.totalErrors}
               color={
                 finalStats.totalErrors === 0
@@ -283,24 +291,24 @@ export function BattleResult({
             />
             <StatBox
               icon={<Flame size={14} />}
-              label="Best Combo"
+              label={t("battleResult.bestCombo")}
               value={`×${finalStats.bestCombo}`}
               color="#f59e0b"
             />
             <StatBox
               icon={<Clock size={14} />}
-              label="Battle Time"
+              label={t("battleResult.battleTime")}
               value={`${Math.round(result.elapsedTime)}s`}
             />
             <StatBox
               icon={<Swords size={14} />}
-              label="Damage Dealt"
+              label={t("battleResult.damageDealt")}
               value={result.totalDamageDealt}
               color="#a855f7"
             />
             <StatBox
               icon={<ShieldAlert size={14} />}
-              label="Damage Taken"
+              label={t("battleResult.damageTaken")}
               value={result.totalDamageTaken}
               color="#f87171"
             />
@@ -375,10 +383,10 @@ export function BattleResult({
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-xs font-bold tracking-widest text-red-400 uppercase flex items-center gap-1.5">
                 <Target size={14} />
-                YOUR WEAKNESSES
+                {t("battleResult.weaknessesHeader").toUpperCase()}
               </h2>
               <span className="text-[10px] text-white/40 uppercase tracking-wider">
-                Top {Math.min(3, weakKeys.length)} Key Struggles
+                {t("battleResult.weaknessesSub", { count: Math.min(3, weakKeys.length) })}
               </span>
             </div>
 
@@ -398,17 +406,17 @@ export function BattleResult({
                   </div>
                   <div className="space-y-1 text-xs">
                     <div className="flex justify-between text-white/70">
-                      <span>Accuracy:</span>
+                      <span>{t("common.accuracy")}:</span>
                       <span className="font-bold text-white">
                         {Math.round((1 - wk.errorRate) * 100)}%
                       </span>
                     </div>
                     <div className="flex justify-between text-white/70">
-                      <span>Errors:</span>
+                      <span>{t("common.errors")}:</span>
                       <span className="font-bold text-red-400">{wk.errors}</span>
                     </div>
                     <div className="flex justify-between text-white/70">
-                      <span>Avg response:</span>
+                      <span>{t("battleResult.avgResponse")}</span>
                       <span className="font-bold text-white">
                         {Math.round(wk.averageResponseTime)}ms
                       </span>
@@ -464,7 +472,7 @@ export function BattleResult({
               className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-black font-black text-sm transition-all shadow-[0_0_20px_rgba(249,115,22,0.4)]"
             >
               <MapPin size={16} />
-              WORLD MAP
+              {t("battleResult.worldMapBtn").toUpperCase()}
             </Link>
           )}
           <button
@@ -472,7 +480,7 @@ export function BattleResult({
             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 font-bold text-sm transition-colors"
           >
             <RotateCcw size={16} />
-            REMATCH
+            {t("battleResult.rematchBtn").toUpperCase()}
           </button>
           {!victory && weakKeys.length > 0 && (
             <Link
@@ -480,14 +488,14 @@ export function BattleResult({
               className="flex items-center gap-2 px-6 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-black text-sm transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)]"
             >
               <Dumbbell size={16} />
-              TRAIN MY WEAKNESSES
+              {t("battleResult.trainBtn").toUpperCase()}
             </Link>
           )}
           <Link
             href="/game"
             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 font-bold text-sm transition-colors"
           >
-            DASHBOARD
+            {t("battleResult.dashboardBtn").toUpperCase()}
             <ChevronRight size={16} />
           </Link>
         </div>

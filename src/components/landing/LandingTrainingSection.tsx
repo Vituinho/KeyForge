@@ -3,8 +3,11 @@
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Dumbbell, Target, ArrowRight, Sparkles } from "lucide-react"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 export function LandingTrainingSection() {
+  const { t } = useI18n()
+
   const weakKeysMock = [
     { key: "A", accuracy: "82%", latency: "380ms", errors: "6 errors", finger: "Left Pinky" },
     { key: "R", accuracy: "87%", latency: "340ms", errors: "4 errors", finger: "Left Index" },
@@ -18,20 +21,18 @@ export function LandingTrainingSection() {
         <div className="flex-1 space-y-6 text-center lg:text-left">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-400 text-xs font-mono font-bold uppercase tracking-wider">
             <Dumbbell size={14} />
-            <span>Telemetry-Driven Learning</span>
+            <span>{t("landing.training.tag")}</span>
           </div>
 
           <div className="space-y-3">
             <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-              NEVER GUESS WHAT TO TRAIN
+              {t("landing.training.title")}
             </h2>
             <p className="text-base text-orange-400/90 font-mono font-bold">
-              The engine pinpoints your exact struggle keys and generates targeted drills.
+              {t("landing.training.subtitle")}
             </p>
             <p className="text-sm text-white/60 leading-relaxed max-w-xl mx-auto lg:mx-0">
-              Unlike generic typing websites that give you random texts, KeyForge monitors the
-              accuracy and response latency of every single key you press. When you finish a battle,
-              it detects your mechanical bottlenecks and creates custom muscle memory drills to eliminate them.
+              {t("landing.training.description")}
             </p>
           </div>
 
@@ -40,7 +41,7 @@ export function LandingTrainingSection() {
               href="/training"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-bold text-sm uppercase tracking-wider transition-colors"
             >
-              <span>EXPLORE TRAINING MODE</span>
+              <span>{t("landing.training.btn").toUpperCase()}</span>
               <ArrowRight size={16} />
             </Link>
           </div>
@@ -61,10 +62,10 @@ export function LandingTrainingSection() {
                   <Target size={16} />
                 </div>
                 <h3 className="text-xs font-black tracking-widest text-red-400 uppercase font-mono">
-                  YOUR WEAKNESSES DETECTED
+                  {t("landing.training.weakTitle")}
                 </h3>
               </div>
-              <span className="text-[10px] font-mono text-white/40 uppercase">Post-Battle Telemetry</span>
+              <span className="text-[10px] font-mono text-white/40 uppercase">{t("landing.training.postTelemetry")}</span>
             </div>
 
             <div className="grid grid-cols-3 gap-3">
@@ -103,12 +104,12 @@ export function LandingTrainingSection() {
                 <Sparkles size={16} />
               </div>
               <h3 className="text-xs font-black tracking-widest text-amber-400 uppercase font-mono">
-                GENERATED PERSONALIZED DRILL
+                {t("landing.training.drillTitle")}
               </h3>
             </div>
 
             <p className="text-xs text-white/60">
-              Focusing on Left Pinky extension and Index reach:
+              {t("landing.training.drillSub")}
             </p>
 
             <div className="space-y-2 font-mono text-xs">

@@ -6,8 +6,10 @@ import { PreBattle } from "@/components/battle/PreBattle"
 import { BattleArena } from "@/components/battle/BattleArena"
 import { getCharacterById, CHARACTERS } from "@/data/characters"
 import { getTextsForCharacter } from "@/data/texts"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 function BattleContent() {
+  const { locale } = useI18n()
   const searchParams = useSearchParams()
   const enemyId = searchParams.get("enemy") ?? "naruto"
 
@@ -17,7 +19,7 @@ function BattleContent() {
     getCharacterById("naruto") ??
     CHARACTERS[0]
 
-  const texts = getTextsForCharacter(enemy.id)
+  const texts = getTextsForCharacter(enemy.id, locale)
   const [started, setStarted] = useState(false)
   // Increment to force BattleArena remount on rematch
   const [battleKey, setBattleKey] = useState(0)

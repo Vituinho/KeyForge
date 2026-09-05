@@ -26,6 +26,8 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
 
+import { useI18n } from "@/lib/i18n/i18nContext"
+
 function formatDuration(totalSeconds: number): string {
   if (totalSeconds < 60) return `${totalSeconds}s`
   const minutes = Math.floor(totalSeconds / 60)
@@ -36,10 +38,10 @@ function formatDuration(totalSeconds: number): string {
   return `${hours}h ${remainingMinutes}m`
 }
 
-function formatDate(iso: string): string {
+function formatDate(iso: string, locale: string): string {
   try {
     const d = new Date(iso)
-    return d.toLocaleDateString(undefined, {
+    return d.toLocaleDateString(locale === "pt-BR" ? "pt-BR" : "en-US", {
       month: "short",
       day: "numeric",
       hour: "2-digit",
@@ -51,6 +53,7 @@ function formatDate(iso: string): string {
 }
 
 export default function StatisticsPage() {
+  const { t, locale } = useI18n()
   const { player } = usePlayer()
   const { history } = useBattleHistory()
 
@@ -72,13 +75,13 @@ export default function StatisticsPage() {
           className="inline-flex items-center gap-2 text-xs font-bold text-white/50 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/10"
         >
           <ChevronLeft size={16} />
-          <span>GAME DASHBOARD</span>
+          <span>{t("statistics.backBtn")}</span>
         </Link>
 
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex items-center gap-2 text-xs text-white/40 font-mono">
             <Activity size={14} className="text-orange-400" />
-            <span>REAL-TIME TELEMETRY</span>
+            <span>{locale === "pt-BR" ? "TELEMETRIA EM TEMPO REAL" : "REAL-TIME TELEMETRY"}</span>
           </div>
           <LanguageSwitcher />
         </div>
@@ -89,10 +92,12 @@ export default function StatisticsPage() {
         <div>
           <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white flex items-center gap-3">
             <Award className="text-pink-500" size={32} />
-            <span>PLAYER STATISTICS</span>
+            <span>{t("statistics.title")}</span>
           </h1>
           <p className="text-white/40 text-sm mt-1">
-            Lifetime combat records, typing speed metrics, and RPG attributes.
+            {locale === "pt-BR"
+              ? "Registros históricos de combate, métricas de velocidade e atributos de RPG."
+              : "Lifetime combat records, typing speed metrics, and RPG attributes."}
           </p>
         </div>
 
@@ -176,29 +181,29 @@ export default function StatisticsPage() {
       <div className="space-y-3">
         <h2 className="text-xs font-bold tracking-widest text-white/40 uppercase flex items-center gap-1.5">
           <Swords size={14} className="text-orange-400" />
-          Combat Performance
+          {locale === "pt-BR" ? "Desempenho em Combate" : "Combat Performance"}
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <StatCard
-            label="Total Battles"
+            label={t("statistics.battlesPlayed")}
             value={player.stats.battlesPlayed}
             icon={<Swords size={14} />}
             color="#f97316"
           />
           <StatCard
-            label="Battles Won"
+            label={t("statistics.battlesWon")}
             value={player.stats.battlesWon}
             icon={<Trophy size={14} />}
             color="#22c55e"
           />
           <StatCard
-            label="Battles Lost"
+            label={locale === "pt-BR" ? "Derrotas" : "Battles Lost"}
             value={player.stats.battlesLost}
             icon={<Shield size={14} />}
             color="#ef4444"
           />
           <StatCard
-            label="Win Rate"
+            label={t("statistics.winRate")}
             value={`${winRate}%`}
             icon={<Activity size={14} />}
             color={winRate >= 70 ? "#22c55e" : winRate >= 40 ? "#eab308" : "#ef4444"}
@@ -210,23 +215,23 @@ export default function StatisticsPage() {
       <div className="space-y-3">
         <h2 className="text-xs font-bold tracking-widest text-white/40 uppercase flex items-center gap-1.5">
           <Zap size={14} className="text-yellow-400" />
-          Typing Mastery Metrics
+          {locale === "pt-BR" ? "Métricas de Maestria em Digitação" : "Typing Mastery Metrics"}
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <StatCard
-            label="Average WPM"
+            label={t("statistics.avgWpm")}
             value={player.stats.averageWpm}
             icon={<Zap size={14} />}
             color="#eab308"
           />
           <StatCard
-            label="Best Peak WPM"
+            label={t("statistics.bestWpm")}
             value={player.stats.bestWpm}
             icon={<Flame size={14} />}
             color="#f97316"
           />
           <StatCard
-            label="Average Accuracy"
+            label={t("statistics.avgAccuracy")}
             value={`${player.stats.averageAccuracy}%`}
             icon={<Target size={14} />}
             color={
@@ -238,7 +243,7 @@ export default function StatisticsPage() {
             }
           />
           <StatCard
-            label="Longest Combo"
+            label={t("statistics.bestCombo")}
             value={`×${player.stats.bestCombo}`}
             icon={<Flame size={14} />}
             color="#ec4899"
@@ -250,29 +255,29 @@ export default function StatisticsPage() {
       <div className="space-y-3">
         <h2 className="text-xs font-bold tracking-widest text-white/40 uppercase flex items-center gap-1.5">
           <Dumbbell size={14} className="text-cyan-400" />
-          Training & Lifetime Volume
+          {locale === "pt-BR" ? "Treinos e Volume Total" : "Training & Lifetime Volume"}
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <StatCard
-            label="Enemies Defeated"
+            label={locale === "pt-BR" ? "Inimigos Derrotados" : "Enemies Defeated"}
             value={player.stats.enemiesDefeated}
             icon={<Trophy size={14} />}
             color="#10b981"
           />
           <StatCard
-            label="Training Drills"
+            label={locale === "pt-BR" ? "Sessões de Treino" : "Training Drills"}
             value={player.stats.trainingSessions}
             icon={<Dumbbell size={14} />}
             color="#06b6d4"
           />
           <StatCard
-            label="Academy Lessons"
+            label={locale === "pt-BR" ? "Lições da Academia" : "Academy Lessons"}
             value={player.stats.academyLessonsCompleted}
             icon={<BookOpen size={14} />}
             color="#8b5cf6"
           />
           <StatCard
-            label="Active Typing Time"
+            label={t("statistics.totalTypingTime")}
             value={formatDuration(player.stats.totalTypingTime)}
             icon={<Clock size={14} />}
             color="#a855f7"
@@ -285,41 +290,65 @@ export default function StatisticsPage() {
         <div>
           <h2 className="text-lg font-black text-white flex items-center gap-2">
             <Shield className="text-amber-400" size={20} />
-            <span>RPG ATTRIBUTES BREAKDOWN</span>
+            <span>
+              {locale === "pt-BR" ? "DETALHAMENTO DOS ATRIBUTOS RPG" : "RPG ATTRIBUTES BREAKDOWN"}
+            </span>
           </h2>
           <p className="text-xs text-white/40 mt-0.5">
-            Dynamic attributes calculated from real typing performance and disciplined training.
+            {locale === "pt-BR"
+              ? "Atributos calculados a partir do desempenho real de digitação e disciplina de treino."
+              : "Dynamic attributes calculated from real typing performance and disciplined training."}
           </p>
         </div>
 
         <div className="space-y-4">
           <AttributeRow
-            label="Speed"
-            description="Normalized against 110 WPM elite benchmark"
+            label={locale === "pt-BR" ? "Velocidade" : "Speed"}
+            description={
+              locale === "pt-BR"
+                ? "Normalizado contra a marca de elite de 110 WPM"
+                : "Normalized against 110 WPM elite benchmark"
+            }
             value={player.attributes.speed}
             color="#f97316"
           />
           <AttributeRow
-            label="Accuracy"
-            description="Direct error discipline rating (weighted heavily at 35% towards Rank)"
+            label={locale === "pt-BR" ? "Precisão" : "Accuracy"}
+            description={
+              locale === "pt-BR"
+                ? "Índice direto de disciplina de erros (peso de 35% no Ranque)"
+                : "Direct error discipline rating (weighted heavily at 35% towards Rank)"
+            }
             value={player.attributes.accuracy}
             color="#22c55e"
           />
           <AttributeRow
-            label="Technique"
-            description="Increases strictly from Academy modules and Weak Key sessions"
+            label={locale === "pt-BR" ? "Técnica" : "Technique"}
+            description={
+              locale === "pt-BR"
+                ? "Aumenta com módulos da Academia e treinos de teclas difíceis"
+                : "Increases strictly from Academy modules and Weak Key sessions"
+            }
             value={player.attributes.technique}
             color="#06b6d4"
           />
           <AttributeRow
             label="Combo"
-            description="Sustained streak length and flow consistency"
+            description={
+              locale === "pt-BR"
+                ? "Duração de sequências sem erros e consistência de fluxo"
+                : "Sustained streak length and flow consistency"
+            }
             value={player.attributes.combo}
             color="#ec4899"
           />
           <AttributeRow
-            label="Overall Power"
-            description="Composite skill index determining eligibility for higher Ranks"
+            label={locale === "pt-BR" ? "Poder Geral" : "Overall Power"}
+            description={
+              locale === "pt-BR"
+                ? "Índice composto de habilidade que define elegibilidade para ranques superiores"
+                : "Composite skill index determining eligibility for higher Ranks"
+            }
             value={player.attributes.overall}
             color="#eab308"
           />
@@ -332,10 +361,12 @@ export default function StatisticsPage() {
           <div>
             <h2 className="text-lg font-black text-white flex items-center gap-2">
               <HistoryIcon className="text-cyan-400" size={20} />
-              <span>RECENT BATTLES</span>
+              <span>{t("statistics.historyTitle")}</span>
             </h2>
             <p className="text-xs text-white/40 mt-0.5">
-              Persistent history of your last {history.length} matches (capped at 50).
+              {locale === "pt-BR"
+                ? `Histórico persistente das últimas ${history.length} partidas (limite de 50).`
+                : `Persistent history of your last ${history.length} matches (capped at 50).`}
             </p>
           </div>
 
@@ -344,22 +375,28 @@ export default function StatisticsPage() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-black font-black text-xs transition-colors"
           >
             <Swords size={14} />
-            <span>FIGHT AGAIN</span>
+            <span>{locale === "pt-BR" ? "LUTAR NOVAMENTE" : "FIGHT AGAIN"}</span>
           </Link>
         </div>
 
         {history.length === 0 ? (
           <div className="text-center py-12 px-4 rounded-2xl border border-dashed border-white/10 bg-black/30 space-y-3">
             <Swords size={36} className="mx-auto text-white/20" />
-            <p className="text-sm font-bold text-white/60">No battle records forged yet</p>
+            <p className="text-sm font-bold text-white/60">
+              {locale === "pt-BR"
+                ? "Nenhum registro de batalha forjado ainda"
+                : "No battle records forged yet"}
+            </p>
             <p className="text-xs text-white/30 max-w-sm mx-auto">
-              Challenge anime adversaries to test your typing throughput and begin recording your combat history.
+              {locale === "pt-BR"
+                ? "Desafie adversários de anime para testar sua velocidade e iniciar seu histórico de combate."
+                : "Challenge anime adversaries to test your typing throughput and begin recording your combat history."}
             </p>
             <Link
               href="/battle"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold text-xs transition-colors mt-2"
             >
-              <span>ENTER THE ARENA</span>
+              <span>{locale === "pt-BR" ? "ENTRAR NA ARENA" : "ENTER THE ARENA"}</span>
             </Link>
           </div>
         ) : (
@@ -388,7 +425,7 @@ export default function StatisticsPage() {
                       </span>
                     </div>
                     <p className="text-[11px] text-white/40">
-                      {formatDate(entry.timestamp)} · Duration: {entry.durationSeconds}s
+                      {formatDate(entry.timestamp, locale)} · {locale === "pt-BR" ? "Duração:" : "Duration:"} {entry.durationSeconds}s
                     </p>
                   </div>
                 </div>
@@ -400,7 +437,9 @@ export default function StatisticsPage() {
                     <strong className="text-white">{entry.battleWpm}</strong>
                   </div>
                   <div className="text-right">
-                    <span className="text-white/40 text-[10px] block">ACC</span>
+                    <span className="text-white/40 text-[10px] block">
+                      {locale === "pt-BR" ? "PREC" : "ACC"}
+                    </span>
                     <strong
                       className={entry.battleAccuracy >= 95 ? "text-emerald-400" : "text-amber-400"}
                     >

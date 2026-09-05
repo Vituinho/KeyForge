@@ -5,6 +5,7 @@ import { Enemy } from "@/types/character"
 import { Swords, ChevronRight, ChevronLeft } from "lucide-react"
 import { usePlayer } from "@/hooks/usePlayer"
 import Link from "next/link"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 interface PreBattleProps {
   enemy: Enemy
@@ -12,6 +13,7 @@ interface PreBattleProps {
 }
 
 export function PreBattle({ enemy, onFight }: PreBattleProps) {
+  const { t } = useI18n()
   const { player } = usePlayer()
 
   return (
@@ -23,7 +25,7 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
           className="inline-flex items-center gap-1.5 text-xs font-bold text-white/50 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/10"
         >
           <ChevronLeft size={14} />
-          <span>EXIT BATTLE</span>
+          <span>{t("battle.preBattle.exitBattle").toUpperCase()}</span>
         </Link>
       </div>
 
@@ -47,7 +49,7 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          Stage 0{enemy.stage ?? 1} · {enemy.typingFocus} Trial
+          {t("battle.preBattle.stageTrial", { stage: enemy.stage ?? 1, focus: enemy.typingFocus ?? "" })}
         </motion.div>
       )}
 
@@ -72,7 +74,7 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
             {player.username.toUpperCase()}
           </p>
           <p className="text-sm text-white/40 font-mono">
-            Rank {player.rank} · Lv. {player.level}
+            {t("common.rank")} {player.rank} · {t("dashboard.quickWidget.level")} {player.level}
           </p>
         </motion.div>
 
@@ -122,10 +124,10 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.6, duration: 0.5 }}
       >
-        <StatChip label="LEVEL" value={enemy.level} color={enemy.themeColor} />
-        <StatChip label="REC. WPM" value={`${enemy.recommendedWpm}+`} color={enemy.themeColor} />
-        <StatChip label="REC. ACC" value={`${enemy.recommendedAccuracy}%`} color={enemy.themeColor} />
-        <StatChip label="DIFFICULTY" value={enemy.difficulty} color={enemy.themeColor} />
+        <StatChip label={t("common.level").toUpperCase()} value={enemy.level} color={enemy.themeColor} />
+        <StatChip label={t("animeWorld.targetSpeed").toUpperCase()} value={`${enemy.recommendedWpm}+`} color={enemy.themeColor} />
+        <StatChip label={t("animeWorld.targetAcc").toUpperCase()} value={`${enemy.recommendedAccuracy}%`} color={enemy.themeColor} />
+        <StatChip label={t("animeWorld.combatFocus").toUpperCase()} value={enemy.difficulty} color={enemy.themeColor} />
       </motion.div>
 
       {enemy.description && (
@@ -153,7 +155,7 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 1, duration: 0.4 }}
       >
-        FIGHT
+        {t("battle.preBattle.startFight").toUpperCase()}
         <ChevronRight size={22} />
       </motion.button>
     </div>

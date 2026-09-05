@@ -6,8 +6,10 @@ import { ACADEMY_MODULES } from "@/data/academyLessons"
 import { AcademyLesson } from "@/components/academy/AcademyLesson"
 import { BookOpen, ChevronRight, ChevronLeft, Lock, Sparkles } from "lucide-react"
 import Link from "next/link"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 export default function AcademyPage() {
+  const { t, locale } = useI18n()
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null)
 
   if (activeModuleId) {
@@ -32,10 +34,10 @@ export default function AcademyPage() {
           className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white transition-colors"
         >
           <ChevronLeft size={16} />
-          Back to Game
+          {t("academy.backBtn")}
         </Link>
         <span className="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-widest bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-          Touch Typing Academy
+          {t("academy.title")}
         </span>
       </div>
 
@@ -52,7 +54,9 @@ export default function AcademyPage() {
           KEYFORGE <span className="text-emerald-400">ACADEMY</span>
         </h1>
         <p className="text-white/40 text-sm mt-2 max-w-md mx-auto">
-          Aprenda a arte do Touch Typing do zero. Abandone o vício de olhar para o teclado e digite com todos os dez dedos.
+          {locale === "pt-BR"
+            ? "Aprenda a arte do Touch Typing do zero. Abandone o vício de olhar para o teclado e digite com todos os dez dedos."
+            : "Master touch typing from the ground up. Stop looking at your keyboard and type with all ten fingers."}
         </p>
       </motion.div>
 

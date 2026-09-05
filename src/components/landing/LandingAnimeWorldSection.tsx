@@ -3,8 +3,11 @@
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Globe, Flame, Skull, ArrowRight, Lock } from "lucide-react"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 export function LandingAnimeWorldSection() {
+  const { t } = useI18n()
+
   const narutoRoster = [
     { stage: "01", name: "Naruto Uzumaki", focus: "Balanced Warmup", wpm: "30 WPM", color: "#f97316" },
     { stage: "02", name: "Sakura Haruno", focus: "Chakra Precision", wpm: "35 WPM", color: "#ec4899" },
@@ -30,14 +33,13 @@ export function LandingAnimeWorldSection() {
         <div className="text-center space-y-3 max-w-2xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs font-mono font-bold uppercase tracking-wider">
             <Globe size={14} />
-            <span>Campaign Multiverse</span>
+            <span>{t("landing.animeWorlds.tag")}</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-            ANIME WORLD CAMPAIGNS
+            {t("landing.animeWorlds.title")}
           </h2>
           <p className="text-sm text-white/50">
-            Journey across iconic anime worlds with custom battle mechanics, progressive typing
-            difficulty, and multi-phase bosses.
+            {t("landing.animeWorlds.subtitle")}
           </p>
         </div>
 
@@ -53,7 +55,7 @@ export function LandingAnimeWorldSection() {
                   World 01: Naruto World
                 </h3>
                 <p className="text-xs text-white/50 font-mono">
-                  Chapter 1: The Leaf to the War · 8 Progressive Stages
+                  {t("landing.animeWorlds.chapter")}
                 </p>
               </div>
             </div>
@@ -62,7 +64,7 @@ export function LandingAnimeWorldSection() {
               href="/anime-world/naruto"
               className="inline-flex items-center gap-1.5 text-xs font-bold text-orange-400 hover:text-orange-300 transition-colors bg-orange-500/10 hover:bg-orange-500/20 px-4 py-2 rounded-xl border border-orange-500/30"
             >
-              <span>EXPLORE MAP</span>
+              <span>{t("landing.animeWorlds.mapBtn").toUpperCase()}</span>
               <ArrowRight size={14} />
             </Link>
           </div>
@@ -80,12 +82,12 @@ export function LandingAnimeWorldSection() {
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono font-bold text-white/40">
-                    STAGE {c.stage}
+                    {t("common.stage").toUpperCase()} {c.stage}
                   </span>
                   {c.isBoss ? (
                     <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-red-500/20 text-red-400 border border-red-500/30 flex items-center gap-1">
                       <Skull size={10} />
-                      FINAL BOSS
+                      {t("common.finalBoss").toUpperCase()}
                     </span>
                   ) : (
                     <span className="text-[11px] font-mono text-white/50">
@@ -112,7 +114,7 @@ export function LandingAnimeWorldSection() {
           <div className="flex items-center gap-2">
             <Lock size={16} className="text-white/40" />
             <h3 className="text-sm font-black text-white/60 uppercase tracking-wider font-mono">
-              FUTURE CAMPAIGNS (COMING SOON)
+              {t("landing.animeWorlds.comingSoon").toUpperCase()}
             </h3>
           </div>
 
@@ -127,7 +129,7 @@ export function LandingAnimeWorldSection() {
                     {w.series}
                   </span>
                   <span className="text-[9px] font-bold font-mono px-2 py-0.5 rounded bg-white/5 text-white/40 border border-white/10">
-                    SOON
+                    {t("common.soon").toUpperCase()}
                   </span>
                 </div>
                 <h4 className="text-sm font-black text-white">{w.title}</h4>

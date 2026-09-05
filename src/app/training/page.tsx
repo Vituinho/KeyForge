@@ -6,12 +6,14 @@ import { motion } from "framer-motion"
 import { Dumbbell, Zap, Flame, RotateCcw, ChevronLeft } from "lucide-react"
 import Link from "next/link"
 import { WeakKeyTraining } from "@/components/training/WeakKeyTraining"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 type TrainingMode = "weak-keys" | "free-practice" | "speed-test"
 
 const COMMON_KEYS = ["A", "S", "D", "F", "J", "K", "L", "R", "T", "E", "I", "O"]
 
 function TrainingContent() {
+  const { t, locale } = useI18n()
   const searchParams = useSearchParams()
 
   // Parse keys from search params: e.g. ?keys=a,r,t
@@ -54,11 +56,11 @@ function TrainingContent() {
           className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white transition-colors"
         >
           <ChevronLeft size={16} />
-          Back to Game
+          {t("training.backBtn")}
         </Link>
         <div className="text-right">
           <span className="text-[10px] font-mono text-orange-400 font-bold uppercase tracking-widest bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20">
-            Training Ground
+            {t("training.title")}
           </span>
         </div>
       </div>
@@ -70,10 +72,12 @@ function TrainingContent() {
         animate={{ opacity: 1, y: 0 }}
       >
         <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-white">
-          KEYFORGE <span className="text-orange-400">TRAINING</span>
+          KEYFORGE <span className="text-orange-400">{locale === "pt-BR" ? "TREINO" : "TRAINING"}</span>
         </h1>
         <p className="text-white/40 text-sm mt-2 max-w-md mx-auto">
-          Sharpen your muscle memory and eliminate targeted typing weaknesses through deliberate practice.
+          {locale === "pt-BR"
+            ? "Aprimore sua memória muscular e elimine fraquezas específicas de digitação com prática deliberada."
+            : "Sharpen your muscle memory and eliminate targeted typing weaknesses through deliberate practice."}
         </p>
       </motion.div>
 
@@ -88,7 +92,7 @@ function TrainingContent() {
           }`}
         >
           <Dumbbell size={14} />
-          Weak Keys
+          {t("training.modes.weakKeys")}
         </button>
 
         <button
@@ -100,8 +104,10 @@ function TrainingContent() {
           }`}
         >
           <Zap size={14} />
-          <span>Free Practice</span>
-          <span className="text-[9px] bg-white/10 px-1.5 py-0.2 rounded font-normal">Soon</span>
+          <span>{t("training.modes.freePractice")}</span>
+          <span className="text-[9px] bg-white/10 px-1.5 py-0.2 rounded font-normal">
+            {locale === "pt-BR" ? "Breve" : "Soon"}
+          </span>
         </button>
 
         <button
@@ -113,8 +119,10 @@ function TrainingContent() {
           }`}
         >
           <Flame size={14} />
-          <span>Speed Test</span>
-          <span className="text-[9px] bg-white/10 px-1.5 py-0.2 rounded font-normal">Soon</span>
+          <span>{t("training.modes.speedTest")}</span>
+          <span className="text-[9px] bg-white/10 px-1.5 py-0.2 rounded font-normal">
+            {locale === "pt-BR" ? "Breve" : "Soon"}
+          </span>
         </button>
       </div>
 
@@ -126,7 +134,7 @@ function TrainingContent() {
             <div className="p-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-bold uppercase tracking-wider text-white/50">
-                  Select Keys to Target
+                  {t("training.selectKeys")}
                 </span>
                 <button
                   onClick={() => {
@@ -136,7 +144,7 @@ function TrainingContent() {
                   className="text-[11px] text-orange-400 hover:text-orange-300 flex items-center gap-1 font-bold"
                 >
                   <RotateCcw size={11} />
-                  Reset Defaults
+                  {locale === "pt-BR" ? "Restaurar Padrão" : "Reset Defaults"}
                 </button>
               </div>
 
@@ -172,9 +180,13 @@ function TrainingContent() {
         {activeMode === "free-practice" && (
           <div className="p-12 text-center rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm space-y-3">
             <Zap size={40} className="mx-auto text-yellow-400" />
-            <h2 className="text-xl font-bold text-white">Free Practice Mode</h2>
+            <h2 className="text-xl font-bold text-white">
+              {t("training.modes.freePractice")}
+            </h2>
             <p className="text-sm text-white/40 max-w-sm mx-auto">
-              Custom text input, arbitrary word counts, and language selection will arrive in an upcoming release.
+              {locale === "pt-BR"
+                ? "Entrada de texto personalizada e contagem de palavras arbitrária estarão disponíveis em breve."
+                : "Custom text input, arbitrary word counts, and language selection will arrive in an upcoming release."}
             </p>
           </div>
         )}
@@ -182,9 +194,13 @@ function TrainingContent() {
         {activeMode === "speed-test" && (
           <div className="p-12 text-center rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm space-y-3">
             <Flame size={40} className="mx-auto text-amber-500" />
-            <h2 className="text-xl font-bold text-white">Speed Test Mode</h2>
+            <h2 className="text-xl font-bold text-white">
+              {t("training.modes.speedTest")}
+            </h2>
             <p className="text-sm text-white/40 max-w-sm mx-auto">
-              Timed 15s, 30s, and 60s competitive sprint benchmarks with leaderboard integration coming soon.
+              {locale === "pt-BR"
+                ? "Testes cronometrados de 15s, 30s e 60s com placares estarão disponíveis em breve."
+                : "Timed 15s, 30s, and 60s competitive sprint benchmarks with leaderboard integration coming soon."}
             </p>
           </div>
         )}

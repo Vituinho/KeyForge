@@ -6,6 +6,7 @@ import { CHARACTERS } from "@/data/characters"
 import { Enemy } from "@/types/character"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
+import { useI18n } from "@/lib/i18n/i18nContext"
 import {
   ChevronLeft,
   Swords,
@@ -22,6 +23,7 @@ import {
 } from "lucide-react"
 
 export default function NarutoWorldMapPage() {
+  const { t } = useI18n()
   const { player } = usePlayer()
 
   const narutoCharacters = CHARACTERS.filter(
@@ -100,7 +102,7 @@ export default function NarutoWorldMapPage() {
             <span>Chapter 1: The Leaf to the War</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
-            NARUTO WORLD CAMPAIGN
+            {t("animeWorld.narutoMapTitle")}
           </h1>
           <p className="text-white/40 text-xs sm:text-sm mt-1 max-w-xl">
             Overcome each shinobi trial in sequential order. Each battle tests a distinct keyboard mastery discipline.
@@ -121,7 +123,7 @@ export default function NarutoWorldMapPage() {
         <div className="lg:col-span-7 space-y-3">
           <h2 className="text-xs font-bold tracking-widest text-white/40 uppercase mb-4 flex items-center gap-1.5">
             <Activity size={14} className="text-orange-400" />
-            Progression Path (Stages 1–8)
+            {t("animeWorld.progressionPath")}
           </h2>
 
           <div className="space-y-3 relative">
@@ -185,7 +187,7 @@ export default function NarutoWorldMapPage() {
                       </h3>
                       {isBoss && (
                         <span className="px-2 py-0.2 rounded bg-red-500/20 text-red-400 border border-red-500/40 text-[10px] font-black uppercase tracking-wider">
-                          FINAL BOSS
+                          {t("common.finalBoss").toUpperCase()}
                         </span>
                       )}
                     </div>
@@ -205,15 +207,15 @@ export default function NarutoWorldMapPage() {
                   <div className="shrink-0 text-right">
                     {defeated ? (
                       <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                        DEFEATED
+                        {t("common.defeated").toUpperCase()}
                       </span>
                     ) : unlocked ? (
                       <span className="text-[10px] font-bold text-orange-400 uppercase tracking-widest bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/30">
-                        AVAILABLE
+                        {t("common.available").toUpperCase()}
                       </span>
                     ) : (
                       <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded border border-white/5">
-                        LOCKED
+                        {t("common.locked").toUpperCase()}
                       </span>
                     )}
                   </div>
@@ -245,11 +247,11 @@ export default function NarutoWorldMapPage() {
                 <div className="space-y-2 relative z-10">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-mono font-bold text-orange-400 uppercase tracking-widest">
-                      Stage 0{selectedEnemy.stage} Briefing
+                      {t("animeWorld.stageBriefing", { stage: selectedEnemy.stage ?? 1 })}
                     </span>
                     {selectedEnemy.isBoss && (
                       <span className="px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/40 text-[10px] font-black uppercase tracking-wider">
-                        FINAL BOSS
+                        {t("common.finalBoss").toUpperCase()}
                       </span>
                     )}
                   </div>
@@ -267,7 +269,7 @@ export default function NarutoWorldMapPage() {
                   <div className="p-3 rounded-xl bg-black/50 border border-white/10">
                     <span className="text-[10px] uppercase tracking-wider text-white/40 block mb-1 flex items-center gap-1">
                       <Zap size={12} className="text-yellow-400" />
-                      Target Speed
+                      {t("animeWorld.targetSpeed")}
                     </span>
                     <span className="text-lg font-black text-white font-mono">
                       {selectedEnemy.recommendedWpm} WPM
@@ -277,7 +279,7 @@ export default function NarutoWorldMapPage() {
                   <div className="p-3 rounded-xl bg-black/50 border border-white/10">
                     <span className="text-[10px] uppercase tracking-wider text-white/40 block mb-1 flex items-center gap-1">
                       <Target size={12} className="text-emerald-400" />
-                      Target Accuracy
+                      {t("animeWorld.targetAcc")}
                     </span>
                     <span className="text-lg font-black text-white font-mono">
                       {selectedEnemy.recommendedAccuracy}%
@@ -287,7 +289,7 @@ export default function NarutoWorldMapPage() {
                   <div className="p-3 rounded-xl bg-black/50 border border-white/10">
                     <span className="text-[10px] uppercase tracking-wider text-white/40 block mb-1 flex items-center gap-1">
                       <Flame size={12} className="text-orange-400" />
-                      Combat Focus
+                      {t("animeWorld.combatFocus")}
                     </span>
                     <span className="text-sm font-black text-orange-400 font-mono uppercase">
                       {selectedEnemy.typingFocus}
@@ -297,7 +299,7 @@ export default function NarutoWorldMapPage() {
                   <div className="p-3 rounded-xl bg-black/50 border border-white/10">
                     <span className="text-[10px] uppercase tracking-wider text-white/40 block mb-1 flex items-center gap-1">
                       <Shield size={12} className="text-cyan-400" />
-                      Enemy HP
+                      {t("animeWorld.enemyHp")}
                     </span>
                     <span className="text-lg font-black text-white font-mono">
                       {selectedEnemy.maxHp} HP
@@ -350,14 +352,14 @@ export default function NarutoWorldMapPage() {
                       className="flex items-center justify-center gap-2 w-full py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-black font-black text-sm transition-all shadow-[0_0_20px_rgba(249,115,22,0.4)]"
                     >
                       <Swords size={18} />
-                      <span>{isSelectedDefeated ? "REMATCH BATTLE" : "START BATTLE"}</span>
+                      <span>{isSelectedDefeated ? t("animeWorld.rematchBattle").toUpperCase() : t("animeWorld.startBattle").toUpperCase()}</span>
                       <ArrowRight size={16} />
                     </Link>
                   ) : (
                     <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 text-center space-y-1">
                       <div className="flex items-center justify-center gap-1.5 text-xs font-bold text-white/40">
                         <Lock size={14} />
-                        <span>LOCKED STAGE</span>
+                        <span>{t("animeWorld.lockedStage").toUpperCase()}</span>
                       </div>
                       <p className="text-[11px] text-white/30">
                         Defeat the previous opponent on the campaign path to unlock this battle.

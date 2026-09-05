@@ -11,63 +11,58 @@ import {
   BarChart2,
   Lightbulb,
 } from "lucide-react"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 export function LandingFeatures() {
+  const { t } = useI18n()
+
   const features = [
     {
       icon: <Swords size={22} />,
-      title: "Typing Battles",
-      description:
-        "Sentence-by-sentence combat engine where your WPM and accuracy calculate direct damage, strike velocity, and critical hits.",
+      title: t("landing.features.battlesTitle"),
+      description: t("landing.features.battlesDesc"),
       color: "#f97316",
     },
     {
       icon: <Globe size={22} />,
-      title: "Anime Worlds",
-      description:
-        "Episodic campaigns inspired by iconic anime sagas, featuring progressive difficulty and unique typing trials.",
+      title: t("landing.features.worldsTitle"),
+      description: t("landing.features.worldsDesc"),
       color: "#8b5cf6",
     },
     {
       icon: <Skull size={22} />,
-      title: "Multi-Phase Bosses",
-      description:
-        "Legendary battles like Pain and Madara Uchiha featuring multi-phase shifts, endurance trials, and cinematic visual cues.",
+      title: t("landing.features.bossesTitle"),
+      description: t("landing.features.bossesDesc"),
       color: "#ef4444",
     },
     {
       icon: <Dumbbell size={22} />,
-      title: "Weak Key Training",
-      description:
-        "Real-time keystroke telemetry tracks error rates per key and generates customized drill routines to fix struggling fingers.",
+      title: t("landing.features.trainingTitle"),
+      description: t("landing.features.trainingDesc"),
       color: "#f59e0b",
     },
     {
       icon: <BookOpen size={22} />,
-      title: "Touch Typing Academy",
-      description:
-        "Structured curriculum teaching proper finger discipline across the home, upper, and lower keyboard rows.",
+      title: t("landing.features.academyTitle"),
+      description: t("landing.features.academyDesc"),
       color: "#10b981",
     },
     {
       icon: <Shield size={22} />,
-      title: "Ranks E → SSS",
-      description:
-        "Skill-based tier system evaluating speed, accuracy, technique, and combo consistency instead of mere grind.",
+      title: t("landing.features.ranksTitle"),
+      description: t("landing.features.ranksDesc"),
       color: "#06b6d4",
     },
     {
       icon: <BarChart2 size={22} />,
-      title: "Deep Statistics",
-      description:
-        "Detailed match logs, historical WPM trends, accuracy charts, and key latency telemetry to track your mastery.",
+      title: t("landing.features.statsTitle"),
+      description: t("landing.features.statsDesc"),
       color: "#ec4899",
     },
     {
       icon: <Lightbulb size={22} />,
-      title: "Personalized Tactical Advice",
-      description:
-        "Contextual coaching upon defeat analyzing opponent mechanics (speed gates, precision checks, cadence) to guide improvement.",
+      title: t("landing.features.adviceTitle"),
+      description: t("landing.features.adviceDesc"),
       color: "#3b82f6",
     },
   ]
@@ -78,13 +73,13 @@ export function LandingFeatures() {
         {/* Section Header */}
         <div className="text-center space-y-3 max-w-2xl mx-auto">
           <span className="text-xs font-mono font-bold uppercase tracking-widest text-orange-400">
-            Engineered For Mastery
+            {t("landing.features.tag")}
           </span>
           <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-            BUILT FOR SPEED & RPG EVOLUTION
+            {t("landing.features.title")}
           </h2>
           <p className="text-sm text-white/50">
-            Every system in KeyForge is connected to real typing performance and progressive character development.
+            {t("landing.features.subtitle")}
           </p>
         </div>
 

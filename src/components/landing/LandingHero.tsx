@@ -3,8 +3,11 @@
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Swords, ArrowRight, Shield, Zap, Target, Flame, Sparkles, Skull } from "lucide-react"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 export function LandingHero() {
+  const { t } = useI18n()
+
   return (
     <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-32 px-4 overflow-hidden">
       {/* Dynamic background lighting */}
@@ -21,7 +24,7 @@ export function LandingHero() {
             transition={{ duration: 0.5 }}
           >
             <Sparkles size={14} />
-            <span>Next-Gen Anime Typing RPG</span>
+            <span>{t("landing.hero.badge")}</span>
           </motion.div>
 
           <motion.div
@@ -31,15 +34,13 @@ export function LandingHero() {
             transition={{ duration: 0.6, delay: 0.1 }}
           >
             <h1 className="text-5xl sm:text-7xl font-black tracking-tight text-white leading-none">
-              KEYFORGE
+              {t("landing.hero.title")}
             </h1>
             <p className="text-xl sm:text-2xl font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-300 to-yellow-200 uppercase">
-              Master Your Keyboard. Defeat The Strongest. Evolve.
+              {t("landing.hero.subtitle")}
             </p>
             <p className="text-sm sm:text-base text-white/60 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              KeyForge transforms monotonous touch typing practice into high-stakes anime RPG
-              battles. Every keystroke fuels your combat velocity, unleashing devastating combos,
-              strikes, and tactical shinobi mastery.
+              {t("landing.hero.description")}
             </p>
           </motion.div>
 
@@ -54,7 +55,7 @@ export function LandingHero() {
               className="flex items-center gap-2.5 px-8 py-4 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-black font-black text-sm uppercase tracking-wider transition-all shadow-[0_0_30px_rgba(249,115,22,0.4)] group"
             >
               <Swords size={18} />
-              <span>START PLAYING</span>
+              <span>{t("landing.hero.startBtn").toUpperCase()}</span>
               <ArrowRight
                 size={16}
                 className="group-hover:translate-x-1 transition-transform"
@@ -65,7 +66,7 @@ export function LandingHero() {
               href="/login"
               className="px-7 py-4 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/15 text-white font-bold text-sm uppercase tracking-wider transition-colors"
             >
-              LOGIN
+              {t("landing.hero.loginBtn").toUpperCase()}
             </Link>
           </motion.div>
 
@@ -78,15 +79,15 @@ export function LandingHero() {
           >
             <div>
               <span className="text-2xl font-black text-white font-mono block">8</span>
-              <span className="text-xs text-white/40 font-mono uppercase">Shinobi Bosses</span>
+              <span className="text-xs text-white/40 font-mono uppercase">{t("landing.hero.shinobiBosses")}</span>
             </div>
             <div>
               <span className="text-2xl font-black text-orange-400 font-mono block">E → SSS</span>
-              <span className="text-xs text-white/40 font-mono uppercase">Rank System</span>
+              <span className="text-xs text-white/40 font-mono uppercase">{t("landing.hero.rankSystem")}</span>
             </div>
             <div>
               <span className="text-2xl font-black text-emerald-400 font-mono block">100%</span>
-              <span className="text-xs text-white/40 font-mono uppercase">Real Skill RPG</span>
+              <span className="text-xs text-white/40 font-mono uppercase">{t("landing.hero.realSkill")}</span>
             </div>
           </motion.div>
         </div>
@@ -105,18 +106,18 @@ export function LandingHero() {
                 <div className="flex items-center gap-2">
                   <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-red-500/20 text-red-400 border border-red-500/30 flex items-center gap-1">
                     <Skull size={10} />
-                    FINAL BOSS · P3/3
+                    {t("landing.mock.bossBadge")}
                   </span>
                   <span className="text-xs font-mono text-white/40">LV. 25</span>
                 </div>
                 <h3 className="text-xl font-black text-red-500 tracking-wide">
-                  MADARA UCHIHA
+                  {t("landing.mock.bossName").toUpperCase()}
                 </h3>
-                <p className="text-xs text-orange-400/90 font-mono">Phase 3: Ten-Tails Jinchuriki</p>
+                <p className="text-xs text-orange-400/90 font-mono">{t("landing.mock.bossPhase")}</p>
               </div>
 
               <div className="text-right font-mono">
-                <span className="text-xs text-white/40 block">BOSS HP</span>
+                <span className="text-xs text-white/40 block">{t("landing.mock.bossHp")}</span>
                 <span className="text-sm font-black text-red-400">420 / 1800</span>
               </div>
             </div>
@@ -135,25 +136,25 @@ export function LandingHero() {
             <div className="grid grid-cols-4 gap-2 text-center py-2 bg-black/50 rounded-2xl border border-white/5 font-mono">
               <div className="p-1">
                 <span className="text-[10px] text-white/40 block flex items-center justify-center gap-1">
-                  <Zap size={10} className="text-orange-400" /> WPM
+                  <Zap size={10} className="text-orange-400" /> {t("common.wpm")}
                 </span>
                 <span className="text-base font-black text-orange-400">92</span>
               </div>
               <div className="p-1">
                 <span className="text-[10px] text-white/40 block flex items-center justify-center gap-1">
-                  <Target size={10} className="text-emerald-400" /> ACC
+                  <Target size={10} className="text-emerald-400" /> {t("common.accuracy").slice(0, 3).toUpperCase()}
                 </span>
                 <span className="text-base font-black text-emerald-400">98%</span>
               </div>
               <div className="p-1">
                 <span className="text-[10px] text-white/40 block flex items-center justify-center gap-1">
-                  <Flame size={10} className="text-amber-400" /> COMBO
+                  <Flame size={10} className="text-amber-400" /> {t("common.combo").toUpperCase()}
                 </span>
                 <span className="text-base font-black text-amber-400">×28</span>
               </div>
               <div className="p-1">
                 <span className="text-[10px] text-white/40 block flex items-center justify-center gap-1">
-                  <Shield size={10} className="text-purple-400" /> RANK
+                  <Shield size={10} className="text-purple-400" /> {t("common.rank").toUpperCase()}
                 </span>
                 <span className="text-base font-black text-purple-400">S</span>
               </div>
@@ -162,24 +163,24 @@ export function LandingHero() {
             {/* Typing Sentence Box Mock */}
             <div className="p-4 rounded-2xl bg-black/80 border border-white/10 font-mono text-sm leading-relaxed relative">
               <div className="absolute -top-3 right-3 px-2 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/40 text-[10px] font-black uppercase tracking-wider animate-bounce">
-                +145 CRITICAL STRIKE!
+                {t("landing.mock.strikePopup")}
               </div>
               <span className="text-emerald-400 font-bold">
-                The true strength of a shinobi lies not in power, but in unwavering
+                {t("landing.mock.sampleTextStart")}
               </span>{" "}
               <span className="bg-orange-500/30 text-white font-black underline decoration-orange-400 underline-offset-4">
-                determination
+                {t("landing.mock.sampleTextWord")}
               </span>{" "}
-              <span className="text-white/30">and discipline under pressure.</span>
+              <span className="text-white/30">{t("landing.mock.sampleTextEnd")}</span>
             </div>
 
             {/* Battle Effect Badge */}
             <div className="flex items-center justify-between text-xs font-mono text-white/50 pt-1">
               <span className="text-orange-400 font-bold flex items-center gap-1.5">
                 <Sparkles size={12} />
-                SHARIKEN SPEED SURGE ACTIVE (+25%)
+                {t("landing.mock.effectActive").toUpperCase()}
               </span>
-              <span>Round 03 / 03</span>
+              <span>{t("landing.mock.roundInfo")}</span>
             </div>
           </div>
         </motion.div>
