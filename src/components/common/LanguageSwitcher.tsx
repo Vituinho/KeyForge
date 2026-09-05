@@ -57,6 +57,7 @@ export function LanguageSwitcher() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono font-bold text-white/80 hover:text-white transition-all shadow-sm focus:outline-none focus:ring-1 focus:ring-orange-500/50"
         aria-expanded={isOpen}
+        aria-haspopup="listbox"
         aria-label="Select Language"
       >
         <span className="text-sm leading-none">{current.flag}</span>
@@ -73,6 +74,8 @@ export function LanguageSwitcher() {
         {isOpen && (
           <motion.div
             className="absolute right-0 mt-2 w-48 rounded-2xl border border-white/15 bg-neutral-950/95 backdrop-blur-xl p-1.5 shadow-[0_10px_40px_rgba(0,0,0,0.8)] z-50 space-y-1"
+            role="listbox"
+            aria-label="Language Options"
             initial={{ opacity: 0, scale: 0.95, y: -5 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -5 }}
@@ -84,6 +87,8 @@ export function LanguageSwitcher() {
                 <button
                   key={lang.code}
                   type="button"
+                  role="option"
+                  aria-selected={isSelected}
                   onClick={() => {
                     setLocale(lang.code)
                     setIsOpen(false)
