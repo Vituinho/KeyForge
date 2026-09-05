@@ -2,34 +2,34 @@
 
 import { motion } from "framer-motion"
 import { Keyboard, Swords, Trophy } from "lucide-react"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 export function LandingHowItWorks() {
+  const { t } = useI18n()
+
   const steps = [
     {
       num: "01",
       icon: <Keyboard size={28} className="text-orange-400" />,
-      title: "TYPE",
-      subtitle: "Improve Speed & Accuracy",
-      description:
-        "Input sentences in real time. The engine evaluates every keystroke, raw WPM, accuracy threshold, and error recovery cadence.",
+      title: t("landing.howItWorks.step1Title"),
+      subtitle: t("landing.howItWorks.step1Sub"),
+      description: t("landing.howItWorks.step1Desc"),
       color: "#f97316",
     },
     {
       num: "02",
       icon: <Swords size={28} className="text-amber-400" />,
-      title: "FIGHT",
-      subtitle: "Typing Becomes Damage",
-      description:
-        "Your typing velocity translates directly into attack strikes, critical hits, and defensive counters against anime opponents and multi-phase bosses.",
+      title: t("landing.howItWorks.step2Title"),
+      subtitle: t("landing.howItWorks.step2Sub"),
+      description: t("landing.howItWorks.step2Desc"),
       color: "#f59e0b",
     },
     {
       num: "03",
       icon: <Trophy size={28} className="text-emerald-400" />,
-      title: "EVOLVE",
-      subtitle: "Level Up & Conquer",
-      description:
-        "Earn XP, climb from Rank E to SSS, unlock prestigious shinobi titles, and conquer progressive campaign worlds across the multiverse.",
+      title: t("landing.howItWorks.step3Title"),
+      subtitle: t("landing.howItWorks.step3Sub"),
+      description: t("landing.howItWorks.step3Desc"),
       color: "#10b981",
     },
   ]
@@ -40,13 +40,13 @@ export function LandingHowItWorks() {
         {/* Section Title */}
         <div className="text-center space-y-3 max-w-2xl mx-auto">
           <span className="text-xs font-mono font-bold uppercase tracking-widest text-orange-400">
-            Core Loop
+            {t("landing.howItWorks.tag")}
           </span>
           <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-            HOW IT WORKS
+            {t("landing.howItWorks.title")}
           </h2>
           <p className="text-sm text-white/50">
-            From basic finger discipline to legendary shinobi battles in three connected steps.
+            {t("landing.howItWorks.subtitle")}
           </p>
         </div>
 

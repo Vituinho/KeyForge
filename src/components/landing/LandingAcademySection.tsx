@@ -3,8 +3,11 @@
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { BookOpen, CheckCircle2, ArrowRight } from "lucide-react"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 export function LandingAcademySection() {
+  const { t } = useI18n()
+
   const leftHandKeys = [
     { key: "A", finger: "Pinky", label: "Left Pinky" },
     { key: "S", finger: "Ring", label: "Left Ring" },
@@ -33,10 +36,10 @@ export function LandingAcademySection() {
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest">
-                Home Row Foundations
+                {t("landing.academy.homeRow")}
               </span>
             </div>
-            <span className="text-xs font-mono text-white/40">Lesson 01 Preview</span>
+            <span className="text-xs font-mono text-white/40">{t("landing.academy.lessonPreview")}</span>
           </div>
 
           {/* Visual Keyboard Row */}
@@ -81,13 +84,13 @@ export function LandingAcademySection() {
             </div>
 
             <p className="text-center text-xs font-mono text-white/40 pt-2">
-              Rest position for maximum speed, accuracy, and zero hand strain.
+              {t("landing.academy.restTip")}
             </p>
           </div>
 
           <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs text-white/60 font-mono">
             <span>8 Interactive Lessons</span>
-            <span className="text-emerald-400 font-bold">Free Touch Typing Track</span>
+            <span className="text-emerald-400 font-bold">{t("landing.academy.freeTrack")}</span>
           </div>
         </motion.div>
 
@@ -95,35 +98,33 @@ export function LandingAcademySection() {
         <div className="flex-1 space-y-6 text-center lg:text-left">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-mono font-bold uppercase tracking-wider">
             <BookOpen size={14} />
-            <span>Structured Learning Track</span>
+            <span>{t("landing.academy.tag")}</span>
           </div>
 
           <div className="space-y-3">
             <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
-              TOUCH TYPING ACADEMY
+              {t("landing.academy.title")}
             </h2>
             <p className="text-base text-emerald-400/90 font-mono font-bold">
-              Learn to type using all ten fingers instead of relying only on your index fingers.
+              {t("landing.academy.subtitle")}
             </p>
             <p className="text-sm text-white/60 leading-relaxed max-w-xl mx-auto lg:mx-0">
-              Hunting and pecking with two fingers puts an artificial ceiling of 40-50 WPM on your
-              potential. Our Academy provides structured lessons starting from the foundational home row
-              to full symbol mastery, building permanent muscle memory.
+              {t("landing.academy.description")}
             </p>
           </div>
 
           <div className="space-y-2 text-sm text-white/70 max-w-md mx-auto lg:mx-0 text-left">
             <div className="flex items-center gap-2.5">
               <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
-              <span>Step-by-step finger mapping curriculum</span>
+              <span>{t("landing.academy.check1")}</span>
             </div>
             <div className="flex items-center gap-2.5">
               <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
-              <span>Instant visual feedback on incorrect finger usage</span>
+              <span>{t("landing.academy.check2")}</span>
             </div>
             <div className="flex items-center gap-2.5">
               <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
-              <span>Earn Academy XP and unlock rank advancement bonuses</span>
+              <span>{t("landing.academy.check3")}</span>
             </div>
           </div>
 
@@ -132,7 +133,7 @@ export function LandingAcademySection() {
               href="/academy"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-black font-black text-sm uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]"
             >
-              <span>ENTER THE ACADEMY</span>
+              <span>{t("landing.academy.btn").toUpperCase()}</span>
               <ArrowRight size={16} />
             </Link>
           </div>

@@ -7,8 +7,10 @@ import { usePlayer } from "@/hooks/usePlayer"
 import { RANK_METADATA } from "@/lib/progression/calculateRank"
 import { getXpRequiredForLevel } from "@/lib/progression/calculateLevel"
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 export function PlayerQuickWidget() {
+  const { t } = useI18n()
   const { player } = usePlayer()
   const rankMeta = RANK_METADATA[player.rank]
   const xpNeeded = getXpRequiredForLevel(player.level)
@@ -36,7 +38,7 @@ export function PlayerQuickWidget() {
           <div className="flex items-center gap-2">
             <span className="text-sm font-bold text-white">{player.username}</span>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20 font-bold">
-              Lv. {player.level}
+              {t("dashboard.quickWidget.level")} {player.level}
             </span>
             {player.title && (
               <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 uppercase">
@@ -46,13 +48,13 @@ export function PlayerQuickWidget() {
           </div>
           <div className="flex items-center gap-2 text-[11px] text-white/40 font-mono mt-0.5">
             <span>
-              Rank {player.rank} · {rankMeta.label}
+              {t("common.rank")} {player.rank} · {rankMeta.label}
             </span>
             <span>·</span>
             {player.campaignProgress?.naruto?.completed ? (
               <span className="text-emerald-400 font-bold">8/8 COMPLETED 🏆</span>
             ) : (
-              <span>Naruto: Stage {player.campaignProgress?.naruto?.currentStage ?? 1}/8</span>
+              <span>Naruto: {t("common.stage")} {player.campaignProgress?.naruto?.currentStage ?? 1}/8</span>
             )}
             <span>·</span>
             <span>
@@ -69,7 +71,7 @@ export function PlayerQuickWidget() {
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-xs font-bold text-white transition-colors"
         >
           <User size={14} />
-          <span>PROFILE</span>
+          <span>{t("nav.profile").toUpperCase()}</span>
         </Link>
       </div>
     </motion.div>

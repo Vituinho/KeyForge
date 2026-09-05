@@ -24,10 +24,12 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
 
-function formatDate(iso: string): string {
+import { useI18n } from "@/lib/i18n/i18nContext"
+
+function formatDate(iso: string, locale: string): string {
   try {
     const d = new Date(iso)
-    return d.toLocaleDateString(undefined, {
+    return d.toLocaleDateString(locale === "pt-BR" ? "pt-BR" : "en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -38,6 +40,7 @@ function formatDate(iso: string): string {
 }
 
 export default function ProfilePage() {
+  const { t, locale } = useI18n()
   const { player, updatePlayer, reset } = usePlayer()
 
   const [usernameInput, setUsernameInput] = useState(player.username)
@@ -65,11 +68,11 @@ export default function ProfilePage() {
     const trimmed = usernameInput.trim()
 
     if (trimmed.length < 2) {
-      setErrorMsg("Username must be at least 2 characters")
+      setErrorMsg(locale === "pt-BR" ? "Nome deve ter pelo menos 2 caracteres" : "Username must be at least 2 characters")
       return
     }
     if (trimmed.length > 20) {
-      setErrorMsg("Username must be 20 characters or less")
+      setErrorMsg(locale === "pt-BR" ? "Nome deve ter no máximo 20 caracteres" : "Username must be 20 characters or less")
       return
     }
 
@@ -100,10 +103,10 @@ export default function ProfilePage() {
                 <AlertTriangle size={28} />
               </div>
               <h3 className="text-xl font-black text-white tracking-tight">
-                RESET ALL PROGRESS?
+                {t("profile.resetModalTitle")}
               </h3>
               <p className="text-xs text-white/60 leading-relaxed">
-                This action is <strong className="text-red-400">permanent and cannot be undone</strong>. Your Level, XP, Rank, Performance Attributes, Lifetime Statistics, Battle History, and Training records will be wiped back to default.
+                {t("profile.resetModalDesc")}
               </p>
 
               <div className="flex items-center justify-center gap-3 pt-2">
@@ -112,7 +115,7 @@ export default function ProfilePage() {
                   onClick={() => setShowResetModal(false)}
                   className="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white font-bold text-xs transition-colors"
                 >
-                  CANCEL
+                  {t("profile.cancelResetBtn")}
                 </button>
                 <button
                   type="button"
@@ -120,7 +123,7 @@ export default function ProfilePage() {
                   className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-black text-xs transition-colors shadow-[0_0_20px_rgba(239,68,68,0.4)]"
                 >
                   <Trash2 size={14} />
-                  <span>CONFIRM RESET</span>
+                  <span>{t("profile.confirmResetBtn")}</span>
                 </button>
               </div>
             </motion.div>
@@ -136,7 +139,11 @@ export default function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
         >
           <Check size={16} />
-          <span>All player progress and battle records have been safely reset.</span>
+          <span>
+            {locale === "pt-BR"
+              ? "Todo o progresso e histórico foram redefinidos com sucesso."
+              : "All player progress and battle records have been safely reset."}
+          </span>
         </motion.div>
       )}
 
@@ -147,7 +154,7 @@ export default function ProfilePage() {
           className="inline-flex items-center gap-2 text-xs font-bold text-white/50 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/10"
         >
           <ChevronLeft size={16} />
-          <span>GAME DASHBOARD</span>
+          <span>{t("profile.backBtn")}</span>
         </Link>
 
         <div className="flex items-center gap-3">
@@ -157,7 +164,7 @@ export default function ProfilePage() {
             className="inline-flex items-center gap-2 text-xs font-bold text-pink-400 hover:text-pink-300 transition-colors bg-pink-500/10 hover:bg-pink-500/15 px-3 py-1.5 rounded-lg border border-pink-500/20"
           >
             <BarChart2 size={14} />
-            <span>VIEW FULL STATISTICS</span>
+            <span>{t("profile.viewStats")}</span>
           </Link>
         </div>
       </div>
@@ -278,7 +285,7 @@ export default function ProfilePage() {
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-black font-black text-xs transition-all shadow-[0_0_20px_rgba(249,115,22,0.4)]"
           >
             <Swords size={14} />
-            <span>ENTER BATTLE</span>
+            <span>{t("profile.enterBattleBtn")}</span>
           </Link>
         </div>
 
@@ -287,7 +294,9 @@ export default function ProfilePage() {
           <div className="flex justify-between text-xs text-white/60 mb-2 font-mono">
             <span className="flex items-center gap-1.5 font-bold">
               <Sparkles size={13} className="text-amber-400" />
-              Level {player.level} Experience
+              {locale === "pt-BR"
+                ? `Experiência do Nível ${player.level}`
+                : `Level ${player.level} Experience`}
             </span>
             <span>
               {player.xp} / {xpNeeded} XP ({xpProgress}%)
@@ -302,8 +311,16 @@ export default function ProfilePage() {
             />
           </div>
           <div className="flex justify-between items-center text-[11px] text-white/30 mt-1.5 font-mono">
-            <span>Total Lifetime XP: {player.totalXp.toLocaleString()}</span>
-            <span>{xpNeeded - player.xp} XP to Level {player.level + 1}</span>
+            <span>
+              {locale === "pt-BR"
+                ? `XP Total Acumulado: ${player.totalXp.toLocaleString("pt-BR")}`
+                : `Total Lifetime XP: ${player.totalXp.toLocaleString("en-US")}`}
+            </span>
+            <span>
+              {locale === "pt-BR"
+                ? `${xpNeeded - player.xp} XP para Nível ${player.level + 1}`
+                : `${xpNeeded - player.xp} XP to Level ${player.level + 1}`}
+            </span>
           </div>
         </div>
       </div>
@@ -314,15 +331,21 @@ export default function ProfilePage() {
           <div>
             <h2 className="text-lg font-black text-white flex items-center gap-2">
               <Shield className="text-amber-400" size={18} />
-              <span>KEYBOARD COMBAT ATTRIBUTES</span>
+              <span>
+                {locale === "pt-BR"
+                  ? "ATRIBUTOS DE COMBATE NO TECLADO"
+                  : "KEYBOARD COMBAT ATTRIBUTES"}
+              </span>
             </h2>
             <p className="text-xs text-white/40 mt-0.5">
-              Reflects real performance in battles, accuracy discipline, and training drills.
+              {locale === "pt-BR"
+                ? "Reflete o desempenho real em batalhas, disciplina de precisão e treinos."
+                : "Reflects real performance in battles, accuracy discipline, and training drills."}
             </p>
           </div>
           <div className="text-right">
             <span className="text-[10px] uppercase font-bold tracking-widest text-white/40 block">
-              Overall Rating
+              {locale === "pt-BR" ? "Avaliação Geral" : "Overall Rating"}
             </span>
             <span className="text-2xl font-black text-amber-400 font-mono">
               {player.attributes.overall} / 100
@@ -332,27 +355,43 @@ export default function ProfilePage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <AttributeCard
-            title="Speed"
+            title={locale === "pt-BR" ? "Velocidade" : "Speed"}
             score={player.attributes.speed}
-            desc="Calculated from average and peak WPM"
+            desc={
+              locale === "pt-BR"
+                ? "Calculado a partir de WPM médio e pico"
+                : "Calculated from average and peak WPM"
+            }
             color="#f97316"
           />
           <AttributeCard
-            title="Accuracy"
+            title={locale === "pt-BR" ? "Precisão" : "Accuracy"}
             score={player.attributes.accuracy}
-            desc="Heavily weighted at 35% towards Rank"
+            desc={
+              locale === "pt-BR"
+                ? "Maior peso (35%) para evolução de Ranque"
+                : "Heavily weighted at 35% towards Rank"
+            }
             color="#22c55e"
           />
           <AttributeCard
-            title="Technique"
+            title={locale === "pt-BR" ? "Técnica" : "Technique"}
             score={player.attributes.technique}
-            desc="Touch-typing discipline & training consistency"
+            desc={
+              locale === "pt-BR"
+                ? "Disciplina de touch typing e constância nos treinos"
+                : "Touch-typing discipline & training consistency"
+            }
             color="#06b6d4"
           />
           <AttributeCard
             title="Combo"
             score={player.attributes.combo}
-            desc="Uninterrupted streaks and flow state"
+            desc={
+              locale === "pt-BR"
+                ? "Sequências sem erro e estado de foco"
+                : "Uninterrupted streaks and flow state"
+            }
             color="#ec4899"
           />
         </div>
@@ -367,10 +406,10 @@ export default function ProfilePage() {
             </div>
             <div>
               <h2 className="text-lg font-black text-white uppercase tracking-wider">
-                Campaign Progression & Shinobi Trials
+                {t("profile.campaignSectionTitle")}
               </h2>
               <p className="text-xs text-white/50">
-                Conquer the Anime World campaigns and defeat legendary bosses
+                {t("profile.campaignSectionSub")}
               </p>
             </div>
           </div>
@@ -379,7 +418,7 @@ export default function ProfilePage() {
             href="/anime-world/naruto"
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/40 text-orange-300 font-bold text-xs uppercase tracking-wider transition-colors"
           >
-            <span>Open Naruto Map</span>
+            <span>{t("profile.openNarutoMap")}</span>
             <ChevronRight size={14} />
           </Link>
         </div>
@@ -392,17 +431,18 @@ export default function ProfilePage() {
               {player.campaignProgress?.naruto?.completed ? (
                 <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
                   <Check size={10} />
-                  8 / 8 COMPLETED
+                  {locale === "pt-BR" ? "8 / 8 CONCLUÍDO" : "8 / 8 COMPLETED"}
                 </span>
               ) : (
                 <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/40 text-[10px] font-black uppercase tracking-wider">
-                  Stage {player.campaignProgress?.naruto?.currentStage ?? 1} / 8
+                  {locale === "pt-BR" ? "Estágio" : "Stage"} {player.campaignProgress?.naruto?.currentStage ?? 1} / 8
                 </span>
               )}
             </div>
 
             <span className="text-xs font-mono text-white/60">
-              Stages Cleared: {player.campaignProgress?.naruto?.completedStages?.length ?? 0} / 8
+              {locale === "pt-BR" ? "Estágios Concluídos: " : "Stages Cleared: "}
+              {player.campaignProgress?.naruto?.completedStages?.length ?? 0} / 8
             </span>
           </div>
 
@@ -422,19 +462,25 @@ export default function ProfilePage() {
 
           {/* Unlocked Achievements list */}
           <div className="pt-2 border-t border-white/5 flex items-center gap-3 flex-wrap">
-            <span className="text-xs text-white/40 font-mono uppercase tracking-wider">Achievements:</span>
+            <span className="text-xs text-white/40 font-mono uppercase tracking-wider">
+              {locale === "pt-BR" ? "Conquistas:" : "Achievements:"}
+            </span>
             {player.achievements && player.achievements.includes("naruto_world_completed") ? (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-yellow-500/10 border border-yellow-500/30 text-yellow-300 font-mono font-bold text-xs">
                 <Trophy size={13} />
-                Naruto World Champion
+                {locale === "pt-BR" ? "Campeão do Naruto World" : "Naruto World Champion"}
               </span>
             ) : (
-              <span className="text-xs text-white/30 italic">Defeat Madara Uchiha in Stage 8 to unlock</span>
+              <span className="text-xs text-white/30 italic">
+                {locale === "pt-BR"
+                  ? "Derrote Madara Uchiha no Estágio 8 para desbloquear"
+                  : "Defeat Madara Uchiha in Stage 8 to unlock"}
+              </span>
             )}
             {player.title && (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 font-mono font-bold text-xs">
                 <Sparkles size={13} />
-                Title: {player.title}
+                {locale === "pt-BR" ? `Título: ${player.title}` : `Title: ${player.title}`}
               </span>
             )}
           </div>
@@ -446,10 +492,10 @@ export default function ProfilePage() {
         <div>
           <h3 className="text-sm font-black text-red-400 flex items-center gap-2">
             <AlertTriangle size={16} />
-            <span>DANGER ZONE</span>
+            <span>{t("profile.dangerZone")}</span>
           </h3>
           <p className="text-xs text-white/40 mt-1 max-w-md">
-            Permanently clear all save data, including rank progression, battle history, and training statistics.
+            {t("profile.dangerDesc")}
           </p>
         </div>
 
@@ -459,7 +505,7 @@ export default function ProfilePage() {
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 hover:text-red-300 font-black text-xs transition-colors shrink-0"
         >
           <Trash2 size={14} />
-          <span>RESET PROGRESS</span>
+          <span>{t("profile.resetBtn")}</span>
         </button>
       </div>
 
@@ -467,11 +513,14 @@ export default function ProfilePage() {
       <div className="p-5 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-between flex-wrap gap-4 text-xs text-white/40">
         <div className="flex items-center gap-2">
           <Calendar size={14} className="text-white/30" />
-          <span>Warrior Created: {formatDate(player.createdAt)}</span>
+          <span>
+            {locale === "pt-BR" ? "Guerreiro Criado em: " : "Warrior Created: "}
+            {formatDate(player.createdAt, locale)}
+          </span>
         </div>
         <div className="flex items-center gap-2 font-mono">
           <User size={14} className="text-white/30" />
-          <span>Warrior ID: {player.id}</span>
+          <span>ID: {player.id}</span>
         </div>
       </div>
     </div>
