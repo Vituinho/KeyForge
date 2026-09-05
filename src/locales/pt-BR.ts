@@ -326,6 +326,11 @@ export const ptBR: TranslationSchema = {
     passwordsMismatch: "As senhas não conferem",
     emailInvalid: "Insira um endereço de e-mail válido",
     usernameTooShort: "Nome de usuário deve ter no mínimo 3 caracteres",
+    usernameInvalidFormat: "Nome de usuário deve ter 3-20 caracteres (letras, números, _ ou -)",
+    usernameTaken: "Este nome de usuário já foi escolhido por outro shinobi",
+    emailAlreadyRegistered: "Já existe uma conta cadastrada com este e-mail",
+    registrationSuccess: "Conta criada com sucesso! Entrando no jogo...",
+    registrationError: "Falha ao criar conta. Tente novamente.",
     passwordTooShort: "A senha deve ter no mínimo 8 caracteres",
   },
 }
