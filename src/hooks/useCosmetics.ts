@@ -13,6 +13,7 @@ import {
   createDefaultCosmeticsState,
   DEFAULT_KEYBOARD_ACCESSIBILITY,
   KeyboardSkin,
+  CosmeticUnlockResult,
 } from "@/types/cosmetics"
 import {
   loadCosmeticsState,
@@ -31,9 +32,11 @@ import {
   updateCrateCloud,
   updateShardsCloud,
   syncLocalToCloud,
+  openCrateCloud,
 } from "@/lib/storage/cloudCosmeticsStorage"
 import { useAuth } from "@/lib/auth/authContext"
 import { getSkinById } from "@/data/keyboardSkins"
+import { rollCrateDrop } from "@/data/crates"
 
 // Cosmetics listeners
 const cosmeticsListeners = new Set<() => void>()
@@ -339,6 +342,87 @@ export function useCosmetics() {
     [userId]
   )
 
+  // Open Crate (Server-Authoritative with Local Fallback)
+  const openCrate = useCallback(
+    async (crateId: string): Promise<CosmeticUnlockResult | null> => {
+      const current = loadCosmeticsState()
+      const existing = current.crates[crateId] ?? 0
+      if (existing <= 0) return null
+
+      if (userId) {
+        // Try server-authoritative RPC
+        const cloudResult = await openCrateCloud(crateId)
+        if (cloudResult) {
+          const nextQuantity = existing - 1
+          const updatedCrates = { ...current.crates }
+          if (nextQuantity <= 0) {
+            delete updatedCrates[crateId]
+          } else {
+            updatedCrates[crateId] = nextQuantity
+          }
+
+          const nextUnlocked = cloudResult.isDuplicate
+            ? current.unlockedSkinIds
+            : Array.from(new Set([...current.unlockedSkinIds, cloudResult.skin.id]))
+
+          const nextShards = current.forgeShards + cloudResult.shardsAwarded
+
+          const next: PlayerCosmeticsState = {
+            ...current,
+            unlockedSkinIds: nextUnlocked,
+            crates: updatedCrates,
+            forgeShards: nextShards,
+            updatedAt: new Date().toISOString(),
+          }
+
+          saveCosmeticsState(next)
+          notifyCosmeticsSubscribers()
+          return cloudResult
+        }
+      }
+
+      // Guest or offline/fallback roll
+      const drop = rollCrateDrop(crateId, current.unlockedSkinIds)
+
+      const nextQuantity = existing - 1
+      const updatedCrates = { ...current.crates }
+      if (nextQuantity <= 0) {
+        delete updatedCrates[crateId]
+      } else {
+        updatedCrates[crateId] = nextQuantity
+      }
+
+      const nextUnlocked = drop.isDuplicate
+        ? current.unlockedSkinIds
+        : [...current.unlockedSkinIds, drop.skin.id]
+
+      const nextShards = current.forgeShards + drop.shardsAwarded
+
+      const next: PlayerCosmeticsState = {
+        ...current,
+        unlockedSkinIds: nextUnlocked,
+        crates: updatedCrates,
+        forgeShards: nextShards,
+        updatedAt: new Date().toISOString(),
+      }
+
+      saveCosmeticsState(next)
+      notifyCosmeticsSubscribers()
+
+      if (userId) {
+        updateCrateCloud(userId, crateId, nextQuantity).catch(() => {})
+        if (drop.isDuplicate && drop.shardsAwarded > 0) {
+          updateShardsCloud(userId, nextShards).catch(() => {})
+        } else if (!drop.isDuplicate) {
+          unlockCosmeticCloud(userId, drop.skin.id).catch(() => {})
+        }
+      }
+
+      return drop
+    },
+    [userId]
+  )
+
   return {
     cosmetics,
     settings,
@@ -352,6 +436,7 @@ export function useCosmetics() {
     unlockSkin,
     addCrates,
     consumeCrate,
+    openCrate,
     addShards,
     updateSettings,
     isGuest,
