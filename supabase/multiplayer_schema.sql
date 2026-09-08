@@ -241,3 +241,632 @@ CREATE POLICY "Queue updatable by self"
 CREATE POLICY "Queue deletable by self"
   ON public.multiplayer_queue FOR DELETE
   USING (auth.uid() = user_id);
+
+-- ==============================================================================
+-- 6. AUTHORITATIVE SERVER-SIDE STORED PROCEDURES (RPCs)
+-- The server is the sole authority for HP, energy, attacks, winners and resolution
+-- ==============================================================================
+
+-- 6.1 CREATE MULTIPLAYER MATCH
+CREATE OR REPLACE FUNCTION public.create_multiplayer_match(
+  p_mode TEXT,
+  p_room_code TEXT DEFAULT NULL,
+  p_language TEXT DEFAULT 'pt-BR',
+  p_seed BIGINT DEFAULT 12345,
+  p_skin_id TEXT DEFAULT 'default_forge',
+  p_word_count INTEGER DEFAULT 30
+)
+RETURNS public.multiplayer_matches
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_user_id UUID := auth.uid();
+  v_match public.multiplayer_matches;
+  v_code TEXT := NULL;
+BEGIN
+  IF v_user_id IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  IF p_mode = 'private' THEN
+    IF p_room_code IS NOT NULL AND p_room_code <> '' THEN
+      v_code := UPPER(TRIM(p_room_code));
+    ELSE
+      v_code := 'KF-' || UPPER(SUBSTRING(MD5(RANDOM()::TEXT) FROM 1 FOR 4));
+    END IF;
+  END IF;
+
+  INSERT INTO public.multiplayer_matches (
+    room_code,
+    mode,
+    status,
+    language,
+    seed,
+    word_count,
+    player_1_id,
+    player_1_skin_id,
+    player_1_hp,
+    player_2_hp,
+    player_1_ready,
+    player_2_ready
+  ) VALUES (
+    v_code,
+    p_mode,
+    'waiting',
+    p_language,
+    p_seed,
+    p_word_count,
+    v_user_id,
+    p_skin_id,
+    1000,
+    1000,
+    FALSE,
+    FALSE
+  )
+  RETURNING * INTO v_match;
+
+  RETURN v_match;
+END;
+$$;
+
+-- 6.2 JOIN MULTIPLAYER MATCH
+CREATE OR REPLACE FUNCTION public.join_multiplayer_match(
+  p_room_code TEXT,
+  p_skin_id TEXT DEFAULT 'default_forge'
+)
+RETURNS public.multiplayer_matches
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_user_id UUID := auth.uid();
+  v_match public.multiplayer_matches;
+  v_norm_code TEXT := UPPER(TRIM(p_room_code));
+BEGIN
+  IF v_user_id IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  SELECT * INTO v_match
+  FROM public.multiplayer_matches
+  WHERE room_code = v_norm_code
+    AND status = 'waiting'
+    AND player_2_id IS NULL
+  FOR UPDATE;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Match not found or already occupied';
+  END IF;
+
+  IF v_match.player_1_id = v_user_id THEN
+    RAISE EXCEPTION 'Cannot join your own room as opponent';
+  END IF;
+
+  UPDATE public.multiplayer_matches
+  SET
+    player_2_id = v_user_id,
+    player_2_skin_id = p_skin_id,
+    player_2_last_active_at = TIMEZONE('utc', NOW()),
+    updated_at = TIMEZONE('utc', NOW())
+  WHERE id = v_match.id
+  RETURNING * INTO v_match;
+
+  RETURN v_match;
+END;
+$$;
+
+-- 6.3 SET PLAYER READY STATE & SYNCHRONIZED COUNTDOWN
+CREATE OR REPLACE FUNCTION public.set_player_ready(
+  p_match_id UUID,
+  p_ready BOOLEAN
+)
+RETURNS public.multiplayer_matches
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_user_id UUID := auth.uid();
+  v_match public.multiplayer_matches;
+  v_p1_ready BOOLEAN;
+  v_p2_ready BOOLEAN;
+  v_both_ready BOOLEAN;
+  v_now TIMESTAMPTZ := TIMEZONE('utc', NOW());
+BEGIN
+  IF v_user_id IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  SELECT * INTO v_match
+  FROM public.multiplayer_matches
+  WHERE id = p_match_id
+  FOR UPDATE;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Match not found';
+  END IF;
+
+  IF v_match.player_1_id = v_user_id THEN
+    v_p1_ready := p_ready;
+    v_p2_ready := v_match.player_2_ready;
+  ELSIF v_match.player_2_id = v_user_id THEN
+    v_p1_ready := v_match.player_1_ready;
+    v_p2_ready := p_ready;
+  ELSE
+    RAISE EXCEPTION 'User not a participant in this match';
+  END IF;
+
+  v_both_ready := v_p1_ready AND v_p2_ready;
+
+  IF v_both_ready THEN
+    UPDATE public.multiplayer_matches
+    SET
+      player_1_ready = v_p1_ready,
+      player_2_ready = v_p2_ready,
+      status = 'countdown',
+      countdown_starts_at = v_now,
+      started_at = v_now + INTERVAL '3 seconds',
+      updated_at = v_now
+    WHERE id = p_match_id
+    RETURNING * INTO v_match;
+  ELSE
+    UPDATE public.multiplayer_matches
+    SET
+      player_1_ready = v_p1_ready,
+      player_2_ready = v_p2_ready,
+      status = 'waiting',
+      countdown_starts_at = NULL,
+      started_at = NULL,
+      updated_at = v_now
+    WHERE id = p_match_id
+    RETURNING * INTO v_match;
+  END IF;
+
+  RETURN v_match;
+END;
+$$;
+
+-- 6.4 SUBMIT WORD COMPLETION (AUTHORITATIVE DAMAGE, ENERGY & WINNER CALCULATION)
+CREATE OR REPLACE FUNCTION public.submit_word_completion(
+  p_match_id UUID,
+  p_event_id TEXT,
+  p_word_index INTEGER,
+  p_word_text TEXT,
+  p_wpm INTEGER,
+  p_accuracy INTEGER,
+  p_combo INTEGER
+)
+RETURNS public.multiplayer_matches
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_user_id UUID := auth.uid();
+  v_match public.multiplayer_matches;
+  v_is_p1 BOOLEAN;
+  v_expected_index INTEGER;
+  v_current_energy INTEGER;
+  v_new_energy INTEGER;
+  v_energy_gain INTEGER := 25;
+  v_damage INTEGER := 0;
+  v_combo_mult NUMERIC := 1.0;
+  v_acc_ratio NUMERIC := 1.0;
+  v_now TIMESTAMPTZ := TIMEZONE('utc', NOW());
+  v_opp_hp INTEGER;
+  v_new_p1_hp INTEGER;
+  v_new_p2_hp INTEGER;
+  v_new_p1_energy INTEGER;
+  v_new_p2_energy INTEGER;
+  v_new_p1_ult INTEGER;
+  v_new_p2_ult INTEGER;
+  v_winner UUID := NULL;
+  v_finished BOOLEAN := FALSE;
+BEGIN
+  IF v_user_id IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  -- 1. Check idempotency: if event_id was already processed, return existing state
+  IF EXISTS (
+    SELECT 1 FROM public.multiplayer_match_events
+    WHERE match_id = p_match_id AND event_id = p_event_id
+  ) THEN
+    SELECT * INTO v_match FROM public.multiplayer_matches WHERE id = p_match_id;
+    RETURN v_match;
+  END IF;
+
+  -- 2. Lock match row
+  SELECT * INTO v_match
+  FROM public.multiplayer_matches
+  WHERE id = p_match_id
+  FOR UPDATE;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Match not found';
+  END IF;
+
+  -- Verify active status or transition countdown -> playing
+  IF v_match.status = 'countdown' AND v_match.started_at IS NOT NULL AND v_now >= v_match.started_at THEN
+    v_match.status := 'playing';
+  END IF;
+
+  IF v_match.status <> 'playing' THEN
+    RAISE EXCEPTION 'Match is not in active playing state (current: %)', v_match.status;
+  END IF;
+
+  v_is_p1 := (v_match.player_1_id = v_user_id);
+  IF NOT v_is_p1 AND v_match.player_2_id <> v_user_id THEN
+    RAISE EXCEPTION 'User not a participant in this match';
+  END IF;
+
+  -- 3. Verify sequential word progression (Anti-Cheat check)
+  v_expected_index := CASE WHEN v_is_p1 THEN v_match.player_1_word_index ELSE v_match.player_2_word_index END;
+  IF p_word_index <> v_expected_index THEN
+    RAISE EXCEPTION 'Invalid word index: expected %, received %', v_expected_index, p_word_index;
+  END IF;
+
+  -- 4. Calculate Attack Energy Gain
+  -- Base: +25 energy. Bonus for high accuracy (>=98% -> +5), Combo >=10 (-> +5)
+  IF p_accuracy >= 98 THEN
+    v_energy_gain := v_energy_gain + 5;
+  END IF;
+  IF p_combo >= 10 THEN
+    v_energy_gain := v_energy_gain + 5;
+  END IF;
+
+  v_current_energy := CASE WHEN v_is_p1 THEN v_match.player_1_attack_energy ELSE v_match.player_2_attack_energy END;
+  v_new_energy := v_current_energy + v_energy_gain;
+
+  -- 5. Attack Resolution at 100 Energy
+  IF v_new_energy >= 100 THEN
+    v_combo_mult := 1.0 + LEAST(1.5, p_combo * 0.05); -- e.g. 10 combo = 1.5x, 20 = 2.0x, max 2.5x
+    v_acc_ratio := GREATEST(0.5, p_accuracy / 100.0);
+    v_damage := ROUND(70.0 * v_combo_mult * v_acc_ratio);
+    v_new_energy := v_new_energy - 100;
+  ELSE
+    v_damage := 0;
+  END IF;
+
+  -- 6. Apply state adjustments
+  IF v_is_p1 THEN
+    v_opp_hp := GREATEST(0, v_match.player_2_hp - v_damage);
+    v_new_p1_hp := v_match.player_1_hp;
+    v_new_p2_hp := v_opp_hp;
+    v_new_p1_energy := v_new_energy;
+    v_new_p2_energy := v_match.player_2_attack_energy;
+    v_new_p1_ult := LEAST(100, v_match.player_1_ultimate_energy + 5);
+    v_new_p2_ult := v_match.player_2_ultimate_energy;
+  ELSE
+    v_opp_hp := GREATEST(0, v_match.player_1_hp - v_damage);
+    v_new_p1_hp := v_opp_hp;
+    v_new_p2_hp := v_match.player_2_hp;
+    v_new_p1_energy := v_match.player_1_attack_energy;
+    v_new_p2_energy := v_new_energy;
+    v_new_p1_ult := v_match.player_1_ultimate_energy;
+    v_new_p2_ult := LEAST(100, v_match.player_2_ultimate_energy + 5);
+  END IF;
+
+  -- 7. Win Condition Check
+  IF v_opp_hp <= 0 THEN
+    v_finished := TRUE;
+    v_winner := v_user_id;
+  ELSIF (p_word_index + 1) >= v_match.word_count THEN
+    v_finished := TRUE;
+    IF v_new_p1_hp > v_new_p2_hp THEN
+      v_winner := v_match.player_1_id;
+    ELSIF v_new_p2_hp > v_new_p1_hp THEN
+      v_winner := v_match.player_2_id;
+    ELSE
+      v_winner := NULL; -- Draw
+    END IF;
+  END IF;
+
+  -- 8. Update Match State
+  UPDATE public.multiplayer_matches
+  SET
+    status = CASE WHEN v_finished THEN 'finished' ELSE 'playing' END,
+    winner_id = CASE WHEN v_finished THEN v_winner ELSE NULL END,
+    is_draw = CASE WHEN v_finished AND v_winner IS NULL THEN TRUE ELSE FALSE END,
+    finished_at = CASE WHEN v_finished THEN v_now ELSE NULL END,
+    player_1_hp = v_new_p1_hp,
+    player_2_hp = v_new_p2_hp,
+    player_1_word_index = CASE WHEN v_is_p1 THEN p_word_index + 1 ELSE v_match.player_1_word_index END,
+    player_2_word_index = CASE WHEN NOT v_is_p1 THEN p_word_index + 1 ELSE v_match.player_2_word_index END,
+    player_1_combo = CASE WHEN v_is_p1 THEN p_combo ELSE v_match.player_1_combo END,
+    player_2_combo = CASE WHEN NOT v_is_p1 THEN p_combo ELSE v_match.player_2_combo END,
+    player_1_attack_energy = v_new_p1_energy,
+    player_2_attack_energy = v_new_p2_energy,
+    player_1_ultimate_energy = v_new_p1_ult,
+    player_2_ultimate_energy = v_new_p2_ult,
+    player_1_wpm = CASE WHEN v_is_p1 THEN p_wpm ELSE v_match.player_1_wpm END,
+    player_2_wpm = CASE WHEN NOT v_is_p1 THEN p_wpm ELSE v_match.player_2_wpm END,
+    player_1_accuracy = CASE WHEN v_is_p1 THEN p_accuracy ELSE v_match.player_1_accuracy END,
+    player_2_accuracy = CASE WHEN NOT v_is_p1 THEN p_accuracy ELSE v_match.player_2_accuracy END,
+    player_1_last_active_at = CASE WHEN v_is_p1 THEN v_now ELSE v_match.player_1_last_active_at END,
+    player_2_last_active_at = CASE WHEN NOT v_is_p1 THEN v_now ELSE v_match.player_2_last_active_at END,
+    updated_at = v_now
+  WHERE id = p_match_id
+  RETURNING * INTO v_match;
+
+  -- 9. Insert Event Log (Idempotent)
+  INSERT INTO public.multiplayer_match_events (
+    match_id,
+    player_id,
+    event_id,
+    event_type,
+    word_index,
+    word_text,
+    accuracy,
+    wpm,
+    combo,
+    damage_dealt,
+    payload
+  ) VALUES (
+    p_match_id,
+    v_user_id,
+    p_event_id,
+    CASE WHEN v_damage > 0 THEN 'ATTACK_RESOLVED' ELSE 'WORD_COMPLETED' END,
+    p_word_index,
+    p_word_text,
+    p_accuracy,
+    p_wpm,
+    p_combo,
+    v_damage,
+    jsonb_build_object(
+      'energy_gain', v_energy_gain,
+      'new_energy', v_new_energy,
+      'damage', v_damage,
+      'opponent_hp', v_opp_hp
+    )
+  );
+
+  -- 10. Record Official Result if Finished
+  IF v_finished THEN
+    INSERT INTO public.multiplayer_match_results (
+      match_id,
+      mode,
+      winner_id,
+      loser_id,
+      is_draw,
+      duration_seconds,
+      player_1_id,
+      player_1_stats,
+      player_1_xp_earned,
+      player_2_id,
+      player_2_stats,
+      player_2_xp_earned
+    ) VALUES (
+      v_match.id,
+      v_match.mode,
+      v_match.winner_id,
+      CASE WHEN v_winner IS NOT NULL THEN (CASE WHEN v_winner = v_match.player_1_id THEN v_match.player_2_id ELSE v_match.player_1_id END) ELSE NULL END,
+      v_match.is_draw,
+      GREATEST(1, ROUND(EXTRACT(EPOCH FROM (v_now - COALESCE(v_match.started_at, v_now))))::INTEGER),
+      v_match.player_1_id,
+      jsonb_build_object('wpm', v_match.player_1_wpm, 'accuracy', v_match.player_1_accuracy, 'hp', v_match.player_1_hp),
+      CASE WHEN v_match.winner_id = v_match.player_1_id THEN 120 ELSE 40 END,
+      v_match.player_2_id,
+      jsonb_build_object('wpm', v_match.player_2_wpm, 'accuracy', v_match.player_2_accuracy, 'hp', v_match.player_2_hp),
+      CASE WHEN v_match.winner_id = v_match.player_2_id THEN 120 ELSE 40 END
+    ) ON CONFLICT (match_id) DO NOTHING;
+  END IF;
+
+  RETURN v_match;
+END;
+$$;
+
+-- 6.5 TRIGGER MULTIPLAYER ULTIMATE
+CREATE OR REPLACE FUNCTION public.trigger_ultimate(
+  p_match_id UUID
+)
+RETURNS public.multiplayer_matches
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_user_id UUID := auth.uid();
+  v_match public.multiplayer_matches;
+  v_is_p1 BOOLEAN;
+  v_ult_damage INTEGER := 160;
+  v_now TIMESTAMPTZ := TIMEZONE('utc', NOW());
+  v_opp_hp INTEGER;
+  v_finished BOOLEAN := FALSE;
+BEGIN
+  IF v_user_id IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  SELECT * INTO v_match
+  FROM public.multiplayer_matches
+  WHERE id = p_match_id
+  FOR UPDATE;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Match not found';
+  END IF;
+
+  IF v_match.status <> 'playing' THEN
+    RAISE EXCEPTION 'Match is not currently playing';
+  END IF;
+
+  v_is_p1 := (v_match.player_1_id = v_user_id);
+  IF NOT v_is_p1 AND v_match.player_2_id <> v_user_id THEN
+    RAISE EXCEPTION 'User not a participant in this match';
+  END IF;
+
+  IF v_is_p1 THEN
+    IF v_match.player_1_ultimate_energy < 100 THEN
+      RAISE EXCEPTION 'Ultimate gauge not fully charged';
+    END IF;
+    v_opp_hp := GREATEST(0, v_match.player_2_hp - v_ult_damage);
+    v_finished := (v_opp_hp <= 0);
+
+    UPDATE public.multiplayer_matches
+    SET
+      player_1_ultimate_energy = 0,
+      player_2_hp = v_opp_hp,
+      status = CASE WHEN v_finished THEN 'finished' ELSE 'playing' END,
+      winner_id = CASE WHEN v_finished THEN v_user_id ELSE NULL END,
+      finished_at = CASE WHEN v_finished THEN v_now ELSE NULL END,
+      updated_at = v_now
+    WHERE id = p_match_id
+    RETURNING * INTO v_match;
+  ELSE
+    IF v_match.player_2_ultimate_energy < 100 THEN
+      RAISE EXCEPTION 'Ultimate gauge not fully charged';
+    END IF;
+    v_opp_hp := GREATEST(0, v_match.player_1_hp - v_ult_damage);
+    v_finished := (v_opp_hp <= 0);
+
+    UPDATE public.multiplayer_matches
+    SET
+      player_2_ultimate_energy = 0,
+      player_1_hp = v_opp_hp,
+      status = CASE WHEN v_finished THEN 'finished' ELSE 'playing' END,
+      winner_id = CASE WHEN v_finished THEN v_user_id ELSE NULL END,
+      finished_at = CASE WHEN v_finished THEN v_now ELSE NULL END,
+      updated_at = v_now
+    WHERE id = p_match_id
+    RETURNING * INTO v_match;
+  END IF;
+
+  INSERT INTO public.multiplayer_match_events (
+    match_id,
+    player_id,
+    event_id,
+    event_type,
+    damage_dealt,
+    payload
+  ) VALUES (
+    p_match_id,
+    v_user_id,
+    'ult_' || MD5(RANDOM()::TEXT),
+    'ULTIMATE_TRIGGERED',
+    v_ult_damage,
+    jsonb_build_object('ultimate_damage', v_ult_damage, 'opponent_hp', v_opp_hp)
+  );
+
+  RETURN v_match;
+END;
+$$;
+
+-- 6.6 FORFEIT MATCH
+CREATE OR REPLACE FUNCTION public.forfeit_match(
+  p_match_id UUID
+)
+RETURNS public.multiplayer_matches
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_user_id UUID := auth.uid();
+  v_match public.multiplayer_matches;
+  v_winner UUID;
+  v_now TIMESTAMPTZ := TIMEZONE('utc', NOW());
+BEGIN
+  IF v_user_id IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  SELECT * INTO v_match
+  FROM public.multiplayer_matches
+  WHERE id = p_match_id
+  FOR UPDATE;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Match not found';
+  END IF;
+
+  IF v_match.status = 'finished' OR v_match.status = 'cancelled' THEN
+    RETURN v_match;
+  END IF;
+
+  IF v_match.player_1_id = v_user_id THEN
+    v_winner := v_match.player_2_id;
+  ELSIF v_match.player_2_id = v_user_id THEN
+    v_winner := v_match.player_1_id;
+  ELSE
+    RAISE EXCEPTION 'User not a participant in this match';
+  END IF;
+
+  UPDATE public.multiplayer_matches
+  SET
+    status = 'finished',
+    winner_id = v_winner,
+    is_draw = FALSE,
+    finished_at = v_now,
+    updated_at = v_now
+  WHERE id = p_match_id
+  RETURNING * INTO v_match;
+
+  INSERT INTO public.multiplayer_match_events (
+    match_id,
+    player_id,
+    event_id,
+    event_type,
+    payload
+  ) VALUES (
+    p_match_id,
+    v_user_id,
+    'forfeit_' || MD5(RANDOM()::TEXT),
+    'FORFEIT',
+    jsonb_build_object('forfeited_by', v_user_id)
+  );
+
+  RETURN v_match;
+END;
+$$;
+
+-- 6.7 CANCEL MATCH
+CREATE OR REPLACE FUNCTION public.cancel_match(
+  p_match_id UUID
+)
+RETURNS public.multiplayer_matches
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_user_id UUID := auth.uid();
+  v_match public.multiplayer_matches;
+  v_now TIMESTAMPTZ := TIMEZONE('utc', NOW());
+BEGIN
+  IF v_user_id IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  SELECT * INTO v_match
+  FROM public.multiplayer_matches
+  WHERE id = p_match_id
+  FOR UPDATE;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Match not found';
+  END IF;
+
+  IF v_match.player_1_id <> v_user_id AND v_match.player_2_id <> v_user_id THEN
+    RAISE EXCEPTION 'User not a participant in this match';
+  END IF;
+
+  IF v_match.status IN ('finished', 'cancelled') THEN
+    RETURN v_match;
+  END IF;
+
+  UPDATE public.multiplayer_matches
+  SET
+    status = 'cancelled',
+    finished_at = v_now,
+    updated_at = v_now
+  WHERE id = p_match_id
+  RETURNING * INTO v_match;
+
+  RETURN v_match;
+END;
+$$;
+
