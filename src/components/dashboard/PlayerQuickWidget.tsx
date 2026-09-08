@@ -48,7 +48,7 @@ export function PlayerQuickWidget() {
           </div>
           <div className="flex items-center gap-2 text-[11px] text-white/40 font-mono mt-0.5">
             <span>
-              {t("common.rank")} {player.rank} · {rankMeta.label}
+              {t("common.rank")} {player.rank} · {t(`ranks.${player.rank}`)}
             </span>
             <span>·</span>
             {player.campaignProgress?.naruto?.completed ? (
