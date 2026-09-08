@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { User, Home } from "lucide-react"
+import { User, Home, Sparkles } from "lucide-react"
 import { usePlayer } from "@/hooks/usePlayer"
 import { RANK_METADATA } from "@/lib/progression/calculateRank"
 import { getXpRequiredForLevel } from "@/lib/progression/calculateLevel"
@@ -73,6 +73,14 @@ export function PlayerQuickWidget() {
         >
           <Home size={14} />
           <span className="hidden sm:inline">{locale === "pt-BR" ? "Início" : "Home"}</span>
+        </Link>
+        <Link
+          href="/locker"
+          title={locale === "pt-BR" ? "Arsenal de Teclados & Skins" : "Keyboard Locker & Skins"}
+          className="p-2 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 text-orange-400 hover:text-orange-300 transition-colors text-xs font-bold flex items-center gap-1"
+        >
+          <Sparkles size={14} />
+          <span className="hidden sm:inline">{locale === "pt-BR" ? "Locker" : "Locker"}</span>
         </Link>
         <Link
           href="/profile"

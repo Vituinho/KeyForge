@@ -48,6 +48,7 @@ export const en = {
     animeWorlds: "Anime Worlds",
     statistics: "Statistics",
     profile: "Profile",
+    locker: "Keyboard Locker",
     gameDashboard: "Game Dashboard",
   },
   landing: {
@@ -180,6 +181,7 @@ export const en = {
       battle: { title: "Battle", desc: "Fight anime characters" },
       animeWorld: { title: "Anime World", desc: "Campaign mode & bosses" },
       multiplayer: { title: "Multiplayer", desc: "PvP duels & online arena" },
+      locker: { title: "Keyboard Locker", desc: "Customize skins, switches & keycaps" },
       training: { title: "Training", desc: "Practice your weaknesses" },
       academy: { title: "Academy", desc: "Learn touch typing" },
       statistics: { title: "Statistics", desc: "Track your progress" },

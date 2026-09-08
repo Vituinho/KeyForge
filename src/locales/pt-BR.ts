@@ -50,6 +50,7 @@ export const ptBR: TranslationSchema = {
     animeWorlds: "Mundos de Anime",
     statistics: "Estatísticas",
     profile: "Perfil",
+    locker: "Arsenal de Teclados",
     gameDashboard: "Painel do Jogo",
   },
   landing: {
@@ -182,6 +183,7 @@ export const ptBR: TranslationSchema = {
       battle: { title: "Batalha", desc: "Lute contra personagens de anime" },
       animeWorld: { title: "Mundo de Anime", desc: "Modo campanha e chefes" },
       multiplayer: { title: "Multiplayer", desc: "Duelos PvP e arena online" },
+      locker: { title: "Arsenal de Teclados", desc: "Customize skins, switches e keycaps" },
       training: { title: "Treinamento", desc: "Pratique suas fraquezas" },
       academy: { title: "Academia", desc: "Aprenda touch typing" },
       statistics: { title: "Estatísticas", desc: "Acompanhe sua evolução" },

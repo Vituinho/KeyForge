@@ -1,12 +1,14 @@
 "use client"
 
 import React from "react"
+import type { KeyboardSkinVisual } from "@/types/cosmetics"
 
 export interface KeyboardFrameProps {
   children: React.ReactNode
   layoutName?: string
   className?: string
   footer?: React.ReactNode
+  skinVisual?: KeyboardSkinVisual
 }
 
 export function KeyboardFrame({
@@ -14,15 +16,26 @@ export function KeyboardFrame({
   layoutName = "PT-BR · ABNT2",
   className = "",
   footer,
+  skinVisual,
 }: KeyboardFrameProps) {
+  const frameBg = skinVisual?.frameBg ?? "bg-gradient-to-b from-neutral-900/95 via-neutral-950/90 to-black/95"
+  const frameBorder = skinVisual?.frameBorder ?? "border-white/15"
+  const accentColor = skinVisual?.accentColor ?? "#f97316"
+
   return (
     <div
-      className={`relative p-3 sm:p-4 rounded-3xl border border-white/15 bg-gradient-to-b from-neutral-900/95 via-neutral-950/90 to-black/95 shadow-[0_20px_50px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-xl max-w-full overflow-x-auto ${className}`}
+      className={`relative p-3 sm:p-4 rounded-3xl border ${frameBorder} ${frameBg} shadow-[0_20px_50px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-xl max-w-full overflow-x-auto ${className}`}
     >
       {/* Top chassis trim */}
       <div className="flex items-center justify-between px-2 mb-2 text-[10px] font-mono text-white/40 tracking-wider">
         <div className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
+          <span
+            className="w-1.5 h-1.5 rounded-full animate-pulse"
+            style={{
+              backgroundColor: accentColor,
+              boxShadow: `0 0 8px ${accentColor}`,
+            }}
+          />
           <span className="font-bold text-white/60">KEYFORGE CHASSIS</span>
         </div>
         <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 font-bold">
@@ -38,3 +51,4 @@ export function KeyboardFrame({
     </div>
   )
 }
+

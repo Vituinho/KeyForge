@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Swords, Globe, Dumbbell, BookOpen, BarChart2, Zap } from "lucide-react"
+import { Swords, Globe, Dumbbell, BookOpen, BarChart2, Zap, Sparkles } from "lucide-react"
 import { PlayerQuickWidget } from "@/components/dashboard/PlayerQuickWidget"
 import { DashboardNavCard, DashboardNavItem } from "@/components/dashboard/DashboardNavCard"
 
@@ -34,6 +34,14 @@ export default function GameDashboardPage() {
       description: t("dashboard.cards.multiplayer.desc"),
       active: true,
       color: "#ef4444",
+    },
+    {
+      href: "/locker",
+      icon: <Sparkles size={22} />,
+      label: t("dashboard.cards.locker.title"),
+      description: t("dashboard.cards.locker.desc"),
+      active: true,
+      color: "#06b6d4",
     },
     {
       href: "/training",

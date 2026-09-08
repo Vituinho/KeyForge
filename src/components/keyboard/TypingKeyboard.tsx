@@ -3,6 +3,7 @@
 import React, { useMemo } from "react"
 import { LAYOUT_PT_BR, LAYOUT_EN, getKeyMetadata } from "@/data/keyboardLayout"
 import { TypingKeyboardProps, KeyVisualState } from "@/types/keyboard"
+import { useCosmetics } from "@/hooks/useCosmetics"
 import { KeyboardFrame } from "./KeyboardFrame"
 import { KeyboardKey } from "./KeyboardKey"
 
@@ -17,7 +18,11 @@ export function TypingKeyboard({
   showFingerLegend = false,
   size = "md",
   className = "",
+  skinVisual: propSkinVisual,
 }: TypingKeyboardProps) {
+  const { equippedSkin, settings } = useCosmetics()
+  const skinVisual = propSkinVisual ?? equippedSkin.visual
+
   const normalizedExpected = expectedKey ? expectedKey.toLowerCase() : null
   const normalizedPressed = pressedKey ? pressedKey.toLowerCase() : null
   const normalizedError = lastErrorKey ? lastErrorKey.toLowerCase() : null
@@ -31,8 +36,12 @@ export function TypingKeyboard({
 
   const layoutLabel = layout === "en" ? "EN · ANSI" : "PT-BR · ABNT2"
 
+  if (settings && !settings.showKeyboard) {
+    return null
+  }
+
   return (
-    <KeyboardFrame layoutName={layoutLabel} className={className}>
+    <KeyboardFrame layoutName={layoutLabel} className={className} skinVisual={skinVisual}>
       {activeRows.map((row, rowIdx) => (
         <div key={rowIdx} className="flex gap-1 sm:gap-1.5 justify-center w-full">
           {row.map((meta) => {
@@ -73,6 +82,7 @@ export function TypingKeyboard({
                 showHomeRowAnchors={showHomeRowAnchors}
                 isWeak={isWeak}
                 size={size}
+                skinVisual={skinVisual}
               />
             )
           })}
