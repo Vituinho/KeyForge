@@ -26,6 +26,7 @@ import {
   calculateWordDamage,
   calculateNextUltimate,
 } from "@/lib/multiplayer/matchConfig"
+import { useCosmetics } from "@/hooks/useCosmetics"
 
 function hashStringToSeed(str: string): number {
   let hash = 0
@@ -42,6 +43,7 @@ function ArenaContent() {
 
   const { user } = useAuth()
   const { player } = usePlayer()
+  const { equippedSkin } = useCosmetics()
   const { t, locale } = useI18n()
 
   const seed = useMemo(() => hashStringToSeed(roomParam), [roomParam])
@@ -341,9 +343,13 @@ function ArenaContent() {
                       {t("multiplayerArena.localPlayer")}
                     </span>
                   </div>
-                  <span className="text-xs text-white/50 font-mono">
-                    Lv. {player.level} · Rank {player.rank}
-                  </span>
+                  <div className="flex items-center gap-2 text-xs text-white/50 font-mono">
+                    <span>Lv. {player.level} · Rank {player.rank}</span>
+                    <span>•</span>
+                    <span className="text-[10px] text-orange-400 font-bold">
+                      ⌨️ {equippedSkin.name}
+                    </span>
+                  </div>
                 </div>
               </div>
 

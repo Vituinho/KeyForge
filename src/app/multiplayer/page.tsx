@@ -29,11 +29,13 @@ import { useI18n } from "@/lib/i18n/i18nContext"
 import { createInitialRoomState, joinRoomState } from "@/lib/multiplayer/roomManager"
 import { RoomState, MultiplayerPlayer } from "@/types/multiplayer"
 import { useMultiplayerPresence } from "@/hooks/useMultiplayerPresence"
+import { useCosmetics } from "@/hooks/useCosmetics"
 
 function MultiplayerContent() {
   const router = useRouter()
   const { user } = useAuth()
   const { player } = usePlayer()
+  const { equippedSkin } = useCosmetics()
   const { t } = useI18n()
   const { onlineCount } = useMultiplayerPresence("in_lobby")
 
@@ -198,7 +200,19 @@ function MultiplayerContent() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            <Link
+              href="/locker"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-xs font-mono"
+              title={t("dashboard.quickWidget.locker")}
+            >
+              <span>⌨️</span>
+              <span className="font-bold text-white/90">{equippedSkin.name}</span>
+              <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-white/10 text-white/60">
+                {equippedSkin.rarity}
+              </span>
+            </Link>
+
             <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-bold">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
