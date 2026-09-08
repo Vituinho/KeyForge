@@ -22,12 +22,14 @@ import {
   ArrowUpCircle,
   MapPin,
   Lightbulb,
+  Package,
 } from "lucide-react"
 import Link from "next/link"
 import { processBattleRewards, BattleRewardSummary } from "@/lib/progression/processBattleRewards"
 import { RankUpModal } from "@/components/progression/RankUpModal"
 import { getDefeatAdvice, DefeatAdvice } from "@/lib/battle/defeatAdvice"
 import { useI18n } from "@/lib/i18n/i18nContext"
+import { getCrateById } from "@/data/crates"
 
 interface BattleResultProps {
   victory: boolean
@@ -172,6 +174,62 @@ export function BattleResult({
             >
               {t("common.continueMap")} →
             </Link>
+          </motion.div>
+        )}
+
+        {/* Crate Reward Drops Banner */}
+        {victory && rewardSummary?.awardedCrates && rewardSummary.awardedCrates.length > 0 && (
+          <motion.div
+            className="rounded-3xl border border-purple-500/40 bg-gradient-to-r from-purple-950/40 via-purple-900/30 to-indigo-950/40 p-5 shadow-[0_0_30px_rgba(168,85,247,0.2)] backdrop-blur-md space-y-3"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.28 }}
+          >
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                  <Package size={18} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+                    <span>{t("battleResult.crateRewardTitle")}</span>
+                    <Sparkles size={14} className="text-yellow-400" />
+                  </h3>
+                  <p className="text-xs text-white/50">{t("battleResult.crateRewardSub")}</p>
+                </div>
+              </div>
+
+              <Link
+                href="/locker/crates"
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-400 hover:to-indigo-500 text-white font-black text-xs uppercase tracking-wider transition-all shadow-md shadow-purple-500/20 flex items-center gap-1.5"
+              >
+                <span>{t("battleResult.openCratesBtn")}</span>
+                <ChevronRight size={14} />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+              {rewardSummary.awardedCrates.map((crateReward, idx) => {
+                const crateInfo = getCrateById(crateReward.crateId)
+                return (
+                  <div
+                    key={`${crateReward.crateId}-${idx}`}
+                    className="flex items-center justify-between p-3 rounded-2xl bg-black/40 border border-purple-500/20"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-2xl">{crateInfo.icon}</span>
+                      <div>
+                        <div className="text-xs font-black text-white">{crateInfo.name}</div>
+                        <div className="text-[10px] text-purple-300/80 font-mono">{crateReward.reason}</div>
+                      </div>
+                    </div>
+                    <span className="text-xs font-black font-mono px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-200">
+                      +{crateReward.count}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
           </motion.div>
         )}
 
