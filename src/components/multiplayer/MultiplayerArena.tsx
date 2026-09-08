@@ -34,6 +34,9 @@ import { subscribeToRoomChannel } from "@/lib/multiplayer/roomManager"
 import { getSkinById } from "@/data/keyboardSkins"
 import { AttackEnergyGauge } from "./AttackEnergyGauge"
 import { PostMatchAnalysis } from "./PostMatchAnalysis"
+import {
+  processMultiplayerRewards,
+} from "@/lib/multiplayer/processMultiplayerRewards"
 
 interface FloatingDamage {
   id: number
@@ -258,6 +261,18 @@ export function MultiplayerArena({
   const elapsedMinutes = Math.max(0.05, elapsedSeconds / 60)
   const liveWpm = Math.round(correctChars / 5 / elapsedMinutes) || 0
   const liveAccuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100
+
+  // Authoritative multiplayer progression rewards computed on match finish
+  const rewardSummary = useMemo(() => {
+    if (!isFinished) return null
+    return processMultiplayerRewards(
+      currentMatch,
+      currentUserId,
+      liveWpm,
+      liveAccuracy,
+      maxCombo
+    )
+  }, [isFinished, currentMatch, currentUserId, liveWpm, liveAccuracy, maxCombo])
 
   // Handle typing input
   const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -991,9 +1006,9 @@ export function MultiplayerArena({
                 </div>
               </div>
 
-              {/* XP Award Banner */}
+              {/* XP Award & Progression Banner */}
               <div
-                className={`p-3 rounded-2xl border font-mono text-center transition-all ${
+                className={`p-3.5 rounded-2xl border font-mono text-center transition-all space-y-1 ${
                   isWinner
                     ? "bg-amber-500/10 border-amber-500/30 text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.15)]"
                     : isDraw
@@ -1001,10 +1016,49 @@ export function MultiplayerArena({
                     : "bg-rose-500/10 border-rose-500/20 text-rose-300"
                 }`}
               >
-                <span className="text-sm font-black tracking-wide block">
-                  {isWinner ? "+120 XP EARNED • SHINOBI PROMOTION" : isDraw ? "+75 XP EARNED • CLASH OF EQUALS" : "+40 XP EARNED • BATTLE COMPLETED"}
-                </span>
-                <span className="text-[10px] text-white/40 block">Authoritative result synchronized to Cloud Save</span>
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-sm font-black tracking-wide">
+                    {rewardSummary
+                      ? `+${rewardSummary.totalXp} XP EARNED`
+                      : isWinner
+                      ? "+120 XP EARNED"
+                      : isDraw
+                      ? "+75 XP EARNED"
+                      : "+40 XP EARNED"}
+                  </span>
+                  {rewardSummary && rewardSummary.bonusXp > 0 && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">
+                      +{rewardSummary.bonusXp} BONUS
+                    </span>
+                  )}
+                </div>
+
+                {/* Level / Rank-up indicators */}
+                {rewardSummary?.didLevelUp && (
+                  <span className="text-xs font-black text-yellow-400 flex items-center justify-center gap-1 animate-pulse">
+                    <Sparkles size={13} />
+                    <span>LEVEL UP! Advanced to Level {rewardSummary.newLevel}!</span>
+                  </span>
+                )}
+                {rewardSummary?.didRankUp && (
+                  <span className="text-xs font-black text-orange-400 flex items-center justify-center gap-1">
+                    <Trophy size={13} />
+                    <span>RANK UP! Promoted to Rank {rewardSummary.newRank}!</span>
+                  </span>
+                )}
+
+                {/* Crate or Shards Drop */}
+                {rewardSummary?.awardedCrate ? (
+                  <span className="text-xs font-bold text-emerald-400 flex items-center justify-center gap-1">
+                    <span>📦 LOOT DROP: {rewardSummary.awardedCrate.name} Unlocked!</span>
+                  </span>
+                ) : rewardSummary?.shardsAwarded ? (
+                  <span className="text-[11px] text-white/60 flex items-center justify-center gap-1">
+                    <span>✨ +{rewardSummary.shardsAwarded} Forge Shards Added</span>
+                  </span>
+                ) : null}
+
+                <span className="text-[9px] text-white/40 block">Authoritative result synchronized to Cloud Save</span>
               </div>
 
               {/* Head-to-Head Clash Comparison */}
@@ -1122,6 +1176,7 @@ export function MultiplayerArena({
           <PostMatchAnalysis
             match={currentMatch}
             result={matchResult}
+            rewardSummary={rewardSummary}
             currentUserId={currentUserId}
             myWpm={liveWpm}
             myAccuracy={liveAccuracy}

@@ -18,6 +18,7 @@ import {
 } from "lucide-react"
 import { MultiplayerMatchRow, MultiplayerMatchResultRow } from "@/types/database"
 import { getSkinById } from "@/data/keyboardSkins"
+import { MultiplayerRewardSummary } from "@/lib/multiplayer/processMultiplayerRewards"
 
 export interface WeakKeyRecord {
   key: string
@@ -27,6 +28,7 @@ export interface WeakKeyRecord {
 export interface PostMatchAnalysisProps {
   match: MultiplayerMatchRow
   result?: MultiplayerMatchResultRow | null
+  rewardSummary?: MultiplayerRewardSummary | null
   currentUserId: string
   myWpm: number
   myAccuracy: number
@@ -46,6 +48,7 @@ export interface PostMatchAnalysisProps {
 export function PostMatchAnalysis({
   match,
   result,
+  rewardSummary,
   currentUserId,
   myWpm,
   myAccuracy,
@@ -223,19 +226,37 @@ export function PostMatchAnalysis({
             </div>
           </div>
 
-          <div className="text-right font-mono">
-            <span
-              className={`text-sm font-black block px-3 py-1 rounded-xl border ${
-                isWinner
-                  ? "bg-amber-500/10 border-amber-500/30 text-amber-400"
-                  : isDraw
-                  ? "bg-white/10 border-white/20 text-white"
-                  : "bg-rose-500/10 border-rose-500/20 text-rose-400"
-              }`}
-            >
-              +{xpEarned} XP
-            </span>
-            <span className="text-[9px] text-white/40 block mt-1">Cloud Saved</span>
+          <div className="text-right font-mono space-y-1">
+            <div className="flex items-center justify-end gap-1.5">
+              <span
+                className={`text-sm font-black block px-3 py-1 rounded-xl border ${
+                  isWinner
+                    ? "bg-amber-500/10 border-amber-500/30 text-amber-400"
+                    : isDraw
+                    ? "bg-white/10 border-white/20 text-white"
+                    : "bg-rose-500/10 border-rose-500/20 text-rose-400"
+                }`}
+              >
+                +{rewardSummary ? rewardSummary.totalXp : xpEarned} XP
+              </span>
+              {rewardSummary && rewardSummary.bonusXp > 0 && (
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">
+                  +{rewardSummary.bonusXp} BONUS
+                </span>
+              )}
+            </div>
+
+            {rewardSummary?.didLevelUp && (
+              <span className="text-[10px] font-black text-yellow-400 block animate-pulse">
+                LEVEL UP: Lv. {rewardSummary.newLevel}!
+              </span>
+            )}
+            {rewardSummary?.awardedCrate && (
+              <span className="text-[10px] font-bold text-emerald-400 block">
+                📦 {rewardSummary.awardedCrate.name}
+              </span>
+            )}
+            <span className="text-[9px] text-white/40 block">Cloud Saved</span>
           </div>
         </div>
 
