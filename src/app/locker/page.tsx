@@ -482,8 +482,8 @@ export default function KeyboardLockerPage() {
                   </div>
 
                   {/* 3D Mini Keycap Preview Swatch */}
-                  <div className="h-16 rounded-2xl p-2 border border-white/10 flex items-center justify-center gap-1.5 shadow-inner"
-                    style={{ background: skin.visual.frameBg }}
+                  <div
+                    className={`h-16 rounded-2xl p-2 border border-white/10 flex items-center justify-center gap-1.5 shadow-inner ${skin.visual.frameBg}`}
                   >
                     <div
                       className={`w-7 h-8 rounded-lg border text-[10px] font-mono font-black flex items-center justify-center shadow-md ${skin.visual.keyBg} ${skin.visual.keyText} ${skin.visual.keyBorder}`}
