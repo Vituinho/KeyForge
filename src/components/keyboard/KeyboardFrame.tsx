@@ -1,6 +1,7 @@
 import React from "react"
 import { EyeOff } from "lucide-react"
 import type { KeyboardSkinVisual } from "@/types/cosmetics"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 export interface KeyboardFrameProps {
   children: React.ReactNode
@@ -21,6 +22,7 @@ export function KeyboardFrame({
   effectIntensity = "full",
   onToggleHide,
 }: KeyboardFrameProps) {
+  const { t } = useI18n()
   const frameBg = skinVisual?.frameBg ?? "bg-gradient-to-b from-neutral-900/95 via-neutral-950/90 to-black/95"
   const frameBorder = skinVisual?.frameBorder ?? "border-white/15"
   const accentColor = skinVisual?.accentColor ?? "#f97316"
@@ -72,7 +74,7 @@ export function KeyboardFrame({
               boxShadow: effectIntensity !== "off" ? `0 0 8px ${accentColor}` : undefined,
             }}
           />
-          <span className="font-bold text-white/60">KEYFORGE CHASSIS</span>
+          <span className="font-bold text-white/60">{t("keyboard.chassis")}</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 font-bold">
@@ -82,11 +84,11 @@ export function KeyboardFrame({
             <button
               type="button"
               onClick={onToggleHide}
-              title="Hide Keyboard"
+              title={t("keyboard.hideKeyboard")}
               className="px-1.5 py-0.5 rounded-md bg-white/5 hover:bg-white/15 border border-white/10 text-white/40 hover:text-white transition-colors flex items-center gap-1 font-bold"
             >
               <EyeOff size={11} />
-              <span className="hidden sm:inline">Hide</span>
+              <span className="hidden sm:inline">{t("keyboard.hide")}</span>
             </button>
           )}
         </div>

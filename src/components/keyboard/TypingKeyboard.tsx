@@ -4,8 +4,26 @@ import React, { useMemo } from "react"
 import { LAYOUT_PT_BR, LAYOUT_EN, getKeyMetadata } from "@/data/keyboardLayout"
 import { TypingKeyboardProps, KeyVisualState } from "@/types/keyboard"
 import { useCosmetics } from "@/hooks/useCosmetics"
+import { useI18n } from "@/lib/i18n/i18nContext"
 import { KeyboardFrame } from "./KeyboardFrame"
 import { KeyboardKey } from "./KeyboardKey"
+
+function getFingerLabel(finger: string, t: (key: string) => string) {
+  switch (finger) {
+    case "pinky":
+      return t("keyboard.fingerPinky")
+    case "ring":
+      return t("keyboard.fingerRing")
+    case "middle":
+      return t("keyboard.fingerMiddle")
+    case "index":
+      return t("keyboard.fingerIndex")
+    case "thumb":
+      return t("keyboard.fingerThumb")
+    default:
+      return finger
+  }
+}
 
 export function TypingKeyboard({
   expectedKey = null,
@@ -20,6 +38,7 @@ export function TypingKeyboard({
   className = "",
   skinVisual: propSkinVisual,
 }: TypingKeyboardProps) {
+  const { t } = useI18n()
   const { equippedSkin, settings, updateSettings } = useCosmetics()
   const skinVisual = propSkinVisual ?? equippedSkin.visual
   const showHomeRowAnchors = propShowHomeRowAnchors ?? settings?.showHomeRowAnchors ?? true
@@ -44,10 +63,10 @@ export function TypingKeyboard({
           type="button"
           onClick={() => updateSettings({ showKeyboard: true })}
           className="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-mono font-bold text-white/50 hover:text-white transition-colors flex items-center gap-2 shadow-sm"
-          title="Show Visual Keyboard"
+          title={t("keyboard.showKeyboard")}
         >
           <span>⌨️</span>
-          <span>Show Visual Keyboard</span>
+          <span>{t("keyboard.showKeyboard")}</span>
         </button>
       </div>
     )
@@ -112,11 +131,11 @@ export function TypingKeyboard({
       {/* Optional Finger Legend for Academy */}
       {showFingerLegend && expectedMeta && (
         <div className="mt-3 flex items-center justify-center gap-3 text-xs text-white/60 bg-white/5 px-4 py-1.5 rounded-full border border-white/10 font-mono">
-          <span className="capitalize font-bold text-white">
-            {expectedMeta.hand} Hand:
+          <span className="font-bold text-white">
+            {expectedMeta.hand === "left" ? t("keyboard.handLeft") : t("keyboard.handRight")}:
           </span>
           <span
-            className="capitalize font-black"
+            className="font-black"
             style={{
               color:
                 expectedMeta.finger === "pinky"
@@ -130,7 +149,7 @@ export function TypingKeyboard({
                   : "#a78bfa",
             }}
           >
-            {expectedMeta.finger} Finger
+            {getFingerLabel(expectedMeta.finger, t)}
           </span>
           <span className="text-white/30">→</span>
           <span className="font-mono font-black text-white px-2 py-0.5 rounded bg-white/15">

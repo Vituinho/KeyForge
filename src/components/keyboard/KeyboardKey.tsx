@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { KeyMetadata, FINGER_COLORS } from "@/data/keyboardLayout"
 import { KeyVisualState } from "@/types/keyboard"
 import type { KeyboardSkinVisual } from "@/types/cosmetics"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 export interface KeyboardKeyProps {
   meta: KeyMetadata
@@ -29,6 +30,7 @@ export const KeyboardKey = React.memo(function KeyboardKey({
   skinVisual,
   effectIntensity = "full",
 }: KeyboardKeyProps) {
+  const { t } = useI18n()
   const fingerColor = FINGER_COLORS[meta.finger]
 
   // Sizing by width category
@@ -131,7 +133,7 @@ export const KeyboardKey = React.memo(function KeyboardKey({
           className={`w-3.5 h-0.5 rounded-full mt-1 ${
             state === "expected" || state === "correct" ? "bg-black/80" : "bg-white/60"
           }`}
-          title="Tactile Guide Bump"
+          title={t("keyboard.tactileBump")}
         />
       )}
 
@@ -139,7 +141,7 @@ export const KeyboardKey = React.memo(function KeyboardKey({
       {isWeak && state !== "expected" && (
         <span
           className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shadow-[0_0_6px_rgba(245,158,11,1)]"
-          title="Weak Key Focus"
+          title={t("keyboard.weakKeyFocus")}
         />
       )}
     </motion.div>
