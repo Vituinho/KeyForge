@@ -86,7 +86,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
       }
 
       const weakKeys = analyzeWeakKeys(stats.keyStats)
-      const exercises = generateTrainingExercises(weakKeys)
+      const exercises = generateTrainingExercises(weakKeys, 5, locale)
 
       setBattleResultData({
         victory,

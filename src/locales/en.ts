@@ -444,15 +444,46 @@ export const en = {
   training: {
     title: "Training Ground",
     backBtn: "Back to Game",
+    trainingTag: "TRAINING",
+    heroDesc:
+      "Sharpen your muscle memory and eliminate targeted typing weaknesses through deliberate practice.",
     modes: {
       weakKeys: "Weak Keys",
       freePractice: "Free Practice",
       speedTest: "Speed Test",
     },
     selectKeys: "Select target struggle keys:",
+    resetDefaults: "Reset Defaults",
+    freePracticeComingSoon:
+      "Custom text input, arbitrary word counts, and language selection will arrive in an upcoming release.",
+    speedTestComingSoon:
+      "Timed 15s, 30s, and 60s competitive sprint benchmarks with leaderboard integration coming soon.",
+    loading: "Loading Training Ground...",
     trainAgain: "Train Again",
     backToBattle: "Back to Battle",
     dashboard: "Dashboard",
+    weakKeys: {
+      targetedKeys: "Targeted Weak Keys",
+      drill: "Drill",
+      nextDrill: "Next drill loading",
+      instruction1: "Type the sequence above with focus on precision and rhythm.",
+      instruction2: "Backspace is enabled — correct mistakes deliberately to build muscle memory.",
+    },
+    result: {
+      complete: "TRAINING COMPLETE",
+      drillsConcluded: "Weakness drills concluded for:",
+      xpEarned: "+{xp} XP Earned",
+      levelUp: "LEVEL UP! Lv. {prev} → Lv. {next}",
+      performance: "Training Performance",
+      breakdown: "Key Accuracy Breakdown",
+      attemptsErrors: "{attempts} attempts · {errors} errors",
+      trainingLabel: "Training",
+      beforeLabel: "Before",
+      improvement: "+{diff}% Improvement",
+      noChange: "No Change",
+      practiced: "Practiced",
+      untyped: "Untyped",
+    },
   },
   academy: {
     title: "Touch Typing Academy",

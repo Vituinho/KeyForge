@@ -13,7 +13,7 @@ type TrainingMode = "weak-keys" | "free-practice" | "speed-test"
 const COMMON_KEYS = ["A", "S", "D", "F", "J", "K", "L", "R", "T", "E", "I", "O"]
 
 function TrainingContent() {
-  const { t, locale } = useI18n()
+  const { t } = useI18n()
   const searchParams = useSearchParams()
 
   // Parse keys from search params: e.g. ?keys=a,r,t
@@ -72,12 +72,10 @@ function TrainingContent() {
         animate={{ opacity: 1, y: 0 }}
       >
         <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-white">
-          KEYFORGE <span className="text-orange-400">{locale === "pt-BR" ? "TREINO" : "TRAINING"}</span>
+          KEYFORGE <span className="text-orange-400">{t("training.trainingTag")}</span>
         </h1>
         <p className="text-white/40 text-sm mt-2 max-w-md mx-auto">
-          {locale === "pt-BR"
-            ? "Aprimore sua memória muscular e elimine fraquezas específicas de digitação com prática deliberada."
-            : "Sharpen your muscle memory and eliminate targeted typing weaknesses through deliberate practice."}
+          {t("training.heroDesc")}
         </p>
       </motion.div>
 
@@ -106,7 +104,7 @@ function TrainingContent() {
           <Zap size={14} />
           <span>{t("training.modes.freePractice")}</span>
           <span className="text-[9px] bg-white/10 px-1.5 py-0.2 rounded font-normal">
-            {locale === "pt-BR" ? "Breve" : "Soon"}
+            {t("common.soon")}
           </span>
         </button>
 
@@ -121,7 +119,7 @@ function TrainingContent() {
           <Flame size={14} />
           <span>{t("training.modes.speedTest")}</span>
           <span className="text-[9px] bg-white/10 px-1.5 py-0.2 rounded font-normal">
-            {locale === "pt-BR" ? "Breve" : "Soon"}
+            {t("common.soon")}
           </span>
         </button>
       </div>
@@ -144,7 +142,7 @@ function TrainingContent() {
                   className="text-[11px] text-orange-400 hover:text-orange-300 flex items-center gap-1 font-bold"
                 >
                   <RotateCcw size={11} />
-                  {locale === "pt-BR" ? "Restaurar Padrão" : "Reset Defaults"}
+                  {t("training.resetDefaults")}
                 </button>
               </div>
 
@@ -184,9 +182,7 @@ function TrainingContent() {
               {t("training.modes.freePractice")}
             </h2>
             <p className="text-sm text-white/40 max-w-sm mx-auto">
-              {locale === "pt-BR"
-                ? "Entrada de texto personalizada e contagem de palavras arbitrária estarão disponíveis em breve."
-                : "Custom text input, arbitrary word counts, and language selection will arrive in an upcoming release."}
+              {t("training.freePracticeComingSoon")}
             </p>
           </div>
         )}
@@ -198,9 +194,7 @@ function TrainingContent() {
               {t("training.modes.speedTest")}
             </h2>
             <p className="text-sm text-white/40 max-w-sm mx-auto">
-              {locale === "pt-BR"
-                ? "Testes cronometrados de 15s, 30s e 60s com placares estarão disponíveis em breve."
-                : "Timed 15s, 30s, and 60s competitive sprint benchmarks with leaderboard integration coming soon."}
+              {t("training.speedTestComingSoon")}
             </p>
           </div>
         )}
@@ -209,15 +203,18 @@ function TrainingContent() {
   )
 }
 
+function TrainingLoadingFallback() {
+  const { t } = useI18n()
+  return (
+    <div className="min-h-screen flex items-center justify-center text-white/30 text-sm">
+      {t("training.loading")}
+    </div>
+  )
+}
+
 export default function TrainingPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center text-white/30 text-sm">
-          Loading Training Ground...
-        </div>
-      }
-    >
+    <Suspense fallback={<TrainingLoadingFallback />}>
       <TrainingContent />
     </Suspense>
   )
