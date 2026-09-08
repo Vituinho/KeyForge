@@ -38,7 +38,7 @@ function formatDuration(totalSeconds: number): string {
   return `${hours}h ${remainingMinutes}m`
 }
 
-function formatDate(iso: string, locale: string): string {
+function formatDate(iso: string, locale: string, fallback = "Recent"): string {
   try {
     const d = new Date(iso)
     return d.toLocaleDateString(locale === "pt-BR" ? "pt-BR" : "en-US", {
@@ -48,7 +48,7 @@ function formatDate(iso: string, locale: string): string {
       minute: "2-digit",
     })
   } catch {
-    return "Recent"
+    return fallback
   }
 }
 
@@ -81,7 +81,7 @@ export default function StatisticsPage() {
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex items-center gap-2 text-xs text-white/40 font-mono">
             <Activity size={14} className="text-orange-400" />
-            <span>{locale === "pt-BR" ? "TELEMETRIA EM TEMPO REAL" : "REAL-TIME TELEMETRY"}</span>
+            <span>{t("statistics.realTimeTelemetry")}</span>
           </div>
           <LanguageSwitcher />
         </div>
@@ -95,9 +95,7 @@ export default function StatisticsPage() {
             <span>{t("statistics.title")}</span>
           </h1>
           <p className="text-white/40 text-sm mt-1">
-            {locale === "pt-BR"
-              ? "Registros históricos de combate, métricas de velocidade e atributos de RPG."
-              : "Lifetime combat records, typing speed metrics, and RPG attributes."}
+            {t("statistics.subtitle")}
           </p>
         </div>
 
@@ -132,12 +130,16 @@ export default function StatisticsPage() {
                       color: rankMeta.color,
                     }}
                   >
-                    Rank {player.rank} · {rankMeta.label}
+                    {t("profile.rankLabel", { rank: player.rank, label: t(`ranks.${player.rank}`) })}
                   </span>
                 </div>
                 <p className="text-xs text-white/40 mt-1 font-mono">
-                  Level <strong className="text-white">{player.level}</strong> · Total XP:{" "}
-                  <strong className="text-amber-400 font-mono">{player.totalXp.toLocaleString()} XP</strong>
+                  {t("profile.levelLabel", { level: player.level })} ·{" "}
+                  <strong className="text-amber-400 font-mono">
+                    {t("statistics.totalXpLabel", {
+                      xp: player.totalXp.toLocaleString(locale === "pt-BR" ? "pt-BR" : "en-US"),
+                    })}
+                  </strong>
                 </p>
               </div>
             </div>
@@ -145,7 +147,7 @@ export default function StatisticsPage() {
             {/* Quick Overall rating */}
             <div className="text-right sm:border-l sm:border-white/10 sm:pl-6 w-full sm:w-auto">
               <span className="text-[10px] uppercase font-bold tracking-widest text-white/40 block">
-                Overall Power Rating
+                {t("statistics.overallPowerRating")}
               </span>
               <div className="text-3xl font-black text-amber-400 font-mono">
                 {player.attributes.overall}
@@ -159,7 +161,7 @@ export default function StatisticsPage() {
             <div className="flex justify-between text-xs text-white/60 mb-2 font-mono">
               <span className="flex items-center gap-1">
                 <Sparkles size={12} className="text-amber-400" />
-                Level {player.level} Progress
+                {t("statistics.levelProgress", { level: player.level })}
               </span>
               <span>
                 {player.xp} / {xpNeeded} XP ({xpProgress}%)
@@ -181,7 +183,7 @@ export default function StatisticsPage() {
       <div className="space-y-3">
         <h2 className="text-xs font-bold tracking-widest text-white/40 uppercase flex items-center gap-1.5">
           <Swords size={14} className="text-orange-400" />
-          {locale === "pt-BR" ? "Desempenho em Combate" : "Combat Performance"}
+          {t("statistics.combatPerformance")}
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <StatCard
@@ -197,7 +199,7 @@ export default function StatisticsPage() {
             color="#22c55e"
           />
           <StatCard
-            label={locale === "pt-BR" ? "Derrotas" : "Battles Lost"}
+            label={t("statistics.battlesLost")}
             value={player.stats.battlesLost}
             icon={<Shield size={14} />}
             color="#ef4444"
@@ -215,7 +217,7 @@ export default function StatisticsPage() {
       <div className="space-y-3">
         <h2 className="text-xs font-bold tracking-widest text-white/40 uppercase flex items-center gap-1.5">
           <Zap size={14} className="text-yellow-400" />
-          {locale === "pt-BR" ? "Métricas de Maestria em Digitação" : "Typing Mastery Metrics"}
+          {t("statistics.typingMasteryMetrics")}
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <StatCard
@@ -255,23 +257,23 @@ export default function StatisticsPage() {
       <div className="space-y-3">
         <h2 className="text-xs font-bold tracking-widest text-white/40 uppercase flex items-center gap-1.5">
           <Dumbbell size={14} className="text-cyan-400" />
-          {locale === "pt-BR" ? "Treinos e Volume Total" : "Training & Lifetime Volume"}
+          {t("statistics.trainingVolume")}
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <StatCard
-            label={locale === "pt-BR" ? "Inimigos Derrotados" : "Enemies Defeated"}
+            label={t("statistics.enemiesDefeated")}
             value={player.stats.enemiesDefeated}
             icon={<Trophy size={14} />}
             color="#10b981"
           />
           <StatCard
-            label={locale === "pt-BR" ? "Sessões de Treino" : "Training Drills"}
+            label={t("statistics.trainingDrills")}
             value={player.stats.trainingSessions}
             icon={<Dumbbell size={14} />}
             color="#06b6d4"
           />
           <StatCard
-            label={locale === "pt-BR" ? "Lições da Academia" : "Academy Lessons"}
+            label={t("statistics.academyLessons")}
             value={player.stats.academyLessonsCompleted}
             icon={<BookOpen size={14} />}
             color="#8b5cf6"
@@ -291,64 +293,42 @@ export default function StatisticsPage() {
           <h2 className="text-lg font-black text-white flex items-center gap-2">
             <Shield className="text-amber-400" size={20} />
             <span>
-              {locale === "pt-BR" ? "DETALHAMENTO DOS ATRIBUTOS RPG" : "RPG ATTRIBUTES BREAKDOWN"}
+              {t("statistics.rpgAttributesTitle")}
             </span>
           </h2>
           <p className="text-xs text-white/40 mt-0.5">
-            {locale === "pt-BR"
-              ? "Atributos calculados a partir do desempenho real de digitação e disciplina de treino."
-              : "Dynamic attributes calculated from real typing performance and disciplined training."}
+            {t("statistics.rpgAttributesSub")}
           </p>
         </div>
 
         <div className="space-y-4">
           <AttributeRow
-            label={locale === "pt-BR" ? "Velocidade" : "Speed"}
-            description={
-              locale === "pt-BR"
-                ? "Normalizado contra a marca de elite de 110 WPM"
-                : "Normalized against 110 WPM elite benchmark"
-            }
+            label={t("profile.attributes.speed")}
+            description={t("statistics.speedBenchmark")}
             value={player.attributes.speed}
             color="#f97316"
           />
           <AttributeRow
-            label={locale === "pt-BR" ? "Precisão" : "Accuracy"}
-            description={
-              locale === "pt-BR"
-                ? "Índice direto de disciplina de erros (peso de 35% no Ranque)"
-                : "Direct error discipline rating (weighted heavily at 35% towards Rank)"
-            }
+            label={t("profile.attributes.accuracy")}
+            description={t("statistics.accuracyBenchmark")}
             value={player.attributes.accuracy}
             color="#22c55e"
           />
           <AttributeRow
-            label={locale === "pt-BR" ? "Técnica" : "Technique"}
-            description={
-              locale === "pt-BR"
-                ? "Aumenta com módulos da Academia e treinos de teclas difíceis"
-                : "Increases strictly from Academy modules and Weak Key sessions"
-            }
+            label={t("profile.attributes.technique")}
+            description={t("statistics.techniqueBenchmark")}
             value={player.attributes.technique}
             color="#06b6d4"
           />
           <AttributeRow
-            label="Combo"
-            description={
-              locale === "pt-BR"
-                ? "Duração de sequências sem erros e consistência de fluxo"
-                : "Sustained streak length and flow consistency"
-            }
+            label={t("profile.attributes.combo")}
+            description={t("statistics.comboBenchmark")}
             value={player.attributes.combo}
             color="#ec4899"
           />
           <AttributeRow
-            label={locale === "pt-BR" ? "Poder Geral" : "Overall Power"}
-            description={
-              locale === "pt-BR"
-                ? "Índice composto de habilidade que define elegibilidade para ranques superiores"
-                : "Composite skill index determining eligibility for higher Ranks"
-            }
+            label={t("statistics.overallPowerRating")}
+            description={t("statistics.overallBenchmark")}
             value={player.attributes.overall}
             color="#eab308"
           />
@@ -414,9 +394,7 @@ export default function StatisticsPage() {
               <span>{t("statistics.historyTitle")}</span>
             </h2>
             <p className="text-xs text-white/40 mt-0.5">
-              {locale === "pt-BR"
-                ? `Histórico persistente das últimas ${history.length} partidas (limite de 50).`
-                : `Persistent history of your last ${history.length} matches (capped at 50).`}
+              {t("statistics.historyCapped", { count: history.length })}
             </p>
           </div>
 
@@ -425,7 +403,7 @@ export default function StatisticsPage() {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-black font-black text-xs transition-colors"
           >
             <Swords size={14} />
-            <span>{locale === "pt-BR" ? "LUTAR NOVAMENTE" : "FIGHT AGAIN"}</span>
+            <span>{t("statistics.fightAgain")}</span>
           </Link>
         </div>
 
@@ -433,20 +411,16 @@ export default function StatisticsPage() {
           <div className="text-center py-12 px-4 rounded-2xl border border-dashed border-white/10 bg-black/30 space-y-3">
             <Swords size={36} className="mx-auto text-white/20" />
             <p className="text-sm font-bold text-white/60">
-              {locale === "pt-BR"
-                ? "Nenhum registro de batalha forjado ainda"
-                : "No battle records forged yet"}
+              {t("statistics.noHistoryTitle")}
             </p>
             <p className="text-xs text-white/30 max-w-sm mx-auto">
-              {locale === "pt-BR"
-                ? "Desafie adversários de anime para testar sua velocidade e iniciar seu histórico de combate."
-                : "Challenge anime adversaries to test your typing throughput and begin recording your combat history."}
+              {t("statistics.noHistorySub")}
             </p>
             <Link
               href="/battle"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold text-xs transition-colors mt-2"
             >
-              <span>{locale === "pt-BR" ? "ENTRAR NA ARENA" : "ENTER THE ARENA"}</span>
+              <span>{t("statistics.enterArena")}</span>
             </Link>
           </div>
         ) : (
@@ -475,7 +449,7 @@ export default function StatisticsPage() {
                       </span>
                     </div>
                     <p className="text-[11px] text-white/40">
-                      {formatDate(entry.timestamp, locale)} · {locale === "pt-BR" ? "Duração:" : "Duration:"} {entry.durationSeconds}s
+                      {formatDate(entry.timestamp, locale, t("statistics.recent"))} · {t("statistics.duration")} {entry.durationSeconds}s
                     </p>
                   </div>
                 </div>
@@ -488,7 +462,7 @@ export default function StatisticsPage() {
                   </div>
                   <div className="text-right">
                     <span className="text-white/40 text-[10px] block">
-                      {locale === "pt-BR" ? "PREC" : "ACC"}
+                      {t("statistics.accShort")}
                     </span>
                     <strong
                       className={entry.battleAccuracy >= 95 ? "text-emerald-400" : "text-amber-400"}
