@@ -25,6 +25,7 @@ import {
 } from "@/lib/multiplayer/matchService"
 import { subscribeToRoomChannel } from "@/lib/multiplayer/roomManager"
 import { getSkinById } from "@/data/keyboardSkins"
+import { AttackEnergyGauge } from "./AttackEnergyGauge"
 
 interface FloatingDamage {
   id: number
@@ -321,25 +322,17 @@ export function MultiplayerArena({
 
               {/* P1 Attack Energy & Ultimate Bar */}
               <div className="grid grid-cols-2 gap-2 pt-1 text-[10px] font-mono">
-                <div>
-                  <div className="flex justify-between text-white/60 mb-0.5">
-                    <span>ATK ENERGY</span>
-                    <span className="text-orange-400 font-bold">{currentMatch.player_1_attack_energy}%</span>
-                  </div>
-                  <div className="w-full h-1.5 bg-neutral-900 rounded-full overflow-hidden border border-white/5">
-                    <div
-                      className="h-full bg-orange-500 rounded-full transition-all duration-200"
-                      style={{ width: `${currentMatch.player_1_attack_energy}%` }}
-                    />
-                  </div>
-                </div>
+                <AttackEnergyGauge
+                  energy={currentMatch.player_1_attack_energy}
+                  isPlayer1={true}
+                />
 
                 <div>
                   <div className="flex justify-between text-white/60 mb-0.5">
                     <span>ULTIMATE</span>
                     <span className="text-purple-400 font-bold">{currentMatch.player_1_ultimate_energy}%</span>
                   </div>
-                  <div className="w-full h-1.5 bg-neutral-900 rounded-full overflow-hidden border border-white/5">
+                  <div className="w-full h-2.5 bg-neutral-900 rounded-full overflow-hidden border border-white/10 p-[1px]">
                     <div
                       className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-200"
                       style={{ width: `${currentMatch.player_1_ultimate_energy}%` }}
@@ -405,25 +398,17 @@ export function MultiplayerArena({
 
               {/* P2 Attack Energy & Ultimate Bar */}
               <div className="grid grid-cols-2 gap-2 pt-1 text-[10px] font-mono">
-                <div>
-                  <div className="flex justify-between text-white/60 mb-0.5">
-                    <span>ATK ENERGY</span>
-                    <span className="text-blue-400 font-bold">{currentMatch.player_2_attack_energy}%</span>
-                  </div>
-                  <div className="w-full h-1.5 bg-neutral-900 rounded-full overflow-hidden border border-white/5">
-                    <div
-                      className="h-full bg-blue-500 rounded-full transition-all duration-200"
-                      style={{ width: `${currentMatch.player_2_attack_energy}%` }}
-                    />
-                  </div>
-                </div>
+                <AttackEnergyGauge
+                  energy={currentMatch.player_2_attack_energy}
+                  isPlayer1={false}
+                />
 
                 <div>
                   <div className="flex justify-between text-white/60 mb-0.5">
                     <span>ULTIMATE</span>
                     <span className="text-pink-400 font-bold">{currentMatch.player_2_ultimate_energy}%</span>
                   </div>
-                  <div className="w-full h-1.5 bg-neutral-900 rounded-full overflow-hidden border border-white/5">
+                  <div className="w-full h-2.5 bg-neutral-900 rounded-full overflow-hidden border border-white/10 p-[1px]">
                     <div
                       className="h-full bg-gradient-to-r from-pink-500 to-purple-500 rounded-full transition-all duration-200"
                       style={{ width: `${currentMatch.player_2_ultimate_energy}%` }}
@@ -431,6 +416,7 @@ export function MultiplayerArena({
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
         </div>
