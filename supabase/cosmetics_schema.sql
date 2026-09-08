@@ -52,6 +52,10 @@ CREATE POLICY "Users can insert own cosmetics"
   WITH CHECK (auth.uid() = user_id);
 
 -- Cosmetics cannot be modified or deleted directly by client
+CREATE POLICY "Cosmetics cannot be updated by client"
+  ON public.user_cosmetics FOR UPDATE
+  USING (false);
+
 CREATE POLICY "Cosmetics cannot be deleted by client"
   ON public.user_cosmetics FOR DELETE
   USING (false);
@@ -133,7 +137,7 @@ BEGIN
 
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- 8. SERVER-AUTHORITATIVE CRATE OPENING RPC
 -- Atomically validates crate ownership, decrements count, rolls drop, and applies duplicate salvage protection
@@ -274,5 +278,5 @@ BEGIN
     'new_shards_balance', v_new_shards
   );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
