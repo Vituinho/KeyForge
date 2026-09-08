@@ -204,6 +204,11 @@ export const en = {
       level: "Lv.",
       xpToNext: "XP to next level",
       profileBtn: "Profile",
+      homeTooltip: "Visit Public Landing Page",
+      lockerTooltip: "Keyboard Locker & Skins",
+      completed: "8/8 COMPLETED 🏆",
+      version: "KeyForge v3.1 — Multiplayer Arena",
+      lockerBtn: "Locker",
     },
     cards: {
       battle: { title: "Battle", desc: "Fight anime characters" },

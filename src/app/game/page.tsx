@@ -140,7 +140,7 @@ export default function GameDashboardPage() {
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2 }}
       >
-        KeyForge v2.1 — Naruto World
+        {t("dashboard.quickWidget.version")}
       </motion.p>
     </main>
   )

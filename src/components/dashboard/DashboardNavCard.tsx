@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { ReactNode } from "react"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 export interface DashboardNavItem {
   href: string
@@ -19,6 +20,7 @@ interface DashboardNavCardProps {
 }
 
 export function DashboardNavCard({ item, index }: DashboardNavCardProps) {
+  const { t } = useI18n()
   const inner = (
     <motion.div
       className={`flex items-center gap-4 p-4 rounded-2xl border transition-all duration-200 ${
@@ -52,7 +54,7 @@ export function DashboardNavCard({ item, index }: DashboardNavCardProps) {
       </div>
       {!item.active && (
         <span className="ml-auto text-[10px] font-bold text-white/20 uppercase tracking-widest bg-white/5 px-2 py-0.5 rounded">
-          Soon
+          {t("common.soon").toUpperCase()}
         </span>
       )}
     </motion.div>
