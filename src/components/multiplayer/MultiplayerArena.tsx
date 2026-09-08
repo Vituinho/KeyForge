@@ -248,7 +248,7 @@ export function MultiplayerArena({
               event.damage,
               isP1 ? "p1" : "p2",
               event.isUlt,
-              event.isUlt ? "OPPONENT ULTIMATE!" : "OPPONENT STRIKE!"
+              event.isUlt ? t("multiplayerArena.opponentUltimate") : t("multiplayerArena.opponentStrike")
             )
             setActiveAttackBeam(isP1 ? "p2_to_p1" : "p1_to_p2")
             setTimeout(() => setActiveAttackBeam(null), 600)
@@ -280,7 +280,7 @@ export function MultiplayerArena({
     return () => {
       unsubscribe()
     }
-  }, [currentMatch.id, currentMatch.word_count, currentUserId, isP1, isOpponentShadow, triggerDamageFloat])
+  }, [currentMatch.id, currentMatch.word_count, currentUserId, isP1, isOpponentShadow, triggerDamageFloat, t])
 
   // Disconnect Grace Period Countdown & Forfeit Award
   useEffect(() => {
@@ -343,7 +343,7 @@ export function MultiplayerArena({
           })
             .then((updated) => {
               if (!isCancelled) {
-                triggerDamageFloat(160, isP1 ? "p1" : "p2", true, "SHADOW ULTIMATE!")
+                triggerDamageFloat(160, isP1 ? "p1" : "p2", true, t("multiplayerArena.shadowUltimate"))
                 setActiveAttackBeam(isP1 ? "p2_to_p1" : "p1_to_p2")
                 setTimeout(() => setActiveAttackBeam(null), 800)
                 setScreenShake(true)
@@ -372,7 +372,7 @@ export function MultiplayerArena({
               const newMyHp = isP1 ? updated.player_1_hp : updated.player_2_hp
               if (newMyHp < oldMyHp) {
                 const diff = oldMyHp - newMyHp
-                triggerDamageFloat(diff, isP1 ? "p1" : "p2", oppCombo >= 10, "OPPONENT STRIKE!")
+                triggerDamageFloat(diff, isP1 ? "p1" : "p2", oppCombo >= 10, t("multiplayerArena.opponentStrike"))
                 setActiveAttackBeam(isP1 ? "p2_to_p1" : "p1_to_p2")
                 setTimeout(() => setActiveAttackBeam(null), 600)
                 setScreenShake(true)
@@ -401,6 +401,7 @@ export function MultiplayerArena({
     words,
     player.stats.bestWpm,
     triggerDamageFloat,
+    t,
   ])
 
 
@@ -536,7 +537,7 @@ export function MultiplayerArena({
         const newOppHp = isP1 ? updated.player_2_hp : updated.player_1_hp
         if (newOppHp < oldOppHp) {
           const diff = oldOppHp - newOppHp
-          triggerDamageFloat(diff, isP1 ? "p2" : "p1", newCombo >= 10, `${newCombo}x COMBO!`)
+          triggerDamageFloat(diff, isP1 ? "p2" : "p1", newCombo >= 10, t("multiplayerArena.comboFloatLabel", { combo: newCombo }))
           setActiveAttackBeam(isP1 ? "p1_to_p2" : "p2_to_p1")
           setTimeout(() => setActiveAttackBeam(null), 600)
           broadcastRef.current?.broadcastAttack(currentUserId, diff, false)
@@ -586,7 +587,7 @@ export function MultiplayerArena({
         playerId: currentUserId,
       })
 
-      triggerDamageFloat(160, isP1 ? "p2" : "p1", true, "SHINOBI ULTIMATE!")
+      triggerDamageFloat(160, isP1 ? "p2" : "p1", true, t("multiplayerArena.shinobiUltimate"))
       setActiveAttackBeam(isP1 ? "p1_to_p2" : "p2_to_p1")
       setTimeout(() => setActiveAttackBeam(null), 800)
       broadcastRef.current?.broadcastAttack(currentUserId, 160, true)
@@ -613,7 +614,7 @@ export function MultiplayerArena({
         isTriggeringUltRef.current = false
       }, 1500)
     }
-  }, [myUlt, currentMatch.status, currentMatch.id, currentUserId, isP1, triggerDamageFloat, myWordIndex, liveWpm, liveAccuracy, localCombo])
+  }, [myUlt, currentMatch.status, currentMatch.id, currentUserId, isP1, triggerDamageFloat, myWordIndex, liveWpm, liveAccuracy, localCombo, t])
 
   // Keyboard shortcut: Tab triggers ultimate
   useEffect(() => {
@@ -708,7 +709,7 @@ export function MultiplayerArena({
                   </div>
                   <div>
                     <span className="text-sm font-black text-white block leading-tight">
-                      {isP1 ? (user?.username || player.username) : (opponentShadowName || "Host Shinobi")}
+                      {isP1 ? (user?.username || player.username) : (opponentShadowName || t("multiplayerArena.hostShinobi"))}
                     </span>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <span className="text-[10px] font-mono text-orange-400 font-bold">
@@ -758,7 +759,7 @@ export function MultiplayerArena({
 
                 <div>
                   <div className="flex justify-between text-white/60 mb-0.5">
-                    <span>ULTIMATE</span>
+                    <span>{t("multiplayerArena.ultimate")}</span>
                     <span className="text-purple-400 font-bold">{currentMatch.player_1_ultimate_energy}%</span>
                   </div>
                   <div className="w-full h-2.5 bg-neutral-900 rounded-full overflow-hidden border border-white/10 p-[1px]">
@@ -778,7 +779,7 @@ export function MultiplayerArena({
                   <Swords size={16} className="text-orange-400" />
                 </div>
                 <span className="text-[10px] font-mono font-bold text-white/50 tracking-widest uppercase">
-                  {currentMatch.room_code || "QUICK"}
+                  {currentMatch.room_code || t("multiplayerHub.quickLabel")}
                 </span>
               </div>
               <span className="text-[10px] font-mono text-orange-400 font-bold">
@@ -803,7 +804,7 @@ export function MultiplayerArena({
                 <div className="flex items-center gap-2.5 text-right">
                   <div>
                     <span className="text-sm font-black text-white block leading-tight">
-                      {!isP1 ? (user?.username || player.username) : (opponentShadowName || "Rival Shinobi")}
+                      {!isP1 ? (user?.username || player.username) : (opponentShadowName || t("multiplayerArena.rivalShinobi"))}
                     </span>
                     <div className="flex items-center justify-end gap-1.5 mt-0.5">
                       <span
@@ -849,7 +850,7 @@ export function MultiplayerArena({
 
                 <div>
                   <div className="flex justify-between text-white/60 mb-0.5">
-                    <span>ULTIMATE</span>
+                    <span>{t("multiplayerArena.ultimate")}</span>
                     <span className="text-pink-400 font-bold">{currentMatch.player_2_ultimate_energy}%</span>
                   </div>
                   <div className="w-full h-2.5 bg-neutral-900 rounded-full overflow-hidden border border-white/10 p-[1px]">
@@ -879,7 +880,7 @@ export function MultiplayerArena({
                 dmg.target === "p1" ? "left-1/4" : "right-1/4"
               } ${dmg.isCrit ? "text-yellow-400 text-3xl sm:text-4xl" : "text-rose-500 text-2xl sm:text-3xl"}`}
             >
-              -{dmg.amount} DMG
+              -{dmg.amount} {t("multiplayerArena.dmgShort")}
               {dmg.label && (
                 <div className="text-xs text-white uppercase tracking-widest font-bold block">
                   {dmg.label}
@@ -911,18 +912,18 @@ export function MultiplayerArena({
                 localCombo >= 10 ? "text-amber-400 animate-bounce" : "text-white/40"
               }`}
             />
-            <span className="text-white/60 font-bold">COMBO:</span>
+            <span className="text-white/60 font-bold">{t("multiplayerArena.combo")}:</span>
             {localCombo >= 30 ? (
               <span className="text-cyan-300 font-black text-sm animate-pulse">
-                {localCombo}x LEGENDARY!
+                {localCombo}x {t("multiplayerArena.comboLegendary")}
               </span>
             ) : localCombo >= 20 ? (
               <span className="text-purple-400 font-black text-sm animate-pulse">
-                {localCombo}x EPIC!
+                {localCombo}x {t("multiplayerArena.comboEpic")}
               </span>
             ) : localCombo >= 10 ? (
               <span className="text-amber-400 font-black text-sm animate-pulse">
-                {localCombo}x GREAT!
+                {localCombo}x {t("multiplayerArena.comboGreat")}
               </span>
             ) : localCombo >= 5 ? (
               <span className="text-orange-400 font-black text-sm">{localCombo}x</span>
@@ -936,13 +937,13 @@ export function MultiplayerArena({
         <div className="w-full max-w-xl space-y-1.5 px-3.5 py-2 rounded-2xl bg-white/[0.02] border border-white/10">
           <div className="flex items-center justify-between text-[10px] font-mono text-white/50">
             <span className="flex items-center gap-1.5 text-blue-400 font-bold">
-              <span>👤 OPPONENT:</span>
+              <span>👤 {t("multiplayerArena.opponentLabel")}:</span>
               <span className="text-white font-bold">
-                Word {oppWordIndex} of {currentMatch.word_count}
+                {t("multiplayerArena.opponentWordProgress", { current: oppWordIndex, total: currentMatch.word_count })}
               </span>
             </span>
             <span className="font-bold">
-              {oppWpm} WPM • {oppAccuracy}% Acc
+              {oppWpm} WPM • {oppAccuracy}% {t("multiplayerArena.accShort")}
             </span>
           </div>
           <div className="w-full h-1.5 bg-neutral-900 rounded-full overflow-hidden border border-white/5">
@@ -977,7 +978,7 @@ export function MultiplayerArena({
                   exit={{ opacity: 0, scale: 1.2 }}
                   className="text-xs font-black font-mono tracking-widest text-cyan-300 drop-shadow-[0_0_12px_rgba(6,182,212,0.9)]"
                 >
-                  ✨ PERFECT WORD! +30 ENERGY
+                  {t("multiplayerArena.perfectWordBurst")}
                 </motion.span>
               )}
               {comboBreak && (
@@ -986,7 +987,7 @@ export function MultiplayerArena({
                   animate={{ opacity: 0, y: -10 }}
                   className="text-xs font-bold font-mono tracking-wider text-rose-500"
                 >
-                  💥 COMBO BROKEN!
+                  {t("multiplayerArena.comboBroken")}
                 </motion.span>
               )}
             </AnimatePresence>
@@ -995,7 +996,7 @@ export function MultiplayerArena({
           {/* Current Target Word */}
           <div className="mb-4">
             <span className="text-xs font-mono uppercase tracking-widest text-orange-400/80 font-bold block mb-2">
-              TARGET WORD #{myWordIndex + 1}
+              {t("multiplayerArena.targetWordNum", { num: myWordIndex + 1 })}
             </span>
 
             <div className="text-3xl sm:text-5xl font-black font-mono tracking-wider flex justify-center items-center gap-0.5 sm:gap-1 flex-wrap break-all">
@@ -1019,7 +1020,7 @@ export function MultiplayerArena({
 
           {/* Upcoming Words Carousel */}
           <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 pt-3 border-t border-white/10 text-xs font-mono text-white/40">
-            <span>NEXT:</span>
+            <span>{t("multiplayerArena.nextWords")}</span>
             {nextWords.map((nw, i) => (
               <span key={i} className="px-2 py-0.5 rounded bg-white/5 border border-white/5">
                 {nw}
@@ -1248,13 +1249,13 @@ export function MultiplayerArena({
                 className="space-y-1"
               >
                 <span className="text-xs sm:text-sm font-mono font-black uppercase tracking-widest text-yellow-300 drop-shadow-[0_0_12px_rgba(253,224,71,1)]">
-                  奥義 • FORGE ULTIMATE JUTSU
+                  奥義 • {t("multiplayerArena.forgeUltimateJutsu")}
                 </span>
                 <h1 className="text-4xl sm:text-6xl font-black font-mono tracking-wider text-white drop-shadow-[0_0_30px_rgba(0,0,0,0.9)]">
-                  CHAKRA OVERDRIVE BURST!
+                  {t("multiplayerArena.chakraOverdriveBurst")}
                 </h1>
                 <span className="text-xs font-mono text-white/90 font-bold uppercase tracking-widest">
-                  DEVASTATING 160 DMG IMPACT
+                  {t("multiplayerArena.devastatingDamageImpact")}
                 </span>
               </motion.div>
             </motion.div>
@@ -1387,7 +1388,7 @@ export function MultiplayerArena({
                 <div className="space-y-1.5 border-b sm:border-b-0 sm:border-r border-white/10 pb-2.5 sm:pb-0 sm:pr-2">
                   <div className="flex items-center justify-between">
                     <span className="font-black text-white truncate max-w-[120px]">
-                      {isP1 ? (user?.username || player.username) : "Host Shinobi"}
+                      {isP1 ? (user?.username || player.username) : t("multiplayerArena.hostShinobi")}
                     </span>
                     <span className="text-[10px] text-orange-400 font-bold">{p1Hp} HP</span>
                   </div>
@@ -1399,7 +1400,7 @@ export function MultiplayerArena({
                   </div>
                   <div className="text-[10px] text-white/50 flex justify-between">
                     <span>{isP1 ? liveWpm : currentMatch.player_1_wpm} WPM</span>
-                    <span>{isP1 ? liveAccuracy : currentMatch.player_1_accuracy}% ACC</span>
+                    <span>{isP1 ? liveAccuracy : currentMatch.player_1_accuracy}% {t("multiplayerArena.accShort")}</span>
                   </div>
                 </div>
 
@@ -1407,7 +1408,7 @@ export function MultiplayerArena({
                 <div className="space-y-1.5 pt-1 sm:pt-0 sm:pl-1">
                   <div className="flex items-center justify-between">
                     <span className="font-black text-white truncate max-w-[120px]">
-                      {!isP1 ? (user?.username || player.username) : "Rival Shinobi"}
+                      {!isP1 ? (user?.username || player.username) : t("multiplayerArena.rivalShinobi")}
                     </span>
                     <span className="text-[10px] text-blue-400 font-bold">{p2Hp} HP</span>
                   </div>
@@ -1419,7 +1420,7 @@ export function MultiplayerArena({
                   </div>
                   <div className="text-[10px] text-white/50 flex justify-between">
                     <span>{!isP1 ? liveWpm : currentMatch.player_2_wpm} WPM</span>
-                    <span>{!isP1 ? liveAccuracy : currentMatch.player_2_accuracy}% ACC</span>
+                    <span>{!isP1 ? liveAccuracy : currentMatch.player_2_accuracy}% {t("multiplayerArena.accShort")}</span>
                   </div>
                 </div>
               </div>
@@ -1435,11 +1436,11 @@ export function MultiplayerArena({
                   <span className="text-base font-black text-emerald-400">{liveAccuracy}%</span>
                 </div>
                 <div>
-                  <span className="text-[9px] text-white/40 block uppercase">Max Combo</span>
+                  <span className="text-[9px] text-white/40 block uppercase">{t("multiplayerArena.peakComboStat")}</span>
                   <span className="text-base font-black text-amber-400">{maxCombo}x</span>
                 </div>
                 <div>
-                  <span className="text-[9px] text-white/40 block uppercase">Perfect</span>
+                  <span className="text-[9px] text-white/40 block uppercase">{t("multiplayerArena.perfectStat")}</span>
                   <span className="text-base font-black text-cyan-300">{perfectWords}</span>
                 </div>
               </div>
