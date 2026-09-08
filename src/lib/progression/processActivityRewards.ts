@@ -1,6 +1,8 @@
 import { TypingStats } from "@/types/typing"
 import { AcademyLessonProgress, PlayerProfile, PlayerRank, PlayerStats } from "@/types/player"
 import { loadPlayerProfile, savePlayerProfile } from "@/lib/storage/playerStorage"
+import { getStoredUser } from "@/lib/auth/authService"
+import { saveCloudPlayerProfile } from "@/lib/storage/cloudPlayerStorage"
 import { calculateAcademyXp, calculateTrainingXp } from "./calculateXp"
 import { applyXpGain, LevelProgressionResult } from "./calculateLevel"
 import { calculatePlayerAttributes } from "./calculateAttributes"
@@ -64,6 +66,13 @@ export function processTrainingRewards(
   }
 
   savePlayerProfile(updatedProfile)
+
+  const authUser = getStoredUser()
+  if (authUser && !authUser.isGuest && authUser.id) {
+    saveCloudPlayerProfile(authUser.id, updatedProfile).catch((err) =>
+      console.warn("[TrainingRewards] Failed to sync profile to cloud:", err)
+    )
+  }
 
   return {
     xpGained,
@@ -146,6 +155,13 @@ export function processAcademyLessonRewards(
   }
 
   savePlayerProfile(updatedProfile)
+
+  const authUser = getStoredUser()
+  if (authUser && !authUser.isGuest && authUser.id) {
+    saveCloudPlayerProfile(authUser.id, updatedProfile).catch((err) =>
+      console.warn("[AcademyRewards] Failed to sync profile to cloud:", err)
+    )
+  }
 
   return {
     xpGained,

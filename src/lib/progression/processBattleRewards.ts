@@ -9,6 +9,8 @@ import {
 } from "@/types/player"
 import { loadPlayerProfile, savePlayerProfile } from "@/lib/storage/playerStorage"
 import { addBattleHistoryEntry } from "@/lib/storage/battleHistoryStorage"
+import { getStoredUser } from "@/lib/auth/authService"
+import { saveCloudPlayerProfile, saveCloudBattleHistory } from "@/lib/storage/cloudPlayerStorage"
 import { calculateBattleXp, BattleXpResult } from "./calculateXp"
 import { applyXpGain, LevelProgressionResult } from "./calculateLevel"
 import { calculatePlayerAttributes } from "./calculateAttributes"
@@ -219,7 +221,7 @@ export function processBattleRewards(
   savePlayerProfile(updatedProfile)
 
   // 7. Record into persistent battle history
-  addBattleHistoryEntry({
+  const historyEntry = addBattleHistoryEntry({
     enemyId: enemy.id,
     enemyName: enemy.name,
     enemyAnime: enemy.anime,
@@ -235,6 +237,18 @@ export function processBattleRewards(
     xpEarned: xpResult.totalXp,
     durationSeconds: Math.round(elapsedTime),
   })
+
+  // 8. Asynchronous Cloud Synchronization (non-blocking for animations)
+  const authUser = getStoredUser()
+  if (authUser && !authUser.isGuest && authUser.id) {
+    saveCloudPlayerProfile(authUser.id, updatedProfile).catch((err) =>
+      console.warn("[BattleRewards] Failed to sync profile to cloud:", err)
+    )
+    const weakKeyStrings = result.weakKeys?.map((w) => w.key) ?? []
+    saveCloudBattleHistory(authUser.id, historyEntry, weakKeyStrings).catch((err) =>
+      console.warn("[BattleRewards] Failed to sync battle history to cloud:", err)
+    )
+  }
 
   return {
     xpResult,
