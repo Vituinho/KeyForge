@@ -509,6 +509,21 @@ BEGIN
     RAISE EXCEPTION 'Invalid word index: expected %, received %', v_expected_index, p_word_index;
   END IF;
 
+  -- 3.1 Anti-Cheat: Validate combo cannot exceed completed word sequence
+  IF p_combo > (p_word_index + 1) THEN
+    RAISE EXCEPTION 'Anti-Cheat: Combo % exceeds maximum possible %', p_combo, (p_word_index + 1);
+  END IF;
+
+  -- 3.2 Anti-Cheat: Validate accuracy range
+  IF p_accuracy < 0 OR p_accuracy > 100 THEN
+    RAISE EXCEPTION 'Anti-Cheat: Invalid accuracy %', p_accuracy;
+  END IF;
+
+  -- 3.3 Anti-Cheat: Validate plausible human typing physics (reject impossible >260 WPM)
+  IF p_wpm > 260 THEN
+    RAISE EXCEPTION 'Anti-Cheat: Impossible typing velocity % WPM', p_wpm;
+  END IF;
+
   -- 4. Calculate Attack Energy Gain
   -- Base: +25 energy. Bonus for high accuracy (>=98% -> +5), Combo >=10 (-> +5)
   IF p_accuracy >= 98 THEN
