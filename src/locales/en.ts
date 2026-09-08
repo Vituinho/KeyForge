@@ -363,6 +363,7 @@ export const en = {
     subtitle: "Challenge other typists worldwide in synchronized, fair, real-time typing battles.",
     onlineStatus: "Online",
     offlineStatus: "Offline",
+    shinobisOnline: "{count} Shinobis Online",
     eloRating: "ELO Rating",
     quickMatchTitle: "Quick Match",
     quickMatchDesc: "Jump into an instant duel against an available Shinobi opponent.",
