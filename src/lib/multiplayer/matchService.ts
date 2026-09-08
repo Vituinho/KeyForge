@@ -129,7 +129,7 @@ export async function createMatch(
     params.roomCode ||
     (mode === "private"
       ? `KF-${Math.random().toString(36).substring(2, 6).toUpperCase()}`
-      : null)
+      : `QM-${Math.random().toString(36).substring(2, 6).toUpperCase()}`)
 
   if (supabase) {
     try {
@@ -200,6 +200,7 @@ export async function createMatch(
   }
 
   localMatchesStore.set(matchId, match)
+  localMatchesStore.set(matchId.toUpperCase(), match)
   if (roomCode) {
     localMatchesStore.set(roomCode.toUpperCase(), match)
   }
@@ -237,7 +238,9 @@ export async function joinMatch(
   }
 
   // Local fallback
-  const existing = localMatchesStore.get(normCode)
+  const existing =
+    localMatchesStore.get(normCode) ||
+    localMatchesStore.get(params.roomCode.trim())
   if (!existing) {
     throw new Error(`Room ${normCode} not found`)
   }
