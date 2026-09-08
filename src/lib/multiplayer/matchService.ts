@@ -1,6 +1,7 @@
 import { getSupabaseClient } from "@/lib/supabase/client"
 import { MultiplayerMatchRow, MultiplayerMatchResultRow } from "@/types/database"
-import { getWordsForMatch, verifyMatchWord } from "@/lib/multiplayer/wordGenerator"
+import { getWordsForMatch } from "@/lib/multiplayer/wordGenerator"
+import { validateWordSubmission, cleanupMatchRateLimits } from "@/lib/multiplayer/antiCheatService"
 
 export interface CreateMatchParams {
   mode: "quick" | "private"
@@ -367,27 +368,33 @@ export async function submitWordCompletion(
   }
   localMatchEventsStore.add(eventKey)
 
-  // Deterministic Anti-Cheat Word Verification
-  const isWordValid = verifyMatchWord(
-    match.seed,
-    params.wordIndex,
-    params.wordText,
-    match.word_count,
-    match.language
-  )
-  if (!isWordValid) {
-    console.warn(
-      `[MatchService] Word verification warning: word index ${params.wordIndex} with text '${params.wordText}' does not match seed ${match.seed}`
-    )
-  }
-
   const playerId = params.playerId || match.player_1_id
   const isP1 = match.player_1_id === playerId
 
+  // Authoritative Anti-Cheat & Deterministic Word Validation
+  const validation = validateWordSubmission(match, {
+    matchId: params.matchId,
+    wordIndex: params.wordIndex,
+    wordText: params.wordText,
+    wpm: params.wpm,
+    accuracy: params.accuracy,
+    combo: params.combo,
+    playerId,
+  })
+
+  if (!validation.isValid) {
+    console.warn(`[AntiCheat] Word submission rejected for player ${playerId}: ${validation.reason}`)
+    return match
+  }
+
+  const effectiveWpm = validation.sanitizedWpm
+  const effectiveAccuracy = validation.sanitizedAccuracy
+  const effectiveCombo = validation.sanitizedCombo
+
   // Energy Gain calculation
   let energyGain = 25
-  if (params.accuracy >= 98) energyGain += 5
-  if (params.combo >= 10) energyGain += 5
+  if (effectiveAccuracy >= 98) energyGain += 5
+  if (effectiveCombo >= 10) energyGain += 5
 
   const currentEnergy = isP1 ? match.player_1_attack_energy : match.player_2_attack_energy
   let newEnergy = currentEnergy + energyGain
@@ -395,8 +402,8 @@ export async function submitWordCompletion(
 
   // Attack resolution at 100 Energy
   if (newEnergy >= 100) {
-    const comboMult = 1.0 + Math.min(1.5, params.combo * 0.05)
-    const accRatio = Math.max(0.5, params.accuracy / 100)
+    const comboMult = 1.0 + Math.min(1.5, effectiveCombo * 0.05)
+    const accRatio = Math.max(0.5, effectiveAccuracy / 100)
     damage = Math.round(70 * comboMult * accRatio)
     newEnergy -= 100
   }
@@ -424,6 +431,10 @@ export async function submitWordCompletion(
     else winnerId = null
   }
 
+  if (isFinished) {
+    cleanupMatchRateLimits(match.id)
+  }
+
   const updated: MultiplayerMatchRow = {
     ...match,
     status: isFinished ? "finished" : "playing",
@@ -434,16 +445,16 @@ export async function submitWordCompletion(
     player_2_hp: p2Hp,
     player_1_word_index: isP1 ? params.wordIndex + 1 : match.player_1_word_index,
     player_2_word_index: !isP1 ? params.wordIndex + 1 : match.player_2_word_index,
-    player_1_combo: isP1 ? params.combo : match.player_1_combo,
-    player_2_combo: !isP1 ? params.combo : match.player_2_combo,
+    player_1_combo: isP1 ? effectiveCombo : match.player_1_combo,
+    player_2_combo: !isP1 ? effectiveCombo : match.player_2_combo,
     player_1_attack_energy: p1Energy,
     player_2_attack_energy: p2Energy,
     player_1_ultimate_energy: p1Ult,
     player_2_ultimate_energy: p2Ult,
-    player_1_wpm: isP1 ? params.wpm : match.player_1_wpm,
-    player_2_wpm: !isP1 ? params.wpm : match.player_2_wpm,
-    player_1_accuracy: isP1 ? params.accuracy : match.player_1_accuracy,
-    player_2_accuracy: !isP1 ? params.accuracy : match.player_2_accuracy,
+    player_1_wpm: isP1 ? effectiveWpm : match.player_1_wpm,
+    player_2_wpm: !isP1 ? effectiveWpm : match.player_2_wpm,
+    player_1_accuracy: isP1 ? effectiveAccuracy : match.player_1_accuracy,
+    player_2_accuracy: !isP1 ? effectiveAccuracy : match.player_2_accuracy,
     player_1_last_active_at: isP1 ? now : match.player_1_last_active_at,
     player_2_last_active_at: !isP1 ? now : match.player_2_last_active_at,
     updated_at: now,
@@ -570,6 +581,7 @@ export async function forfeitMatch(
 
   localMatchesStore.set(match.id, updated)
   recordLocalMatchResult(updated, now)
+  cleanupMatchRateLimits(params.matchId)
   return updated
 }
 
@@ -592,6 +604,7 @@ export async function claimDisconnectForfeit(
         })
 
         if (!error && data) {
+          cleanupMatchRateLimits(params.matchId)
           return data as MultiplayerMatchRow
         }
       }
@@ -617,6 +630,7 @@ export async function claimDisconnectForfeit(
 
   localMatchesStore.set(match.id, updated)
   recordLocalMatchResult(updated, now)
+  cleanupMatchRateLimits(params.matchId)
   return updated
 }
 
@@ -687,6 +701,7 @@ export async function cancelMatch(
   }
 
   localMatchesStore.set(match.id, updated)
+  cleanupMatchRateLimits(params.matchId)
   return updated
 }
 
