@@ -355,6 +355,56 @@ export default function StatisticsPage() {
         </div>
       </div>
 
+      {/* Multiplayer PvP Telemetry Section */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <h2 className="text-xs font-bold tracking-widest text-white/40 uppercase flex items-center gap-1.5">
+              <Zap size={14} className="text-purple-400" />
+              <span>{t("statistics.multiplayerTitle")}</span>
+            </h2>
+            <p className="text-xs text-white/40 mt-0.5">
+              {t("statistics.multiplayerSub")}
+            </p>
+          </div>
+
+          <Link
+            href="/multiplayer"
+            className="inline-flex items-center gap-1.5 text-xs text-orange-400 hover:text-orange-300 font-bold font-mono"
+          >
+            <span>{t("profile.goToArenaBtn")}</span>
+            <ChevronLeft size={14} className="rotate-180" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <StatCard
+            label={t("profile.matchesPlayed")}
+            value={player.multiplayerStats?.matchesPlayed ?? 0}
+            icon={<Swords size={14} />}
+            color="#a855f7"
+          />
+          <StatCard
+            label={t("profile.pvpWinRate")}
+            value={`${player.multiplayerStats?.winRate ?? 0}%`}
+            icon={<Trophy size={14} />}
+            color="#10b981"
+          />
+          <StatCard
+            label={t("profile.pvpBestWpm")}
+            value={player.multiplayerStats?.bestWpm ?? 0}
+            icon={<Flame size={14} />}
+            color="#f97316"
+          />
+          <StatCard
+            label={t("profile.pvpBestCombo")}
+            value={`${player.multiplayerStats?.bestCombo ?? 0}x`}
+            icon={<Zap size={14} />}
+            color="#ec4899"
+          />
+        </div>
+      </div>
+
       {/* Battle History Section */}
       <div className="p-6 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md space-y-5">
         <div className="flex items-center justify-between flex-wrap gap-2">

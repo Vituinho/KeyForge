@@ -487,6 +487,72 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      {/* Multiplayer Arena Records Card */}
+      <div className="p-6 sm:p-8 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md space-y-6">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-orange-500/20 border border-orange-500/30 text-orange-400">
+              <Swords size={20} />
+            </div>
+            <div>
+              <h2 className="text-lg font-black text-white uppercase tracking-wider">
+                {t("profile.multiplayerSectionTitle")}
+              </h2>
+              <p className="text-xs text-white/50">
+                {t("profile.multiplayerSectionSub")}
+              </p>
+            </div>
+          </div>
+
+          <Link
+            href="/multiplayer"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/40 text-orange-300 font-bold text-xs uppercase tracking-wider transition-colors"
+          >
+            <span>{t("profile.goToArenaBtn")}</span>
+            <ChevronRight size={14} />
+          </Link>
+        </div>
+
+        {/* 4 Telemetry metrics */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="p-4 rounded-2xl bg-black/40 border border-white/10 space-y-1">
+            <span className="text-[10px] uppercase font-mono text-white/40 block">
+              {t("profile.matchesPlayed")}
+            </span>
+            <span className="text-xl font-black font-mono text-white">
+              {player.multiplayerStats?.matchesPlayed ?? 0}
+            </span>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-black/40 border border-white/10 space-y-1">
+            <span className="text-[10px] uppercase font-mono text-white/40 block">
+              {t("profile.pvpWinRate")}
+            </span>
+            <span className="text-xl font-black font-mono text-emerald-400">
+              {player.multiplayerStats?.winRate ?? 0}%
+            </span>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-black/40 border border-white/10 space-y-1">
+            <span className="text-[10px] uppercase font-mono text-white/40 block">
+              {t("profile.pvpBestWpm")}
+            </span>
+            <span className="text-xl font-black font-mono text-orange-400">
+              {player.multiplayerStats?.bestWpm ?? 0}
+            </span>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-black/40 border border-white/10 space-y-1">
+            <span className="text-[10px] uppercase font-mono text-white/40 block">
+              {t("profile.pvpBestCombo")}
+            </span>
+            <span className="text-xl font-black font-mono text-amber-400">
+              {player.multiplayerStats?.bestCombo ?? 0}x
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* Danger Zone: Progress Reset */}
       <div className="p-6 rounded-3xl border border-red-500/20 bg-red-500/5 backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
