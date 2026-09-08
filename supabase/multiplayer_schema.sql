@@ -1132,8 +1132,16 @@ BEGIN
 
   IF v_match.player_1_id = v_caller_id THEN
     v_disconnected_id := v_match.player_2_id;
+    -- Verify opponent has been inactive for at least 15 seconds
+    IF v_match.player_2_last_active_at IS NOT NULL AND v_match.player_2_last_active_at > (v_now - INTERVAL '15 seconds') THEN
+      RAISE EXCEPTION 'Reconnect grace period has not expired yet';
+    END IF;
   ELSIF v_match.player_2_id = v_caller_id THEN
     v_disconnected_id := v_match.player_1_id;
+    -- Verify opponent has been inactive for at least 15 seconds
+    IF v_match.player_1_last_active_at > (v_now - INTERVAL '15 seconds') THEN
+      RAISE EXCEPTION 'Reconnect grace period has not expired yet';
+    END IF;
   ELSE
     RAISE EXCEPTION 'User not a participant in this match';
   END IF;
