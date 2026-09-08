@@ -9,6 +9,8 @@ import { BattleHud } from "@/components/battle/BattleHud"
 import { generateWeakKeysSession } from "@/lib/typing/generateTraining"
 import { TrainingResult } from "./TrainingResult"
 import { Dumbbell, ArrowRight } from "lucide-react"
+import { TypingKeyboard } from "@/components/keyboard/TypingKeyboard"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 interface WeakKeyTrainingProps {
   targetKeys: string[]
@@ -21,6 +23,8 @@ export function WeakKeyTraining({
   baselineAccuracies = {},
   onRestart,
 }: WeakKeyTrainingProps) {
+  const { locale } = useI18n()
+
   // Generate sequence of drill sentences for the target keys
   const [exercises, setExercises] = useState<string[]>(() =>
     generateWeakKeysSession(targetKeys)
@@ -52,7 +56,16 @@ export function WeakKeyTraining({
   )
 
   // Reusing the exact same useTypingEngine as Battle
-  const { chars, stats, inputRef, reset, focus } = useTypingEngine({
+  const {
+    chars,
+    stats,
+    inputRef,
+    reset,
+    focus,
+    expectedKey,
+    pressedKey,
+    lastErrorKey,
+  } = useTypingEngine({
     text: currentExercise,
     textId: `drill-${exerciseIndex}`,
     enabled: !isCompleted && !isTransitioning,
@@ -159,6 +172,19 @@ export function WeakKeyTraining({
             <ArrowRight size={12} />
           </div>
         )}
+      </div>
+
+      {/* Weak Keys Training Visual Keyboard */}
+      <div className="flex justify-center pt-2">
+        <TypingKeyboard
+          expectedKey={expectedKey}
+          pressedKey={pressedKey}
+          lastErrorKey={lastErrorKey}
+          weakKeys={targetKeys}
+          layout={locale === "en" ? "en" : "pt-BR"}
+          size="sm"
+          className="scale-90 sm:scale-95"
+        />
       </div>
 
       {/* Step instructions */}
