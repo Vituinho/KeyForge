@@ -22,7 +22,7 @@ import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
 function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const { t, locale } = useI18n()
+  const { t } = useI18n()
   const { login } = useAuth()
 
   const rawReturnUrl = searchParams.get("returnUrl") || searchParams.get("next") || "/game"
@@ -82,7 +82,7 @@ function LoginForm() {
           <div className="text-center space-y-2">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-orange-500/10 text-orange-400 border border-orange-500/20 font-mono">
               <ShieldCheck size={13} />
-              <span>{locale === "pt-BR" ? "Acesso Shinobi" : "Shinobi Access"}</span>
+              <span>{t("auth.shinobiAccess")}</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
               {t("auth.loginTitle")}
@@ -148,7 +148,7 @@ function LoginForm() {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -170,7 +170,7 @@ function LoginForm() {
           <div className="relative flex items-center justify-center">
             <div className="w-full border-t border-white/10" />
             <span className="absolute bg-neutral-950 px-3 text-[11px] uppercase font-mono text-white/40">
-              {locale === "pt-BR" ? "ou" : "or"}
+              {t("auth.or")}
             </span>
           </div>
 
@@ -203,7 +203,7 @@ function LoginForm() {
 }
 
 export default function LoginPage() {
-  const { locale } = useI18n()
+  const { t } = useI18n()
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col justify-between relative overflow-hidden selection:bg-orange-500/30 selection:text-orange-200">
@@ -232,7 +232,7 @@ export default function LoginPage() {
             className="hidden sm:inline-flex items-center gap-1.5 text-xs text-white/50 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/10 font-bold"
           >
             <ChevronLeft size={14} />
-            <span>{locale === "pt-BR" ? "Início" : "Home"}</span>
+            <span>{t("auth.home")}</span>
           </Link>
         </div>
       </header>
@@ -242,7 +242,7 @@ export default function LoginPage() {
         <Suspense
           fallback={
             <div className="p-8 rounded-3xl border border-white/10 bg-white/[0.03] text-center text-white/50 animate-pulse text-sm">
-              Loading...
+              {t("auth.loading")}
             </div>
           }
         >
@@ -252,7 +252,7 @@ export default function LoginPage() {
 
       {/* Footer */}
       <footer className="relative z-10 w-full max-w-6xl mx-auto px-6 py-6 text-center text-xs text-white/30 font-mono">
-        KeyForge v2.3 · {locale === "pt-BR" ? "Todos os direitos reservados" : "All rights reserved"}
+        KeyForge v2.3 · {t("auth.allRightsReserved")}
       </footer>
     </div>
   )
