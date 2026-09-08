@@ -65,7 +65,7 @@ export function PostMatchAnalysis({
   onRematch,
   onExit,
 }: PostMatchAnalysisProps) {
-  const { locale } = useI18n()
+  const { locale, t } = useI18n()
   const isP1 = match.player_1_id === currentUserId
   const isWinner = match.winner_id === currentUserId
   const isDraw = match.is_draw
@@ -98,12 +98,12 @@ export function PostMatchAnalysis({
 
   // Match ending cause
   const victoryReason = useMemo(() => {
-    if (myHp <= 0 || oppHp <= 0) return "KNOCKOUT (0 HP REACHED)"
+    if (myHp <= 0 || oppHp <= 0) return t("multiplayerArena.knockoutReason")
     if (match.player_1_word_index >= match.word_count || match.player_2_word_index >= match.word_count) {
-      return "ALL WORDS CONQUERED"
+      return t("multiplayerArena.wordTargetReached")
     }
-    return "SURRENDER / FORFEIT"
-  }, [myHp, oppHp, match.player_1_word_index, match.player_2_word_index, match.word_count])
+    return t("multiplayerArena.surrenderReason")
+  }, [myHp, oppHp, match.player_1_word_index, match.player_2_word_index, match.word_count, t])
 
   // Tactical Shinobi Telemetry Insights
   const insights = useMemo(() => {
@@ -113,20 +113,20 @@ export function PostMatchAnalysis({
     const wpmDiff = myWpm - oppWpm
     if (wpmDiff >= 12) {
       list.push({
-        title: "Decisive Speed Advantage",
-        desc: `Your typing speed (+${wpmDiff} WPM advantage) overwhelmed the rival's energy charging rate.`,
+        title: t("multiplayerArena.speedAdvantageTitle"),
+        desc: t("multiplayerArena.speedAdvantageDesc"),
         type: "positive",
       })
     } else if (wpmDiff <= -10) {
       list.push({
-        title: "Speed Pressure Deficit",
-        desc: `Your rival maintained a +${Math.abs(wpmDiff)} WPM advantage, dealing damage faster than your counter-attacks.`,
+        title: t("multiplayerArena.speedDeficitTitle"),
+        desc: t("multiplayerArena.speedDeficitDesc"),
         type: "warning",
       })
     } else {
       list.push({
-        title: "Even Combat Pace",
-        desc: "Both shinobi traded blows with closely matched typing velocity.",
+        title: locale === "pt-BR" ? "Ritmo Equilibrado de Combate" : "Even Combat Pace",
+        desc: locale === "pt-BR" ? "Ambos os shinobi trocaram golpes com velocidade de digitação muito próxima." : "Both shinobi traded blows with closely matched typing velocity.",
         type: "neutral",
       })
     }
@@ -135,20 +135,20 @@ export function PostMatchAnalysis({
     const accDiff = myAccuracy - oppAccuracy
     if (myAccuracy >= 97) {
       list.push({
-        title: "Immaculate Precision",
-        desc: `${myAccuracy}% accuracy ensured zero wasted chakra, maximizing attack frequency without combo penalties.`,
+        title: t("multiplayerArena.flawlessAccuracyTitle"),
+        desc: t("multiplayerArena.flawlessAccuracyDesc"),
         type: "positive",
       })
     } else if (myAccuracy < 90) {
       list.push({
-        title: "Chakra Instability (Typos)",
-        desc: `${myAccuracy}% accuracy caused frequent combo resets, losing valuable damage scaling.`,
+        title: t("multiplayerArena.typoWarningTitle"),
+        desc: t("multiplayerArena.typoWarningDesc"),
         type: "warning",
       })
     } else if (accDiff > 5) {
       list.push({
-        title: "Precision Edge",
-        desc: `Your +${accDiff}% higher accuracy gave you cleaner multiplier bonuses across all words.`,
+        title: locale === "pt-BR" ? "Vantagem de Precisão" : "Precision Edge",
+        desc: locale === "pt-BR" ? `Sua precisão +${accDiff}% superior garantiu bônus consistentes em todas as palavras.` : `Your +${accDiff}% higher accuracy gave you cleaner multiplier bonuses across all words.`,
         type: "positive",
       })
     }
@@ -156,14 +156,14 @@ export function PostMatchAnalysis({
     // 3. Combo Multiplier
     if (myMaxCombo >= 15) {
       list.push({
-        title: "Jutsu Chain Mastery",
-        desc: `Peak ${myMaxCombo}x combo pushed damage amplification up to 1.75x–2.0x base strikes.`,
+        title: t("multiplayerArena.comboDominanceTitle"),
+        desc: t("multiplayerArena.comboDominanceDesc"),
         type: "positive",
       })
     } else if (myMaxCombo < 5) {
       list.push({
-        title: "Low Combo Sustainability",
-        desc: "Max combo remained under 5x. Sustained keystrokes are vital to unleash high-damage strikes.",
+        title: t("multiplayerArena.rhythmDisruptedTitle"),
+        desc: t("multiplayerArena.rhythmDisruptedDesc"),
         type: "warning",
       })
     }
@@ -171,14 +171,14 @@ export function PostMatchAnalysis({
     // 4. Perfect Words
     if (myPerfectWords >= 8) {
       list.push({
-        title: "Flawless Word Casts",
-        desc: `${myPerfectWords} perfect words provided instant +30 Attack Energy bursts!`,
+        title: locale === "pt-BR" ? "Execução Impecável de Palavras" : "Flawless Word Casts",
+        desc: locale === "pt-BR" ? `${myPerfectWords} palavras perfeitas geraram impulsos imediatos de +30 de Energia de Ataque!` : `${myPerfectWords} perfect words provided instant +30 Attack Energy bursts!`,
         type: "positive",
       })
     }
 
     return list
-  }, [myWpm, oppWpm, myAccuracy, oppAccuracy, myMaxCombo, myPerfectWords])
+  }, [myWpm, oppWpm, myAccuracy, oppAccuracy, myMaxCombo, myPerfectWords, t, locale])
 
   // Top Weak Keys (up to 4)
   const topWeakKeys = useMemo(() => {
@@ -213,7 +213,11 @@ export function PostMatchAnalysis({
                   isWinner ? "text-yellow-400" : isDraw ? "text-white" : "text-rose-400"
                 }`}
               >
-                {isWinner ? "SHINOBI VICTORY" : isDraw ? "HONORABLE DRAW" : "CHAKRA DEPLETED"}
+                {isWinner
+                  ? t("multiplayerArena.shinobiVictory")
+                  : isDraw
+                  ? t("multiplayerArena.honorableDraw")
+                  : t("multiplayerArena.chakraDepleted")}
               </h2>
               <div className="flex items-center gap-2 text-xs font-mono text-white/50">
                 <span className="text-orange-400 font-bold uppercase">{victoryReason}</span>
@@ -258,7 +262,7 @@ export function PostMatchAnalysis({
                 📦 {rewardSummary.awardedCrate.name}
               </span>
             )}
-            <span className="text-[9px] text-white/40 block">Cloud Saved</span>
+            <span className="text-[9px] text-white/40 block">{t("multiplayerArena.cloudSavedNotice")}</span>
           </div>
         </div>
 
@@ -266,7 +270,7 @@ export function PostMatchAnalysis({
         <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/10 text-left font-mono">
           <div className="text-[10px] uppercase tracking-widest text-white/40 font-bold mb-3 flex items-center gap-1.5">
             <Swords size={12} className="text-orange-400" />
-            <span>Shinobi Clash Comparison</span>
+            <span>{t("multiplayerArena.clashComparisonTitle")}</span>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -382,7 +386,7 @@ export function PostMatchAnalysis({
         <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/10 text-left font-mono space-y-2.5">
           <div className="text-[10px] uppercase tracking-widest text-white/40 font-bold flex items-center gap-1.5">
             <TrendingUp size={12} className="text-amber-400" />
-            <span>Combat Telemetry Insights</span>
+            <span>{t("multiplayerArena.tacticalInsightsTitle")}</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -419,7 +423,7 @@ export function PostMatchAnalysis({
             <div className="space-y-1 text-center sm:text-left">
               <div className="flex items-center justify-center sm:justify-start gap-1.5 text-amber-400 text-xs font-bold">
                 <Target size={14} />
-                <span>Identified Keystroke Vulnerabilities</span>
+                <span>{t("multiplayerArena.weakKeyAnalysisTitle")}</span>
               </div>
               <div className="flex items-center gap-2 pt-0.5">
                 {topWeakKeys.map(({ key, count }) => (
@@ -438,7 +442,7 @@ export function PostMatchAnalysis({
               className="py-2.5 px-4 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-black font-black text-xs font-mono transition-colors flex items-center gap-2 shadow-[0_0_20px_rgba(249,115,22,0.4)] shrink-0"
             >
               <BookOpen size={14} />
-              <span>Train in Academy</span>
+              <span>{t("multiplayerArena.sharpenAcademyBtn")}</span>
             </Link>
           </div>
         )}
@@ -452,7 +456,7 @@ export function PostMatchAnalysis({
               className="flex-1 py-3 px-4 rounded-2xl bg-white/10 hover:bg-white/15 text-xs font-bold font-mono text-white transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
               <ArrowLeft size={16} />
-              <span>Back to Summary</span>
+              <span>{locale === "pt-BR" ? "Voltar ao Resumo" : "Back to Summary"}</span>
             </button>
           )}
 
@@ -462,7 +466,7 @@ export function PostMatchAnalysis({
             className="flex-1 py-3 px-4 rounded-2xl bg-white/10 hover:bg-white/15 text-xs font-bold font-mono text-white transition-colors flex items-center justify-center gap-2 cursor-pointer"
           >
             <ArrowLeft size={16} />
-            <span>Return to Lobby</span>
+            <span>{t("multiplayerArena.returnLobbyBtn")}</span>
           </button>
 
           {onRematch && (
@@ -472,7 +476,7 @@ export function PostMatchAnalysis({
               className="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-xs font-black font-mono text-black transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(249,115,22,0.4)]"
             >
               <RotateCcw size={16} />
-              <span>Rematch</span>
+              <span>{t("multiplayerArena.rematchBtn")}</span>
             </button>
           )}
         </div>
