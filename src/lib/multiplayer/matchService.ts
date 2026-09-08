@@ -1,5 +1,5 @@
 import { getSupabaseClient } from "@/lib/supabase/client"
-import { MultiplayerMatchRow } from "@/types/database"
+import { MultiplayerMatchRow, MultiplayerMatchResultRow } from "@/types/database"
 import { getWordsForMatch, verifyMatchWord } from "@/lib/multiplayer/wordGenerator"
 
 export interface CreateMatchParams {
@@ -56,6 +56,61 @@ export interface CancelMatchParams {
  */
 const localMatchesStore = new Map<string, MultiplayerMatchRow>()
 const localMatchEventsStore = new Set<string>() // composite: matchId:eventId
+const localResultsStore = new Map<string, MultiplayerMatchResultRow>()
+
+/**
+ * Records an authoritative match result locally when a match finishes.
+ */
+function recordLocalMatchResult(
+  match: MultiplayerMatchRow,
+  now: string
+): MultiplayerMatchResultRow {
+  const startedTime = match.started_at
+    ? new Date(match.started_at).getTime()
+    : new Date(match.created_at).getTime()
+  const duration = Math.max(1, Math.round((new Date(now).getTime() - startedTime) / 1000))
+
+  const p1Xp = match.winner_id === match.player_1_id ? 120 : match.is_draw ? 75 : 40
+  const p2Xp = match.winner_id === match.player_2_id ? 120 : match.is_draw ? 75 : 40
+
+  const loserId = match.winner_id
+    ? match.winner_id === match.player_1_id
+      ? match.player_2_id
+      : match.player_1_id
+    : null
+
+  const result: MultiplayerMatchResultRow = {
+    id: `res_${match.id}`,
+    match_id: match.id,
+    mode: match.mode,
+    winner_id: match.winner_id,
+    loser_id: loserId,
+    is_draw: match.is_draw,
+    duration_seconds: duration,
+    player_1_id: match.player_1_id,
+    player_1_stats: {
+      wpm: match.player_1_wpm,
+      accuracy: match.player_1_accuracy,
+      hp: match.player_1_hp,
+      combo: match.player_1_combo,
+      word_index: match.player_1_word_index,
+    },
+    player_1_xp_earned: p1Xp,
+    player_2_id: match.player_2_id,
+    player_2_stats: {
+      wpm: match.player_2_wpm,
+      accuracy: match.player_2_accuracy,
+      hp: match.player_2_hp,
+      combo: match.player_2_combo,
+      word_index: match.player_2_word_index,
+    },
+    player_2_xp_earned: p2Xp,
+    created_at: now,
+  }
+
+  localResultsStore.set(match.id, result)
+  return result
+}
 
 /**
  * Creates an authoritative multiplayer match record.
@@ -396,6 +451,11 @@ export async function submitWordCompletion(
   if (match.room_code) {
     localMatchesStore.set(match.room_code.toUpperCase(), updated)
   }
+
+  if (isFinished) {
+    recordLocalMatchResult(updated, now)
+  }
+
   return updated
 }
 
@@ -456,6 +516,10 @@ export async function triggerUltimate(
   }
 
   localMatchesStore.set(match.id, updated)
+  if (isFinished) {
+    recordLocalMatchResult(updated, now)
+  }
+
   return updated
 }
 
@@ -503,7 +567,35 @@ export async function forfeitMatch(
   }
 
   localMatchesStore.set(match.id, updated)
+  recordLocalMatchResult(updated, now)
   return updated
+}
+
+/**
+ * Retrieves the authoritative match result record.
+ */
+export async function getMatchResult(
+  matchId: string
+): Promise<MultiplayerMatchResultRow | null> {
+  const supabase = getSupabaseClient()
+
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("multiplayer_match_results")
+        .select("*")
+        .eq("match_id", matchId)
+        .maybeSingle()
+
+      if (!error && data) {
+        return data as MultiplayerMatchResultRow
+      }
+    } catch (err) {
+      console.warn("[MatchService] Supabase getMatchResult failed, checking local store:", err)
+    }
+  }
+
+  return localResultsStore.get(matchId) || null
 }
 
 /**
@@ -629,6 +721,7 @@ export interface MatchBattleCallbacks {
   onMatchUpdate?: (match: MultiplayerMatchRow) => void
   onOpponentTelemetry?: (telemetry: MatchTelemetryPayload) => void
   onAttackEvent?: (event: { attackerId: string; damage: number; isUlt?: boolean }) => void
+  onMatchFinished?: (event: { winnerId: string | null; isDraw: boolean }) => void
 }
 
 /**
@@ -640,6 +733,7 @@ export function subscribeToMatchBattle(
 ): {
   broadcastTelemetry: (telemetry: MatchTelemetryPayload) => Promise<void>
   broadcastAttack: (attackerId: string, damage: number, isUlt?: boolean) => Promise<void>
+  broadcastMatchFinished: (winnerId: string | null, isDraw: boolean) => Promise<void>
   unsubscribe: () => void
 } {
   const supabase = getSupabaseClient()
@@ -648,6 +742,7 @@ export function subscribeToMatchBattle(
     return {
       broadcastTelemetry: async () => {},
       broadcastAttack: async () => {},
+      broadcastMatchFinished: async () => {},
       unsubscribe: () => {},
     }
   }
@@ -669,6 +764,13 @@ export function subscribeToMatchBattle(
   channel.on("broadcast", { event: "attack" }, ({ payload }) => {
     if (payload && callbacks.onAttackEvent) {
       callbacks.onAttackEvent(payload as { attackerId: string; damage: number; isUlt?: boolean })
+    }
+  })
+
+  // Match finished broadcast
+  channel.on("broadcast", { event: "finished" }, ({ payload }) => {
+    if (payload && callbacks.onMatchFinished) {
+      callbacks.onMatchFinished(payload as { winnerId: string | null; isDraw: boolean })
     }
   })
 
@@ -714,6 +816,18 @@ export function subscribeToMatchBattle(
     }
   }
 
+  const broadcastMatchFinished = async (winnerId: string | null, isDraw: boolean) => {
+    try {
+      await channel.send({
+        type: "broadcast",
+        event: "finished",
+        payload: { winnerId, isDraw },
+      })
+    } catch {
+      // Ignore broadcast errors
+    }
+  }
+
   const unsubscribe = () => {
     try {
       supabase.removeChannel(channel)
@@ -725,6 +839,7 @@ export function subscribeToMatchBattle(
   return {
     broadcastTelemetry,
     broadcastAttack,
+    broadcastMatchFinished,
     unsubscribe,
   }
 }

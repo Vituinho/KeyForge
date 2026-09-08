@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react"
+import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Swords,
@@ -11,18 +12,21 @@ import {
   Sparkles,
   Flame,
   Flag,
+  Timer,
+  BookOpen,
 } from "lucide-react"
 import { useAuth } from "@/lib/auth/authContext"
 import { usePlayer } from "@/hooks/usePlayer"
 import { useI18n } from "@/lib/i18n/i18nContext"
 import { TypingKeyboard } from "@/components/keyboard/TypingKeyboard"
-import { MultiplayerMatchRow } from "@/types/database"
+import { MultiplayerMatchRow, MultiplayerMatchResultRow } from "@/types/database"
 import {
   getMatchWords,
   submitWordCompletion,
   triggerUltimate,
   forfeitMatch,
   subscribeToMatchBattle,
+  getMatchResult,
   MatchTelemetryPayload,
 } from "@/lib/multiplayer/matchService"
 import { subscribeToRoomChannel } from "@/lib/multiplayer/roomManager"
@@ -86,6 +90,7 @@ export function MultiplayerArena({
 
   // Disconnect / Grace period
   const [showForfeitConfirm, setShowForfeitConfirm] = useState(false)
+  const [matchResult, setMatchResult] = useState<MultiplayerMatchResultRow | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Health and energy variables
@@ -118,6 +123,19 @@ export function MultiplayerArena({
     return () => clearInterval(interval)
   }, [currentMatch.status])
 
+  const isFinished = currentMatch.status === "finished"
+  const isWinner = currentMatch.winner_id === currentUserId
+  const isDraw = currentMatch.is_draw
+
+  // Fetch authoritative match result upon match completion
+  useEffect(() => {
+    if (isFinished) {
+      getMatchResult(currentMatch.id).then((res) => {
+        if (res) setMatchResult(res)
+      })
+    }
+  }, [isFinished, currentMatch.id])
+
   // Spawn floating damage effect
   const triggerDamageFloat = useCallback((amount: number, target: "p1" | "p2", isCrit = false, label?: string) => {
     damageIdRef.current += 1
@@ -137,17 +155,26 @@ export function MultiplayerArena({
   const broadcastRef = useRef<{
     broadcastTelemetry: (t: MatchTelemetryPayload) => Promise<void>
     broadcastAttack: (a: string, d: number, u?: boolean) => Promise<void>
+    broadcastMatchFinished: (w: string | null, d: boolean) => Promise<void>
   } | null>(null)
 
   // Real-time PvP match subscription (telemetry, attacks, and Postgres DB state updates)
   useEffect(() => {
-    const { broadcastTelemetry, broadcastAttack, unsubscribe } = subscribeToMatchBattle(
+    const { broadcastTelemetry, broadcastAttack, broadcastMatchFinished, unsubscribe } = subscribeToMatchBattle(
       currentMatch.id,
       {
         onMatchUpdate: (updatedMatch) => {
           setCurrentMatch((prev) => ({
             ...prev,
             ...updatedMatch,
+          }))
+        },
+        onMatchFinished: ({ winnerId, isDraw: draw }) => {
+          setCurrentMatch((prev) => ({
+            ...prev,
+            status: "finished",
+            winner_id: winnerId,
+            is_draw: draw,
           }))
         },
         onOpponentTelemetry: (telemetry) => {
@@ -190,7 +217,7 @@ export function MultiplayerArena({
       }
     )
 
-    broadcastRef.current = { broadcastTelemetry, broadcastAttack }
+    broadcastRef.current = { broadcastTelemetry, broadcastAttack, broadcastMatchFinished }
 
     return () => {
       unsubscribe()
@@ -332,6 +359,10 @@ export function MultiplayerArena({
           hp: isP1 ? updated.player_1_hp : updated.player_2_hp,
         })
 
+        if (updated.status === "finished") {
+          broadcastRef.current?.broadcastMatchFinished(updated.winner_id, updated.is_draw)
+        }
+
         setCurrentMatch(updated)
       } catch (err) {
         console.warn("[Arena] Submit word failed:", err)
@@ -366,6 +397,11 @@ export function MultiplayerArena({
         ultimateEnergy: 0,
         hp: isP1 ? updated.player_1_hp : updated.player_2_hp,
       })
+
+      if (updated.status === "finished") {
+        broadcastRef.current?.broadcastMatchFinished(updated.winner_id, updated.is_draw)
+      }
+
       setCurrentMatch(updated)
     } catch (err) {
       console.warn("[Arena] Ultimate failed:", err)
@@ -391,6 +427,7 @@ export function MultiplayerArena({
         matchId: currentMatch.id,
         playerId: currentUserId,
       })
+      broadcastRef.current?.broadcastMatchFinished(updated.winner_id, false)
       setCurrentMatch(updated)
       setShowForfeitConfirm(false)
     } catch (err) {
@@ -402,10 +439,6 @@ export function MultiplayerArena({
   const currentWord = words[myWordIndex] || ""
   const nextWords = words.slice(myWordIndex + 1, myWordIndex + 4)
   const expectedKey = currentWord[typedInput.length] || null
-
-  const isFinished = currentMatch.status === "finished"
-  const isWinner = currentMatch.winner_id === currentUserId
-  const isDraw = currentMatch.is_draw
 
   return (
     <motion.div
@@ -884,66 +917,156 @@ export function MultiplayerArena({
         )}
       </AnimatePresence>
 
-      {/* POST-MATCH RESOLUTION OVERLAY */}
+      {/* POST-MATCH AUTHORITATIVE RESOLUTION OVERLAY */}
       <AnimatePresence>
         {isFinished && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 overflow-y-auto"
+            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl flex items-center justify-center p-4 overflow-y-auto"
           >
-            <div className="max-w-md w-full p-8 rounded-3xl border border-white/15 bg-neutral-950 shadow-2xl text-center space-y-6 my-auto">
+            <div className="max-w-lg w-full p-6 sm:p-8 rounded-3xl border border-white/15 bg-neutral-950/90 shadow-[0_0_80px_rgba(0,0,0,0.9)] text-center space-y-5 my-auto">
+              {/* Animated Emblem */}
               <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                initial={{ scale: 0, rotate: -20 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 220, damping: 14 }}
                 className={`w-20 h-20 rounded-full mx-auto flex items-center justify-center shadow-2xl ${
                   isWinner
-                    ? "bg-gradient-to-br from-yellow-400 to-amber-500 text-black shadow-[0_0_35px_rgba(245,158,11,0.7)]"
+                    ? "bg-gradient-to-br from-yellow-400 via-amber-500 to-orange-500 text-black shadow-[0_0_45px_rgba(245,158,11,0.8)] ring-4 ring-yellow-400/30"
                     : isDraw
-                    ? "bg-white/10 text-white"
-                    : "bg-rose-500/20 border border-rose-500/40 text-rose-400"
+                    ? "bg-gradient-to-br from-neutral-200 to-neutral-400 text-black shadow-[0_0_35px_rgba(255,255,255,0.4)]"
+                    : "bg-rose-500/20 border border-rose-500/50 text-rose-400 shadow-[0_0_35px_rgba(244,63,94,0.3)]"
                 }`}
               >
-                {isWinner ? <Trophy size={40} /> : <Swords size={36} />}
+                {isWinner ? <Trophy size={42} /> : isDraw ? <Swords size={38} /> : <Swords size={38} className="opacity-70" />}
               </motion.div>
 
-              <div>
+              {/* Title & Reason */}
+              <div className="space-y-1">
                 <h2
-                  className={`text-3xl font-black uppercase tracking-wider ${
-                    isWinner ? "text-yellow-400" : isDraw ? "text-white" : "text-rose-400"
+                  className={`text-3xl sm:text-4xl font-black uppercase tracking-wider font-mono ${
+                    isWinner
+                      ? "text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-400 drop-shadow-[0_0_20px_rgba(245,158,11,0.5)]"
+                      : isDraw
+                      ? "text-white"
+                      : "text-rose-400"
                   }`}
                 >
-                  {isWinner ? "SHINOBI VICTORY!" : isDraw ? "HONORABLE DRAW" : "DEFEAT"}
+                  {isWinner ? "SHINOBI VICTORY!" : isDraw ? "HONORABLE DRAW" : "CHAKRA DEPLETED"}
                 </h2>
-                <p className="text-xs text-white/50 font-mono mt-1">
-                  {isWinner ? "+120 XP EARNED • RANK PROGRESSION" : "+40 XP EARNED • BATTLE COMPLETED"}
-                </p>
+
+                <div className="flex items-center justify-center gap-2 text-[11px] font-mono font-bold text-white/50 uppercase tracking-wider">
+                  <span className="text-orange-400">
+                    {p1Hp <= 0 || p2Hp <= 0
+                      ? "KNOCKOUT (0 HP)"
+                      : currentMatch.player_1_word_index >= currentMatch.word_count || currentMatch.player_2_word_index >= currentMatch.word_count
+                      ? "WORD TARGET REACHED"
+                      : "SURRENDER / FORFEIT"}
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1">
+                    <Timer size={12} />
+                    {`${Math.floor((matchResult?.duration_seconds ?? elapsedSeconds) / 60)
+                      .toString()
+                      .padStart(2, "0")}:${((matchResult?.duration_seconds ?? elapsedSeconds) % 60)
+                      .toString()
+                      .padStart(2, "0")}`}
+                  </span>
+                </div>
               </div>
 
-              {/* Performance Stats Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-white/[0.03] border border-white/10 text-left font-mono">
-                <div>
-                  <span className="text-[10px] text-white/40 block">WPM</span>
-                  <span className="text-lg font-black text-white">{liveWpm}</span>
+              {/* XP Award Banner */}
+              <div
+                className={`p-3 rounded-2xl border font-mono text-center transition-all ${
+                  isWinner
+                    ? "bg-amber-500/10 border-amber-500/30 text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.15)]"
+                    : isDraw
+                    ? "bg-white/5 border-white/15 text-white/90"
+                    : "bg-rose-500/10 border-rose-500/20 text-rose-300"
+                }`}
+              >
+                <span className="text-sm font-black tracking-wide block">
+                  {isWinner ? "+120 XP EARNED • SHINOBI PROMOTION" : isDraw ? "+75 XP EARNED • CLASH OF EQUALS" : "+40 XP EARNED • BATTLE COMPLETED"}
+                </span>
+                <span className="text-[10px] text-white/40 block">Authoritative result synchronized to Cloud Save</span>
+              </div>
+
+              {/* Head-to-Head Clash Comparison */}
+              <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-white/[0.02] border border-white/10 text-left font-mono text-xs">
+                {/* Player 1 card */}
+                <div className="space-y-1.5 border-r border-white/10 pr-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-black text-white truncate max-w-[120px]">
+                      {isP1 ? (user?.username || player.username) : "Host Shinobi"}
+                    </span>
+                    <span className="text-[10px] text-orange-400 font-bold">{p1Hp} HP</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-neutral-900 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full ${p1Hp <= 0 ? "bg-white/20" : "bg-emerald-400"}`}
+                      style={{ width: `${Math.max(0, Math.min(100, (p1Hp / 1000) * 100))}%` }}
+                    />
+                  </div>
+                  <div className="text-[10px] text-white/50 flex justify-between">
+                    <span>{isP1 ? liveWpm : currentMatch.player_1_wpm} WPM</span>
+                    <span>{isP1 ? liveAccuracy : currentMatch.player_1_accuracy}% ACC</span>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-[10px] text-white/40 block">ACCURACY</span>
-                  <span className="text-lg font-black text-emerald-400">{liveAccuracy}%</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-white/40 block">MAX COMBO</span>
-                  <span className="text-lg font-black text-amber-400">{maxCombo}x</span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-white/40 block">PERFECT</span>
-                  <span className="text-lg font-black text-cyan-300">{perfectWords}</span>
+
+                {/* Player 2 card */}
+                <div className="space-y-1.5 pl-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-black text-white truncate max-w-[120px]">
+                      {!isP1 ? (user?.username || player.username) : "Rival Shinobi"}
+                    </span>
+                    <span className="text-[10px] text-blue-400 font-bold">{p2Hp} HP</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-neutral-900 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full ${p2Hp <= 0 ? "bg-white/20" : "bg-blue-400"}`}
+                      style={{ width: `${Math.max(0, Math.min(100, (p2Hp / 1000) * 100))}%` }}
+                    />
+                  </div>
+                  <div className="text-[10px] text-white/50 flex justify-between">
+                    <span>{!isP1 ? liveWpm : currentMatch.player_2_wpm} WPM</span>
+                    <span>{!isP1 ? liveAccuracy : currentMatch.player_2_accuracy}% ACC</span>
+                  </div>
                 </div>
               </div>
+
+              {/* Personal Performance Stats Grid */}
+              <div className="grid grid-cols-4 gap-2 p-3 rounded-2xl bg-white/[0.03] border border-white/10 text-center font-mono">
+                <div>
+                  <span className="text-[9px] text-white/40 block uppercase">WPM</span>
+                  <span className="text-base font-black text-white">{liveWpm}</span>
+                </div>
+                <div>
+                  <span className="text-[9px] text-white/40 block uppercase">Accuracy</span>
+                  <span className="text-base font-black text-emerald-400">{liveAccuracy}%</span>
+                </div>
+                <div>
+                  <span className="text-[9px] text-white/40 block uppercase">Max Combo</span>
+                  <span className="text-base font-black text-amber-400">{maxCombo}x</span>
+                </div>
+                <div>
+                  <span className="text-[9px] text-white/40 block uppercase">Perfect</span>
+                  <span className="text-base font-black text-cyan-300">{perfectWords}</span>
+                </div>
+              </div>
+
+              {/* Academy Weak Key CTA */}
+              <Link
+                href="/academy"
+                className="w-full py-2.5 px-4 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono font-bold text-white/80 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <BookOpen size={14} className="text-orange-400" />
+                <span>Sharpen Weak Keys in Academy</span>
+              </Link>
 
               {/* Action Buttons */}
-              <div className="flex gap-3 pt-2">
+              <div className="flex gap-3 pt-1">
                 <button
                   type="button"
                   onClick={onExit}
