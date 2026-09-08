@@ -76,7 +76,7 @@ export function LandingHeader() {
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="lg:hidden p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-colors"
-          aria-label="Toggle Navigation Menu"
+          aria-label={t("nav.toggleMenu")}
         >
           {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
@@ -114,7 +114,7 @@ export function LandingHeader() {
                 <ArrowRight size={16} />
               </Link>
               <div className="flex items-center justify-between pt-1">
-                <span className="text-xs font-mono text-white/40">Language / Idioma</span>
+                <span className="text-xs font-mono text-white/40">{t("common.language")}</span>
                 <LanguageSwitcher />
               </div>
               <div className="grid grid-cols-2 gap-2">

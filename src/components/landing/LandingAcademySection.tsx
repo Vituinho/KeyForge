@@ -9,17 +9,17 @@ export function LandingAcademySection() {
   const { t } = useI18n()
 
   const leftHandKeys = [
-    { key: "A", finger: "Pinky", label: "Left Pinky" },
-    { key: "S", finger: "Ring", label: "Left Ring" },
-    { key: "D", finger: "Middle", label: "Left Middle" },
-    { key: "F", finger: "Index", label: "Left Index" },
+    { key: "A", finger: t("landing.academy.pinky") },
+    { key: "S", finger: t("landing.academy.ring") },
+    { key: "D", finger: t("landing.academy.middle") },
+    { key: "F", finger: t("landing.academy.index") },
   ]
 
   const rightHandKeys = [
-    { key: "J", finger: "Index", label: "Right Index" },
-    { key: "K", finger: "Middle", label: "Right Middle" },
-    { key: "L", finger: "Ring", label: "Right Ring" },
-    { key: "Ç", finger: "Pinky", label: "Right Pinky" },
+    { key: "J", finger: t("landing.academy.index") },
+    { key: "K", finger: t("landing.academy.middle") },
+    { key: "L", finger: t("landing.academy.ring") },
+    { key: "Ç", finger: t("landing.academy.pinky") },
   ]
 
   return (
@@ -89,7 +89,7 @@ export function LandingAcademySection() {
           </div>
 
           <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs text-white/60 font-mono">
-            <span>8 Interactive Lessons</span>
+            <span>{t("landing.academy.interactiveLessons")}</span>
             <span className="text-emerald-400 font-bold">{t("landing.academy.freeTrack")}</span>
           </div>
         </motion.div>

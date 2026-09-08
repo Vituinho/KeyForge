@@ -9,9 +9,9 @@ export function LandingTrainingSection() {
   const { t } = useI18n()
 
   const weakKeysMock = [
-    { key: "A", accuracy: "82%", latency: "380ms", errors: "6 errors", finger: "Left Pinky" },
-    { key: "R", accuracy: "87%", latency: "340ms", errors: "4 errors", finger: "Left Index" },
-    { key: "T", accuracy: "91%", latency: "310ms", errors: "3 errors", finger: "Left Index Reach" },
+    { key: "A", accuracy: "82%", latency: "380ms", errors: "6", finger: t("landing.training.mockFingerA") },
+    { key: "R", accuracy: "87%", latency: "340ms", errors: "4", finger: t("landing.training.mockFingerR") },
+    { key: "T", accuracy: "91%", latency: "310ms", errors: "3", finger: t("landing.training.mockFingerT") },
   ]
 
   return (

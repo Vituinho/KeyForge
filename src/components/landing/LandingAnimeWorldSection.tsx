@@ -9,21 +9,21 @@ export function LandingAnimeWorldSection() {
   const { t } = useI18n()
 
   const narutoRoster = [
-    { stage: "01", name: "Naruto Uzumaki", focus: "Balanced Warmup", wpm: "30 WPM", color: "#f97316" },
-    { stage: "02", name: "Sakura Haruno", focus: "Chakra Precision", wpm: "35 WPM", color: "#ec4899" },
-    { stage: "03", name: "Rock Lee", focus: "Eight Gates Burst", wpm: "50 WPM", color: "#22c55e" },
-    { stage: "04", name: "Kakashi Hatake", focus: "Copy Ninja Cadence", wpm: "55 WPM", color: "#06b6d4" },
-    { stage: "05", name: "Sasuke Uchiha", focus: "Sharingan Combo", wpm: "60 WPM", color: "#8b5cf6" },
-    { stage: "06", name: "Itachi Uchiha", focus: "Tsukuyomi Genjutsu", wpm: "65 WPM", color: "#dc2626" },
-    { stage: "07", name: "Pain (Nagato)", focus: "Six Paths Endurance", wpm: "70 WPM", color: "#f59e0b" },
-    { stage: "08", name: "Madara Uchiha", focus: "Calamity Final Boss", wpm: "80 WPM", color: "#ef4444", isBoss: true },
+    { stage: "01", name: "Naruto Uzumaki", focus: t("landing.animeWorlds.narutoFocus"), wpm: "30 WPM", color: "#f97316" },
+    { stage: "02", name: "Sakura Haruno", focus: t("landing.animeWorlds.sakuraFocus"), wpm: "35 WPM", color: "#ec4899" },
+    { stage: "03", name: "Rock Lee", focus: t("landing.animeWorlds.leeFocus"), wpm: "50 WPM", color: "#22c55e" },
+    { stage: "04", name: "Kakashi Hatake", focus: t("landing.animeWorlds.kakashiFocus"), wpm: "55 WPM", color: "#06b6d4" },
+    { stage: "05", name: "Sasuke Uchiha", focus: t("landing.animeWorlds.sasukeFocus"), wpm: "60 WPM", color: "#8b5cf6" },
+    { stage: "06", name: "Itachi Uchiha", focus: t("landing.animeWorlds.itachiFocus"), wpm: "65 WPM", color: "#dc2626" },
+    { stage: "07", name: "Pain (Nagato)", focus: t("landing.animeWorlds.painFocus"), wpm: "70 WPM", color: "#f59e0b" },
+    { stage: "08", name: "Madara Uchiha", focus: t("landing.animeWorlds.madaraFocus"), wpm: "80 WPM", color: "#ef4444", isBoss: true },
   ]
 
   const comingSoonWorlds = [
-    { title: "Dragon Ball World", boss: "Frieza", series: "Dragon Ball Z", color: "#f59e0b" },
-    { title: "Jujutsu World", boss: "Ryomen Sukuna", series: "Jujutsu Kaisen", color: "#8b5cf6" },
-    { title: "Grand Line World", boss: "Kaido", series: "One Piece", color: "#3b82f6" },
-    { title: "Shadow Monarch World", boss: "Beru", series: "Solo Leveling", color: "#06b6d4" },
+    { title: t("landing.animeWorlds.dragonBallWorld"), boss: "Frieza", series: "Dragon Ball Z", color: "#f59e0b" },
+    { title: t("landing.animeWorlds.jujutsuWorld"), boss: "Ryomen Sukuna", series: "Jujutsu Kaisen", color: "#8b5cf6" },
+    { title: t("landing.animeWorlds.grandLineWorld"), boss: "Kaido", series: "One Piece", color: "#3b82f6" },
+    { title: t("landing.animeWorlds.shadowMonarchWorld"), boss: "Beru", series: "Solo Leveling", color: "#06b6d4" },
   ]
 
   return (
@@ -52,7 +52,7 @@ export function LandingAnimeWorldSection() {
               </span>
               <div>
                 <h3 className="text-xl font-black text-white uppercase tracking-wider">
-                  World 01: Naruto World
+                  {t("landing.animeWorlds.world01Title")}
                 </h3>
                 <p className="text-xs text-white/50 font-mono">
                   {t("landing.animeWorlds.chapter")}
@@ -133,7 +133,7 @@ export function LandingAnimeWorldSection() {
                   </span>
                 </div>
                 <h4 className="text-sm font-black text-white">{w.title}</h4>
-                <p className="text-xs text-white/40 font-mono">Boss: {w.boss}</p>
+                <p className="text-xs text-white/40 font-mono">{t("landing.animeWorlds.bossPrefix", { name: w.boss })}</p>
               </div>
             ))}
           </div>
