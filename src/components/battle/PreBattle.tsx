@@ -49,7 +49,10 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          {t("battle.preBattle.stageTrial", { stage: enemy.stage ?? 1, focus: enemy.typingFocus ?? "" })}
+          {t("battle.preBattle.stageTrial", {
+            stage: enemy.stage ?? 1,
+            focus: t(`battle.focusTypes.${enemy.typingFocus}` as Parameters<typeof t>[0]) || enemy.typingFocus,
+          })}
         </motion.div>
       )}
 

@@ -1,6 +1,7 @@
 "use client"
 
 import { Gauge, Target, Flame, X } from "lucide-react"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 interface BattleHudProps {
   wpm: number
@@ -11,31 +12,33 @@ interface BattleHudProps {
 }
 
 export function BattleHud({ wpm, accuracy, combo, errors, themeColor = "#f97316" }: BattleHudProps) {
+  const { t } = useI18n()
+
   return (
     <div className="flex items-center justify-center gap-4 flex-wrap">
       <StatPill
         icon={<Gauge size={14} />}
-        label="WPM"
+        label={t("common.wpm")}
         value={wpm}
         color={themeColor}
         glow
       />
       <StatPill
         icon={<Target size={14} />}
-        label="ACC"
+        label={t("battle.hud.acc")}
         value={`${accuracy}%`}
         color={accuracy >= 95 ? "#22c55e" : accuracy >= 80 ? "#eab308" : "#ef4444"}
       />
       <StatPill
         icon={<Flame size={14} />}
-        label="COMBO"
+        label={t("battle.hud.combo")}
         value={`×${combo}`}
         color={combo >= 20 ? "#f59e0b" : combo >= 10 ? "#a78bfa" : "#94a3b8"}
         glow={combo >= 10}
       />
       <StatPill
         icon={<X size={14} />}
-        label="ERRORS"
+        label={t("battle.hud.errors")}
         value={errors}
         color="#ef4444"
       />

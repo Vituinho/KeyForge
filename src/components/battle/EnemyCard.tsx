@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { Enemy } from "@/types/character"
 import { Shield, Zap } from "lucide-react"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 interface EnemyCardProps {
   enemy: Enemy
@@ -17,6 +18,7 @@ interface EnemyCardProps {
 }
 
 export function EnemyCard({ enemy, currentHp, maxHp, isUnderAttack, phaseInfo }: EnemyCardProps) {
+  const { t } = useI18n()
   const effectiveMaxHp = maxHp ?? enemy.maxHp
   const hpPercent = Math.max(0, (currentHp / effectiveMaxHp) * 100)
 
@@ -44,7 +46,7 @@ export function EnemyCard({ enemy, currentHp, maxHp, isUnderAttack, phaseInfo }:
               border: `1px solid ${enemy.themeColor}44`,
             }}
           >
-            {enemy.type}
+            {t(`battle.enemyTypes.${enemy.type}` as Parameters<typeof t>[0]) || enemy.type}
           </span>
 
           {phaseInfo && phaseInfo.totalPhases > 1 && (

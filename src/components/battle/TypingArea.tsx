@@ -3,6 +3,7 @@
 import { CharData } from "@/types/typing"
 import { motion } from "framer-motion"
 import { useEffect, useRef } from "react"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 interface TypingAreaProps {
   chars: CharData[]
@@ -19,6 +20,7 @@ const STATE_CLASSES: Record<string, string> = {
 }
 
 export function TypingArea({ chars, inputRef, onFocus, themeColor = "#f97316" }: TypingAreaProps) {
+  const { t } = useI18n()
   const containerRef = useRef<HTMLDivElement>(null)
 
   // Click anywhere on the typing area → focus the hidden input
@@ -46,7 +48,7 @@ export function TypingArea({ chars, inputRef, onFocus, themeColor = "#f97316" }:
         ref={inputRef}
         className="absolute opacity-0 w-0 h-0 pointer-events-none"
         readOnly
-        aria-label="Typing input"
+        aria-label={t("battle.typingArea.typingInputAria")}
         tabIndex={0}
       />
 
@@ -68,7 +70,7 @@ export function TypingArea({ chars, inputRef, onFocus, themeColor = "#f97316" }:
           animate={{ opacity: [0.3, 0.8, 0.3] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          Click here and start typing…
+          {t("battle.typingArea.clickToFocus")}
         </motion.p>
       )}
     </div>

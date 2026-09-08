@@ -239,7 +239,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
             )}
             {phase === "pre-battle" && (
               <div className="text-center">
-                <p className="text-white/30 text-sm">Get ready...</p>
+                <p className="text-white/30 text-sm">{t("battle.hud.getReady")}</p>
               </div>
             )}
           </div>
