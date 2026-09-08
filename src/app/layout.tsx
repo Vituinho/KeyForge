@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import { I18nProvider } from "@/lib/i18n/i18nContext"
 import { AuthProvider } from "@/lib/auth/authContext"
+import { MigrationSyncManager } from "@/components/progression/MigrationSyncManager"
 import "./globals.css"
 
 const geistSans = Geist({
@@ -64,7 +65,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0a0a0f] text-white`}
       >
         <I18nProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <MigrationSyncManager />
+            {children}
+          </AuthProvider>
         </I18nProvider>
       </body>
     </html>
