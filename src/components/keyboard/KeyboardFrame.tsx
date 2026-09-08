@@ -1,6 +1,5 @@
-"use client"
-
 import React from "react"
+import { EyeOff } from "lucide-react"
 import type { KeyboardSkinVisual } from "@/types/cosmetics"
 
 export interface KeyboardFrameProps {
@@ -10,6 +9,7 @@ export interface KeyboardFrameProps {
   footer?: React.ReactNode
   skinVisual?: KeyboardSkinVisual
   effectIntensity?: "full" | "reduced" | "off"
+  onToggleHide?: () => void
 }
 
 export function KeyboardFrame({
@@ -19,6 +19,7 @@ export function KeyboardFrame({
   footer,
   skinVisual,
   effectIntensity = "full",
+  onToggleHide,
 }: KeyboardFrameProps) {
   const frameBg = skinVisual?.frameBg ?? "bg-gradient-to-b from-neutral-900/95 via-neutral-950/90 to-black/95"
   const frameBorder = skinVisual?.frameBorder ?? "border-white/15"
@@ -73,9 +74,22 @@ export function KeyboardFrame({
           />
           <span className="font-bold text-white/60">KEYFORGE CHASSIS</span>
         </div>
-        <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 font-bold">
-          {layoutName}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 font-bold">
+            {layoutName}
+          </span>
+          {onToggleHide && (
+            <button
+              type="button"
+              onClick={onToggleHide}
+              title="Hide Keyboard"
+              className="px-1.5 py-0.5 rounded-md bg-white/5 hover:bg-white/15 border border-white/10 text-white/40 hover:text-white transition-colors flex items-center gap-1 font-bold"
+            >
+              <EyeOff size={11} />
+              <span className="hidden sm:inline">Hide</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Keys container */}
