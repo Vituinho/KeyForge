@@ -1,6 +1,7 @@
 import { getSupabaseClient } from "@/lib/supabase/client"
 import { PlayerProfile, createDefaultPlayerProfile, PlayerRank } from "@/types/player"
 import { ProfileRow, PlayerStatsRow, CampaignProgressRow } from "@/types/database"
+import { BattleHistoryEntry } from "@/types/battle"
 
 /**
  * Fetches player profile, stats, and campaign progress from Supabase.
@@ -192,6 +193,48 @@ export async function saveCloudPlayerProfile(userId: string, profile: PlayerProf
     return true
   } catch (error) {
     console.error("[CloudStorage] Unexpected error syncing to cloud:", error)
+    return false
+  }
+}
+
+/**
+ * Saves a completed battle into the Supabase battle_history table.
+ */
+export async function saveCloudBattleHistory(
+  userId: string,
+  entry: BattleHistoryEntry,
+  weakKeys: string[] = []
+): Promise<boolean> {
+  const supabase = getSupabaseClient()
+  if (!supabase) return false
+
+  try {
+    const { error } = await supabase.from("battle_history").insert({
+      user_id: userId,
+      enemy_id: entry.enemyId,
+      enemy_name: entry.enemyName,
+      enemy_anime: entry.enemyAnime,
+      victory: entry.victory,
+      battle_wpm: Math.round(entry.battleWpm),
+      best_wpm: Math.round(entry.battleWpm),
+      battle_accuracy: Math.round(entry.battleAccuracy),
+      best_combo: entry.bestCombo,
+      damage_dealt: Math.round(entry.damageDealt),
+      damage_taken: Math.round(entry.damageTaken),
+      duration_seconds: entry.durationSeconds,
+      xp_earned: entry.xpEarned,
+      weak_keys: weakKeys,
+      played_at: entry.timestamp || new Date().toISOString(),
+    })
+
+    if (error) {
+      console.warn("[CloudStorage] Battle history insert error:", error)
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error("[CloudStorage] Unexpected error saving battle history to cloud:", error)
     return false
   }
 }
