@@ -17,7 +17,8 @@ import {
   Shield,
 } from "lucide-react"
 import { MultiplayerMatchRow, MultiplayerMatchResultRow } from "@/types/database"
-import { getSkinById } from "@/data/keyboardSkins"
+import { getSkinById, RARITY_DETAILS } from "@/data/keyboardSkins"
+import { useI18n } from "@/lib/i18n/i18nContext"
 import { MultiplayerRewardSummary } from "@/lib/multiplayer/processMultiplayerRewards"
 
 export interface WeakKeyRecord {
@@ -64,6 +65,7 @@ export function PostMatchAnalysis({
   onRematch,
   onExit,
 }: PostMatchAnalysisProps) {
+  const { locale } = useI18n()
   const isP1 = match.player_1_id === currentUserId
   const isWinner = match.winner_id === currentUserId
   const isDraw = match.is_draw
@@ -273,7 +275,16 @@ export function PostMatchAnalysis({
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-xs font-black text-white block">You</span>
-                  <span className="text-[10px] text-orange-400/80">{mySkin.name}</span>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="text-[10px] text-orange-400 font-bold">{mySkin.name}</span>
+                    <span
+                      className={`text-[8px] font-mono font-bold px-1.5 py-0.5 rounded border uppercase leading-none ${
+                        RARITY_DETAILS[mySkin.rarity].bgBadge
+                      }`}
+                    >
+                      {RARITY_DETAILS[mySkin.rarity].name[locale === "pt-BR" ? "pt-BR" : "en"]}
+                    </span>
+                  </div>
                 </div>
                 <span
                   className={`text-xs font-black px-2 py-0.5 rounded-md ${
@@ -317,7 +328,16 @@ export function PostMatchAnalysis({
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-xs font-black text-white block">Rival</span>
-                  <span className="text-[10px] text-blue-400/80">{oppSkin.name}</span>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <span className="text-[10px] text-blue-400 font-bold">{oppSkin.name}</span>
+                    <span
+                      className={`text-[8px] font-mono font-bold px-1.5 py-0.5 rounded border uppercase leading-none ${
+                        RARITY_DETAILS[oppSkin.rarity].bgBadge
+                      }`}
+                    >
+                      {RARITY_DETAILS[oppSkin.rarity].name[locale === "pt-BR" ? "pt-BR" : "en"]}
+                    </span>
+                  </div>
                 </div>
                 <span
                   className={`text-xs font-black px-2 py-0.5 rounded-md ${

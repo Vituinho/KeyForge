@@ -33,7 +33,7 @@ import {
   MatchTelemetryPayload,
 } from "@/lib/multiplayer/matchService"
 import { subscribeToRoomChannel } from "@/lib/multiplayer/roomManager"
-import { getSkinById } from "@/data/keyboardSkins"
+import { getSkinById, RARITY_DETAILS } from "@/data/keyboardSkins"
 import { AttackEnergyGauge } from "./AttackEnergyGauge"
 import { PostMatchAnalysis } from "./PostMatchAnalysis"
 import {
@@ -61,7 +61,7 @@ export function MultiplayerArena({
 }: MultiplayerArenaProps) {
   const { user } = useAuth()
   const { player } = usePlayer()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
 
   const [currentMatch, setCurrentMatch] = useState<MultiplayerMatchRow>(initialMatch)
   const isP1 = !currentMatch.player_2_id || currentMatch.player_1_id === (user?.id || "guest_player_1")
@@ -125,6 +125,9 @@ export function MultiplayerArena({
   const p1Skin = getSkinById(currentMatch.player_1_skin_id || "default_forge")
   const p2Skin = getSkinById(currentMatch.player_2_skin_id || "default_forge")
   const mySkin = isP1 ? p1Skin : p2Skin
+  const oppSkin = isP1 ? p2Skin : p1Skin
+  const [inspectingOpponentSkin, setInspectingOpponentSkin] = useState(false)
+  const activeKeyboardSkin = inspectingOpponentSkin ? oppSkin : mySkin
 
   // Shadow Shinobi Opponent Detection
   const isOpponentShadow = isP1
@@ -695,17 +698,30 @@ export function MultiplayerArena({
             {/* PLAYER 1 HUD (Left 3 cols) */}
             <div className="md:col-span-3 space-y-2">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center font-black text-xs text-black shadow-md">
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className={`w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center font-black text-xs text-black border ${
+                      RARITY_DETAILS[p1Skin.rarity].borderColor
+                    } ${RARITY_DETAILS[p1Skin.rarity].glowClass}`}
+                  >
                     1
                   </div>
                   <div>
                     <span className="text-sm font-black text-white block leading-tight">
                       {isP1 ? (user?.username || player.username) : (opponentShadowName || "Host Shinobi")}
                     </span>
-                    <span className="text-[10px] font-mono text-orange-400 font-bold">
-                      Lv. {player.level} • {p1Skin.name}
-                    </span>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="text-[10px] font-mono text-orange-400 font-bold">
+                        Lv. {player.level} • {p1Skin.name}
+                      </span>
+                      <span
+                        className={`text-[8px] font-mono font-bold px-1.5 py-0.5 rounded border uppercase leading-none ${
+                          RARITY_DETAILS[p1Skin.rarity].bgBadge
+                        }`}
+                      >
+                        {RARITY_DETAILS[p1Skin.rarity].name[locale === "pt-BR" ? "pt-BR" : "en"]}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -782,16 +798,29 @@ export function MultiplayerArena({
                   <span className="text-xs text-white/40 font-bold"> / 1000 HP</span>
                 </div>
 
-                <div className="flex items-center gap-2 text-right">
+                <div className="flex items-center gap-2.5 text-right">
                   <div>
                     <span className="text-sm font-black text-white block leading-tight">
                       {!isP1 ? (user?.username || player.username) : (opponentShadowName || "Rival Shinobi")}
                     </span>
-                    <span className="text-[10px] font-mono text-blue-400 font-bold">
-                      {p2Skin.name}
-                    </span>
+                    <div className="flex items-center justify-end gap-1.5 mt-0.5">
+                      <span
+                        className={`text-[8px] font-mono font-bold px-1.5 py-0.5 rounded border uppercase leading-none ${
+                          RARITY_DETAILS[p2Skin.rarity].bgBadge
+                        }`}
+                      >
+                        {RARITY_DETAILS[p2Skin.rarity].name[locale === "pt-BR" ? "pt-BR" : "en"]}
+                      </span>
+                      <span className="text-[10px] font-mono text-blue-400 font-bold">
+                        {p2Skin.name}
+                      </span>
+                    </div>
                   </div>
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center font-black text-xs text-black shadow-md">
+                  <div
+                    className={`w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center font-black text-xs text-black border ${
+                      RARITY_DETAILS[p2Skin.rarity].borderColor
+                    } ${RARITY_DETAILS[p2Skin.rarity].glowClass}`}
+                  >
                     2
                   </div>
                 </div>
@@ -1040,14 +1069,67 @@ export function MultiplayerArena({
 
       {/* BOTTOM VISUAL KEYBOARD */}
       <footer className="relative z-10 w-full max-w-4xl mx-auto px-4 pb-4">
-        <div className="p-3 rounded-3xl bg-neutral-950/70 border border-white/10 backdrop-blur-xl shadow-xl">
+        {/* Skin Selector / Inspect Opponent Toggle */}
+        <div className="flex items-center justify-between mb-2 px-1">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setInspectingOpponentSkin(false)}
+              className={`px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                !inspectingOpponentSkin
+                  ? "bg-white/15 text-white border border-white/25 shadow-[0_0_12px_rgba(255,255,255,0.15)]"
+                  : "bg-white/5 text-white/50 hover:text-white/80 border border-white/5"
+              }`}
+            >
+              <span>⌨️</span>
+              <span>{mySkin.name}</span>
+              <span
+                className={`text-[8px] px-1.5 py-0.5 rounded border uppercase leading-none ${
+                  RARITY_DETAILS[mySkin.rarity].bgBadge
+                }`}
+              >
+                {RARITY_DETAILS[mySkin.rarity].name[locale === "pt-BR" ? "pt-BR" : "en"]}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setInspectingOpponentSkin(true)}
+              className={`px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                inspectingOpponentSkin
+                  ? "bg-blue-500/20 text-blue-300 border border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.3)]"
+                  : "bg-white/5 text-white/50 hover:text-white/80 border border-white/5"
+              }`}
+            >
+              <span>👁️</span>
+              <span>Inspect: {oppSkin.name}</span>
+              <span
+                className={`text-[8px] px-1.5 py-0.5 rounded border uppercase leading-none ${
+                  RARITY_DETAILS[oppSkin.rarity].bgBadge
+                }`}
+              >
+                {RARITY_DETAILS[oppSkin.rarity].name[locale === "pt-BR" ? "pt-BR" : "en"]}
+              </span>
+            </button>
+          </div>
+
+          <span className="text-[10px] font-mono text-white/40 hidden sm:inline">
+            {inspectingOpponentSkin ? "👁️ Previewing Rival Keyboard Skin" : "⌨️ Your Equipped Keyboard Skin"}
+          </span>
+        </div>
+
+        <div
+          className={`p-3 rounded-3xl bg-neutral-950/80 border transition-all duration-300 backdrop-blur-xl ${
+            RARITY_DETAILS[activeKeyboardSkin.rarity].borderColor
+          } ${RARITY_DETAILS[activeKeyboardSkin.rarity].glowClass}`}
+        >
           <TypingKeyboard
             expectedKey={expectedKey}
             pressedKey={lastPressedKey}
             lastErrorKey={lastErrorKey}
             layout={currentMatch.language === "en" ? "en" : "pt-BR"}
             size="sm"
-            skinVisual={mySkin.visual}
+            skinVisual={activeKeyboardSkin.visual}
           />
         </div>
       </footer>
