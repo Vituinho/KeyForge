@@ -1,6 +1,6 @@
 "use client"
 
-import { useSyncExternalStore, useCallback, useEffect } from "react"
+import { useSyncExternalStore, useCallback } from "react"
 import { PlayerProfile, createDefaultPlayerProfile } from "@/types/player"
 import {
   loadPlayerProfile,
@@ -10,7 +10,7 @@ import {
   PLAYER_UPDATE_EVENT,
 } from "@/lib/storage/playerStorage"
 import { useAuth } from "@/lib/auth/authContext"
-import { fetchCloudPlayerProfile, saveCloudPlayerProfile } from "@/lib/storage/cloudPlayerStorage"
+import { saveCloudPlayerProfile } from "@/lib/storage/cloudPlayerStorage"
 
 function subscribe(callback: () => void) {
   window.addEventListener(PLAYER_UPDATE_EVENT, callback)
@@ -44,26 +44,6 @@ function getServerSnapshot(): PlayerProfile {
 export function usePlayer() {
   const player = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
   const { user, isAuthenticated } = useAuth()
-
-  // Fetch cloud profile upon mounting or user change if authenticated
-  useEffect(() => {
-    if (!isAuthenticated || !user || user.isGuest) return
-
-    let cancelled = false
-
-    fetchCloudPlayerProfile(user.id)
-      .then((cloudProfile) => {
-        if (cancelled || !cloudProfile) return
-        savePlayerProfile(cloudProfile)
-      })
-      .catch((err) => {
-        console.warn("[usePlayer] Failed to load cloud profile:", err)
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [user, isAuthenticated])
 
   const updatePlayer = useCallback(
     (updater: (prev: PlayerProfile) => PlayerProfile) => {

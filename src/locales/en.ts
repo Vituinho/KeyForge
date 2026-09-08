@@ -341,6 +341,22 @@ export const en = {
     multiplayerGuardLogin: "Sign In",
     multiplayerGuardReturnToDojo: "Back to Dojo",
   },
+  migration: {
+    conflictBadge: "PROGRESS CONFLICT",
+    conflictTitle: "Save Data Divergence Detected",
+    conflictDesc: "We found different progress saved on this device and on your cloud account. Which save do you want to keep?",
+    localSave: "Local Device Save",
+    cloudSave: "Shinobi Cloud Save",
+    level: "Level",
+    battlesWon: "Battles Won",
+    bestWpm: "Best WPM",
+    accuracy: "Accuracy",
+    keepCloudBtn: "Keep Cloud Save",
+    keepCloudDesc: "Discards local save and restores cloud progress.",
+    overwriteCloudBtn: "Overwrite Cloud with Local",
+    overwriteCloudDesc: "Replaces your cloud save with the progress on this device.",
+    autoMigratedNotice: "Local progress was successfully migrated to your cloud account!",
+  },
 }
 
 export type TranslationSchema = typeof en
