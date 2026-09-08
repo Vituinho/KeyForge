@@ -46,15 +46,18 @@ function BattleContent() {
   )
 }
 
+function BattleFallback() {
+  const { t } = useI18n()
+  return (
+    <div className="min-h-screen bg-black flex items-center justify-center text-white/40 font-mono text-sm">
+      {t("common.summoningBattlefield")}
+    </div>
+  )
+}
+
 export default function BattlePage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-black flex items-center justify-center text-white/40 font-mono text-sm">
-          Summoning battlefield...
-        </div>
-      }
-    >
+    <Suspense fallback={<BattleFallback />}>
       <BattleContent />
     </Suspense>
   )

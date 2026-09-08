@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Heart } from "lucide-react"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 interface PlayerCardProps {
   currentHp: number
@@ -10,6 +11,7 @@ interface PlayerCardProps {
 }
 
 export function PlayerCard({ currentHp, maxHp, isUnderAttack }: PlayerCardProps) {
+  const { t } = useI18n()
   const hpPercent = Math.max(0, (currentHp / maxHp) * 100)
 
   const hpColor =
@@ -30,8 +32,8 @@ export function PlayerCard({ currentHp, maxHp, isUnderAttack }: PlayerCardProps)
           P
         </div>
         <div>
-          <p className="text-sm font-bold text-white">PLAYER</p>
-          <p className="text-xs text-white/40">Challenger</p>
+          <p className="text-sm font-bold text-white">{t("battle.playerCard.player").toUpperCase()}</p>
+          <p className="text-xs text-white/40">{t("battle.playerCard.challenger")}</p>
         </div>
       </div>
 

@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion"
 import { useEffect, useState } from "react"
 import { DamageEvent } from "@/types/battle"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 interface DamageIndicatorProps {
   events: DamageEvent[]
@@ -51,6 +52,7 @@ function FloatingDamage({
   event: DamageEvent
   onClear: (id: string) => void
 }) {
+  const { t } = useI18n()
   const style = STRIKE_STYLES[event.strikeType] ?? STRIKE_STYLES.normal
   // Random horizontal position so numbers don't stack
   const [x] = useState(() => 30 + Math.random() * 40)
@@ -70,12 +72,12 @@ function FloatingDamage({
         exit={{ opacity: 0 }}
         transition={{ duration: 1.6, ease: "easeOut" }}
       >
-        {event.strikeType !== "miss" ? `-${event.amount}` : "MISS"}
+        {event.strikeType !== "miss" ? `-${event.amount}` : t("battle.damage.miss")}
         {event.strikeType === "critical" && (
-          <div className="text-base font-bold text-yellow-400 text-center -mt-1">CRITICAL!</div>
+          <div className="text-base font-bold text-yellow-400 text-center -mt-1">{t("battle.damage.critical")}</div>
         )}
         {event.strikeType === "perfect" && (
-          <div className="text-base font-bold text-cyan-400 text-center -mt-1">PERFECT!</div>
+          <div className="text-base font-bold text-cyan-400 text-center -mt-1">{t("battle.damage.perfect")}</div>
         )}
       </motion.div>
     )

@@ -31,6 +31,18 @@ import { getDefeatAdvice, DefeatAdvice } from "@/lib/battle/defeatAdvice"
 import { useI18n } from "@/lib/i18n/i18nContext"
 import { getCrateById } from "@/data/crates"
 
+function formatCrateReason(
+  reason: string,
+  t: (key: string, params?: Record<string, string | number>) => string
+): string {
+  const stageMatch = reason.match(/^Stage (\d+) First Clear$/i)
+  if (stageMatch) return t("battleResult.crateReasons.stageFirstClear", { stage: stageMatch[1] })
+  if (/^Boss Defeat First Clear$/i.test(reason)) return t("battleResult.crateReasons.bossFirstClear")
+  const levelMatch = reason.match(/^Reached Level (\d+)$/i)
+  if (levelMatch) return t("battleResult.crateReasons.reachedLevel", { level: levelMatch[1] })
+  return reason
+}
+
 interface BattleResultProps {
   victory: boolean
   enemy: Enemy
@@ -220,7 +232,9 @@ export function BattleResult({
                       <span className="text-2xl">{crateInfo.icon}</span>
                       <div>
                         <div className="text-xs font-black text-white">{crateInfo.name}</div>
-                        <div className="text-[10px] text-purple-300/80 font-mono">{crateReward.reason}</div>
+                        <div className="text-[10px] text-purple-300/80 font-mono">
+                          {formatCrateReason(crateReward.reason, t)}
+                        </div>
                       </div>
                     </div>
                     <span className="text-xs font-black font-mono px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-200">
@@ -388,7 +402,7 @@ export function BattleResult({
                 </div>
                 <div>
                   <span className="text-[10px] font-mono text-orange-400/80 font-bold uppercase tracking-wider block">
-                    Tactical Analysis vs {enemy.name}
+                    {t("battleResult.tacticalAnalysis", { name: enemy.name })}
                   </span>
                   <h3 className="text-sm font-black text-white">{defeatAdvice.title}</h3>
                 </div>
@@ -403,7 +417,7 @@ export function BattleResult({
                       : "bg-red-500/20 text-red-400 border-red-500/30"
                   }`}
                 >
-                  {defeatAdvice.focusMetric.current} (Target: {defeatAdvice.focusMetric.required})
+                  {defeatAdvice.focusMetric.current} {t("battleResult.target", { value: defeatAdvice.focusMetric.required })}
                 </span>
               </div>
             </div>
@@ -413,7 +427,7 @@ export function BattleResult({
             <div className="p-3 rounded-xl bg-black/40 border border-white/10 flex items-start gap-2.5">
               <Sparkles size={14} className="text-amber-400 shrink-0 mt-0.5" />
               <div className="text-xs">
-                <span className="font-bold text-amber-300">Tactical Drill: </span>
+                <span className="font-bold text-amber-300">{t("battleResult.tacticalDrill")}</span>
                 <span className="text-white/80">{defeatAdvice.tacticalTip}</span>
               </div>
             </div>
@@ -496,16 +510,12 @@ export function BattleResult({
           >
             <h2 className="text-xs font-bold tracking-widest text-violet-400 uppercase mb-3 flex items-center gap-2">
               <Dumbbell size={14} />
-              How to Improve
+              {t("battleResult.howToImprove")}
             </h2>
             {exercises.slice(0, 1).map((ex) => (
               <div key={ex.targetKey}>
                 <p className="text-sm text-white/50 mb-3">
-                  Practice exercises targeting the letter{" "}
-                  <span className="text-violet-300 font-bold">
-                    {ex.targetKey.toUpperCase()}
-                  </span>
-                  :
+                  {t("battleResult.practiceTargetLetter", { key: ex.targetKey.toUpperCase() })}
                 </p>
                 <div className="space-y-2">
                   {ex.exercises.map((line, i) => (
