@@ -26,7 +26,7 @@ import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
 
 import { useI18n } from "@/lib/i18n/i18nContext"
 
-function formatDate(iso: string, locale: string): string {
+function formatDate(iso: string, locale: string, unknownText = "Unknown"): string {
   try {
     const d = new Date(iso)
     return d.toLocaleDateString(locale === "pt-BR" ? "pt-BR" : "en-US", {
@@ -35,7 +35,7 @@ function formatDate(iso: string, locale: string): string {
       day: "numeric",
     })
   } catch {
-    return "Unknown"
+    return unknownText
   }
 }
 
@@ -68,11 +68,11 @@ export default function ProfilePage() {
     const trimmed = usernameInput.trim()
 
     if (trimmed.length < 2) {
-      setErrorMsg(locale === "pt-BR" ? "Nome deve ter pelo menos 2 caracteres" : "Username must be at least 2 characters")
+      setErrorMsg(t("profile.nameMinLength"))
       return
     }
     if (trimmed.length > 20) {
-      setErrorMsg(locale === "pt-BR" ? "Nome deve ter no máximo 20 caracteres" : "Username must be 20 characters or less")
+      setErrorMsg(t("profile.nameMaxLength"))
       return
     }
 
@@ -139,11 +139,7 @@ export default function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
         >
           <Check size={16} />
-          <span>
-            {locale === "pt-BR"
-              ? "Todo o progresso e histórico foram redefinidos com sucesso."
-              : "All player progress and battle records have been safely reset."}
-          </span>
+          <span>{t("profile.resetSuccess")}</span>
         </motion.div>
       )}
 
@@ -203,7 +199,7 @@ export default function ProfilePage() {
                       setUsernameInput(e.target.value)
                       setErrorMsg(null)
                     }}
-                    placeholder="Enter nickname"
+                    placeholder={t("profile.usernamePlaceholder")}
                     maxLength={20}
                     autoFocus
                     className="px-3 py-1 rounded-xl bg-black/60 border border-orange-500/50 text-white font-bold text-lg focus:outline-none focus:ring-2 focus:ring-orange-500/50"
@@ -211,7 +207,7 @@ export default function ProfilePage() {
                   <button
                     type="submit"
                     className="p-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-black font-bold text-xs transition-colors"
-                    title="Save Username"
+                    title={t("profile.saveUsername")}
                   >
                     <Check size={16} />
                   </button>
@@ -224,7 +220,7 @@ export default function ProfilePage() {
                     }}
                     className="px-2.5 py-1 text-xs text-white/40 hover:text-white transition-colors"
                   >
-                    Cancel
+                    {t("profile.cancelBtn")}
                   </button>
                 </form>
               ) : (
@@ -238,7 +234,7 @@ export default function ProfilePage() {
                       setIsEditingUsername(true)
                     }}
                     className="p-1.5 rounded-lg text-white/30 hover:text-white hover:bg-white/10 transition-colors"
-                    title="Edit Username"
+                    title={t("profile.editUsername")}
                   >
                     <Edit2 size={14} />
                   </button>
@@ -249,7 +245,7 @@ export default function ProfilePage() {
               {saveSuccess && (
                 <p className="text-xs text-emerald-400 font-bold flex items-center gap-1">
                   <Check size={12} />
-                  <span>Username updated!</span>
+                  <span>{t("profile.saveSuccess")}</span>
                 </p>
               )}
 
@@ -262,11 +258,14 @@ export default function ProfilePage() {
                     color: rankMeta.color,
                   }}
                 >
-                  Rank {player.rank} · {rankMeta.label}
+                  {t("profile.rankLabel", {
+                    rank: player.rank,
+                    label: t(`ranks.${player.rank}`),
+                  })}
                 </span>
 
                 <span className="text-xs text-white/40 font-mono">
-                  Level <strong className="text-white font-bold">{player.level}</strong>
+                  {t("profile.levelLabel", { level: player.level })}
                 </span>
 
                 {player.title && (
@@ -294,9 +293,7 @@ export default function ProfilePage() {
           <div className="flex justify-between text-xs text-white/60 mb-2 font-mono">
             <span className="flex items-center gap-1.5 font-bold">
               <Sparkles size={13} className="text-amber-400" />
-              {locale === "pt-BR"
-                ? `Experiência do Nível ${player.level}`
-                : `Level ${player.level} Experience`}
+              {t("profile.levelExp", { level: player.level })}
             </span>
             <span>
               {player.xp} / {xpNeeded} XP ({xpProgress}%)
@@ -312,14 +309,15 @@ export default function ProfilePage() {
           </div>
           <div className="flex justify-between items-center text-[11px] text-white/30 mt-1.5 font-mono">
             <span>
-              {locale === "pt-BR"
-                ? `XP Total Acumulado: ${player.totalXp.toLocaleString("pt-BR")}`
-                : `Total Lifetime XP: ${player.totalXp.toLocaleString("en-US")}`}
+              {t("profile.totalLifetimeXp", {
+                xp: player.totalXp.toLocaleString(locale === "pt-BR" ? "pt-BR" : "en-US"),
+              })}
             </span>
             <span>
-              {locale === "pt-BR"
-                ? `${xpNeeded - player.xp} XP para Nível ${player.level + 1}`
-                : `${xpNeeded - player.xp} XP to Level ${player.level + 1}`}
+              {t("profile.xpToNextLevel", {
+                xp: xpNeeded - player.xp,
+                nextLevel: player.level + 1,
+              })}
             </span>
           </div>
         </div>
@@ -331,21 +329,15 @@ export default function ProfilePage() {
           <div>
             <h2 className="text-lg font-black text-white flex items-center gap-2">
               <Shield className="text-amber-400" size={18} />
-              <span>
-                {locale === "pt-BR"
-                  ? "ATRIBUTOS DE COMBATE NO TECLADO"
-                  : "KEYBOARD COMBAT ATTRIBUTES"}
-              </span>
+              <span>{t("profile.combatAttributesTitle")}</span>
             </h2>
             <p className="text-xs text-white/40 mt-0.5">
-              {locale === "pt-BR"
-                ? "Reflete o desempenho real em batalhas, disciplina de precisão e treinos."
-                : "Reflects real performance in battles, accuracy discipline, and training drills."}
+              {t("profile.combatAttributesSub")}
             </p>
           </div>
           <div className="text-right">
             <span className="text-[10px] uppercase font-bold tracking-widest text-white/40 block">
-              {locale === "pt-BR" ? "Avaliação Geral" : "Overall Rating"}
+              {t("profile.overallRating")}
             </span>
             <span className="text-2xl font-black text-amber-400 font-mono">
               {player.attributes.overall} / 100
@@ -355,43 +347,27 @@ export default function ProfilePage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <AttributeCard
-            title={locale === "pt-BR" ? "Velocidade" : "Speed"}
+            title={t("profile.attributes.speed")}
             score={player.attributes.speed}
-            desc={
-              locale === "pt-BR"
-                ? "Calculado a partir de WPM médio e pico"
-                : "Calculated from average and peak WPM"
-            }
+            desc={t("profile.attributes.speedDesc")}
             color="#f97316"
           />
           <AttributeCard
-            title={locale === "pt-BR" ? "Precisão" : "Accuracy"}
+            title={t("profile.attributes.accuracy")}
             score={player.attributes.accuracy}
-            desc={
-              locale === "pt-BR"
-                ? "Maior peso (35%) para evolução de Ranque"
-                : "Heavily weighted at 35% towards Rank"
-            }
+            desc={t("profile.attributes.accuracyDesc")}
             color="#22c55e"
           />
           <AttributeCard
-            title={locale === "pt-BR" ? "Técnica" : "Technique"}
+            title={t("profile.attributes.technique")}
             score={player.attributes.technique}
-            desc={
-              locale === "pt-BR"
-                ? "Disciplina de touch typing e constância nos treinos"
-                : "Touch-typing discipline & training consistency"
-            }
+            desc={t("profile.attributes.techniqueDesc")}
             color="#06b6d4"
           />
           <AttributeCard
-            title="Combo"
+            title={t("profile.attributes.combo")}
             score={player.attributes.combo}
-            desc={
-              locale === "pt-BR"
-                ? "Sequências sem erro e estado de foco"
-                : "Uninterrupted streaks and flow state"
-            }
+            desc={t("profile.attributes.comboDesc")}
             color="#ec4899"
           />
         </div>
@@ -427,22 +403,27 @@ export default function ProfilePage() {
         <div className="p-5 rounded-2xl bg-black/40 border border-white/10 space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
-              <span className="text-base font-black text-orange-400">NARUTO WORLD</span>
+              <span className="text-base font-black text-orange-400">
+                {t("profile.narutoWorldTitle")}
+              </span>
               {player.campaignProgress?.naruto?.completed ? (
                 <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
                   <Check size={10} />
-                  {locale === "pt-BR" ? "8 / 8 CONCLUÍDO" : "8 / 8 COMPLETED"}
+                  {t("profile.narutoCompletedBadge")}
                 </span>
               ) : (
                 <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/40 text-[10px] font-black uppercase tracking-wider">
-                  {locale === "pt-BR" ? "Estágio" : "Stage"} {player.campaignProgress?.naruto?.currentStage ?? 1} / 8
+                  {t("profile.stageCurrent", {
+                    stage: player.campaignProgress?.naruto?.currentStage ?? 1,
+                  })}
                 </span>
               )}
             </div>
 
             <span className="text-xs font-mono text-white/60">
-              {locale === "pt-BR" ? "Estágios Concluídos: " : "Stages Cleared: "}
-              {player.campaignProgress?.naruto?.completedStages?.length ?? 0} / 8
+              {t("profile.stagesCleared", {
+                cleared: player.campaignProgress?.naruto?.completedStages?.length ?? 0,
+              })}
             </span>
           </div>
 
@@ -463,24 +444,22 @@ export default function ProfilePage() {
           {/* Unlocked Achievements list */}
           <div className="pt-2 border-t border-white/5 flex items-center gap-3 flex-wrap">
             <span className="text-xs text-white/40 font-mono uppercase tracking-wider">
-              {locale === "pt-BR" ? "Conquistas:" : "Achievements:"}
+              {t("profile.achievementsLabel")}
             </span>
             {player.achievements && player.achievements.includes("naruto_world_completed") ? (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-yellow-500/10 border border-yellow-500/30 text-yellow-300 font-mono font-bold text-xs">
                 <Trophy size={13} />
-                {locale === "pt-BR" ? "Campeão do Naruto World" : "Naruto World Champion"}
+                {t("profile.narutoChampion")}
               </span>
             ) : (
               <span className="text-xs text-white/30 italic">
-                {locale === "pt-BR"
-                  ? "Derrote Madara Uchiha no Estágio 8 para desbloquear"
-                  : "Defeat Madara Uchiha in Stage 8 to unlock"}
+                {t("profile.narutoLockedAchievement")}
               </span>
             )}
             {player.title && (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 font-mono font-bold text-xs">
                 <Sparkles size={13} />
-                {locale === "pt-BR" ? `Título: ${player.title}` : `Title: ${player.title}`}
+                {t("profile.titlePrefix", { title: player.title })}
               </span>
             )}
           </div>
@@ -580,8 +559,9 @@ export default function ProfilePage() {
         <div className="flex items-center gap-2">
           <Calendar size={14} className="text-white/30" />
           <span>
-            {locale === "pt-BR" ? "Guerreiro Criado em: " : "Warrior Created: "}
-            {formatDate(player.createdAt, locale)}
+            {t("profile.warriorCreated", {
+              date: formatDate(player.createdAt, locale, t("profile.unknown")),
+            })}
           </span>
         </div>
         <div className="flex items-center gap-2 font-mono">
