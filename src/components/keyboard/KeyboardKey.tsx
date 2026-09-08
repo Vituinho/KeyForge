@@ -4,6 +4,7 @@ import React from "react"
 import { motion } from "framer-motion"
 import { KeyMetadata, FINGER_COLORS } from "@/data/keyboardLayout"
 import { KeyVisualState } from "@/types/keyboard"
+import type { KeyboardSkinVisual } from "@/types/cosmetics"
 
 export interface KeyboardKeyProps {
   meta: KeyMetadata
@@ -13,6 +14,7 @@ export interface KeyboardKeyProps {
   isWeak?: boolean
   size?: "sm" | "md" | "lg"
   className?: string
+  skinVisual?: KeyboardSkinVisual
 }
 
 export const KeyboardKey = React.memo(function KeyboardKey({
@@ -23,6 +25,7 @@ export const KeyboardKey = React.memo(function KeyboardKey({
   isWeak = false,
   size = "md",
   className = "",
+  skinVisual,
 }: KeyboardKeyProps) {
   const fingerColor = FINGER_COLORS[meta.finger]
 
@@ -35,29 +38,37 @@ export const KeyboardKey = React.memo(function KeyboardKey({
   }[meta.width || "normal"]
 
   // Visual appearance per state
-  let stateClasses = "bg-neutral-900/90 text-white/70 border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_3px_0_rgba(0,0,0,0.6)]"
+  const defaultKeyBg = skinVisual?.keyBg ?? "bg-neutral-900/90"
+  const defaultKeyText = skinVisual?.keyText ?? "text-white/70"
+  const defaultKeyBorder = skinVisual?.keyBorder ?? "border-white/10"
+
+  let stateClasses = `${defaultKeyBg} ${defaultKeyText} ${defaultKeyBorder} shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_3px_0_rgba(0,0,0,0.6)]`
   let auraGlow = ""
 
   switch (state) {
     case "expected":
-      stateClasses =
-        "bg-gradient-to-b from-orange-500 to-amber-600 text-black font-black border-orange-300 shadow-[0_0_20px_rgba(249,115,22,0.8),inset_0_1px_0_rgba(255,255,255,0.4),0_2px_0_rgba(180,83,9,1)] z-10"
+      stateClasses = skinVisual
+        ? `${skinVisual.keyExpectedBg} z-10`
+        : "bg-gradient-to-b from-orange-500 to-amber-600 text-black font-black border-orange-300 shadow-[0_0_20px_rgba(249,115,22,0.8),inset_0_1px_0_rgba(255,255,255,0.4),0_2px_0_rgba(180,83,9,1)] z-10"
       auraGlow = "after:absolute after:inset-0 after:rounded-xl after:animate-ping after:bg-orange-400/30 after:pointer-events-none"
       break
 
     case "pressed":
-      stateClasses =
-        "bg-orange-600 text-white font-black border-orange-400 translate-y-0.5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)] z-10"
+      stateClasses = skinVisual
+        ? `${skinVisual.keyPressedBg} translate-y-0.5 z-10`
+        : "bg-orange-600 text-white font-black border-orange-400 translate-y-0.5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)] z-10"
       break
 
     case "correct":
-      stateClasses =
-        "bg-emerald-500 text-black font-black border-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.7),inset_0_1px_0_rgba(255,255,255,0.3)] z-10"
+      stateClasses = skinVisual
+        ? `${skinVisual.keyCorrectBg} z-10`
+        : "bg-emerald-500 text-black font-black border-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.7),inset_0_1px_0_rgba(255,255,255,0.3)] z-10"
       break
 
     case "incorrect":
-      stateClasses =
-        "bg-red-600 text-white font-black border-red-400 shadow-[0_0_18px_rgba(239,68,68,0.8),inset_0_1px_0_rgba(255,255,255,0.3)] animate-shake z-10"
+      stateClasses = skinVisual
+        ? `${skinVisual.keyIncorrectBg} animate-shake z-10`
+        : "bg-red-600 text-white font-black border-red-400 shadow-[0_0_18px_rgba(239,68,68,0.8),inset_0_1px_0_rgba(255,255,255,0.3)] animate-shake z-10"
       break
 
     case "weak":
@@ -66,8 +77,9 @@ export const KeyboardKey = React.memo(function KeyboardKey({
       break
 
     case "home-row":
-      stateClasses =
-        "bg-neutral-800/90 text-white/90 border-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_3px_0_rgba(0,0,0,0.6)]"
+      stateClasses = skinVisual
+        ? `${defaultKeyBg} ${defaultKeyText} ${defaultKeyBorder} shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_3px_0_rgba(0,0,0,0.6)]`
+        : "bg-neutral-800/90 text-white/90 border-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_3px_0_rgba(0,0,0,0.6)]"
       break
 
     default:
