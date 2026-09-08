@@ -64,11 +64,15 @@ export function MultiplayerArena({
   const [lastErrorKey, setLastErrorKey] = useState<string | null>(null)
   const [isRecoilActive, setIsRecoilActive] = useState(false)
 
-  // Local telemetry
+  // Local telemetry & combo tracking
   const [correctChars, setCorrectChars] = useState(0)
   const [totalChars, setTotalChars] = useState(0)
   const [localCombo, setLocalCombo] = useState(0)
   const [maxCombo, setMaxCombo] = useState(0)
+  const [perfectWords, setPerfectWords] = useState(0)
+  const [lastWordPerfect, setLastWordPerfect] = useState(false)
+  const [comboBreak, setComboBreak] = useState(false)
+  const wordHadMistakeRef = useRef(false)
   const [startTime, setStartTime] = useState<number | null>(null)
 
   // Damage float animations
@@ -176,6 +180,12 @@ export function MultiplayerArena({
       } else {
         setTotalChars((prev) => prev + 1)
         setLastErrorKey(lastChar)
+        wordHadMistakeRef.current = true
+
+        if (localCombo > 0) {
+          setComboBreak(true)
+          setTimeout(() => setComboBreak(false), 800)
+        }
         setLocalCombo(0)
 
         // Typo recoil lockout (300ms)
@@ -187,6 +197,15 @@ export function MultiplayerArena({
 
     // Word completed successfully
     if (value === currentWord || (value.trim() === currentWord && value.endsWith(" "))) {
+      const isPerfect = !wordHadMistakeRef.current
+      wordHadMistakeRef.current = false
+
+      if (isPerfect) {
+        setPerfectWords((prev) => prev + 1)
+        setLastWordPerfect(true)
+        setTimeout(() => setLastWordPerfect(false), 1000)
+      }
+
       const newCombo = localCombo + 1
       setLocalCombo(newCombo)
       if (newCombo > maxCombo) {
@@ -461,9 +480,30 @@ export function MultiplayerArena({
           </div>
 
           <div className="flex items-center gap-2">
-            <Flame size={14} className="text-amber-400 animate-bounce" />
-            <span className="text-amber-400 font-bold">COMBO:</span>
-            <span className="text-white font-black text-sm">{localCombo}x</span>
+            <Flame
+              size={14}
+              className={`${
+                localCombo >= 10 ? "text-amber-400 animate-bounce" : "text-white/40"
+              }`}
+            />
+            <span className="text-white/60 font-bold">COMBO:</span>
+            {localCombo >= 30 ? (
+              <span className="text-cyan-300 font-black text-sm animate-pulse">
+                {localCombo}x LEGENDARY!
+              </span>
+            ) : localCombo >= 20 ? (
+              <span className="text-purple-400 font-black text-sm animate-pulse">
+                {localCombo}x EPIC!
+              </span>
+            ) : localCombo >= 10 ? (
+              <span className="text-amber-400 font-black text-sm animate-pulse">
+                {localCombo}x GREAT!
+              </span>
+            ) : localCombo >= 5 ? (
+              <span className="text-orange-400 font-black text-sm">{localCombo}x</span>
+            ) : (
+              <span className="text-white font-black text-sm">{localCombo}x</span>
+            )}
           </div>
         </div>
 
@@ -477,6 +517,31 @@ export function MultiplayerArena({
               className="absolute inset-0 bg-red-600/20 pointer-events-none"
             />
           )}
+
+          {/* Perfect Word Flash / Combo Break Notification */}
+          <div className="h-6 flex items-center justify-center mb-1">
+            <AnimatePresence>
+              {lastWordPerfect && (
+                <motion.span
+                  initial={{ opacity: 0, scale: 0.7, y: 5 }}
+                  animate={{ opacity: 1, scale: [0.7, 1.15, 1], y: 0 }}
+                  exit={{ opacity: 0, scale: 1.2 }}
+                  className="text-xs font-black font-mono tracking-widest text-cyan-300 drop-shadow-[0_0_12px_rgba(6,182,212,0.9)]"
+                >
+                  ✨ PERFECT WORD! +30 ENERGY
+                </motion.span>
+              )}
+              {comboBreak && (
+                <motion.span
+                  initial={{ opacity: 1, y: 0 }}
+                  animate={{ opacity: 0, y: -10 }}
+                  className="text-xs font-bold font-mono tracking-wider text-rose-500"
+                >
+                  💥 COMBO BROKEN!
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* Current Target Word */}
           <div className="mb-4">
@@ -644,7 +709,7 @@ export function MultiplayerArena({
               </div>
 
               {/* Performance Stats Grid */}
-              <div className="grid grid-cols-3 gap-3 p-4 rounded-2xl bg-white/[0.03] border border-white/10 text-left font-mono">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-white/[0.03] border border-white/10 text-left font-mono">
                 <div>
                   <span className="text-[10px] text-white/40 block">WPM</span>
                   <span className="text-lg font-black text-white">{liveWpm}</span>
@@ -656,6 +721,10 @@ export function MultiplayerArena({
                 <div>
                   <span className="text-[10px] text-white/40 block">MAX COMBO</span>
                   <span className="text-lg font-black text-amber-400">{maxCombo}x</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-white/40 block">PERFECT</span>
+                  <span className="text-lg font-black text-cyan-300">{perfectWords}</span>
                 </div>
               </div>
 
