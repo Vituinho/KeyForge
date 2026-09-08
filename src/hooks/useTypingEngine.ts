@@ -20,6 +20,11 @@ interface UseTypingEngineReturn {
   resetAll: (newText?: string) => void
   nextRound: (newText: string, newTextId?: string) => void
   focus: () => void
+
+  // Real-time keyboard reaction telemetry
+  expectedKey: string | null
+  pressedKey: string | null
+  lastErrorKey: string | null
 }
 
 // Special non-printable keys that should be completely ignored (never counted as errors)
@@ -121,6 +126,12 @@ export function useTypingEngine({
 }: UseTypingEngineProps): UseTypingEngineReturn {
   const [chars, setChars] = useState<CharData[]>(() => buildChars(text))
   const [stats, setStats] = useState<TypingStats>(buildInitialStats)
+
+  // Keyboard reaction telemetry state
+  const [pressedKey, setPressedKey] = useState<string | null>(null)
+  const [lastErrorKey, setLastErrorKey] = useState<string | null>(null)
+  const pressedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const errorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Current active text & text identifier
   const textRef = useRef(text)
@@ -293,6 +304,9 @@ export function useTypingEngine({
 
       // Handle Backspace
       if (key === "Backspace") {
+        setPressedKey("Backspace")
+        if (pressedTimerRef.current) clearTimeout(pressedTimerRef.current)
+        pressedTimerRef.current = setTimeout(() => setPressedKey(null), 150)
         handleBackspace()
         return
       }
@@ -301,6 +315,10 @@ export function useTypingEngine({
       if (IGNORED_KEYS.has(key) || key.length !== 1) {
         return
       }
+
+      setPressedKey(key)
+      if (pressedTimerRef.current) clearTimeout(pressedTimerRef.current)
+      pressedTimerRef.current = setTimeout(() => setPressedKey(null), 150)
 
       const now = Date.now()
 
@@ -330,6 +348,7 @@ export function useTypingEngine({
       recordKeyStat(expectedChar, isCorrect, responseTime)
 
       if (isCorrect) {
+        setLastErrorKey(null)
         roundCorrectRef.current++
         totalCorrectRef.current++
         comboRef.current++
@@ -342,6 +361,10 @@ export function useTypingEngine({
           bestStreakRef.current = currentStreakRef.current
         }
       } else {
+        setLastErrorKey(expectedChar)
+        if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
+        errorTimerRef.current = setTimeout(() => setLastErrorKey(null), 400)
+
         roundIncorrectRef.current++
         roundErrorsRef.current++
         totalIncorrectRef.current++
@@ -479,6 +502,11 @@ export function useTypingEngine({
         errorLogRef.current = []
       }
 
+      setPressedKey(null)
+      setLastErrorKey(null)
+      if (pressedTimerRef.current) clearTimeout(pressedTimerRef.current)
+      if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
+
       const targetText = newText ?? textRef.current
       textRef.current = targetText
       setChars(buildChars(targetText))
@@ -511,8 +539,15 @@ export function useTypingEngine({
 
   // Cleanup timer on unmount
   useEffect(() => {
-    return () => stopTimer()
+    return () => {
+      stopTimer()
+      if (pressedTimerRef.current) clearTimeout(pressedTimerRef.current)
+      if (errorTimerRef.current) clearTimeout(errorTimerRef.current)
+    }
   }, [stopTimer])
+
+  // Current expected character to type
+  const expectedKey = chars.find((c) => c.state === "current")?.char ?? null
 
   return {
     chars,
@@ -522,5 +557,8 @@ export function useTypingEngine({
     resetAll,
     nextRound,
     focus,
+    expectedKey,
+    pressedKey,
+    lastErrorKey,
   }
 }

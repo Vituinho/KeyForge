@@ -19,6 +19,7 @@ import { MultiplayerAuthGuard } from "@/components/multiplayer/MultiplayerAuthGu
 import { useAuth } from "@/lib/auth/authContext"
 import { usePlayer } from "@/hooks/usePlayer"
 import { useI18n } from "@/lib/i18n/i18nContext"
+import { TypingKeyboard } from "@/components/keyboard/TypingKeyboard"
 import { generateMatchWords } from "@/lib/multiplayer/wordGenerator"
 import {
   DEFAULT_MULTIPLAYER_CONFIG,
@@ -75,6 +76,10 @@ function ArenaContent() {
   // Floating Damage Indicators
   const [p1LastHit, setP1LastHit] = useState<{ amount: number; id: number } | null>(null)
   const [p2LastHit, setP2LastHit] = useState<{ amount: number; id: number } | null>(null)
+
+  // Telemetry & Keyboard Feedback
+  const [lastPressedKey, setLastPressedKey] = useState<string | null>(null)
+  const [lastErrorKey, setLastErrorKey] = useState<string | null>(null)
 
   // Final Telemetry Result
   const [finalStats, setFinalStats] = useState({ wpm: 0, accuracy: 100 })
@@ -153,18 +158,27 @@ function ArenaContent() {
     return () => clearInterval(rivalInterval)
   }, [phase, matchWords.length, finishMatch])
 
-  // Current Target Word
+  // Current Target Word & Expected Key
   const currentTargetWord = matchWords[p1WordIndex] || ""
+  const expectedKey = useMemo(() => {
+    if (phase !== "BATTLE") return null
+    return currentTargetWord[typedInput.length] ?? null
+  }, [phase, currentTargetWord, typedInput.length])
 
   // Handle Input Typing
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (phase !== "BATTLE" || isRecoilActive) return
 
     const val = e.target.value
+    const lastChar = val.length > 0 ? val[val.length - 1] : null
     setP1TotalChars((c) => c + 1)
 
     // Check if valid prefix of target word
     if (currentTargetWord.startsWith(val)) {
+      if (lastChar) {
+        setLastPressedKey(lastChar)
+        setTimeout(() => setLastPressedKey(null), 150)
+      }
       setTypedInput(val)
       setP1CorrectChars((c) => c + 1)
 
@@ -200,6 +214,10 @@ function ArenaContent() {
       }
     } else {
       // Recoil typo penalty
+      if (lastChar) {
+        setLastErrorKey(lastChar)
+        setTimeout(() => setLastErrorKey(null), 300)
+      }
       setIsRecoilActive(true)
       setTimeout(() => setIsRecoilActive(false), DEFAULT_MULTIPLAYER_CONFIG.errorChakraRecoilMs)
       setP1Combo(0)
@@ -247,6 +265,8 @@ function ArenaContent() {
     setFinalStats({ wpm: 0, accuracy: 100 })
     setP1LastHit(null)
     setP2LastHit(null)
+    setLastPressedKey(null)
+    setLastErrorKey(null)
   }
 
   const p1HpPercent = Math.max(0, (p1Hp / DEFAULT_MULTIPLAYER_CONFIG.initialHealth) * 100)
@@ -585,6 +605,17 @@ function ArenaContent() {
               autoComplete="off"
               autoCapitalize="off"
               spellCheck="false"
+            />
+          </div>
+
+          {/* Visual Keyboard */}
+          <div className="w-full max-w-2xl px-2">
+            <TypingKeyboard
+              expectedKey={expectedKey}
+              pressedKey={lastPressedKey}
+              lastErrorKey={lastErrorKey}
+              layout={locale === "en" ? "en" : "pt-BR"}
+              className="shadow-2xl"
             />
           </div>
 

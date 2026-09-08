@@ -15,6 +15,7 @@ import { BattleHud } from "./BattleHud"
 import { TypingArea } from "./TypingArea"
 import { DamageIndicator } from "./DamageIndicator"
 import { BattleResult } from "./BattleResult"
+import { TypingKeyboard } from "@/components/keyboard/TypingKeyboard"
 import { useI18n } from "@/lib/i18n/i18nContext"
 
 interface BattleArenaProps {
@@ -24,7 +25,7 @@ interface BattleArenaProps {
 }
 
 export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [enemyUnderAttack, setEnemyUnderAttack] = useState(false)
   const [playerUnderAttack, setPlayerUnderAttack] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
@@ -145,7 +146,16 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
   )
 
   // Typing engine instance
-  const { chars, stats, inputRef, reset, focus } = useTypingEngine({
+  const {
+    chars,
+    stats,
+    inputRef,
+    reset,
+    focus,
+    expectedKey,
+    pressedKey,
+    lastErrorKey,
+  } = useTypingEngine({
     text: currentText,
     enabled: phase === "fighting" && !isTransitioning,
     onComplete: handleRoundComplete,
@@ -297,6 +307,24 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
               />
             </motion.div>
           </AnimatePresence>
+
+          {/* Gameplay Visual Keyboard below TypingArea */}
+          {phase === "fighting" && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex justify-center pt-2"
+            >
+              <TypingKeyboard
+                expectedKey={expectedKey}
+                pressedKey={pressedKey}
+                lastErrorKey={lastErrorKey}
+                layout={locale === "en" ? "en" : "pt-BR"}
+                size="sm"
+                className="scale-90 sm:scale-95"
+              />
+            </motion.div>
+          )}
 
           {/* Round counter & transition indicator */}
           {phase === "fighting" && (
