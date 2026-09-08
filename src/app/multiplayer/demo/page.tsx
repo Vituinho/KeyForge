@@ -293,7 +293,7 @@ function ArenaContent() {
           </Link>
           <div className="flex items-center gap-2">
             <span className="font-black text-sm uppercase tracking-wider text-orange-400 font-mono">
-              ROOM: {roomParam}
+              {t("multiplayerHub.roomCode")}: {roomParam}
             </span>
             <span className="px-2 py-0.5 rounded-full bg-orange-500/10 border border-orange-500/30 text-[10px] font-bold text-orange-300 font-mono">
               {t("multiplayerArena.prototypeBadge")}
@@ -344,7 +344,9 @@ function ArenaContent() {
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-white/50 font-mono">
-                    <span>Lv. {player.level} · Rank {player.rank}</span>
+                    <span>
+                      {t("dashboard.quickWidget.level")} {player.level} · {t("common.rank")} {player.rank}
+                    </span>
                     <span>•</span>
                     <span className="text-[10px] text-orange-400 font-bold">
                       ⌨️ {equippedSkin.name}
@@ -416,7 +418,7 @@ function ArenaContent() {
                 whileTap={{ scale: 0.97 }}
                 className="w-full mt-3 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-orange-500 text-black font-black text-xs uppercase tracking-widest shadow-[0_0_25px_rgba(245,158,11,0.6)] cursor-pointer"
               >
-                ⚡ RASENGAN BURST! (180 DMG)
+                {t("multiplayerArena.rasenganBurst", { dmg: 180 })}
               </motion.button>
             )}
 
@@ -452,10 +454,12 @@ function ArenaContent() {
                       {t("multiplayerArena.rivalPlayer")}
                     </span>
                     <span className="px-2 py-0.5 rounded-md bg-purple-500/20 border border-purple-500/40 text-purple-300 font-mono text-[10px] font-bold">
-                      BOT
+                      {t("multiplayerArena.bot")}
                     </span>
                   </div>
-                  <span className="text-xs text-white/50 font-mono">Lv. {player.level} · Jonin</span>
+                  <span className="text-xs text-white/50 font-mono">
+                    {t("dashboard.quickWidget.level")} {player.level} · {t("multiplayerArena.botRankLabel")}
+                  </span>
                 </div>
               </div>
 
@@ -636,7 +640,9 @@ function ArenaContent() {
             <span>•</span>
             <span>
               {t("multiplayerArena.damageDealt")}:{" "}
-              <strong className="text-orange-400">{p1DamageDealt} DMG</strong>
+              <strong className="text-orange-400">
+                {p1DamageDealt} {t("multiplayerArena.dmgShort")}
+              </strong>
             </span>
           </div>
         </div>
