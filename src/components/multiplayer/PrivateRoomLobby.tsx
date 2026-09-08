@@ -19,6 +19,7 @@ import {
   setPlayerReadyState,
   leaveRoomState,
 } from "@/lib/multiplayer/roomManager"
+import { setPlayerReady } from "@/lib/multiplayer/matchService"
 import { useI18n } from "@/lib/i18n/i18nContext"
 import { ConnectionStateBadge } from "./ConnectionStateBadge"
 import { getSkinById, RARITY_DETAILS } from "@/data/keyboardSkins"
@@ -175,6 +176,14 @@ export function PrivateRoomLobby({
       skinId: currentPlayer.skinId,
     })
     unsubscribe()
+
+    setPlayerReady({
+      matchId: room.code,
+      isReady: !myReady,
+      playerId: currentPlayer.id,
+    }).catch((err) => {
+      console.warn("[PrivateRoom] Authoritative set ready notice:", err)
+    })
   }
 
   const handleStartDuel = () => {
