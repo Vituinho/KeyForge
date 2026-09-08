@@ -26,7 +26,7 @@ export function CrateOpeningModal({
   isOpen,
   onClose,
 }: CrateOpeningModalProps) {
-  const { locale } = useI18n()
+  const { locale, t } = useI18n()
   const {
     crates,
     openCrate,
@@ -100,9 +100,7 @@ export function CrateOpeningModal({
         {/* Guest Mode Indicator */}
         {isGuest && (
           <div className="w-full px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[11px] font-mono">
-            {locale === "pt-BR"
-              ? "Modo Visitante: os itens são salvos localmente no navegador."
-              : "Guest Mode: unlocked cosmetics are saved locally."}
+            {t("lockerModule.openingModal.guestNotice")}
           </div>
         )}
 
@@ -111,10 +109,14 @@ export function CrateOpeningModal({
           <div className="space-y-6 w-full py-4">
             <div className="space-y-1">
               <span className="text-[10px] font-mono tracking-widest text-white/40 uppercase">
-                {locale === "pt-BR" ? "CAIXA DE DIGITAÇÃO" : "TYPING CRATE"}
+                {t("lockerModule.openingModal.typingCrateCategory")}
               </span>
-              <h2 className="text-2xl font-black text-white">{crate.name}</h2>
-              <p className="text-xs text-white/60 max-w-sm mx-auto">{crate.description}</p>
+              <h2 className="text-2xl font-black text-white">
+                {t(`lockerModule.crates.${crate.id}.name`)}
+              </h2>
+              <p className="text-xs text-white/60 max-w-sm mx-auto">
+                {t(`lockerModule.crates.${crate.id}.description`)}
+              </p>
             </div>
 
             {/* 3D Crate Box Representation */}
@@ -130,15 +132,14 @@ export function CrateOpeningModal({
             >
               <span>{crate.icon}</span>
               <div className="absolute -bottom-3 px-3 py-0.5 rounded-full bg-black border border-white/20 text-[10px] font-mono font-bold text-white">
-                {remainingCount}{" "}
-                {locale === "pt-BR" ? "Disponíveis" : "Available"}
+                {t("lockerModule.openingModal.availableBadge", { count: remainingCount })}
               </div>
             </motion.div>
 
             {/* Drop Rates Telemetry Preview */}
             <div className="p-3 rounded-2xl bg-white/5 border border-white/10 max-w-sm mx-auto text-left space-y-1.5">
               <div className="flex items-center justify-between text-[11px] font-mono text-white/50 border-b border-white/5 pb-1">
-                <span>{locale === "pt-BR" ? "Probabilidades" : "Drop Probabilities"}</span>
+                <span>{t("lockerModule.openingModal.probabilities")}</span>
                 <span>{(crate.guaranteedMinRarity ?? "common").toUpperCase()} +</span>
               </div>
               <div className="flex flex-wrap gap-2 text-[10px] font-mono">
@@ -165,12 +166,8 @@ export function CrateOpeningModal({
                 className="w-full max-w-sm py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 via-amber-400 to-yellow-400 text-black font-black text-sm tracking-wider uppercase shadow-[0_0_30px_rgba(245,158,11,0.5)] cursor-pointer hover:scale-102 active:scale-98 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {remainingCount > 0
-                  ? locale === "pt-BR"
-                    ? "Abrir Caixa Agora"
-                    : "Open Crate Now"
-                  : locale === "pt-BR"
-                  ? "Sem Caixas Disponíveis"
-                  : "No Crates Left"}
+                  ? t("lockerModule.openingModal.openNowBtn")
+                  : t("lockerModule.openingModal.noCratesLeft")}
               </button>
             </div>
           </div>
@@ -203,12 +200,10 @@ export function CrateOpeningModal({
                 animate={{ opacity: [0.6, 1, 0.6] }}
                 transition={{ duration: 0.5, repeat: Infinity }}
               >
-                ⚡ {locale === "pt-BR" ? "FORJANDO KEYCAPS..." : "FORGING KEYCAPS..."} ⚡
+                ⚡ {t("lockerModule.openingModal.forgingKeycaps")} ⚡
               </motion.div>
               <p className="text-xs text-white/40 font-mono">
-                {locale === "pt-BR"
-                  ? "Canalizando chakra dos switches mecânicos..."
-                  : "Channelling mechanical switch energy..."}
+                {t("lockerModule.openingModal.channelingEnergy")}
               </p>
             </div>
           </div>
@@ -226,11 +221,11 @@ export function CrateOpeningModal({
             <div>
               {result.isDuplicate ? (
                 <span className="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 font-mono text-xs font-black uppercase tracking-wider">
-                  {locale === "pt-BR" ? "♻️ DUPLICATA SALVAGUARDADA" : "♻️ DUPLICATE SALVAGED"}
+                  {t("lockerModule.openingModal.duplicateSalvaged")}
                 </span>
               ) : (
                 <span className="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 font-mono text-xs font-black uppercase tracking-wider animate-pulse">
-                  ✨ {locale === "pt-BR" ? "NOVA SKIN DESBLOQUEADA!" : "NEW SKIN UNLOCKED!"} ✨
+                  {t("lockerModule.openingModal.newSkinUnlocked")}
                 </span>
               )}
             </div>
@@ -253,7 +248,7 @@ export function CrateOpeningModal({
                   {RARITY_DETAILS[result.skin.rarity].name[locale === "pt-BR" ? "pt-BR" : "en"]}
                 </span>
                 <span className="text-[10px] font-mono text-white/40 uppercase">
-                  {result.skin.collection}
+                  {t(`lockerModule.collections.${result.skin.collection}`)}
                 </span>
               </div>
 
@@ -286,9 +281,7 @@ export function CrateOpeningModal({
               {/* Duplicate Shards Notice */}
               {result.isDuplicate && (
                 <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono text-xs font-bold">
-                  {locale === "pt-BR"
-                    ? `Item já possuído! Você recebeu +${result.shardsAwarded} Fragmentos da Forja 💎`
-                    : `Already owned! Converted to +${result.shardsAwarded} Forge Shards 💎`}
+                  {t("lockerModule.openingModal.duplicateNotice", { amount: result.shardsAwarded })}
                 </div>
               )}
             </div>
@@ -308,12 +301,8 @@ export function CrateOpeningModal({
                   <Check size={16} />
                   <span>
                     {isEquipped
-                      ? locale === "pt-BR"
-                        ? "Skin Equipada"
-                        : "Skin Equipped"
-                      : locale === "pt-BR"
-                      ? "Equipar Agora"
-                      : "Equip Now"}
+                      ? t("lockerModule.openingModal.equippedBadge")
+                      : t("lockerModule.openingModal.equipNowBtn")}
                   </span>
                 </button>
               )}
@@ -326,9 +315,7 @@ export function CrateOpeningModal({
                 >
                   <RotateCcw size={16} />
                   <span>
-                    {locale === "pt-BR"
-                      ? `Abrir Outra (${remainingCount})`
-                      : `Open Another (${remainingCount})`}
+                    {t("lockerModule.openingModal.openAnotherBtn", { count: remainingCount })}
                   </span>
                 </button>
               ) : (
@@ -337,7 +324,7 @@ export function CrateOpeningModal({
                   onClick={onClose}
                   className="w-full py-3 rounded-2xl bg-white/10 hover:bg-white/15 text-white font-mono text-xs font-bold transition-all cursor-pointer"
                 >
-                  {locale === "pt-BR" ? "Concluir" : "Done"}
+                  {t("lockerModule.openingModal.doneBtn")}
                 </button>
               )}
             </div>
