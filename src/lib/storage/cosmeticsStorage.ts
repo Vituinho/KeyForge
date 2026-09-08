@@ -55,10 +55,11 @@ export function loadCosmeticsState(): PlayerCosmeticsState {
     const starterSet = new Set(DEFAULT_STARTER_SKIN_IDS)
     const existingUnlocked = Array.isArray(parsed.unlockedSkinIds) ? parsed.unlockedSkinIds : []
 
-    // Ensure all starters are present in unlocked list
+    let missingStarters = false
     starterSet.forEach((s) => {
       if (!existingUnlocked.includes(s)) {
         existingUnlocked.push(s)
+        missingStarters = true
       }
     })
 
@@ -68,6 +69,10 @@ export function loadCosmeticsState(): PlayerCosmeticsState {
       crates: typeof parsed.crates === "object" && parsed.crates !== null ? parsed.crates : { basic_crate: 1 },
       forgeShards: typeof parsed.forgeShards === "number" && parsed.forgeShards >= 0 ? parsed.forgeShards : 50,
       updatedAt: parsed.updatedAt || new Date().toISOString(),
+    }
+
+    if (missingStarters) {
+      localStorage.setItem(COSMETICS_STORAGE_KEY, JSON.stringify(validated))
     }
 
     return validated
