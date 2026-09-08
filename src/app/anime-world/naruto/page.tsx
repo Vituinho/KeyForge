@@ -83,13 +83,13 @@ export default function NarutoWorldMapPage() {
           className="inline-flex items-center gap-2 text-xs font-bold text-white/50 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/10"
         >
           <ChevronLeft size={16} />
-          <span>CAMPAIGN HUB</span>
+          <span>{t("animeWorld.campaignHub").toUpperCase()}</span>
         </Link>
 
         <div className="flex items-center gap-3 text-xs font-mono">
-          <span className="text-white/40">NARUTO WORLD</span>
+          <span className="text-white/40">{t("animeWorld.narutoWorld").toUpperCase()}</span>
           <span className="text-orange-400 font-bold">
-            {completedStages.length} / {narutoCharacters.length} COMPLETED
+            {t("animeWorld.completedCount", { count: completedStages.length, total: narutoCharacters.length }).toUpperCase()}
           </span>
         </div>
       </div>
@@ -99,20 +99,20 @@ export default function NarutoWorldMapPage() {
         <div>
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-orange-400 font-mono mb-1">
             <Flame size={14} />
-            <span>Chapter 1: The Leaf to the War</span>
+            <span>{t("animeWorld.chapter1")}</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
             {t("animeWorld.narutoMapTitle")}
           </h1>
           <p className="text-white/40 text-xs sm:text-sm mt-1 max-w-xl">
-            Overcome each shinobi trial in sequential order. Each battle tests a distinct keyboard mastery discipline.
+            {t("animeWorld.chapterDesc")}
           </p>
         </div>
 
         {progress?.completed && (
           <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold text-xs">
             <CheckCircle2 size={16} />
-            <span>CAMPAIGN MASTERED</span>
+            <span>{t("animeWorld.campaignMastered").toUpperCase()}</span>
           </div>
         )}
       </div>
@@ -193,10 +193,17 @@ export default function NarutoWorldMapPage() {
                     </div>
 
                     <div className="flex items-center gap-3 text-[11px] text-white/40 font-mono mt-0.5">
-                      <span>Lvl {char.level}</span>
+                      <span>{t("common.level")} {char.level}</span>
                       <span>·</span>
                       <span className="capitalize text-orange-400/80 font-bold">
-                        {char.typingFocus} focus
+                        {t("animeWorld.focusTag", {
+                          focus:
+                            (char.typingFocus
+                              ? t(`battle.focusTypes.${char.typingFocus}` as Parameters<typeof t>[0])
+                              : "") ||
+                            char.typingFocus ||
+                            "",
+                        })}
                       </span>
                       <span>·</span>
                       <span>{char.recommendedWpm} WPM</span>
@@ -260,7 +267,11 @@ export default function NarutoWorldMapPage() {
                     {selectedEnemy.name}
                   </h2>
                   <p className="text-xs text-white/50 leading-relaxed">
-                    {selectedEnemy.description}
+                    {t(
+                      `battle.characterDescriptions.${selectedEnemy.id.replace("-", "_")}` as Parameters<
+                        typeof t
+                      >[0]
+                    ) || selectedEnemy.description}
                   </p>
                 </div>
 
@@ -292,7 +303,9 @@ export default function NarutoWorldMapPage() {
                       {t("animeWorld.combatFocus")}
                     </span>
                     <span className="text-sm font-black text-orange-400 font-mono uppercase">
-                      {selectedEnemy.typingFocus}
+                      {t(
+                        `battle.focusTypes.${selectedEnemy.typingFocus}` as Parameters<typeof t>[0]
+                      ) || selectedEnemy.typingFocus}
                     </span>
                   </div>
 
@@ -312,10 +325,20 @@ export default function NarutoWorldMapPage() {
                   <div className="p-3.5 rounded-2xl bg-white/5 border border-white/10 space-y-1 relative z-10">
                     <div className="flex items-center gap-1.5 text-xs font-bold text-amber-400">
                       <Sparkles size={14} />
-                      <span>{selectedEnemy.mechanics[0].name}</span>
+                      <span>
+                        {t(
+                          `animeWorld.mechanicDetails.${selectedEnemy.id === "rock-lee" ? "rockLee" : selectedEnemy.id}.name` as Parameters<
+                            typeof t
+                          >[0]
+                        ) || selectedEnemy.mechanics[0].name}
+                      </span>
                     </div>
                     <p className="text-[11px] text-white/60 leading-relaxed">
-                      {selectedEnemy.mechanics[0].description}
+                      {t(
+                        `animeWorld.mechanicDetails.${selectedEnemy.id === "rock-lee" ? "rockLee" : selectedEnemy.id}.desc` as Parameters<
+                          typeof t
+                        >[0]
+                      ) || selectedEnemy.mechanics[0].description}
                     </p>
                   </div>
                 )}
@@ -324,22 +347,24 @@ export default function NarutoWorldMapPage() {
                 {bestScore && (
                   <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono space-y-1 relative z-10">
                     <span className="text-[10px] uppercase font-bold text-emerald-300 block">
-                      Your Personal Best Record
+                      {t("animeWorld.personalBestRecord")}
                     </span>
                     <div className="flex justify-between text-emerald-200">
-                      <span>WPM: <strong>{bestScore.bestWpm}</strong></span>
-                      <span>Acc: <strong>{bestScore.bestAccuracy}%</strong></span>
-                      <span>Combo: <strong>×{bestScore.bestCombo}</strong></span>
+                      <span>{t("common.wpm")}: <strong>{bestScore.bestWpm}</strong></span>
+                      <span>{t("battle.hud.acc")}: <strong>{bestScore.bestAccuracy}%</strong></span>
+                      <span>{t("common.combo")}: <strong>×{bestScore.bestCombo}</strong></span>
                     </div>
                   </div>
                 )}
 
                 {/* XP Rewards section */}
                 <div className="flex items-center justify-between flex-wrap gap-2 text-xs font-mono text-white/60 pt-2 border-t border-white/10 relative z-10">
-                  <span>Standard Reward: <strong className="text-amber-400 font-bold">+{selectedEnemy.xpReward ?? 50} XP</strong></span>
+                  <span>
+                    {t("animeWorld.standardReward", { xp: selectedEnemy.xpReward ?? 50 })}
+                  </span>
                   {!isFirstClearClaimed && selectedEnemy.firstClearBonusXp && (
                     <span className="text-emerald-400 font-bold">
-                      +{selectedEnemy.firstClearBonusXp} XP 1st Clear
+                      {t("animeWorld.firstClearBonus", { xp: selectedEnemy.firstClearBonusXp })}
                     </span>
                   )}
                 </div>
@@ -362,7 +387,7 @@ export default function NarutoWorldMapPage() {
                         <span>{t("animeWorld.lockedStage").toUpperCase()}</span>
                       </div>
                       <p className="text-[11px] text-white/30">
-                        Defeat the previous opponent on the campaign path to unlock this battle.
+                        {t("animeWorld.lockedStageDesc")}
                       </p>
                     </div>
                   )}
