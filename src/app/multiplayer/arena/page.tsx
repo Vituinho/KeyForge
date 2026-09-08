@@ -21,7 +21,7 @@ function ArenaPageContent() {
   const router = useRouter()
   const { user } = useAuth()
   const { equippedSkin } = useCosmetics()
-  const { locale } = useI18n()
+  const { locale, t } = useI18n()
 
   const matchIdParam = searchParams.get("matchId")
   const roomParam = searchParams.get("room")
@@ -92,7 +92,7 @@ function ArenaPageContent() {
       <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center space-y-4">
         <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
         <p className="text-xs font-mono uppercase tracking-widest text-white/50">
-          INITIALIZING MULTIPLAYER ARENA...
+          {t("multiplayerArena.initializingArena")}
         </p>
       </div>
     )
@@ -102,13 +102,13 @@ function ArenaPageContent() {
     return (
       <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center space-y-4 p-4 text-center">
         <AlertCircle className="w-12 h-12 text-rose-500" />
-        <h2 className="text-xl font-black">ARENA INITIALIZATION ERROR</h2>
-        <p className="text-xs text-white/50 max-w-sm">{error || "Match could not be found."}</p>
+        <h2 className="text-xl font-black">{t("multiplayerArena.arenaInitError")}</h2>
+        <p className="text-xs text-white/50 max-w-sm">{error || t("multiplayerArena.matchNotFound")}</p>
         <Link
           href="/multiplayer"
           className="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold font-mono text-white transition-colors"
         >
-          Return to Hub
+          {t("multiplayerArena.returnToHub")}
         </Link>
       </div>
     )
@@ -123,19 +123,22 @@ function ArenaPageContent() {
   )
 }
 
+function ArenaLoadingFallback() {
+  const { t } = useI18n()
+  return (
+    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center space-y-4">
+      <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
+      <p className="text-xs font-mono uppercase tracking-widest text-white/50">
+        {t("multiplayerArena.preparingBattleground")}
+      </p>
+    </div>
+  )
+}
+
 export default function MultiplayerArenaPage() {
   return (
     <MultiplayerAuthGuard>
-      <Suspense
-        fallback={
-          <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center space-y-4">
-            <Loader2 className="w-10 h-10 text-orange-500 animate-spin" />
-            <p className="text-xs font-mono uppercase tracking-widest text-white/50">
-              PREPARING BATTLEGROUND...
-            </p>
-          </div>
-        }
-      >
+      <Suspense fallback={<ArenaLoadingFallback />}>
         <ArenaPageContent />
       </Suspense>
     </MultiplayerAuthGuard>

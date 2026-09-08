@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Zap } from "lucide-react"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 export interface AttackEnergyGaugeProps {
   energy: number // 0 - 100
@@ -14,10 +15,12 @@ export interface AttackEnergyGaugeProps {
 export function AttackEnergyGauge({
   energy,
   isPlayer1 = true,
-  label = "ATK ENERGY",
+  label,
   className = "",
   lastAttackTimestamp,
 }: AttackEnergyGaugeProps) {
+  const { t } = useI18n()
+  const displayLabel = label ?? t("multiplayerArena.atkEnergy")
   const isCharged = energy >= 100
   const primaryColor = isPlayer1 ? "from-orange-500 to-amber-400" : "from-blue-500 to-cyan-400"
   const glowColor = isPlayer1 ? "rgba(249,115,22,0.8)" : "rgba(59,130,246,0.8)"
@@ -36,7 +39,7 @@ export function AttackEnergyGauge({
                 : "text-white/40"
             }`}
           />
-          <span className="text-white/60 font-bold uppercase tracking-wider">{label}</span>
+          <span className="text-white/60 font-bold uppercase tracking-wider">{displayLabel}</span>
         </div>
 
         <div className="flex items-center gap-1.5">
@@ -50,7 +53,7 @@ export function AttackEnergyGauge({
                   : "bg-blue-500/20 text-blue-300 border-blue-500/40"
               }`}
             >
-              READY
+              {t("multiplayerArena.readyBadge")}
             </motion.span>
           )}
           <span

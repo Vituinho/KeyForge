@@ -125,8 +125,8 @@ export function PostMatchAnalysis({
       })
     } else {
       list.push({
-        title: locale === "pt-BR" ? "Ritmo Equilibrado de Combate" : "Even Combat Pace",
-        desc: locale === "pt-BR" ? "Ambos os shinobi trocaram golpes com velocidade de digitação muito próxima." : "Both shinobi traded blows with closely matched typing velocity.",
+        title: t("multiplayerArena.evenPaceTitle"),
+        desc: t("multiplayerArena.evenPaceDesc"),
         type: "neutral",
       })
     }
@@ -147,8 +147,8 @@ export function PostMatchAnalysis({
       })
     } else if (accDiff > 5) {
       list.push({
-        title: locale === "pt-BR" ? "Vantagem de Precisão" : "Precision Edge",
-        desc: locale === "pt-BR" ? `Sua precisão +${accDiff}% superior garantiu bônus consistentes em todas as palavras.` : `Your +${accDiff}% higher accuracy gave you cleaner multiplier bonuses across all words.`,
+        title: t("multiplayerArena.precisionEdgeTitle"),
+        desc: t("multiplayerArena.precisionEdgeDesc", { diff: accDiff }),
         type: "positive",
       })
     }
@@ -171,14 +171,14 @@ export function PostMatchAnalysis({
     // 4. Perfect Words
     if (myPerfectWords >= 8) {
       list.push({
-        title: locale === "pt-BR" ? "Execução Impecável de Palavras" : "Flawless Word Casts",
-        desc: locale === "pt-BR" ? `${myPerfectWords} palavras perfeitas geraram impulsos imediatos de +30 de Energia de Ataque!` : `${myPerfectWords} perfect words provided instant +30 Attack Energy bursts!`,
+        title: t("multiplayerArena.flawlessWordsTitle"),
+        desc: t("multiplayerArena.flawlessWordsDesc", { count: myPerfectWords }),
         type: "positive",
       })
     }
 
     return list
-  }, [myWpm, oppWpm, myAccuracy, oppAccuracy, myMaxCombo, myPerfectWords, t, locale])
+  }, [myWpm, oppWpm, myAccuracy, oppAccuracy, myMaxCombo, myPerfectWords, t])
 
   // Top Weak Keys (up to 4)
   const topWeakKeys = useMemo(() => {
@@ -227,7 +227,7 @@ export function PostMatchAnalysis({
                   {formattedTime}
                 </span>
                 <span>•</span>
-                <span>{match.room_code || "QUICK MATCH"}</span>
+                <span>{match.room_code || t("multiplayerHub.quickMatchTitle").toUpperCase()}</span>
               </div>
             </div>
           </div>
@@ -247,14 +247,14 @@ export function PostMatchAnalysis({
               </span>
               {rewardSummary && rewardSummary.bonusXp > 0 && (
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">
-                  +{rewardSummary.bonusXp} BONUS
+                  {t("multiplayerArena.bonusXp", { amount: rewardSummary.bonusXp })}
                 </span>
               )}
             </div>
 
             {rewardSummary?.didLevelUp && (
               <span className="text-[10px] font-black text-yellow-400 block animate-pulse">
-                LEVEL UP: Lv. {rewardSummary.newLevel}!
+                {t("multiplayerArena.levelUpShort", { level: rewardSummary.newLevel })}
               </span>
             )}
             {rewardSummary?.awardedCrate && (
@@ -278,7 +278,7 @@ export function PostMatchAnalysis({
             <div className="space-y-2 border-b sm:border-b-0 sm:border-r border-white/10 pb-3 sm:pb-0 sm:pr-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-black text-white block">You</span>
+                  <span className="text-xs font-black text-white block">{t("multiplayerArena.localPlayer")}</span>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <span className="text-[10px] text-orange-400 font-bold">{mySkin.name}</span>
                     <span
@@ -309,19 +309,19 @@ export function PostMatchAnalysis({
 
               <div className="grid grid-cols-2 gap-1 text-[11px] pt-1">
                 <div>
-                  <span className="text-white/40 block text-[9px]">SPEED</span>
+                  <span className="text-white/40 block text-[9px]">{t("multiplayerArena.speedStat")}</span>
                   <span className="font-black text-white">{myWpm} WPM</span>
                 </div>
                 <div>
-                  <span className="text-white/40 block text-[9px]">ACCURACY</span>
+                  <span className="text-white/40 block text-[9px]">{t("multiplayerArena.accuracyStat")}</span>
                   <span className="font-black text-emerald-400">{myAccuracy}%</span>
                 </div>
                 <div>
-                  <span className="text-white/40 block text-[9px]">PEAK COMBO</span>
+                  <span className="text-white/40 block text-[9px]">{t("multiplayerArena.peakComboStat")}</span>
                   <span className="font-black text-amber-400">{myMaxCombo}x</span>
                 </div>
                 <div>
-                  <span className="text-white/40 block text-[9px]">DAMAGE</span>
+                  <span className="text-white/40 block text-[9px]">{t("multiplayerArena.damageStat")}</span>
                   <span className="font-black text-orange-400">{myDamageDealt}</span>
                 </div>
               </div>
@@ -331,7 +331,7 @@ export function PostMatchAnalysis({
             <div className="space-y-2 pt-2 sm:pt-0 sm:pl-2">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-black text-white block">Rival</span>
+                  <span className="text-xs font-black text-white block">{t("multiplayerArena.rivalPlayer")}</span>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     <span className="text-[10px] text-blue-400 font-bold">{oppSkin.name}</span>
                     <span
@@ -362,19 +362,19 @@ export function PostMatchAnalysis({
 
               <div className="grid grid-cols-2 gap-1 text-[11px] pt-1">
                 <div>
-                  <span className="text-white/40 block text-[9px]">SPEED</span>
+                  <span className="text-white/40 block text-[9px]">{t("multiplayerArena.speedStat")}</span>
                   <span className="font-black text-white">{oppWpm} WPM</span>
                 </div>
                 <div>
-                  <span className="text-white/40 block text-[9px]">ACCURACY</span>
+                  <span className="text-white/40 block text-[9px]">{t("multiplayerArena.accuracyStat")}</span>
                   <span className="font-black text-blue-400">{oppAccuracy}%</span>
                 </div>
                 <div>
-                  <span className="text-white/40 block text-[9px]">PERFECT WORDS</span>
+                  <span className="text-white/40 block text-[9px]">{t("multiplayerArena.perfectWordsStat")}</span>
                   <span className="font-black text-cyan-300">{myPerfectWords}</span>
                 </div>
                 <div>
-                  <span className="text-white/40 block text-[9px]">DAMAGE</span>
+                  <span className="text-white/40 block text-[9px]">{t("multiplayerArena.damageStat")}</span>
                   <span className="font-black text-orange-400">{oppDamageDealt}</span>
                 </div>
               </div>
@@ -456,7 +456,7 @@ export function PostMatchAnalysis({
               className="flex-1 py-3 px-4 rounded-2xl bg-white/10 hover:bg-white/15 text-xs font-bold font-mono text-white transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
               <ArrowLeft size={16} />
-              <span>{locale === "pt-BR" ? "Voltar ao Resumo" : "Back to Summary"}</span>
+              <span>{t("multiplayerArena.backToSummary")}</span>
             </button>
           )}
 

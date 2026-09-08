@@ -413,7 +413,7 @@ function MultiplayerContent() {
                         </span>
                       </div>
                       <p className="text-[10px] font-mono text-white/50 animate-pulse">
-                        Entering Battleground...
+                        {t("multiplayerHub.enteringBattleground")}
                       </p>
                     </motion.div>
                   ) : (
@@ -500,7 +500,7 @@ function MultiplayerContent() {
                         type="button"
                         onClick={handleCopyCode}
                         className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-                        title="Copy Room Code"
+                        title={t("multiplayerHub.copyRoomCode")}
                       >
                         {copiedCode ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
                       </button>
@@ -624,7 +624,7 @@ function MultiplayerContent() {
 
       {/* Footer */}
       <footer className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 py-5 text-center text-xs text-white/30 font-mono">
-        KeyForge v2.3 · Multiplayer Arena Foundation
+        KeyForge v2.3 · {t("multiplayerHub.footer")}
       </footer>
     </div>
   )

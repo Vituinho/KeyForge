@@ -227,7 +227,7 @@ export function PrivateRoomLobby({
               type="button"
               onClick={handleCopyCode}
               className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-colors cursor-pointer"
-              title="Copy Room Code"
+              title={t("multiplayerHub.copyRoomCode")}
             >
               {copiedCode ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
             </button>
@@ -325,7 +325,7 @@ export function PrivateRoomLobby({
             <Swords className={`w-8 h-8 ${bothReady ? "text-black" : "text-orange-400"}`} />
           </motion.div>
           <span className="font-black text-xs font-mono text-white/40 tracking-widest mt-2 uppercase">
-            DUEL
+            {t("multiplayerHub.duelLabel")}
           </span>
         </div>
 
@@ -462,16 +462,16 @@ export function PrivateRoomLobby({
                     {countdown}
                   </div>
                   <p className="text-sm font-mono uppercase tracking-widest text-orange-400/80 font-bold mt-2">
-                    GET READY TO TYPE
+                    {t("multiplayerHub.getReadyToType")}
                   </p>
                 </div>
               ) : (
                 <div className="relative">
                   <div className="text-6xl sm:text-8xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-400 to-red-500 drop-shadow-[0_0_50px_rgba(249,115,22,1)] uppercase">
-                    FORGE!
+                    {t("multiplayerArena.fight")}
                   </div>
                   <p className="text-xs font-mono uppercase tracking-widest text-white/80 font-bold mt-2">
-                    CLASH OF SHINOBI
+                    {t("multiplayerHub.clashOfShinobi")}
                   </p>
                 </div>
               )}
