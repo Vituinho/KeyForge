@@ -97,6 +97,99 @@ export interface PlayerCrateRow {
   updated_at: string
 }
 
+export interface MultiplayerMatchRow {
+  id: string
+  room_code: string | null
+  mode: "quick" | "private"
+  status: "waiting" | "ready" | "countdown" | "playing" | "finished" | "cancelled"
+  language: "pt-BR" | "en"
+  seed: number
+  word_count: number
+  player_1_id: string
+  player_2_id: string | null
+  player_1_ready: boolean
+  player_2_ready: boolean
+  player_1_hp: number
+  player_2_hp: number
+  player_1_word_index: number
+  player_2_word_index: number
+  player_1_combo: number
+  player_2_combo: number
+  player_1_attack_energy: number
+  player_2_attack_energy: number
+  player_1_ultimate_energy: number
+  player_2_ultimate_energy: number
+  player_1_wpm: number
+  player_2_wpm: number
+  player_1_accuracy: number
+  player_2_accuracy: number
+  player_1_skin_id: string
+  player_2_skin_id: string
+  winner_id: string | null
+  is_draw: boolean
+  countdown_starts_at: string | null
+  started_at: string | null
+  finished_at: string | null
+  player_1_last_active_at: string
+  player_2_last_active_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface MultiplayerMatchEventRow {
+  id: string
+  match_id: string
+  player_id: string
+  event_id: string
+  event_type:
+    | "WORD_COMPLETED"
+    | "ATTACK_RESOLVED"
+    | "ULTIMATE_TRIGGERED"
+    | "TYPO_PENALTY"
+    | "PLAYER_DISCONNECTED"
+    | "PLAYER_RECONNECTED"
+    | "FORFEIT"
+  word_index: number | null
+  word_text: string | null
+  accuracy: number | null
+  wpm: number | null
+  combo: number | null
+  damage_dealt: number
+  payload: Record<string, unknown>
+  created_at: string
+}
+
+export interface MultiplayerMatchResultRow {
+  id: string
+  match_id: string
+  mode: string
+  winner_id: string | null
+  loser_id: string | null
+  is_draw: boolean
+  duration_seconds: number
+  player_1_id: string
+  player_1_stats: Record<string, unknown>
+  player_1_xp_earned: number
+  player_2_id: string | null
+  player_2_stats: Record<string, unknown>
+  player_2_xp_earned: number
+  created_at: string
+}
+
+export interface MultiplayerQueueRow {
+  id: string
+  user_id: string
+  username: string
+  level: number
+  rank: string
+  language: "pt-BR" | "en"
+  skin_id: string
+  status: "searching" | "matched" | "cancelled"
+  matched_match_id: string | null
+  queued_at: string
+  updated_at: string
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -129,6 +222,26 @@ export interface Database {
         Row: PlayerCrateRow
         Insert: Partial<PlayerCrateRow> & { user_id: string; crate_id: string }
         Update: Partial<PlayerCrateRow>
+      }
+      multiplayer_matches: {
+        Row: MultiplayerMatchRow
+        Insert: Partial<MultiplayerMatchRow> & { player_1_id: string; seed: number; mode: "quick" | "private" }
+        Update: Partial<MultiplayerMatchRow>
+      }
+      multiplayer_match_events: {
+        Row: MultiplayerMatchEventRow
+        Insert: Omit<MultiplayerMatchEventRow, 'id' | 'created_at'> & { id?: string; created_at?: string }
+        Update: Partial<MultiplayerMatchEventRow>
+      }
+      multiplayer_match_results: {
+        Row: MultiplayerMatchResultRow
+        Insert: Omit<MultiplayerMatchResultRow, 'id' | 'created_at'> & { id?: string; created_at?: string }
+        Update: Partial<MultiplayerMatchResultRow>
+      }
+      multiplayer_queue: {
+        Row: MultiplayerQueueRow
+        Insert: Partial<MultiplayerQueueRow> & { user_id: string; username: string }
+        Update: Partial<MultiplayerQueueRow>
       }
     }
   }
