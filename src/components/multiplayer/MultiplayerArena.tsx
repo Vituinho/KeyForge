@@ -104,6 +104,8 @@ export function MultiplayerArena({
   const [reconnectedNotice, setReconnectedNotice] = useState(false)
   const [matchResult, setMatchResult] = useState<MultiplayerMatchResultRow | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const isTriggeringUltRef = useRef(false)
+  const isForfeitingRef = useRef(false)
 
   // Health and energy variables
   const p1Hp = currentMatch.player_1_hp
@@ -206,24 +208,34 @@ export function MultiplayerArena({
         },
         onOpponentTelemetry: (telemetry) => {
           if (telemetry.playerId === currentUserId) return
+
+          // Authoritative client protection: sanitize telemetry bounds
+          const safeWordIndex = Math.max(0, Math.min(currentMatch.word_count, telemetry.wordIndex))
+          const safeWpm = Math.max(0, Math.min(260, telemetry.wpm))
+          const safeAccuracy = Math.max(0, Math.min(100, telemetry.accuracy))
+          const safeCombo = Math.max(0, Math.min(safeWordIndex + 1, telemetry.combo))
+          const safeAttackEnergy = Math.max(0, Math.min(100, telemetry.attackEnergy))
+          const safeUltEnergy = Math.max(0, Math.min(100, telemetry.ultimateEnergy))
+          const safeHp = Math.max(0, Math.min(1000, telemetry.hp))
+
           setCurrentMatch((prev) => {
             const isOppP1 = prev.player_1_id === telemetry.playerId
             return {
               ...prev,
-              player_1_word_index: isOppP1 ? telemetry.wordIndex : prev.player_1_word_index,
-              player_2_word_index: !isOppP1 ? telemetry.wordIndex : prev.player_2_word_index,
-              player_1_wpm: isOppP1 ? telemetry.wpm : prev.player_1_wpm,
-              player_2_wpm: !isOppP1 ? telemetry.wpm : prev.player_2_wpm,
-              player_1_accuracy: isOppP1 ? telemetry.accuracy : prev.player_1_accuracy,
-              player_2_accuracy: !isOppP1 ? telemetry.accuracy : prev.player_2_accuracy,
-              player_1_combo: isOppP1 ? telemetry.combo : prev.player_1_combo,
-              player_2_combo: !isOppP1 ? telemetry.combo : prev.player_2_combo,
-              player_1_attack_energy: isOppP1 ? telemetry.attackEnergy : prev.player_1_attack_energy,
-              player_2_attack_energy: !isOppP1 ? telemetry.attackEnergy : prev.player_2_attack_energy,
-              player_1_ultimate_energy: isOppP1 ? telemetry.ultimateEnergy : prev.player_1_ultimate_energy,
-              player_2_ultimate_energy: !isOppP1 ? telemetry.ultimateEnergy : prev.player_2_ultimate_energy,
-              player_1_hp: isOppP1 ? telemetry.hp : prev.player_1_hp,
-              player_2_hp: !isOppP1 ? telemetry.hp : prev.player_2_hp,
+              player_1_word_index: isOppP1 ? safeWordIndex : prev.player_1_word_index,
+              player_2_word_index: !isOppP1 ? safeWordIndex : prev.player_2_word_index,
+              player_1_wpm: isOppP1 ? safeWpm : prev.player_1_wpm,
+              player_2_wpm: !isOppP1 ? safeWpm : prev.player_2_wpm,
+              player_1_accuracy: isOppP1 ? safeAccuracy : prev.player_1_accuracy,
+              player_2_accuracy: !isOppP1 ? safeAccuracy : prev.player_2_accuracy,
+              player_1_combo: isOppP1 ? safeCombo : prev.player_1_combo,
+              player_2_combo: !isOppP1 ? safeCombo : prev.player_2_combo,
+              player_1_attack_energy: isOppP1 ? safeAttackEnergy : prev.player_1_attack_energy,
+              player_2_attack_energy: !isOppP1 ? safeAttackEnergy : prev.player_2_attack_energy,
+              player_1_ultimate_energy: isOppP1 ? safeUltEnergy : prev.player_1_ultimate_energy,
+              player_2_ultimate_energy: !isOppP1 ? safeUltEnergy : prev.player_2_ultimate_energy,
+              player_1_hp: isOppP1 ? safeHp : prev.player_1_hp,
+              player_2_hp: !isOppP1 ? safeHp : prev.player_2_hp,
             }
           })
         },
@@ -265,7 +277,7 @@ export function MultiplayerArena({
     return () => {
       unsubscribe()
     }
-  }, [currentMatch.id, currentUserId, isP1, isOpponentShadow, triggerDamageFloat])
+  }, [currentMatch.id, currentMatch.word_count, currentUserId, isP1, isOpponentShadow, triggerDamageFloat])
 
   // Disconnect Grace Period Countdown & Forfeit Award
   useEffect(() => {
@@ -559,7 +571,8 @@ export function MultiplayerArena({
 
   // Handle Ultimate Activation
   const handleTriggerUltimate = useCallback(async () => {
-    if (myUlt < 100 || currentMatch.status !== "playing") return
+    if (isTriggeringUltRef.current || myUlt < 100 || currentMatch.status !== "playing") return
+    isTriggeringUltRef.current = true
 
     setUltimateActiveFlash(true)
     setTimeout(() => setUltimateActiveFlash(false), 1200)
@@ -592,6 +605,10 @@ export function MultiplayerArena({
       setCurrentMatch(updated)
     } catch (err) {
       console.warn("[Arena] Ultimate failed:", err)
+    } finally {
+      setTimeout(() => {
+        isTriggeringUltRef.current = false
+      }, 1500)
     }
   }, [myUlt, currentMatch.status, currentMatch.id, currentUserId, isP1, triggerDamageFloat, myWordIndex, liveWpm, liveAccuracy, localCombo])
 
@@ -609,6 +626,8 @@ export function MultiplayerArena({
 
   // Handle Forfeit
   const handleForfeit = async () => {
+    if (isForfeitingRef.current) return
+    isForfeitingRef.current = true
     try {
       const updated = await forfeitMatch({
         matchId: currentMatch.id,
@@ -619,6 +638,10 @@ export function MultiplayerArena({
       setShowForfeitConfirm(false)
     } catch (err) {
       console.warn("[Arena] Forfeit failed:", err)
+    } finally {
+      setTimeout(() => {
+        isForfeitingRef.current = false
+      }, 2000)
     }
   }
 
