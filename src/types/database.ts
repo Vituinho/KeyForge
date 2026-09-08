@@ -19,6 +19,14 @@ export interface ProfileRow {
   }
   achievements: string[]
   language: string
+  equipped_keyboard_skin?: string
+  forge_shards?: number
+  keyboard_settings?: {
+    showKeyboard?: boolean
+    effectIntensity?: string
+    showHandsGuide?: boolean
+    showHomeRowAnchors?: boolean
+  }
   created_at: string
   updated_at: string
 }
@@ -73,6 +81,22 @@ export interface BattleHistoryRow {
   played_at: string
 }
 
+export interface UserCosmeticRow {
+  id: string
+  user_id: string
+  cosmetic_id: string
+  cosmetic_type: string
+  unlocked_at: string
+}
+
+export interface PlayerCrateRow {
+  id: string
+  user_id: string
+  crate_id: string
+  quantity: number
+  updated_at: string
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -96,6 +120,17 @@ export interface Database {
         Insert: Omit<BattleHistoryRow, 'id' | 'played_at'> & { id?: string; played_at?: string }
         Update: Partial<BattleHistoryRow>
       }
+      user_cosmetics: {
+        Row: UserCosmeticRow
+        Insert: Partial<UserCosmeticRow> & { user_id: string; cosmetic_id: string }
+        Update: Partial<UserCosmeticRow>
+      }
+      player_crates: {
+        Row: PlayerCrateRow
+        Insert: Partial<PlayerCrateRow> & { user_id: string; crate_id: string }
+        Update: Partial<PlayerCrateRow>
+      }
     }
   }
 }
+
