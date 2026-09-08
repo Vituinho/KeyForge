@@ -115,6 +115,20 @@ export function addCratesDirectly(crateId: string, count: number = 1): PlayerCos
 }
 
 /**
+ * Directly add forge shards to player balance.
+ */
+export function addShardsDirectly(shards: number): PlayerCosmeticsState {
+  const current = loadCosmeticsState()
+  const updated: PlayerCosmeticsState = {
+    ...current,
+    forgeShards: (current.forgeShards || 0) + Math.max(0, shards),
+    updatedAt: new Date().toISOString(),
+  }
+  saveCosmeticsState(updated)
+  return updated
+}
+
+/**
  * Load accessibility settings safely.
  */
 export function loadKeyboardAccessibilitySettings(): KeyboardAccessibilitySettings {
