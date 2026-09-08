@@ -38,18 +38,18 @@ const ALL_RARITIES: SkinRarity[] = [
   "secret",
 ]
 
-const ALL_COLLECTIONS: { id: SkinCollection; label: string }[] = [
-  { id: "forge", label: "KeyForge" },
-  { id: "shinobi", label: "Shinobi" },
-  { id: "cosmic", label: "Cosmic" },
-  { id: "cursed", label: "Cursed" },
-  { id: "pirate", label: "Pirate" },
-  { id: "shadow", label: "Shadow" },
-  { id: "cyber", label: "Cyber" },
+const ALL_COLLECTIONS: SkinCollection[] = [
+  "forge",
+  "shinobi",
+  "cosmic",
+  "cursed",
+  "pirate",
+  "shadow",
+  "cyber",
 ]
 
 export default function KeyboardLockerPage() {
-  const { locale } = useI18n()
+  const { locale, t } = useI18n()
   const {
     equippedSkinId,
     unlockedSkinIds,
@@ -163,23 +163,21 @@ export default function KeyboardLockerPage() {
               className="p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-all flex items-center gap-2 text-xs font-mono font-bold"
             >
               <ArrowLeft size={16} />
-              <span>{locale === "pt-BR" ? "Painel" : "Dashboard"}</span>
+              <span>{t("lockerModule.backToDashboard")}</span>
             </Link>
 
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2.5">
                   <Sparkles className="text-amber-400" size={24} />
-                  <span>{locale === "pt-BR" ? "ARSENAL DE TECLADOS" : "KEYBOARD LOCKER"}</span>
+                  <span>{t("lockerModule.title")}</span>
                 </h1>
                 <span className="px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-400 font-mono text-[11px] font-bold">
                   v2.4
                 </span>
               </div>
               <p className="text-xs text-white/50 mt-0.5">
-                {locale === "pt-BR"
-                  ? "Personalize seu chassis, keycaps e efeitos. 100% cosmético."
-                  : "Customize chassis, keycaps, and visual auras. 100% cosmetic."}
+                {t("lockerModule.subtitle")}
               </p>
             </div>
           </div>
@@ -188,7 +186,7 @@ export default function KeyboardLockerPage() {
           <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
             {/* Unlocked Counter */}
             <div className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-mono flex items-center gap-2">
-              <span className="text-white/40">{locale === "pt-BR" ? "Skins" : "Skins"}:</span>
+              <span className="text-white/40">{t("lockerModule.skinsCounter")}:</span>
               <strong className="text-white">
                 {unlockedSkinIds.length} / {ALL_KEYBOARD_SKINS.length}
               </strong>
@@ -198,7 +196,7 @@ export default function KeyboardLockerPage() {
             <div className="px-3 py-1.5 rounded-xl bg-orange-500/10 border border-orange-500/30 text-xs font-mono flex items-center gap-2 text-orange-400 font-bold">
               <span>💎 {forgeShards}</span>
               <span className="text-white/40 text-[10px]">
-                {locale === "pt-BR" ? "Fragmentos" : "Shards"}
+                {t("lockerModule.shards")}
               </span>
             </div>
 
@@ -208,7 +206,7 @@ export default function KeyboardLockerPage() {
               className="px-3 py-1.5 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/40 text-xs font-mono flex items-center gap-1.5 text-purple-300 transition-all font-bold"
             >
               <Package size={14} />
-              <span>{locale === "pt-BR" ? "Caixas" : "Crates"}</span>
+              <span>{t("lockerModule.cratesBadge")}</span>
               {totalCratesCount > 0 && (
                 <span className="px-1.5 py-0.2 rounded-full bg-purple-500 text-black text-[10px] font-black">
                   {totalCratesCount}
@@ -221,7 +219,7 @@ export default function KeyboardLockerPage() {
               type="button"
               onClick={() => setIsSettingsOpen(true)}
               className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-all"
-              title={locale === "pt-BR" ? "Configurações de Teclado" : "Keyboard Settings"}
+              title={t("lockerModule.settingsBtn")}
             >
               <Sliders size={16} />
             </button>
@@ -259,7 +257,7 @@ export default function KeyboardLockerPage() {
                 {isSelectedEquipped ? (
                   <div className="px-5 py-2.5 rounded-2xl bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 font-mono font-black text-sm flex items-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
                     <Check size={18} />
-                    <span>{locale === "pt-BR" ? "EQUIPADO" : "EQUIPPED"}</span>
+                    <span>{t("lockerModule.equipped")}</span>
                   </div>
                 ) : isSelectedUnlocked ? (
                   <button
@@ -267,21 +265,20 @@ export default function KeyboardLockerPage() {
                     onClick={() => equipSkin(selectedSkin.id)}
                     className="px-6 py-2.5 rounded-2xl bg-orange-500 hover:bg-orange-400 text-black font-black text-sm tracking-wider uppercase transition-all shadow-[0_0_25px_rgba(249,115,22,0.6)] cursor-pointer hover:scale-105 active:scale-95"
                   >
-                    {locale === "pt-BR" ? "Equipar Skin" : "Equip Skin"}
+                    {t("lockerModule.equipSkin")}
                   </button>
                 ) : (
                   <div className="px-4 py-2 rounded-2xl bg-neutral-900 border border-white/10 text-white/40 font-mono text-xs flex items-center gap-2">
                     <Lock size={14} className="text-red-400" />
                     <span>
-                      {selectedSkin.obtainableFrom ??
-                        (locale === "pt-BR" ? "Obtenha em Caixas" : "Available in Crates")}
+                      {selectedSkin.obtainableFrom ?? t("lockerModule.obtainInCrates")}
                     </span>
                   </div>
                 )}
 
                 {/* Shard salvage value badge */}
                 <span className="text-[11px] font-mono text-white/40">
-                  {locale === "pt-BR" ? "Valor de Fragmentos:" : "Shards Value:"}{" "}
+                  {t("lockerModule.shardsValue")}{" "}
                   <strong className="text-orange-400">{selectedSkin.shardsValue} 💎</strong>
                 </span>
               </div>
@@ -289,9 +286,7 @@ export default function KeyboardLockerPage() {
               {/* Interactive test typing input */}
               <div className="pt-3">
                 <span className="text-[10px] font-mono text-white/40 block mb-1">
-                  {locale === "pt-BR"
-                    ? "DIGITE AQUI PARA TESTAR A SENSAÇÃO TÁTIL:"
-                    : "TYPE HERE TO TEST THE TACTILE SWITCHES:"}
+                  {t("lockerModule.testTypingPrompt")}
                 </span>
                 <input
                   type="text"
@@ -332,9 +327,7 @@ export default function KeyboardLockerPage() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={
-                  locale === "pt-BR" ? "Buscar por nome ou tema..." : "Search by name or theme..."
-                }
+                placeholder={t("lockerModule.searchPlaceholder")}
                 className="w-full pl-9 pr-4 py-2 rounded-2xl bg-white/5 border border-white/10 text-xs font-mono text-white placeholder:text-white/30 focus:outline-none focus:border-orange-500"
               />
               {searchQuery && (
@@ -362,16 +355,10 @@ export default function KeyboardLockerPage() {
                   }`}
                 >
                   {st === "all"
-                    ? locale === "pt-BR"
-                      ? "Todos"
-                      : "All"
+                    ? t("lockerModule.statusAll")
                     : st === "unlocked"
-                    ? locale === "pt-BR"
-                      ? "Desbloqueados"
-                      : "Unlocked"
-                    : locale === "pt-BR"
-                    ? "Bloqueados"
-                    : "Locked"}
+                    ? t("lockerModule.statusUnlocked")
+                    : t("lockerModule.statusLocked")}
                 </button>
               ))}
             </div>
@@ -388,7 +375,7 @@ export default function KeyboardLockerPage() {
                   : "bg-white/5 text-white/50 border-white/10 hover:text-white"
               }`}
             >
-              {locale === "pt-BR" ? "Todas Raridades" : "All Rarities"}
+              {t("lockerModule.allRarities")}
             </button>
             {ALL_RARITIES.map((r) => {
               const details = RARITY_DETAILS[r]
@@ -421,20 +408,20 @@ export default function KeyboardLockerPage() {
                   : "bg-white/5 text-white/40 border-white/10 hover:text-white"
               }`}
             >
-              {locale === "pt-BR" ? "Todas Coleções" : "All Collections"}
+              {t("lockerModule.allCollections")}
             </button>
             {ALL_COLLECTIONS.map((c) => (
               <button
-                key={c.id}
+                key={c}
                 type="button"
-                onClick={() => setSelectedCollection(c.id)}
+                onClick={() => setSelectedCollection(c)}
                 className={`px-3 py-1 rounded-xl border transition-all whitespace-nowrap ${
-                  selectedCollection === c.id
+                  selectedCollection === c
                     ? "bg-orange-500/20 text-orange-300 border-orange-500/40 font-bold"
                     : "bg-white/5 text-white/40 border-white/10 hover:text-white"
                 }`}
               >
-                {c.label}
+                {t(`lockerModule.collections.${c}`)}
               </button>
             ))}
           </div>
@@ -521,7 +508,7 @@ export default function KeyboardLockerPage() {
                   {isEquipped ? (
                     <span className="text-emerald-400 font-mono font-bold text-[11px] flex items-center gap-1">
                       <Check size={13} />
-                      {locale === "pt-BR" ? "Equipado" : "Equipped"}
+                      {t("lockerModule.equippedShort")}
                     </span>
                   ) : isUnlocked ? (
                     <button
@@ -532,12 +519,12 @@ export default function KeyboardLockerPage() {
                       }}
                       className="px-3 py-1 rounded-xl bg-white/10 hover:bg-orange-500 hover:text-black font-mono text-[11px] font-bold text-white transition-all cursor-pointer"
                     >
-                      {locale === "pt-BR" ? "Equipar" : "Equip"}
+                      {t("lockerModule.equipShort")}
                     </button>
                   ) : (
                     <span className="text-white/40 font-mono text-[11px] flex items-center gap-1">
                       <Lock size={12} className="text-red-400" />
-                      {locale === "pt-BR" ? "Bloqueado" : "Locked"}
+                      {t("lockerModule.lockedShort")}
                     </span>
                   )}
 
@@ -564,7 +551,7 @@ export default function KeyboardLockerPage() {
               <div className="flex items-center justify-between border-b border-white/10 pb-4">
                 <div className="flex items-center gap-2 font-black text-base text-white">
                   <Sliders size={18} className="text-orange-400" />
-                  <span>{locale === "pt-BR" ? "Configurações do Teclado" : "Keyboard Settings"}</span>
+                  <span>{t("lockerModule.accessibilityModal.title")}</span>
                 </div>
                 <button
                   type="button"
@@ -579,12 +566,10 @@ export default function KeyboardLockerPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <span className="font-bold text-sm text-white block">
-                    {locale === "pt-BR" ? "Exibir Teclado Visual" : "Show Visual Keyboard"}
+                    {t("lockerModule.accessibilityModal.showKeyboard")}
                   </span>
                   <span className="text-xs text-white/40">
-                    {locale === "pt-BR"
-                      ? "Mostrar o teclado 3D durante batalhas e treinos"
-                      : "Display the 3D keyboard during battle and training"}
+                    {t("lockerModule.accessibilityModal.showKeyboardDesc")}
                   </span>
                 </div>
                 <button
@@ -605,7 +590,7 @@ export default function KeyboardLockerPage() {
               {/* Effects Intensity */}
               <div className="space-y-2">
                 <span className="font-bold text-sm text-white block">
-                  {locale === "pt-BR" ? "Intensidade de Efeitos" : "Visual Effects Intensity"}
+                  {t("lockerModule.accessibilityModal.effectIntensity")}
                 </span>
                 <div className="grid grid-cols-3 gap-2">
                   {(["full", "reduced", "off"] as EffectIntensity[]).map((intensity) => (
@@ -619,7 +604,7 @@ export default function KeyboardLockerPage() {
                           : "bg-white/5 text-white/60 border-white/10 hover:text-white"
                       }`}
                     >
-                      {intensity}
+                      {t(`lockerModule.accessibilityModal.intensities.${intensity}`)}
                     </button>
                   ))}
                 </div>
@@ -629,12 +614,10 @@ export default function KeyboardLockerPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <span className="font-bold text-sm text-white block">
-                    {locale === "pt-BR" ? "Guias Táteis (F / J)" : "Tactile Bump Guides (F / J)"}
+                    {t("lockerModule.accessibilityModal.homeRowGuides")}
                   </span>
                   <span className="text-xs text-white/40">
-                    {locale === "pt-BR"
-                      ? "Exibir pequenos relevos indicadores nos dedos indicadores"
-                      : "Display tactile nib bumps on home row index keys"}
+                    {t("lockerModule.accessibilityModal.homeRowGuidesDesc")}
                   </span>
                 </div>
                 <button
@@ -660,7 +643,7 @@ export default function KeyboardLockerPage() {
                   onClick={() => setIsSettingsOpen(false)}
                   className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-mono font-bold transition-all"
                 >
-                  {locale === "pt-BR" ? "Fechar" : "Done"}
+                  {t("lockerModule.accessibilityModal.done")}
                 </button>
               </div>
             </motion.div>

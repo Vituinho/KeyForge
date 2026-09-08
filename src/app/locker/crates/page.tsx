@@ -17,7 +17,7 @@ import { RARITY_DETAILS } from "@/data/keyboardSkins"
 import { CrateOpeningModal } from "@/components/cosmetics/CrateOpeningModal"
 
 export default function CratesWorkshopPage() {
-  const { locale } = useI18n()
+  const { locale, t } = useI18n()
   const {
     crates,
     forgeShards,
@@ -57,23 +57,21 @@ export default function CratesWorkshopPage() {
               className="p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-all flex items-center gap-2 text-xs font-mono font-bold"
             >
               <ArrowLeft size={16} />
-              <span>{locale === "pt-BR" ? "Arsenal" : "Locker"}</span>
+              <span>{t("lockerModule.workshop.backToLocker")}</span>
             </Link>
 
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2.5">
                   <Package className="text-purple-400" size={24} />
-                  <span>{locale === "pt-BR" ? "FORJA DE CAIXAS" : "CRATE WORKSHOP"}</span>
+                  <span>{t("lockerModule.workshop.title")}</span>
                 </h1>
                 <span className="px-2 py-0.5 rounded-md bg-purple-500/10 border border-purple-500/30 text-purple-400 font-mono text-[11px] font-bold">
-                  {locale === "pt-BR" ? "Loot Cosmético" : "Cosmetic Loot"}
+                  {t("lockerModule.workshop.cosmeticLootBadge")}
                 </span>
               </div>
               <p className="text-xs text-white/50 mt-0.5">
-                {locale === "pt-BR"
-                  ? "Abra caixas conquistadas em batalha ou forje novas usando Fragmentos da Forja."
-                  : "Open battle-awarded crates or forge new ones using recycled Forge Shards."}
+                {t("lockerModule.workshop.subtitle")}
               </p>
             </div>
           </div>
@@ -83,7 +81,7 @@ export default function CratesWorkshopPage() {
             <Sparkles size={16} />
             <span>💎 {forgeShards}</span>
             <span className="text-white/40 text-[11px]">
-              {locale === "pt-BR" ? "Fragmentos da Forja" : "Forge Shards"}
+              {t("lockerModule.workshop.forgeShardsBadge")}
             </span>
           </div>
         </header>
@@ -94,16 +92,14 @@ export default function CratesWorkshopPage() {
             <div className="flex items-center gap-2">
               <Info size={16} />
               <span>
-                {locale === "pt-BR"
-                  ? "Você está jogando como Visitante. Seus fragmentos e caixas estão salvos neste navegador."
-                  : "Playing in Guest Mode. Crates and shards are persisted locally in this browser."}
+                {t("lockerModule.workshop.guestModeNotice")}
               </span>
             </div>
             <Link
               href="/register"
               className="px-3 py-1.5 rounded-xl bg-amber-500 text-black font-black text-xs hover:bg-amber-400 transition-all shrink-0"
             >
-              {locale === "pt-BR" ? "Criar Conta Grátis" : "Create Free Account"}
+              {t("lockerModule.workshop.createAccountBtn")}
             </Link>
           </div>
         )}
@@ -146,11 +142,13 @@ export default function CratesWorkshopPage() {
                         {crate.icon}
                       </div>
                       <div>
-                        <h2 className="text-xl font-black text-white">{crate.name}</h2>
+                        <h2 className="text-xl font-black text-white">
+                          {t(`lockerModule.crates.${crate.id}.name`)}
+                        </h2>
                         <span className="text-[11px] font-mono text-white/40">
-                          {locale === "pt-BR" ? "Garante no mínimo:" : "Guaranteed min:"}{" "}
+                          {t("lockerModule.workshop.guaranteedMin")}{" "}
                           <strong className="text-white font-bold uppercase">
-                            {crate.guaranteedMinRarity ?? "common"}
+                            {RARITY_DETAILS[crate.guaranteedMinRarity ?? "common"].name[locale === "pt-BR" ? "pt-BR" : "en"]}
                           </strong>
                         </span>
                       </div>
@@ -161,17 +159,19 @@ export default function CratesWorkshopPage() {
                         {availableCount}
                       </div>
                       <span className="text-[10px] font-mono text-white/40 uppercase">
-                        {locale === "pt-BR" ? "Disponíveis" : "Available"}
+                        {t("lockerModule.workshop.available")}
                       </span>
                     </div>
                   </div>
 
-                  <p className="text-xs text-white/60 leading-relaxed">{crate.description}</p>
+                  <p className="text-xs text-white/60 leading-relaxed">
+                    {t(`lockerModule.crates.${crate.id}.description`)}
+                  </p>
 
                   {/* Drop Table Breakdown */}
                   <div className="p-3 rounded-2xl bg-black/40 border border-white/10 space-y-2">
                     <span className="text-[10px] font-mono text-white/40 uppercase block">
-                      {locale === "pt-BR" ? "Tabela de Probabilidades:" : "Drop Table Weights:"}
+                      {t("lockerModule.workshop.dropTableTitle")}
                     </span>
                     <div className="flex flex-wrap gap-1.5 text-[10px] font-mono">
                       {crate.dropWeights
@@ -207,12 +207,8 @@ export default function CratesWorkshopPage() {
                     <Package size={15} />
                     <span>
                       {availableCount > 0
-                        ? locale === "pt-BR"
-                          ? `Abrir Caixa (${availableCount})`
-                          : `Open Crate (${availableCount})`
-                        : locale === "pt-BR"
-                        ? "Nenhuma Disponível"
-                        : "None Available"}
+                        ? t("lockerModule.workshop.openCrateCount", { count: availableCount })
+                        : t("lockerModule.workshop.noneAvailable")}
                     </span>
                   </button>
 
@@ -228,17 +224,13 @@ export default function CratesWorkshopPage() {
                     }`}
                     title={
                       canAffordForge
-                        ? locale === "pt-BR"
-                          ? "Construir caixa com fragmentos"
-                          : "Forge crate with shards"
-                        : locale === "pt-BR"
-                        ? "Fragmentos insuficientes"
-                        : "Insufficient shards"
+                        ? t("lockerModule.workshop.forgeTooltip")
+                        : t("lockerModule.workshop.insufficientShards")
                     }
                   >
                     <Hammer size={14} />
                     <span>
-                      {locale === "pt-BR" ? "Forjar" : "Forge"} ({crate.costShards} 💎)
+                      {t("lockerModule.workshop.forgeBtn", { cost: crate.costShards })}
                     </span>
                   </button>
                 </div>
