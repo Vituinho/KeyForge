@@ -17,6 +17,7 @@ import { DamageIndicator } from "./DamageIndicator"
 import { BattleResult } from "./BattleResult"
 import { TypingKeyboard } from "@/components/keyboard/TypingKeyboard"
 import { useI18n } from "@/lib/i18n/i18nContext"
+import { formatMechanicEffect, formatPhaseName } from "@/lib/battle/formatMechanics"
 
 interface BattleArenaProps {
   enemy: Enemy
@@ -220,7 +221,9 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
                 ? {
                     currentPhase: battleState.currentPhase,
                     totalPhases: battleState.totalPhases,
-                    phaseName: battleState.phaseName,
+                    phaseName: battleState.phaseName
+                      ? formatPhaseName(battleState.phaseName, t)
+                      : undefined,
                   }
                 : undefined
             }
@@ -265,7 +268,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
                 {t("battle.hud.bossShift")}
               </span>
               <h2 className="text-2xl sm:text-3xl font-black text-white tracking-wider">
-                {battleState.phaseTransitionBanner}
+                {formatPhaseName(battleState.phaseTransitionBanner.replace(/!$/, ""), t).toUpperCase()}!
               </h2>
             </motion.div>
           )}
@@ -285,7 +288,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
                   initial={{ opacity: 0, y: -5 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
-                  {effect}
+                  {formatMechanicEffect(effect, t)}
                 </motion.span>
               ))}
             </div>

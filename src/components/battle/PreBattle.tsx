@@ -140,7 +140,10 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
         >
-          &ldquo;{enemy.description}&rdquo;
+          &ldquo;
+          {t(`battle.characterDescriptions.${enemy.id.replace("-", "_")}` as Parameters<typeof t>[0]) ||
+            enemy.description}
+          &rdquo;
         </motion.p>
       )}
 

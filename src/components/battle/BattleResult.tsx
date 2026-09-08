@@ -72,8 +72,8 @@ export function BattleResult({
   )
 
   const defeatAdvice: DefeatAdvice = useMemo(
-    () => getDefeatAdvice(enemy, finalStats),
-    [enemy, finalStats]
+    () => getDefeatAdvice(enemy, finalStats, t),
+    [enemy, finalStats, t]
   )
 
   return (
