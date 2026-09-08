@@ -259,8 +259,7 @@ export function CrateOpeningModal({
 
               {/* 3D Keycap Trio Swatch */}
               <div
-                className="h-16 rounded-2xl p-2 border border-white/10 flex items-center justify-center gap-2 shadow-inner"
-                style={{ background: result.skin.visual.frameBg }}
+                className={`h-16 rounded-2xl p-2 border border-white/10 flex items-center justify-center gap-2 shadow-inner ${result.skin.visual.frameBg}`}
               >
                 <div
                   className={`w-9 h-10 rounded-xl border text-xs font-mono font-black flex items-center justify-center shadow-md ${result.skin.visual.keyBg} ${result.skin.visual.keyText} ${result.skin.visual.keyBorder}`}
