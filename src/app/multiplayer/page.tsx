@@ -168,7 +168,7 @@ function MultiplayerContent() {
             currentPlayer={currentPlayer}
             onLeaveRoom={() => setActiveRoom(null)}
             onStartMatch={(room) => {
-              router.push(`/multiplayer/demo?room=${room.code}`)
+              router.push(`/multiplayer/arena?room=${room.code}`)
             }}
           />
         ) : (
