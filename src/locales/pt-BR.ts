@@ -268,6 +268,51 @@ export const ptBR: TranslationSchema = {
       endurance: "Resistência",
       calamity: "Calamidade",
     },
+    characterDescriptions: {
+      naruto:
+        "O ninja hiperativo que nunca desiste. Um duelo equilibrado para aquecer os dedos e aprender o ritmo de batalha.",
+      sakura:
+        "Ninja médica com controle monumental de chakra. Exige precisão deliberada acima de velocidade descuidada.",
+      rock_lee:
+        "O gênio do trabalho duro. Exige uma cadência rápida de digitação através dos Oito Portões Internos.",
+      kakashi:
+        "O Ninja Copiador. Lê sua cadência de digitação; manter um WPM constante rende bônus constantes de maestria.",
+      sasuke:
+        "Prodígio do clã Uchiha. Usa a precisão do Sharingan para transformar combos altos em golpes elétricos devastadores.",
+      itachi:
+        "Mestre do Genjutsu. Desafia seu foco cognitivo com frases ilusórias repletas de pontuação complexa.",
+      pain:
+        "Líder da Akatsuki. Uma dura prova de resistência multifásica que exige precisão implacável em frases extensas.",
+      madara:
+        "O lendário fantasma dos Uchiha. 3 fases catastróficas testando velocidade, combo, precisão e pura resistência de digitação.",
+    },
+    mechanics: {
+      precisionPenalty: "PENALIDADE DE PRECISÃO (-{percent}% Dano)",
+      precisionStrike: "GOLPE DE PRECISÃO (+{percent}%)",
+      speedPenalty: "PENALIDADE DE VELOCIDADE (-{percent}% Dano)",
+      consistencyBonus: "BÔNUS DE CONSTÂNCIA (+{percent}%)",
+      rhythmPenalty: "PENALIDADE DE RITMO (-{percent}%)",
+      comboSurge: "EXPLOSÃO DE COMBO (x{multiplier})",
+      countered: "CONTRA-ATAQUE (-{hp} PV)",
+      genjutsuDispelled: "GENJUTSU DISSIPADO (+20%)",
+      trappedGenjutsu: "PRESO NO GENJUTSU (-30%)",
+      advancedToPhase: "AVANÇOU PARA A FASE {phase}",
+      eightGatesSurge: "LIBERAÇÃO DOS OITO PORTÕES (x{multiplier})",
+      lotusVelocity: "VELOCIDADE DA LÓTUS (x{multiplier})",
+      taijutsuCadence: "CADÊNCIA DE TAIJUTSU (x{multiplier})",
+      kirinCombo: "COMBO KIRIN x2.0",
+      chidoriCombo: "COMBO CHIDORI x1.5",
+      sharinganFlow: "FLUXO DO SHARINGAN x1.25",
+      phaseNames: {
+        pain1: "Fase 1: Caminho Asura & Humano",
+        pain2: "Fase 2: Caminho Animal & Naraka",
+        pain3: "Fase 3: Caminho Deva (Shinra Tensei)",
+        madara1: "Fase 1: Edo Tensei (Equilíbrio)",
+        madara2: "Fase 2: Susanoo Perfeito (Velocidade & Combo)",
+        madara3: "Fase 3: Jinchuriki do Dez-Caudas (Precisão & Resistência)",
+        genericPhase: "Fase {phase}",
+      },
+    },
   },
   battleResult: {
     victory: "VITÓRIA",
@@ -312,6 +357,90 @@ export const ptBR: TranslationSchema = {
       stageFirstClear: "1ª Vitória na Fase {stage}",
       bossFirstClear: "1ª Vitória contra Chefe",
       reachedLevel: "Alcançou Nível {level}",
+    },
+    defeatAdvice: {
+      sakura: {
+        title: "Déficit de Precisão de Golpe",
+        analysis:
+          "A mecânica de Bisturi de Chakra da Sakura reduz seu dano drasticamente quando sua precisão cai abaixo de 92%.",
+        tacticalTip:
+          "Reduza o ritmo de digitação deliberadamente em 10-15%. Nesta luta, uma precisão de 95% causa o triplo do dano de rajadas imprecisas de 60 WPM.",
+        recommendedDrillTitle: "Precisão de Teclas Fracas",
+        recommendedLinkText: "Praticar Teclas Fracas",
+        metricLabel: "Meta de Precisão",
+      },
+      rockLee: {
+        title: "Falha na Prova de Velocidade",
+        analysis:
+          "Rock Lee libera os Oito Portões, penalizando qualquer ritmo abaixo de 55 WPM e concedendo bônus massivos para rajadas rápidas.",
+        tacticalTip:
+          "Aqueça os dedos e digite palavras curtas e comuns em rajadas fluídas sem pausar entre as sílabas.",
+        recommendedDrillTitle: "Treino de Rajada de Velocidade",
+        recommendedLinkText: "Treinar Velocidade",
+        metricLabel: "Meta de Velocidade",
+      },
+      kakashi: {
+        title: "Quebra de Cadência",
+        analysis:
+          "O Sharingan do Ninja Copiador lê oscilações no seu ritmo de digitação. Hesitações ou ritmos erráticos amortecem seus ataques.",
+        tacticalTip:
+          "Mantenha um ritmo constante como um metrônomo. Digite cada letra em cadência uniforme em vez de correr e travar em palavras difíceis.",
+        recommendedDrillTitle: "Prática de Fluxo Constante",
+        recommendedLinkText: "Praticar Ritmo",
+        metricLabel: "Ritmo & Precisão",
+      },
+      sasuke: {
+        title: "Quebra de Combo & Contra-Ataque",
+        analysis:
+          "O Chidori do Sasuke desfere dano imediato de contra-ataque sempre que um combo é quebrado, zerando o ritmo do seu dano.",
+        tacticalTip:
+          "Nunca adivinhe teclas. Proteger um combo de 15x ou 20x é vital contra Sasuke para evitar choques retaliatórios.",
+        recommendedDrillTitle: "Treino de Sequência e Precisão",
+        recommendedLinkText: "Eliminar Quebras de Combo",
+        metricLabel: "Maior Sequência",
+      },
+      itachi: {
+        title: "Armadilha de Pontuação do Genjutsu",
+        analysis:
+          "O Tsukuyomi do Itachi preenche o campo de batalha com pontuações complexas, aspas, vírgulas, ponto e vírgula e apóstrofos.",
+        tacticalTip:
+          "Use a tecla Shift com a mão oposta à tecla alvo. Não olhe para o teclado ao digitar sinais gráficos e pontuação.",
+        recommendedDrillTitle: "Aulas de Pontuação da Academia",
+        recommendedLinkText: "Ir para a Academia",
+        metricLabel: "Precisão de Símbolos",
+      },
+      pain: {
+        title: "Resistência dos Seis Caminhos Esgotada",
+        analysis:
+          "As 3 fases divinas do Pain exigem alta estamina e foco contínuo. Fadiga na Fase 2 ou 3 resulta em cascatas letais de erros.",
+        tacticalTip:
+          "Respire fundo e relaxe os ombros. Manter um ritmo constante ao longo das 3 fases é essencial para vencer o Caminho Deva.",
+        recommendedDrillTitle: "Treino de Resistência",
+        recommendedLinkText: "Treino Livre",
+        metricLabel: "Resistência de Fases",
+        required: "60+ WPM / <10 erros",
+        current: "{wpm} WPM ({errors} erros)",
+      },
+      madara: {
+        title: "Superado pela Calamidade Suprema",
+        analysis:
+          "O Susanoo Perfeito de Madara combina velocidade implacável com exigência estrita de precisão e resistência multifásica.",
+        tacticalTip:
+          "Alcance Ranque A ou S e Nível 10+ antes de desafiar Madara. Garanta que a memória muscular dos dedos esteja automática.",
+        recommendedDrillTitle: "Maestria na Academia Shinobi",
+        recommendedLinkText: "Dominar Treinos da Academia",
+        metricLabel: "Maestria Shinobi",
+      },
+      default: {
+        title: "Fundamentos Shinobi",
+        analysis:
+          "A saraivada agressiva de clones do Naruto testa sua velocidade fundamental e compostura sob pressão.",
+        tacticalTip:
+          "Mantenha os dedos ancorados na linha inicial (ASDF JKL;) e leia 2 a 3 palavras à frente enquanto digita.",
+        recommendedDrillTitle: "Fundamentos Shinobi",
+        recommendedLinkText: "Praticar Fundamentos",
+        metricLabel: "Cadência Básica",
+      },
     },
   },
   training: {

@@ -266,6 +266,51 @@ export const en = {
       endurance: "Endurance",
       calamity: "Calamity",
     },
+    characterDescriptions: {
+      naruto:
+        "The hyperactive ninja who never gives up. A balanced matchup to warm up your keystrokes and learn the battle rhythm.",
+      sakura:
+        "Medical ninja with monstrous chakra control. Demands deliberate precision over reckless speed.",
+      rock_lee:
+        "The genius of hard work. Demands rapid typing cadence through the Eight Inner Gates.",
+      kakashi:
+        "The Copy Ninja. Reads your typing cadence; maintaining consistent WPM yields steady mastery bonuses.",
+      sasuke:
+        "Prodigy of the Uchiha clan. Harnesses Sharingan precision to turn high combos into devastating lightning strikes.",
+      itachi:
+        "Master of Genjutsu. Challenges cognitive focus with deceptive, punctuation-rich sentences.",
+      pain:
+        "Leader of the Akatsuki. A grueling multi-phase endurance trial requiring relentless precision over lengthy sentences.",
+      madara:
+        "The legendary ghost of the Uchiha. 3 catastrophic phases testing speed, combo, accuracy, and sheer typing endurance.",
+    },
+    mechanics: {
+      precisionPenalty: "PRECISION PENALTY (-{percent}% Damage)",
+      precisionStrike: "PRECISION STRIKE (+{percent}%)",
+      speedPenalty: "SPEED PENALTY (-{percent}% Damage)",
+      consistencyBonus: "CONSISTENCY BONUS (+{percent}%)",
+      rhythmPenalty: "RHYTHM SWING PENALTY (-{percent}%)",
+      comboSurge: "COMBO SURGE (x{multiplier})",
+      countered: "COUNTERED (-{hp} HP)",
+      genjutsuDispelled: "GENJUTSU DISPELLED (+20%)",
+      trappedGenjutsu: "TRAPPED IN GENJUTSU (-30%)",
+      advancedToPhase: "ADVANCED TO PHASE {phase}",
+      eightGatesSurge: "EIGHT GATES SURGE (x{multiplier})",
+      lotusVelocity: "LOTUS VELOCITY (x{multiplier})",
+      taijutsuCadence: "TAIJUTSU CADENCE (x{multiplier})",
+      kirinCombo: "KIRIN COMBO x2.0",
+      chidoriCombo: "CHIDORI COMBO x1.5",
+      sharinganFlow: "SHARINGAN FLOW x1.25",
+      phaseNames: {
+        pain1: "Phase 1: Asura & Human Path",
+        pain2: "Phase 2: Animal & Naraka Path",
+        pain3: "Phase 3: Deva Path (Almighty Push)",
+        madara1: "Phase 1: Edo Tensei (Balanced)",
+        madara2: "Phase 2: Perfect Susanoo (Speed & Combo)",
+        madara3: "Phase 3: Ten-Tails Jinchuriki (Accuracy & Endurance)",
+        genericPhase: "Phase {phase}",
+      },
+    },
   },
   battleResult: {
     victory: "VICTORY",
@@ -310,6 +355,90 @@ export const en = {
       stageFirstClear: "Stage {stage} First Clear",
       bossFirstClear: "Boss Defeat First Clear",
       reachedLevel: "Reached Level {level}",
+    },
+    defeatAdvice: {
+      sakura: {
+        title: "Precision Strike Deficit",
+        analysis:
+          "Sakura's Chakra Scalpel mechanic reduces your damage output drastically when your accuracy drops below 92%.",
+        tacticalTip:
+          "Deliberately decelerate your keystrokes by 10-15%. In this fight, a clean 95% accuracy deals triple the damage of an inaccurate 60 WPM burst.",
+        recommendedDrillTitle: "Targeted Weak-Key Precision",
+        recommendedLinkText: "Practice Weak Keys",
+        metricLabel: "Accuracy Threshold",
+      },
+      rockLee: {
+        title: "Speed Gate Check Failed",
+        analysis:
+          "Rock Lee unleashes the Eight Gates, penalizing any typing cadence below 55 WPM while rewarding burst speeds with massive damage boosts.",
+        tacticalTip:
+          "Warm up your finger muscles and type short common words in fluid burst movements without pausing between syllables.",
+        recommendedDrillTitle: "Speed Test Burst Drills",
+        recommendedLinkText: "Train Speed Burst",
+        metricLabel: "Speed Threshold",
+      },
+      kakashi: {
+        title: "Cadence Breakdown",
+        analysis:
+          "Kakashi's Copy Ninja Sharingan reads fluctuations in your typing cadence. Stutters, halts, or erratic rhythms dampen your strikes.",
+        tacticalTip:
+          "Adopt a metronome-like rhythm. Type each letter at an even, continuous cadence rather than sprinting and freezing on difficult words.",
+        recommendedDrillTitle: "Steady Flow Practice",
+        recommendedLinkText: "Practice Rhythm",
+        metricLabel: "Tempo & Accuracy",
+      },
+      sasuke: {
+        title: "Combo Disruption & Counter",
+        analysis:
+          "Sasuke's Chidori triggers immediate counter-attack damage on you whenever a combo breaks, resetting your damage momentum.",
+        tacticalTip:
+          "Never guess keystrokes. Protecting a 15x or 20x combo is vital against Sasuke to avoid taking retaliatory counter-shocks.",
+        recommendedDrillTitle: "Streak & Accuracy Drills",
+        recommendedLinkText: "Eliminate Combo Breakers",
+        metricLabel: "Highest Streak",
+      },
+      itachi: {
+        title: "Genjutsu Punctuation Trap",
+        analysis:
+          "Itachi's Tsukuyomi fills the battlefield with complex sentence structures, quotes, commas, semicolons, and apostrophes.",
+        tacticalTip:
+          "Use the shift key with the opposite hand of the target key. Do not glance down at the keyboard when hitting punctuation symbols.",
+        recommendedDrillTitle: "Academy Punctuation Lessons",
+        recommendedLinkText: "Go to Academy",
+        metricLabel: "Symbol Precision",
+      },
+      pain: {
+        title: "Six Paths Endurance Depleted",
+        analysis:
+          "Pain's 3 divine phases require high stamina and unwavering concentration. Fatigue in Phase 2 or 3 leads to lethal error cascades.",
+        tacticalTip:
+          "Breathe steadily and keep your shoulders relaxed. Pacing yourself evenly across all 3 phases is key to overcoming the Deva Path.",
+        recommendedDrillTitle: "Endurance Practice",
+        recommendedLinkText: "Train Free Practice",
+        metricLabel: "Phase Endurance",
+        required: "60+ WPM / <10 errors",
+        current: "{wpm} WPM ({errors} errors)",
+      },
+      madara: {
+        title: "Ultimate Calamity Overwhelmed",
+        analysis:
+          "Madara's Perfect Susanoo combines devastating attack speed with strict accuracy and multi-phase resistance.",
+        tacticalTip:
+          "Attain Rank A or S and Level 10+ before challenging Madara. Ensure your keyboard muscle memory is completely automatic.",
+        recommendedDrillTitle: "Shinobi Academy Mastery",
+        recommendedLinkText: "Master Academy Drills",
+        metricLabel: "Shinobi Mastery",
+      },
+      default: {
+        title: "Shinobi Fundamentals",
+        analysis:
+          "Naruto's aggressive clone barrage tests your fundamental typing speed and composure under pressure.",
+        tacticalTip:
+          "Keep your fingers anchored on the home row (ASDF JKL;) and read 2 to 3 words ahead while typing.",
+        recommendedDrillTitle: "Shinobi Fundamentals",
+        recommendedLinkText: "Practice Fundamentals",
+        metricLabel: "Basic Cadence",
+      },
     },
   },
   training: {
