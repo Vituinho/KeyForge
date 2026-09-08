@@ -33,6 +33,7 @@ export interface MultiplayerPlayer {
   level: number
   rank: string
   avatar?: string
+  skinId?: string
   ready: boolean
   isHost: boolean
   currentWpm: number
