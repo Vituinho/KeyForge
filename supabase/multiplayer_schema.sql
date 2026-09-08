@@ -751,6 +751,37 @@ BEGIN
     jsonb_build_object('ultimate_damage', v_ult_damage, 'opponent_hp', v_opp_hp)
   );
 
+  -- Record Official Result if Ultimate finished the match
+  IF v_finished THEN
+    INSERT INTO public.multiplayer_match_results (
+      match_id,
+      mode,
+      winner_id,
+      loser_id,
+      is_draw,
+      duration_seconds,
+      player_1_id,
+      player_1_stats,
+      player_1_xp_earned,
+      player_2_id,
+      player_2_stats,
+      player_2_xp_earned
+    ) VALUES (
+      v_match.id,
+      v_match.mode,
+      v_match.winner_id,
+      CASE WHEN v_match.winner_id = v_match.player_1_id THEN v_match.player_2_id ELSE v_match.player_1_id END,
+      FALSE,
+      GREATEST(1, ROUND(EXTRACT(EPOCH FROM (v_now - COALESCE(v_match.started_at, v_now))))::INTEGER),
+      v_match.player_1_id,
+      jsonb_build_object('wpm', v_match.player_1_wpm, 'accuracy', v_match.player_1_accuracy, 'hp', v_match.player_1_hp),
+      CASE WHEN v_match.winner_id = v_match.player_1_id THEN 120 ELSE 40 END,
+      v_match.player_2_id,
+      jsonb_build_object('wpm', v_match.player_2_wpm, 'accuracy', v_match.player_2_accuracy, 'hp', v_match.player_2_hp),
+      CASE WHEN v_match.winner_id = v_match.player_2_id THEN 120 ELSE 40 END
+    ) ON CONFLICT (match_id) DO NOTHING;
+  END IF;
+
   RETURN v_match;
 END;
 $$;
@@ -818,6 +849,35 @@ BEGIN
     'FORFEIT',
     jsonb_build_object('forfeited_by', v_user_id)
   );
+
+  -- Record Official Result upon Forfeit
+  INSERT INTO public.multiplayer_match_results (
+    match_id,
+    mode,
+    winner_id,
+    loser_id,
+    is_draw,
+    duration_seconds,
+    player_1_id,
+    player_1_stats,
+    player_1_xp_earned,
+    player_2_id,
+    player_2_stats,
+    player_2_xp_earned
+  ) VALUES (
+    v_match.id,
+    v_match.mode,
+    v_winner,
+    v_user_id,
+    FALSE,
+    GREATEST(1, ROUND(EXTRACT(EPOCH FROM (v_now - COALESCE(v_match.started_at, v_now))))::INTEGER),
+    v_match.player_1_id,
+    jsonb_build_object('wpm', v_match.player_1_wpm, 'accuracy', v_match.player_1_accuracy, 'hp', v_match.player_1_hp, 'forfeited', v_match.player_1_id = v_user_id),
+    CASE WHEN v_winner = v_match.player_1_id THEN 120 ELSE 40 END,
+    v_match.player_2_id,
+    jsonb_build_object('wpm', v_match.player_2_wpm, 'accuracy', v_match.player_2_accuracy, 'hp', v_match.player_2_hp, 'forfeited', v_match.player_2_id = v_user_id),
+    CASE WHEN v_winner = v_match.player_2_id THEN 120 ELSE 40 END
+  ) ON CONFLICT (match_id) DO NOTHING;
 
   RETURN v_match;
 END;
