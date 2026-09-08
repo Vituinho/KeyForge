@@ -15,6 +15,7 @@ import {
   Timer,
   BookOpen,
   TrendingUp,
+  Check,
 } from "lucide-react"
 import { useAuth } from "@/lib/auth/authContext"
 import { usePlayer } from "@/hooks/usePlayer"
@@ -26,6 +27,7 @@ import {
   submitWordCompletion,
   triggerUltimate,
   forfeitMatch,
+  claimDisconnectForfeit,
   subscribeToMatchBattle,
   getMatchResult,
   MatchTelemetryPayload,
@@ -97,6 +99,9 @@ export function MultiplayerArena({
 
   // Disconnect / Grace period
   const [showForfeitConfirm, setShowForfeitConfirm] = useState(false)
+  const [isOpponentDisconnected, setIsOpponentDisconnected] = useState(false)
+  const [disconnectGraceCountdown, setDisconnectGraceCountdown] = useState(15)
+  const [reconnectedNotice, setReconnectedNotice] = useState(false)
   const [matchResult, setMatchResult] = useState<MultiplayerMatchResultRow | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -236,7 +241,23 @@ export function MultiplayerArena({
             setTimeout(() => setScreenShake(false), 400)
           }
         },
-      }
+        onOpponentPresenceChange: (isOnline) => {
+          if (isOpponentShadow) return
+          if (!isOnline) {
+            setIsOpponentDisconnected(true)
+          } else {
+            setIsOpponentDisconnected((prev) => {
+              if (prev) {
+                setReconnectedNotice(true)
+                setTimeout(() => setReconnectedNotice(false), 3500)
+              }
+              return false
+            })
+            setDisconnectGraceCountdown(15)
+          }
+        },
+      },
+      currentUserId
     )
 
     broadcastRef.current = { broadcastTelemetry, broadcastAttack, broadcastMatchFinished }
@@ -244,7 +265,39 @@ export function MultiplayerArena({
     return () => {
       unsubscribe()
     }
-  }, [currentMatch.id, currentUserId, isP1, triggerDamageFloat])
+  }, [currentMatch.id, currentUserId, isP1, isOpponentShadow, triggerDamageFloat])
+
+  // Disconnect Grace Period Countdown & Forfeit Award
+  useEffect(() => {
+    if (!isOpponentDisconnected || currentMatch.status !== "playing" || isOpponentShadow) {
+      return
+    }
+
+    const interval = setInterval(async () => {
+      setDisconnectGraceCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval)
+          // Authoritatively claim forfeit victory due to opponent disconnect
+          claimDisconnectForfeit({
+            matchId: currentMatch.id,
+            playerId: currentUserId,
+          })
+            .then((updated) => {
+              broadcastRef.current?.broadcastMatchFinished(currentUserId, false)
+              setCurrentMatch(updated)
+            })
+            .catch((err) => {
+              console.warn("[Arena] Claim disconnect forfeit failed:", err)
+            })
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [isOpponentDisconnected, currentMatch.status, currentMatch.id, currentUserId, isOpponentShadow])
+
 
   // Shadow Shinobi AI autonomous simulation
   useEffect(() => {
@@ -1008,6 +1061,53 @@ export function MultiplayerArena({
                 </button>
               </div>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* OPPONENT DISCONNECTED GRACE PERIOD BANNER */}
+      <AnimatePresence>
+        {isOpponentDisconnected && currentMatch.status === "playing" && (
+          <motion.div
+            initial={{ opacity: 0, y: -25, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -25, scale: 0.95 }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4 pointer-events-auto"
+          >
+            <div className="p-4 rounded-3xl bg-neutral-950/95 border-2 border-amber-500/80 shadow-[0_0_40px_rgba(245,158,11,0.4)] backdrop-blur-2xl text-center space-y-2">
+              <div className="flex items-center justify-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping" />
+                <span className="text-xs font-black font-mono uppercase tracking-wider text-amber-400">
+                  {t("multiplayerArena.opponentDisconnected")}
+                </span>
+              </div>
+              <p className="text-[11px] font-mono text-white/70">
+                {t("multiplayerArena.disconnectGraceDesc")}
+              </p>
+              <div className="text-3xl font-black font-mono text-amber-400 tracking-wider">
+                00:{disconnectGraceCountdown.toString().padStart(2, "0")}
+              </div>
+              <p className="text-[10px] font-mono text-white/40">
+                {t("multiplayerArena.forfeitNotice")}
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* RECONNECTED BANNER */}
+      <AnimatePresence>
+        {reconnectedNotice && currentMatch.status === "playing" && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-2xl bg-emerald-950/90 border border-emerald-500/60 shadow-[0_0_25px_rgba(16,185,129,0.3)] backdrop-blur-xl text-center pointer-events-none"
+          >
+            <span className="text-xs font-black font-mono text-emerald-300 flex items-center gap-2">
+              <Check size={14} className="text-emerald-400" />
+              <span>{t("multiplayerArena.opponentReconnected")}</span>
+            </span>
           </motion.div>
         )}
       </AnimatePresence>

@@ -49,6 +49,24 @@ export function processMultiplayerRewards(
     return null
   }
 
+  // Cancelled, waiting or invalid matches award 0 rewards
+  if (match.status === "cancelled" || match.status === "waiting") {
+    return null
+  }
+
+  // Anti-farm protection: matches under 5 seconds or with 0 typing activity award no rewards
+  const matchDuration = match.started_at && match.finished_at
+    ? (new Date(match.finished_at).getTime() - new Date(match.started_at).getTime()) / 1000
+    : 10
+  if (matchDuration < 5 && (myWpm < 10 || myAccuracy < 20)) {
+    return null
+  }
+
+  // Private match anti-farm protection: private matches lasting under 6 seconds award 0 XP
+  if (match.mode === "private" && matchDuration < 6) {
+    return null
+  }
+
   // Double check localStorage to avoid double-crediting across page reloads
   const storageGuardKey = `keyforge_mp_reward_${match.id}`
   if (typeof window !== "undefined" && localStorage.getItem(storageGuardKey)) {
