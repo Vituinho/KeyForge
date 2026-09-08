@@ -484,7 +484,78 @@ export const ptBR: TranslationSchema = {
     enemyHp: "HP do Inimigo",
     startBattle: "Iniciar Batalha",
     rematchBattle: "Batalha de Revanche",
-    lockedStage: "Estágio Bloqueado",
+    lockedStage: "Fase Bloqueada",
+    world01: "Mundo 01",
+    narutoWorldTitle: "MUNDO DE NARUTO",
+    narutoWorldDesc:
+      "Viaje da Aldeia da Folha até a Quarta Grande Guerra Ninja. Enfrente 8 shinobi icônicos em níveis progressivos de dificuldade, culminando no lendário Chefe Final: Madara Uchiha.",
+    mechanicsCount: "8 Provas Únicas",
+    overallCompletion: "Conclusão Geral",
+    upcomingCampaigns: "Campanhas Futuras",
+    comingSoon: "Em Breve",
+    underConstruction: "Em Desenvolvimento",
+    bossLabel: "Chefe: {boss}",
+    mechanicsHeader: "Mecânicas",
+    comingSoonWorlds: {
+      dragonBall: {
+        name: "Mundo Dragon Ball",
+        desc: "Treine em gravidade extrema e dispare rajadas implacáveis de Ki com digitação veloz.",
+      },
+      jujutsu: {
+        name: "Mundo Jujutsu",
+        desc: "Exorcize maldições de nível especial com a precisão de uma expansão de domínio.",
+      },
+      onePiece: {
+        name: "Mundo Grand Line",
+        desc: "Navegue por mares traiçoeiros e enfrente imperadores com resistência marítima de digitação.",
+      },
+      soloLeveling: {
+        name: "Mundo do Monarca das Sombras",
+        desc: "Supere portais de masmorra Rank-S e desperte soldados das sombras com precisão letal.",
+      },
+    },
+    campaignHub: "Central da Campanha",
+    narutoWorld: "Mundo de Naruto",
+    completedCount: "{count} / {total} Concluído",
+    chapter1: "Capítulo 1: Da Folha à Guerra",
+    chapterDesc:
+      "Supere cada prova shinobi em ordem sequencial. Cada batalha testa uma disciplina distinta de digitação.",
+    campaignMastered: "Campanha Dominada",
+    focusTag: "foco em {focus}",
+    personalBestRecord: "Seu Recorde Pessoal",
+    standardReward: "Recompensa Padrão: +{xp} XP",
+    firstClearBonus: "+{xp} XP 1ª Vitória",
+    lockedStageDesc: "Derrote o oponente anterior na trilha da campanha para desbloquear esta batalha.",
+    mechanicDetails: {
+      sakura: {
+        name: "Golpe de Precisão de Chakra",
+        desc: "Precisão abaixo de 94% reduz o dano em 50%. Precisão ≥ 94% concede +20% de dano bônus.",
+      },
+      rockLee: {
+        name: "Oito Portões Internos",
+        desc: "Abaixo de 30 WPM causa -40% de dano. 50+ WPM causa +25%, 70+ WPM causa +50% de dano bônus.",
+      },
+      kakashi: {
+        name: "Constância do Ninja Copiador",
+        desc: "Manter o WPM dentro de 10 da sua média concede +30% de dano. Oscilações erráticas sofrem -20%.",
+      },
+      sasuke: {
+        name: "Combo do Sharingan",
+        desc: "Combo x10 (+25%), x20 (+50%), x30 (+100%). Erros causam contra-ataque de 5 PV.",
+      },
+      itachi: {
+        name: "Ilusão do Tsukuyomi",
+        desc: "Frases com pontuação complexa. Precisão ≥ 96% dissipa a ilusão para +20% de dano bônus.",
+      },
+      pain: {
+        name: "Seis Caminhos de Pain",
+        desc: "Prova de resistência em 3 fases distintas de combate (Caminhos Asura, Preta e Deva).",
+      },
+      madara: {
+        name: "Calamidade Divina",
+        desc: "Fase 1: Edo Tensei (Equilíbrio). Fase 2: Susanoo Perfeito (Velocidade & Combo). Fase 3: Jinchuriki do Dez-Caudas (Precisão & Resistência).",
+      },
+    },
   },
   profile: {
     title: "Perfil do Guerreiro",

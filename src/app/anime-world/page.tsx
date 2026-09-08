@@ -16,50 +16,50 @@ import {
 
 interface ComingSoonWorld {
   id: string
-  name: string
+  nameKey: string
   series: string
   boss: string
-  description: string
+  descKey: string
   color: string
 }
 
 const COMING_SOON_WORLDS: ComingSoonWorld[] = [
   {
     id: "dragon-ball",
-    name: "Dragon Ball World",
+    nameKey: "animeWorld.comingSoonWorlds.dragonBall.name",
     series: "Dragon Ball Z",
     boss: "Frieza (Final Form)",
-    description: "Train in extreme gravity and unleash relentless Ki blast typing bursts.",
+    descKey: "animeWorld.comingSoonWorlds.dragonBall.desc",
     color: "#f59e0b",
   },
   {
     id: "jujutsu-kaisen",
-    name: "Jujutsu World",
+    nameKey: "animeWorld.comingSoonWorlds.jujutsu.name",
     series: "Jujutsu Kaisen",
     boss: "Ryomen Sukuna",
-    description: "Exorcise special grade curses with domain expansion precision keystrokes.",
+    descKey: "animeWorld.comingSoonWorlds.jujutsu.desc",
     color: "#8b5cf6",
   },
   {
     id: "one-piece",
-    name: "Grand Line World",
+    nameKey: "animeWorld.comingSoonWorlds.onePiece.name",
     series: "One Piece",
     boss: "Kaido (King of the Beasts)",
-    description: "Sail treacherous seas and clash with emperors through high-seas typing stamina.",
+    descKey: "animeWorld.comingSoonWorlds.onePiece.desc",
     color: "#3b82f6",
   },
   {
     id: "solo-leveling",
-    name: "Shadow Monarch World",
+    nameKey: "animeWorld.comingSoonWorlds.soloLeveling.name",
     series: "Solo Leveling",
     boss: "Beru (Ant King)",
-    description: "Clear S-Rank dungeon gates and awaken shadow soldiers with lethal accuracy.",
+    descKey: "animeWorld.comingSoonWorlds.soloLeveling.desc",
     color: "#06b6d4",
   },
 ]
 
 export default function AnimeWorldHubPage() {
-  const { t, locale } = useI18n()
+  const { t } = useI18n()
   const { player } = usePlayer()
 
   const narutoProgress = player.campaignProgress?.naruto
@@ -126,7 +126,7 @@ export default function AnimeWorldHubPage() {
             <div className="space-y-3 max-w-xl">
               <div className="flex items-center gap-3 flex-wrap">
                 <span className="px-3 py-0.5 rounded-full text-xs font-black uppercase tracking-wider bg-orange-500/20 text-orange-400 border border-orange-500/40">
-                  {locale === "pt-BR" ? "Mundo 01" : "World 01"}
+                  {t("animeWorld.world01")}
                 </span>
                 <span
                   className={`px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border ${
@@ -142,12 +142,10 @@ export default function AnimeWorldHubPage() {
               </div>
 
               <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-                NARUTO WORLD
+                {t("animeWorld.narutoWorldTitle")}
               </h2>
               <p className="text-sm text-white/60 leading-relaxed">
-                {locale === "pt-BR"
-                  ? "Viaje da Aldeia da Folha até a Quarta Grande Guerra Ninja. Enfrente 8 shinobi icônicos em níveis progressivos de dificuldade, culminando no lendário Chefe Final: Madara Uchiha."
-                  : "Journey through the Hidden Leaf Village to the Fourth Great Ninja War. Face 8 iconic shinobi across progressive typing difficulty tiers, culminating in the legendary Final Boss: Madara Uchiha."}
+                {t("animeWorld.narutoWorldDesc")}
               </p>
 
               <div className="flex items-center gap-6 pt-2 flex-wrap text-xs text-white/50 font-mono">
@@ -159,16 +157,16 @@ export default function AnimeWorldHubPage() {
                 </div>
                 <div>
                   <span className="text-white/30 block text-[10px] uppercase">
-                    {locale === "pt-BR" ? "Chefe Final" : "Final Boss"}
+                    {t("common.finalBoss")}
                   </span>
                   <strong className="text-red-400 text-base">Madara Uchiha</strong>
                 </div>
                 <div>
                   <span className="text-white/30 block text-[10px] uppercase">
-                    {locale === "pt-BR" ? "Mecânicas" : "Mechanics"}
+                    {t("animeWorld.mechanicsHeader")}
                   </span>
                   <strong className="text-amber-400 text-base">
-                    {locale === "pt-BR" ? "8 Provas Únicas" : "8 Unique Trials"}
+                    {t("animeWorld.mechanicsCount")}
                   </strong>
                 </div>
               </div>
@@ -189,7 +187,7 @@ export default function AnimeWorldHubPage() {
           {/* Progress bar across bottom */}
           <div className="mt-6 pt-4 border-t border-white/10">
             <div className="flex justify-between text-xs text-white/40 mb-1.5 font-mono">
-              <span>{locale === "pt-BR" ? "Conclusão Geral" : "Overall Completion"}</span>
+              <span>{t("animeWorld.overallCompletion")}</span>
               <span>{Math.round((completedStages / 8) * 100)}%</span>
             </div>
             <div className="h-2 rounded-full bg-white/10 overflow-hidden">
@@ -208,7 +206,7 @@ export default function AnimeWorldHubPage() {
       <div className="space-y-3 pt-4">
         <h2 className="text-xs font-bold tracking-widest text-white/40 uppercase flex items-center gap-1.5">
           <Sparkles size={14} className="text-purple-400" />
-          {locale === "pt-BR" ? "Campanhas Futuras" : "Upcoming Campaigns"}
+          {t("animeWorld.upcomingCampaigns")}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -224,18 +222,18 @@ export default function AnimeWorldHubPage() {
                   </span>
                   <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-white/5 text-white/40">
                     <Lock size={10} />
-                    {locale === "pt-BR" ? "Em Breve" : "Coming Soon"}
+                    {t("animeWorld.comingSoon")}
                   </span>
                 </div>
 
-                <h3 className="text-lg font-black text-white">{w.name}</h3>
-                <p className="text-xs text-white/40 leading-relaxed">{w.description}</p>
+                <h3 className="text-lg font-black text-white">{t(w.nameKey as Parameters<typeof t>[0])}</h3>
+                <p className="text-xs text-white/40 leading-relaxed">{t(w.descKey as Parameters<typeof t>[0])}</p>
               </div>
 
               <div className="flex items-center justify-between text-xs text-white/30 pt-2 border-t border-white/5 font-mono">
-                <span>Boss: {w.boss}</span>
+                <span>{t("animeWorld.bossLabel", { boss: w.boss })}</span>
                 <span className="text-[11px] text-white/20">
-                  {locale === "pt-BR" ? "Em Desenvolvimento" : "Under Construction"}
+                  {t("animeWorld.underConstruction")}
                 </span>
               </div>
             </div>

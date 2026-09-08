@@ -483,6 +483,77 @@ export const en = {
     startBattle: "Start Battle",
     rematchBattle: "Rematch Battle",
     lockedStage: "Locked Stage",
+    world01: "World 01",
+    narutoWorldTitle: "NARUTO WORLD",
+    narutoWorldDesc:
+      "Journey through the Hidden Leaf Village to the Fourth Great Ninja War. Face 8 iconic shinobi across progressive typing difficulty tiers, culminating in the legendary Final Boss: Madara Uchiha.",
+    mechanicsCount: "8 Unique Trials",
+    overallCompletion: "Overall Completion",
+    upcomingCampaigns: "Upcoming Campaigns",
+    comingSoon: "Coming Soon",
+    underConstruction: "Under Construction",
+    bossLabel: "Boss: {boss}",
+    mechanicsHeader: "Mechanics",
+    comingSoonWorlds: {
+      dragonBall: {
+        name: "Dragon Ball World",
+        desc: "Train in extreme gravity and unleash relentless Ki blast typing bursts.",
+      },
+      jujutsu: {
+        name: "Jujutsu World",
+        desc: "Exorcise special grade curses with domain expansion precision keystrokes.",
+      },
+      onePiece: {
+        name: "Grand Line World",
+        desc: "Sail treacherous seas and clash with emperors through high-seas typing stamina.",
+      },
+      soloLeveling: {
+        name: "Shadow Monarch World",
+        desc: "Clear S-Rank dungeon gates and awaken shadow soldiers with lethal accuracy.",
+      },
+    },
+    campaignHub: "Campaign Hub",
+    narutoWorld: "Naruto World",
+    completedCount: "{count} / {total} Completed",
+    chapter1: "Chapter 1: The Leaf to the War",
+    chapterDesc:
+      "Overcome each shinobi trial in sequential order. Each battle tests a distinct keyboard mastery discipline.",
+    campaignMastered: "Campaign Mastered",
+    focusTag: "{focus} focus",
+    personalBestRecord: "Your Personal Best Record",
+    standardReward: "Standard Reward: +{xp} XP",
+    firstClearBonus: "+{xp} XP 1st Clear",
+    lockedStageDesc: "Defeat the previous opponent on the campaign path to unlock this battle.",
+    mechanicDetails: {
+      sakura: {
+        name: "Chakra Precision Strike",
+        desc: "Accuracy below 94% reduces damage by 50%. Accuracy ≥ 94% grants +20% bonus damage.",
+      },
+      rockLee: {
+        name: "Eight Inner Gates",
+        desc: "Below 30 WPM deals -40% damage. 50+ WPM deals +25%, 70+ WPM deals +50% bonus damage.",
+      },
+      kakashi: {
+        name: "Copy Ninja Consistency",
+        desc: "Keeping WPM within 10 of your match average grants +30% damage. Erratic swings suffer -20%.",
+      },
+      sasuke: {
+        name: "Sharingan Combo",
+        desc: "Combo x10 (+25%), x20 (+50%), x30 (+100%). Erring triggers a 5 HP counter-attack.",
+      },
+      itachi: {
+        name: "Tsukuyomi Illusion",
+        desc: "Complex punctuation sentences. ≥ 96% accuracy dispels the illusion for +20% bonus damage.",
+      },
+      pain: {
+        name: "Six Paths of Pain",
+        desc: "Endurance trial across 3 distinct combat phases (Asura, Preva, Deva Path).",
+      },
+      madara: {
+        name: "Godlike Calamity",
+        desc: "Phase 1: Edo Tensei (Balanced). Phase 2: Perfect Susanoo (Speed & Combo). Phase 3: Ten-Tails Jinchuriki (Accuracy & Endurance).",
+      },
+    },
   },
   profile: {
     title: "Warrior Profile",
