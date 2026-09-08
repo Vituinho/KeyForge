@@ -1051,7 +1051,11 @@ export function MultiplayerArena({
             }`}
           >
             <Sparkles size={16} />
-            <span>{myUlt >= 100 ? "[TAB] UNLEASH ULTIMATE! (READY)" : `ULTIMATE (${myUlt}%)`}</span>
+            <span>
+              {myUlt >= 100
+                ? t("multiplayerArena.ultimateReady")
+                : t("multiplayerArena.ultimateCharging", { pct: myUlt })}
+            </span>
           </button>
 
           {/* Forfeit Safeguard */}
@@ -1059,10 +1063,10 @@ export function MultiplayerArena({
             type="button"
             onClick={() => setShowForfeitConfirm(true)}
             className="py-3 px-4 rounded-2xl bg-white/5 hover:bg-rose-500/20 hover:text-rose-300 border border-white/10 text-xs font-mono font-bold text-white/60 transition-colors flex items-center gap-1.5 cursor-pointer"
-            title="Forfeit match"
+            title={t("multiplayerArena.forfeitActionBtn")}
           >
             <Flag size={14} />
-            <span>FORFEIT</span>
+            <span>{t("multiplayerArena.forfeitActionBtn")}</span>
           </button>
         </div>
       </main>
@@ -1102,7 +1106,7 @@ export function MultiplayerArena({
               }`}
             >
               <span>👁️</span>
-              <span>Inspect: {oppSkin.name}</span>
+              <span>{t("multiplayerArena.inspectOpponent", { name: oppSkin.name })}</span>
               <span
                 className={`text-[8px] px-1.5 py-0.5 rounded border uppercase leading-none ${
                   RARITY_DETAILS[oppSkin.rarity].bgBadge
@@ -1114,7 +1118,7 @@ export function MultiplayerArena({
           </div>
 
           <span className="text-[10px] font-mono text-white/40 hidden sm:inline">
-            {inspectingOpponentSkin ? "👁️ Previewing Rival Keyboard Skin" : "⌨️ Your Equipped Keyboard Skin"}
+            {inspectingOpponentSkin ? t("multiplayerArena.previewRivalSkin") : t("multiplayerArena.equippedSkinLabel")}
           </span>
         </div>
 
@@ -1145,9 +1149,9 @@ export function MultiplayerArena({
           >
             <div className="p-6 rounded-3xl bg-neutral-950 border border-white/10 max-w-sm w-full space-y-4 text-center">
               <AlertTriangle className="w-10 h-10 text-rose-500 mx-auto" />
-              <h3 className="text-lg font-black text-white">Forfeit Match?</h3>
+              <h3 className="text-lg font-black text-white">{t("multiplayerArena.forfeitModalTitle")}</h3>
               <p className="text-xs text-white/60">
-                Are you sure you want to forfeit? Your opponent will be awarded victory.
+                {t("multiplayerArena.forfeitModalDesc")}
               </p>
               <div className="flex gap-3 pt-2">
                 <button
@@ -1155,14 +1159,14 @@ export function MultiplayerArena({
                   onClick={() => setShowForfeitConfirm(false)}
                   className="flex-1 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-bold font-mono text-white transition-colors"
                 >
-                  Cancel
+                  {t("multiplayerArena.forfeitCancelBtn")}
                 </button>
                 <button
                   type="button"
                   onClick={handleForfeit}
                   className="flex-1 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-xs font-bold font-mono text-black transition-colors"
                 >
-                  Confirm Forfeit
+                  {t("multiplayerArena.forfeitConfirmBtn")}
                 </button>
               </div>
             </div>
@@ -1293,16 +1297,20 @@ export function MultiplayerArena({
                       : "text-rose-400"
                   }`}
                 >
-                  {isWinner ? "SHINOBI VICTORY!" : isDraw ? "HONORABLE DRAW" : "CHAKRA DEPLETED"}
+                  {isWinner
+                    ? t("multiplayerArena.shinobiVictory")
+                    : isDraw
+                    ? t("multiplayerArena.honorableDraw")
+                    : t("multiplayerArena.chakraDepleted")}
                 </h2>
 
                 <div className="flex items-center justify-center gap-2 text-[11px] font-mono font-bold text-white/50 uppercase tracking-wider">
                   <span className="text-orange-400">
                     {p1Hp <= 0 || p2Hp <= 0
-                      ? "KNOCKOUT (0 HP)"
+                      ? t("multiplayerArena.knockoutReason")
                       : currentMatch.player_1_word_index >= currentMatch.word_count || currentMatch.player_2_word_index >= currentMatch.word_count
-                      ? "WORD TARGET REACHED"
-                      : "SURRENDER / FORFEIT"}
+                      ? t("multiplayerArena.wordTargetReached")
+                      : t("multiplayerArena.surrenderReason")}
                   </span>
                   <span>•</span>
                   <span className="flex items-center gap-1">
@@ -1329,16 +1337,16 @@ export function MultiplayerArena({
                 <div className="flex items-center justify-center gap-2">
                   <span className="text-sm font-black tracking-wide">
                     {rewardSummary
-                      ? `+${rewardSummary.totalXp} XP EARNED`
+                      ? t("multiplayerArena.xpEarned", { amount: rewardSummary.totalXp })
                       : isWinner
-                      ? "+120 XP EARNED"
+                      ? t("multiplayerArena.xpEarned", { amount: 120 })
                       : isDraw
-                      ? "+75 XP EARNED"
-                      : "+40 XP EARNED"}
+                      ? t("multiplayerArena.xpEarned", { amount: 75 })
+                      : t("multiplayerArena.xpEarned", { amount: 40 })}
                   </span>
                   {rewardSummary && rewardSummary.bonusXp > 0 && (
                     <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold">
-                      +{rewardSummary.bonusXp} BONUS
+                      {t("multiplayerArena.bonusXp", { amount: rewardSummary.bonusXp })}
                     </span>
                   )}
                 </div>
@@ -1347,28 +1355,28 @@ export function MultiplayerArena({
                 {rewardSummary?.didLevelUp && (
                   <span className="text-xs font-black text-yellow-400 flex items-center justify-center gap-1 animate-pulse">
                     <Sparkles size={13} />
-                    <span>LEVEL UP! Advanced to Level {rewardSummary.newLevel}!</span>
+                    <span>{t("multiplayerArena.levelUpNotice", { level: rewardSummary.newLevel })}</span>
                   </span>
                 )}
                 {rewardSummary?.didRankUp && (
                   <span className="text-xs font-black text-orange-400 flex items-center justify-center gap-1">
                     <Trophy size={13} />
-                    <span>RANK UP! Promoted to Rank {rewardSummary.newRank}!</span>
+                    <span>{t("multiplayerArena.rankUpNotice", { rank: rewardSummary.newRank })}</span>
                   </span>
                 )}
 
                 {/* Crate or Shards Drop */}
                 {rewardSummary?.awardedCrate ? (
                   <span className="text-xs font-bold text-emerald-400 flex items-center justify-center gap-1">
-                    <span>📦 LOOT DROP: {rewardSummary.awardedCrate.name} Unlocked!</span>
+                    <span>{t("multiplayerArena.lootDropNotice", { name: rewardSummary.awardedCrate.name })}</span>
                   </span>
                 ) : rewardSummary?.shardsAwarded ? (
                   <span className="text-[11px] text-white/60 flex items-center justify-center gap-1">
-                    <span>✨ +{rewardSummary.shardsAwarded} Forge Shards Added</span>
+                    <span>{t("multiplayerArena.shardsAwardNotice", { amount: rewardSummary.shardsAwarded })}</span>
                   </span>
                 ) : null}
 
-                <span className="text-[9px] text-white/40 block">Authoritative result synchronized to Cloud Save</span>
+                <span className="text-[9px] text-white/40 block">{t("multiplayerArena.cloudSavedNotice")}</span>
               </div>
 
               {/* Head-to-Head Clash Comparison */}
@@ -1421,7 +1429,7 @@ export function MultiplayerArena({
                   <span className="text-base font-black text-white">{liveWpm}</span>
                 </div>
                 <div>
-                  <span className="text-[9px] text-white/40 block uppercase">Accuracy</span>
+                  <span className="text-[9px] text-white/40 block uppercase">{t("multiplayerArena.accuracy")}</span>
                   <span className="text-base font-black text-emerald-400">{liveAccuracy}%</span>
                 </div>
                 <div>
@@ -1441,7 +1449,7 @@ export function MultiplayerArena({
                 className="w-full py-2.5 px-4 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-mono font-bold text-amber-400 transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(245,158,11,0.1)]"
               >
                 <TrendingUp size={14} />
-                <span>View Combat Telemetry Breakdown</span>
+                <span>{t("multiplayerArena.viewTelemetryBtn")}</span>
               </button>
 
               {/* Academy Weak Key CTA */}
@@ -1450,7 +1458,7 @@ export function MultiplayerArena({
                 className="w-full py-2.5 px-4 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono font-bold text-white/80 transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
                 <BookOpen size={14} className="text-orange-400" />
-                <span>Sharpen Weak Keys in Academy</span>
+                <span>{t("multiplayerArena.sharpenAcademyBtn")}</span>
               </Link>
 
               {/* Action Buttons */}
@@ -1461,7 +1469,7 @@ export function MultiplayerArena({
                   className="flex-1 py-3 px-4 rounded-2xl bg-white/10 hover:bg-white/15 text-xs font-bold font-mono text-white transition-colors flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <ArrowLeft size={16} />
-                  <span>Return to Lobby</span>
+                  <span>{t("multiplayerArena.returnLobbyBtn")}</span>
                 </button>
 
                 {onRematch && (
@@ -1471,7 +1479,7 @@ export function MultiplayerArena({
                     className="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-xs font-black font-mono text-black transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(249,115,22,0.4)]"
                   >
                     <RotateCcw size={16} />
-                    <span>Rematch</span>
+                    <span>{t("multiplayerArena.rematchBtn")}</span>
                   </button>
                 )}
               </div>
