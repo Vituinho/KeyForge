@@ -54,16 +54,17 @@ export function processMultiplayerRewards(
     return null
   }
 
-  // Anti-farm protection: matches under 5 seconds or with 0 typing activity award no rewards
+  // Anti-farm protection: matches under 5 seconds or with fewer than 3 words completed award no rewards
   const matchDuration = match.started_at && match.finished_at
     ? (new Date(match.finished_at).getTime() - new Date(match.started_at).getTime()) / 1000
     : 10
-  if (matchDuration < 5 && (myWpm < 10 || myAccuracy < 20)) {
+  const myCompletedWords = match.player_1_id === currentUserId ? match.player_1_word_index : match.player_2_word_index
+  if (matchDuration < 5 || myCompletedWords < 3) {
     return null
   }
 
   // Private match anti-farm protection: private matches lasting under 6 seconds award 0 XP
-  if (match.mode === "private" && matchDuration < 6) {
+  if (match.mode === "private" && (matchDuration < 6 || myCompletedWords < 5)) {
     return null
   }
 
@@ -152,9 +153,9 @@ export function processMultiplayerRewards(
   let shardsAwarded = 0
 
   if (isWinner) {
-    // 35% chance for a crate on victory
+    // 35% chance for a crate on victory (Quick match only - private rooms never drop crates to prevent collusion farming)
     const dropRoll = Math.random()
-    if (dropRoll < 0.35) {
+    if (match.mode !== "private" && dropRoll < 0.35) {
       if (currentStreak >= 3) {
         awardedCrate = { crateId: "shinobi_crate", name: "Shinobi Secret Crate" }
       } else {
