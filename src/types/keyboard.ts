@@ -3,6 +3,7 @@
  */
 
 import { Hand, Finger } from "@/data/keyboardLayout"
+import type { KeyboardSkinVisual } from "./cosmetics"
 
 export type KeyVisualState =
   | "neutral"
@@ -39,4 +40,6 @@ export interface TypingKeyboardProps {
   showFingerLegend?: boolean
   size?: "sm" | "md" | "lg"
   className?: string
+  skinVisual?: KeyboardSkinVisual
 }
+
