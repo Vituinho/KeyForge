@@ -23,7 +23,7 @@ export function MultiplayerAuthGuard({ children }: MultiplayerAuthGuardProps) {
             <Swords className="w-6 h-6 text-orange-400" />
           </div>
           <span className="text-sm font-mono text-white/50 tracking-wider">
-            SYNCHRONIZING CHAKRA...
+            {t("auth.synchronizingChakra")}
           </span>
         </div>
       </div>
