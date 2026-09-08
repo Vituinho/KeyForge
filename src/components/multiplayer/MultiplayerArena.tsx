@@ -14,6 +14,7 @@ import {
   Flag,
   Timer,
   BookOpen,
+  TrendingUp,
 } from "lucide-react"
 import { useAuth } from "@/lib/auth/authContext"
 import { usePlayer } from "@/hooks/usePlayer"
@@ -32,6 +33,7 @@ import {
 import { subscribeToRoomChannel } from "@/lib/multiplayer/roomManager"
 import { getSkinById } from "@/data/keyboardSkins"
 import { AttackEnergyGauge } from "./AttackEnergyGauge"
+import { PostMatchAnalysis } from "./PostMatchAnalysis"
 
 interface FloatingDamage {
   id: number
@@ -82,6 +84,8 @@ export function MultiplayerArena({
   const [screenShake, setScreenShake] = useState(false)
   const [activeAttackBeam, setActiveAttackBeam] = useState<"p1_to_p2" | "p2_to_p1" | null>(null)
   const wordHadMistakeRef = useRef(false)
+  const [weakKeyStats, setWeakKeyStats] = useState<{ key: string; count: number }[]>([])
+  const [showDetailedAnalysis, setShowDetailedAnalysis] = useState(false)
   const [startTime, setStartTime] = useState<number | null>(null)
 
   // Damage float animations
@@ -281,6 +285,16 @@ export function MultiplayerArena({
         setTotalChars((prev) => prev + 1)
         setLastErrorKey(lastChar)
         wordHadMistakeRef.current = true
+        const lowChar = lastChar.toLowerCase()
+        setWeakKeyStats((prev) => {
+          const idx = prev.findIndex((k) => k.key === lowChar)
+          if (idx >= 0) {
+            const next = [...prev]
+            next[idx] = { key: lowChar, count: next[idx].count + 1 }
+            return next
+          }
+          return [...prev, { key: lowChar, count: 1 }]
+        })
 
         if (localCombo > 0) {
           setComboBreak(true)
@@ -1056,6 +1070,16 @@ export function MultiplayerArena({
                 </div>
               </div>
 
+              {/* Combat Telemetry Breakdown Button */}
+              <button
+                type="button"
+                onClick={() => setShowDetailedAnalysis(true)}
+                className="w-full py-2.5 px-4 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-xs font-mono font-bold text-amber-400 transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(245,158,11,0.1)]"
+              >
+                <TrendingUp size={14} />
+                <span>View Combat Telemetry Breakdown</span>
+              </button>
+
               {/* Academy Weak Key CTA */}
               <Link
                 href="/academy"
@@ -1089,6 +1113,30 @@ export function MultiplayerArena({
               </div>
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* DETAILED COMBAT TELEMETRY BREAKDOWN MODAL */}
+      <AnimatePresence>
+        {showDetailedAnalysis && (
+          <PostMatchAnalysis
+            match={currentMatch}
+            result={matchResult}
+            currentUserId={currentUserId}
+            myWpm={liveWpm}
+            myAccuracy={liveAccuracy}
+            myMaxCombo={maxCombo}
+            myPerfectWords={perfectWords}
+            myDamageDealt={Math.max(0, 1000 - (isP1 ? currentMatch.player_2_hp : currentMatch.player_1_hp))}
+            oppWpm={oppWpm}
+            oppAccuracy={oppAccuracy}
+            oppDamageDealt={Math.max(0, 1000 - (isP1 ? currentMatch.player_1_hp : currentMatch.player_2_hp))}
+            weakKeys={weakKeyStats}
+            durationSeconds={matchResult?.duration_seconds ?? elapsedSeconds}
+            onClose={() => setShowDetailedAnalysis(false)}
+            onRematch={onRematch}
+            onExit={onExit}
+          />
         )}
       </AnimatePresence>
     </motion.div>
