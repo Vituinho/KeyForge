@@ -387,6 +387,18 @@ export const en = {
     rule3Desc: "Accuracy and combos deal damage. Typos trigger a temporary 0.5s chakra recoil.",
     roomCreatedNotice: "Room {code} created! Waiting for opponent...",
     invalidRoomCode: "Please enter a valid room code (e.g. KF-4819)",
+    lobbyRoomTitle: "Battle Room Lobby",
+    lobbyWaitingGuest: "Waiting for Shinobi to join...",
+    lobbyShareCodeTip: "Share this code with your rival to duel:",
+    lobbyReadyBadge: "READY FOR BATTLE",
+    lobbyNotReadyBadge: "PREPARING CHAKRA",
+    lobbyToggleReady: "Ready Up",
+    lobbyCancelReady: "Cancel Ready",
+    lobbyStartMatch: "Start Duel",
+    lobbyLeaveRoom: "Leave Room",
+    lobbyBothReadyNotice: "Both shinobi are ready! The host can initiate the duel.",
+    lobbyHostTitle: "Host",
+    lobbyChallengerTitle: "Challenger",
   },
 }
 

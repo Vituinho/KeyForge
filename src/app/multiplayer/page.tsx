@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   Flame,
@@ -20,21 +21,43 @@ import {
   HelpCircle,
 } from "lucide-react"
 import { MultiplayerAuthGuard } from "@/components/multiplayer/MultiplayerAuthGuard"
+import { PrivateRoomLobby } from "@/components/multiplayer/PrivateRoomLobby"
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
 import { useAuth } from "@/lib/auth/authContext"
 import { usePlayer } from "@/hooks/usePlayer"
 import { useI18n } from "@/lib/i18n/i18nContext"
+import { createInitialRoomState, joinRoomState } from "@/lib/multiplayer/roomManager"
+import { RoomState, MultiplayerPlayer } from "@/types/multiplayer"
 
 function MultiplayerContent() {
+  const router = useRouter()
   const { user } = useAuth()
   const { player } = usePlayer()
   const { t } = useI18n()
 
   const [isSearching, setIsSearching] = useState(false)
   const [roomCodeInput, setRoomCodeInput] = useState("")
+  const [activeRoom, setActiveRoom] = useState<RoomState | null>(null)
   const [createdRoomCode, setCreatedRoomCode] = useState<string | null>(null)
   const [copiedCode, setCopiedCode] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const currentPlayer: MultiplayerPlayer = {
+    id: user?.id || "player_local",
+    username: user?.username || player.username,
+    level: player.level,
+    rank: player.rank,
+    ready: false,
+    isHost: false,
+    currentWpm: player.stats.bestWpm,
+    progress: 0,
+    errors: 0,
+    combo: 0,
+    currentStreak: 0,
+    health: 100,
+    isAlive: true,
+    lastActiveAt: new Date().toISOString(),
+  }
 
   // Initial ELO rating based on rank / level
   const eloRating = 1200 + (player.level - 1) * 25 + Math.round(player.stats.bestWpm * 1.5)
@@ -49,10 +72,14 @@ function MultiplayerContent() {
   }
 
   const handleCreatePrivateRoom = () => {
-    // Generate a clean 6-char shinobi room code: e.g. "KF-7X29"
-    const randomChars = Math.random().toString(36).substring(2, 6).toUpperCase()
-    const code = `KF-${randomChars}`
-    setCreatedRoomCode(code)
+    const hostPlayer: MultiplayerPlayer = {
+      ...currentPlayer,
+      isHost: true,
+      ready: false,
+    }
+    const newRoom = createInitialRoomState(hostPlayer)
+    setCreatedRoomCode(newRoom.code)
+    setActiveRoom(newRoom)
     setErrorMessage(null)
   }
 
@@ -71,8 +98,27 @@ function MultiplayerContent() {
       return
     }
     setErrorMessage(null)
-    // Will transition into room lobby
-    setCreatedRoomCode(trimmed)
+    const rivalHost: MultiplayerPlayer = {
+      id: "host_rival",
+      username: "Shinobi Rival",
+      level: Math.max(1, player.level),
+      rank: player.rank,
+      ready: false,
+      isHost: true,
+      currentWpm: 0,
+      progress: 0,
+      errors: 0,
+      combo: 0,
+      currentStreak: 0,
+      health: 100,
+      isAlive: true,
+      lastActiveAt: new Date().toISOString(),
+    }
+    const joinedRoom = joinRoomState(
+      createInitialRoomState(rivalHost, trimmed),
+      currentPlayer
+    )
+    setActiveRoom(joinedRoom)
   }
 
   return (
@@ -110,12 +156,23 @@ function MultiplayerContent() {
 
       {/* Main Container */}
       <main className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 py-4 flex-1 flex flex-col justify-center space-y-6">
-        {/* Player Shinobi Status Ribbon */}
-        <motion.div
-          initial={{ opacity: 0, y: -15 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="p-4 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl shadow-lg flex flex-wrap items-center justify-between gap-4"
-        >
+        {activeRoom ? (
+          <PrivateRoomLobby
+            room={activeRoom}
+            currentPlayer={currentPlayer}
+            onLeaveRoom={() => setActiveRoom(null)}
+            onStartMatch={(room) => {
+              router.push(`/multiplayer/demo?room=${room.code}`)
+            }}
+          />
+        ) : (
+          <>
+            {/* Player Shinobi Status Ribbon */}
+            <motion.div
+              initial={{ opacity: 0, y: -15 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-4 rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl shadow-lg flex flex-wrap items-center justify-between gap-4"
+            >
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-orange-500/20 via-red-500/20 to-neutral-900 border border-orange-500/30 flex items-center justify-center font-black text-orange-400">
               {user?.username ? user.username.charAt(0).toUpperCase() : "S"}
@@ -384,7 +441,9 @@ function MultiplayerContent() {
             </div>
           </div>
         </div>
-      </main>
+      </>
+    )}
+  </main>
 
       {/* Footer */}
       <footer className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 py-5 text-center text-xs text-white/30 font-mono">
