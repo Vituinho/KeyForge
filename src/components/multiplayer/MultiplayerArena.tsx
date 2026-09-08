@@ -22,6 +22,8 @@ import {
   submitWordCompletion,
   triggerUltimate,
   forfeitMatch,
+  subscribeToMatchBattle,
+  MatchTelemetryPayload,
 } from "@/lib/multiplayer/matchService"
 import { subscribeToRoomChannel } from "@/lib/multiplayer/roomManager"
 import { getSkinById } from "@/data/keyboardSkins"
@@ -92,6 +94,11 @@ export function MultiplayerArena({
   const myHp = isP1 ? p1Hp : p2Hp
   const myUlt = isP1 ? currentMatch.player_1_ultimate_energy : currentMatch.player_2_ultimate_energy
 
+  // Opponent Live Telemetry
+  const oppWordIndex = isP1 ? currentMatch.player_2_word_index : currentMatch.player_1_word_index
+  const oppWpm = isP1 ? currentMatch.player_2_wpm : currentMatch.player_1_wpm
+  const oppAccuracy = isP1 ? currentMatch.player_2_accuracy : currentMatch.player_1_accuracy
+
   // Danger threshold (<25% HP)
   const isMyHpCritical = myHp > 0 && myHp <= 250
 
@@ -110,6 +117,85 @@ export function MultiplayerArena({
     }, 1000)
     return () => clearInterval(interval)
   }, [currentMatch.status])
+
+  // Spawn floating damage effect
+  const triggerDamageFloat = useCallback((amount: number, target: "p1" | "p2", isCrit = false, label?: string) => {
+    damageIdRef.current += 1
+    const newDamage: FloatingDamage = {
+      id: damageIdRef.current,
+      amount,
+      target,
+      isCrit,
+      label,
+    }
+    setFloatingDamages((prev) => [...prev.slice(-8), newDamage])
+    setTimeout(() => {
+      setFloatingDamages((prev) => prev.filter((d) => d.id !== newDamage.id))
+    }, 1200)
+  }, [])
+
+  const broadcastRef = useRef<{
+    broadcastTelemetry: (t: MatchTelemetryPayload) => Promise<void>
+    broadcastAttack: (a: string, d: number, u?: boolean) => Promise<void>
+  } | null>(null)
+
+  // Real-time PvP match subscription (telemetry, attacks, and Postgres DB state updates)
+  useEffect(() => {
+    const { broadcastTelemetry, broadcastAttack, unsubscribe } = subscribeToMatchBattle(
+      currentMatch.id,
+      {
+        onMatchUpdate: (updatedMatch) => {
+          setCurrentMatch((prev) => ({
+            ...prev,
+            ...updatedMatch,
+          }))
+        },
+        onOpponentTelemetry: (telemetry) => {
+          if (telemetry.playerId === currentUserId) return
+          setCurrentMatch((prev) => {
+            const isOppP1 = prev.player_1_id === telemetry.playerId
+            return {
+              ...prev,
+              player_1_word_index: isOppP1 ? telemetry.wordIndex : prev.player_1_word_index,
+              player_2_word_index: !isOppP1 ? telemetry.wordIndex : prev.player_2_word_index,
+              player_1_wpm: isOppP1 ? telemetry.wpm : prev.player_1_wpm,
+              player_2_wpm: !isOppP1 ? telemetry.wpm : prev.player_2_wpm,
+              player_1_accuracy: isOppP1 ? telemetry.accuracy : prev.player_1_accuracy,
+              player_2_accuracy: !isOppP1 ? telemetry.accuracy : prev.player_2_accuracy,
+              player_1_combo: isOppP1 ? telemetry.combo : prev.player_1_combo,
+              player_2_combo: !isOppP1 ? telemetry.combo : prev.player_2_combo,
+              player_1_attack_energy: isOppP1 ? telemetry.attackEnergy : prev.player_1_attack_energy,
+              player_2_attack_energy: !isOppP1 ? telemetry.attackEnergy : prev.player_2_attack_energy,
+              player_1_ultimate_energy: isOppP1 ? telemetry.ultimateEnergy : prev.player_1_ultimate_energy,
+              player_2_ultimate_energy: !isOppP1 ? telemetry.ultimateEnergy : prev.player_2_ultimate_energy,
+              player_1_hp: isOppP1 ? telemetry.hp : prev.player_1_hp,
+              player_2_hp: !isOppP1 ? telemetry.hp : prev.player_2_hp,
+            }
+          })
+        },
+        onAttackEvent: (event) => {
+          if (event.attackerId !== currentUserId) {
+            triggerDamageFloat(
+              event.damage,
+              isP1 ? "p1" : "p2",
+              event.isUlt,
+              event.isUlt ? "OPPONENT ULTIMATE!" : "OPPONENT STRIKE!"
+            )
+            setActiveAttackBeam(isP1 ? "p2_to_p1" : "p1_to_p2")
+            setTimeout(() => setActiveAttackBeam(null), 600)
+            setScreenShake(true)
+            setTimeout(() => setScreenShake(false), 400)
+          }
+        },
+      }
+    )
+
+    broadcastRef.current = { broadcastTelemetry, broadcastAttack }
+
+    return () => {
+      unsubscribe()
+    }
+  }, [currentMatch.id, currentUserId, isP1, triggerDamageFloat])
 
   // Live match synchronization via broadcast channel if room_code exists
   useEffect(() => {
@@ -136,22 +222,6 @@ export function MultiplayerArena({
       inputRef.current?.focus()
     }
   }, [currentMatch.status])
-
-  // Spawn floating damage effect
-  const triggerDamageFloat = useCallback((amount: number, target: "p1" | "p2", isCrit = false, label?: string) => {
-    damageIdRef.current += 1
-    const newDamage: FloatingDamage = {
-      id: damageIdRef.current,
-      amount,
-      target,
-      isCrit,
-      label,
-    }
-    setFloatingDamages((prev) => [...prev.slice(-8), newDamage])
-    setTimeout(() => {
-      setFloatingDamages((prev) => prev.filter((d) => d.id !== newDamage.id))
-    }, 1200)
-  }, [])
 
   // Calculate live WPM and accuracy
   const elapsedMinutes = Math.max(0.05, elapsedSeconds / 60)
@@ -240,6 +310,7 @@ export function MultiplayerArena({
           triggerDamageFloat(diff, isP1 ? "p2" : "p1", newCombo >= 10, `${newCombo}x COMBO!`)
           setActiveAttackBeam(isP1 ? "p1_to_p2" : "p2_to_p1")
           setTimeout(() => setActiveAttackBeam(null), 600)
+          broadcastRef.current?.broadcastAttack(currentUserId, diff, false)
         }
 
         const oldMyHp = isP1 ? currentMatch.player_1_hp : currentMatch.player_2_hp
@@ -248,6 +319,18 @@ export function MultiplayerArena({
           setScreenShake(true)
           setTimeout(() => setScreenShake(false), 400)
         }
+
+        // Broadcast real-time telemetry to opponent
+        broadcastRef.current?.broadcastTelemetry({
+          playerId: currentUserId,
+          wordIndex: myWordIndex + 1,
+          wpm: liveWpm,
+          accuracy: liveAccuracy,
+          combo: newCombo,
+          attackEnergy: isP1 ? updated.player_1_attack_energy : updated.player_2_attack_energy,
+          ultimateEnergy: isP1 ? updated.player_1_ultimate_energy : updated.player_2_ultimate_energy,
+          hp: isP1 ? updated.player_1_hp : updated.player_2_hp,
+        })
 
         setCurrentMatch(updated)
       } catch (err) {
@@ -272,11 +355,22 @@ export function MultiplayerArena({
       triggerDamageFloat(160, isP1 ? "p2" : "p1", true, "SHINOBI ULTIMATE!")
       setActiveAttackBeam(isP1 ? "p1_to_p2" : "p2_to_p1")
       setTimeout(() => setActiveAttackBeam(null), 800)
+      broadcastRef.current?.broadcastAttack(currentUserId, 160, true)
+      broadcastRef.current?.broadcastTelemetry({
+        playerId: currentUserId,
+        wordIndex: myWordIndex,
+        wpm: liveWpm,
+        accuracy: liveAccuracy,
+        combo: localCombo,
+        attackEnergy: isP1 ? updated.player_1_attack_energy : updated.player_2_attack_energy,
+        ultimateEnergy: 0,
+        hp: isP1 ? updated.player_1_hp : updated.player_2_hp,
+      })
       setCurrentMatch(updated)
     } catch (err) {
       console.warn("[Arena] Ultimate failed:", err)
     }
-  }, [myUlt, currentMatch.status, currentMatch.id, currentUserId, isP1, triggerDamageFloat])
+  }, [myUlt, currentMatch.status, currentMatch.id, currentUserId, isP1, triggerDamageFloat, myWordIndex, liveWpm, liveAccuracy, localCombo])
 
   // Keyboard shortcut: Tab triggers ultimate
   useEffect(() => {
@@ -561,6 +655,30 @@ export function MultiplayerArena({
             ) : (
               <span className="text-white font-black text-sm">{localCombo}x</span>
             )}
+          </div>
+        </div>
+
+        {/* Opponent Live Progress Bar */}
+        <div className="w-full max-w-xl space-y-1.5 px-3.5 py-2 rounded-2xl bg-white/[0.02] border border-white/10">
+          <div className="flex items-center justify-between text-[10px] font-mono text-white/50">
+            <span className="flex items-center gap-1.5 text-blue-400 font-bold">
+              <span>👤 OPPONENT:</span>
+              <span className="text-white font-bold">
+                Word {oppWordIndex} of {currentMatch.word_count}
+              </span>
+            </span>
+            <span className="font-bold">
+              {oppWpm} WPM • {oppAccuracy}% Acc
+            </span>
+          </div>
+          <div className="w-full h-1.5 bg-neutral-900 rounded-full overflow-hidden border border-white/5">
+            <motion.div
+              className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full"
+              animate={{
+                width: `${Math.min(100, Math.max(0, (oppWordIndex / Math.max(1, currentMatch.word_count)) * 100))}%`,
+              }}
+              transition={{ duration: 0.3 }}
+            />
           </div>
         </div>
 
