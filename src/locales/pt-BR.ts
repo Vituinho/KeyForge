@@ -206,6 +206,11 @@ export const ptBR: TranslationSchema = {
       level: "Nv.",
       xpToNext: "XP para o próximo nível",
       profileBtn: "Perfil",
+      homeTooltip: "Ir para a Página Inicial Pública",
+      lockerTooltip: "Arsenal de Teclados & Skins",
+      completed: "8/8 CONCLUÍDO 🏆",
+      version: "KeyForge v3.1 — Arena Multiplayer",
+      lockerBtn: "Arsenal",
     },
     cards: {
       battle: { title: "Batalha", desc: "Lute contra personagens de anime" },
