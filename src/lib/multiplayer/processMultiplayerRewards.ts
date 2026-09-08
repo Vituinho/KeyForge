@@ -45,7 +45,8 @@ export function processMultiplayerRewards(
   myAccuracy: number,
   myCombo: number
 ): MultiplayerRewardSummary | null {
-  if (!match.id || processedMatchIds.has(match.id)) {
+  const rewardKey = `${match.id}:${currentUserId}`
+  if (!match.id || processedMatchIds.has(rewardKey)) {
     return null
   }
 
@@ -69,13 +70,13 @@ export function processMultiplayerRewards(
   }
 
   // Double check localStorage to avoid double-crediting across page reloads
-  const storageGuardKey = `keyforge_mp_reward_${match.id}`
+  const storageGuardKey = `keyforge_mp_reward_${match.id}_${currentUserId}`
   if (typeof window !== "undefined" && localStorage.getItem(storageGuardKey)) {
-    processedMatchIds.add(match.id)
+    processedMatchIds.add(rewardKey)
     return null
   }
 
-  processedMatchIds.add(match.id)
+  processedMatchIds.add(rewardKey)
   if (typeof window !== "undefined") {
     localStorage.setItem(storageGuardKey, new Date().toISOString())
   }
