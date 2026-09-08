@@ -11,10 +11,18 @@ import { loadPlayerProfile, savePlayerProfile } from "@/lib/storage/playerStorag
 import { addBattleHistoryEntry } from "@/lib/storage/battleHistoryStorage"
 import { getStoredUser } from "@/lib/auth/authService"
 import { saveCloudPlayerProfile, saveCloudBattleHistory } from "@/lib/storage/cloudPlayerStorage"
+import { addCratesDirectly } from "@/lib/storage/cosmeticsStorage"
+import { updateCrateCloud } from "@/lib/storage/cloudCosmeticsStorage"
 import { calculateBattleXp, BattleXpResult } from "./calculateXp"
 import { applyXpGain, LevelProgressionResult } from "./calculateLevel"
 import { calculatePlayerAttributes } from "./calculateAttributes"
 import { calculateRankFromAttributes, isRankUp } from "./calculateRank"
+
+export interface AwardedCrateReward {
+  crateId: string
+  count: number
+  reason: string
+}
 
 export interface BattleRewardSummary {
   xpResult: BattleXpResult
@@ -30,6 +38,7 @@ export interface BattleRewardSummary {
   campaignCompleted?: boolean
   stageUnlocked?: number
   unlockedTitle?: string
+  awardedCrates?: AwardedCrateReward[]
 }
 
 /**
@@ -250,6 +259,54 @@ export function processBattleRewards(
     )
   }
 
+  // 9. Crate Milestone Rewards (Cosmetics Progression)
+  const awardedCrates: AwardedCrateReward[] = []
+
+  if (victory) {
+    if (isFirstClear) {
+      const stageNum = enemy.stage ?? 1
+      if (stageNum === 2) {
+        awardedCrates.push({ crateId: "basic_crate", count: 1, reason: "Stage 2 First Clear" })
+      } else if (stageNum === 4) {
+        awardedCrates.push({ crateId: "shinobi_crate", count: 1, reason: "Stage 4 First Clear" })
+      } else if (stageNum === 6) {
+        awardedCrates.push({ crateId: "shinobi_crate", count: 1, reason: "Stage 6 First Clear" })
+      }
+      if (enemy.isBoss || stageNum >= 8) {
+        awardedCrates.push({ crateId: "elite_crate", count: 1, reason: "Boss Defeat First Clear" })
+      }
+    }
+
+    // Level milestones crossed
+    if (levelResult.newLevel > prevLevel) {
+      if (prevLevel < 5 && levelResult.newLevel >= 5) {
+        awardedCrates.push({ crateId: "basic_crate", count: 1, reason: "Reached Level 5" })
+      }
+      if (prevLevel < 10 && levelResult.newLevel >= 10) {
+        awardedCrates.push({ crateId: "shinobi_crate", count: 1, reason: "Reached Level 10" })
+      }
+      if (prevLevel < 20 && levelResult.newLevel >= 20) {
+        awardedCrates.push({ crateId: "elite_crate", count: 1, reason: "Reached Level 20" })
+      }
+      if (prevLevel < 30 && levelResult.newLevel >= 30) {
+        awardedCrates.push({ crateId: "mythic_crate", count: 1, reason: "Reached Level 30" })
+      }
+    }
+  }
+
+  // Grant crates locally and queue cloud sync
+  if (awardedCrates.length > 0) {
+    for (const reward of awardedCrates) {
+      const updatedCosmetics = addCratesDirectly(reward.crateId, reward.count)
+      if (authUser && !authUser.isGuest && authUser.id) {
+        const newTotal = updatedCosmetics.crates[reward.crateId] || 0
+        updateCrateCloud(authUser.id, reward.crateId, newTotal).catch((err) =>
+          console.warn("[BattleRewards] Failed to sync crate to cloud:", err)
+        )
+      }
+    }
+  }
+
   return {
     xpResult,
     levelResult,
@@ -264,5 +321,6 @@ export function processBattleRewards(
     campaignCompleted,
     stageUnlocked,
     unlockedTitle,
+    awardedCrates: awardedCrates.length > 0 ? awardedCrates : undefined,
   }
 }

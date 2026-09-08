@@ -96,6 +96,25 @@ export function saveCosmeticsState(state: PlayerCosmeticsState): void {
 }
 
 /**
+ * Directly add crates to player inventory.
+ * Safely creates or increments crate entry in local storage and dispatches update.
+ */
+export function addCratesDirectly(crateId: string, count: number = 1): PlayerCosmeticsState {
+  const current = loadCosmeticsState()
+  const existingCount = current.crates[crateId] || 0
+  const updated: PlayerCosmeticsState = {
+    ...current,
+    crates: {
+      ...current.crates,
+      [crateId]: existingCount + count,
+    },
+    updatedAt: new Date().toISOString(),
+  }
+  saveCosmeticsState(updated)
+  return updated
+}
+
+/**
  * Load accessibility settings safely.
  */
 export function loadKeyboardAccessibilitySettings(): KeyboardAccessibilitySettings {
