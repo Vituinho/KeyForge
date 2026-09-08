@@ -72,6 +72,7 @@ export function MultiplayerArena({
   const [perfectWords, setPerfectWords] = useState(0)
   const [lastWordPerfect, setLastWordPerfect] = useState(false)
   const [comboBreak, setComboBreak] = useState(false)
+  const [ultimateActiveFlash, setUltimateActiveFlash] = useState(false)
   const wordHadMistakeRef = useRef(false)
   const [startTime, setStartTime] = useState<number | null>(null)
 
@@ -245,8 +246,11 @@ export function MultiplayerArena({
   }
 
   // Handle Ultimate Activation
-  const handleTriggerUltimate = async () => {
+  const handleTriggerUltimate = useCallback(async () => {
     if (myUlt < 100 || currentMatch.status !== "playing") return
+
+    setUltimateActiveFlash(true)
+    setTimeout(() => setUltimateActiveFlash(false), 1200)
 
     try {
       const updated = await triggerUltimate({
@@ -259,7 +263,19 @@ export function MultiplayerArena({
     } catch (err) {
       console.warn("[Arena] Ultimate failed:", err)
     }
-  }
+  }, [myUlt, currentMatch.status, currentMatch.id, currentUserId, isP1, triggerDamageFloat])
+
+  // Keyboard shortcut: Tab triggers ultimate
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Tab" && myUlt >= 100 && currentMatch.status === "playing") {
+        e.preventDefault()
+        handleTriggerUltimate()
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [myUlt, currentMatch.status, handleTriggerUltimate])
 
   // Handle Forfeit
   const handleForfeit = async () => {
@@ -604,7 +620,7 @@ export function MultiplayerArena({
             }`}
           >
             <Sparkles size={16} />
-            <span>{myUlt >= 100 ? "UNLEASH ULTIMATE! (READY)" : `ULTIMATE (${myUlt}%)`}</span>
+            <span>{myUlt >= 100 ? "[TAB] UNLEASH ULTIMATE! (READY)" : `ULTIMATE (${myUlt}%)`}</span>
           </button>
 
           {/* Forfeit Safeguard */}
@@ -666,6 +682,45 @@ export function MultiplayerArena({
                 </button>
               </div>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ANIME ULTIMATE CUT-IN OVERLAY */}
+      <AnimatePresence>
+        {ultimateActiveFlash && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-purple-950/75 backdrop-blur-sm" />
+
+            <motion.div
+              initial={{ x: "-100%", skewX: -12 }}
+              animate={{ x: "0%", skewX: -12 }}
+              exit={{ x: "100%", skewX: -12 }}
+              transition={{ type: "spring", stiffness: 260, damping: 22 }}
+              className="relative w-full py-10 bg-gradient-to-r from-purple-950 via-pink-600 to-amber-500 border-y-4 border-yellow-400 shadow-[0_0_60px_rgba(234,179,8,0.8)] text-center"
+            >
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.1, duration: 0.25 }}
+                className="space-y-1"
+              >
+                <span className="text-xs sm:text-sm font-mono font-black uppercase tracking-widest text-yellow-300 drop-shadow-[0_0_12px_rgba(253,224,71,1)]">
+                  奥義 • FORGE ULTIMATE JUTSU
+                </span>
+                <h1 className="text-4xl sm:text-6xl font-black font-mono tracking-wider text-white drop-shadow-[0_0_30px_rgba(0,0,0,0.9)]">
+                  CHAKRA OVERDRIVE BURST!
+                </h1>
+                <span className="text-xs font-mono text-white/90 font-bold uppercase tracking-widest">
+                  DEVASTATING 160 DMG IMPACT
+                </span>
+              </motion.div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
