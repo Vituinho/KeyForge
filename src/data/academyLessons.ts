@@ -17,6 +17,69 @@ export interface AcademyLesson {
   exercises?: string[]
 }
 
+export function getAcademyModules(t: (key: string) => string): AcademyModule[] {
+  return [
+    {
+      id: "intro",
+      title: t("academy.modules.intro.title"),
+      subtitle: t("academy.modules.intro.subtitle"),
+      description: t("academy.modules.intro.desc"),
+      order: 1,
+      status: "available",
+      badge: t("academy.modules.intro.badge"),
+    },
+    {
+      id: "home-row",
+      title: t("academy.modules.homeRow.title"),
+      subtitle: t("academy.modules.homeRow.subtitle"),
+      description: t("academy.modules.homeRow.desc"),
+      order: 2,
+      status: "available",
+      badge: t("academy.modules.homeRow.badge"),
+    },
+    {
+      id: "left-hand",
+      title: t("academy.modules.leftHand.title"),
+      subtitle: t("academy.modules.leftHand.subtitle"),
+      description: t("academy.modules.leftHand.desc"),
+      order: 3,
+      status: "soon",
+    },
+    {
+      id: "right-hand",
+      title: t("academy.modules.rightHand.title"),
+      subtitle: t("academy.modules.rightHand.subtitle"),
+      description: t("academy.modules.rightHand.desc"),
+      order: 4,
+      status: "soon",
+    },
+    {
+      id: "all-fingers",
+      title: t("academy.modules.allFingers.title"),
+      subtitle: t("academy.modules.allFingers.subtitle"),
+      description: t("academy.modules.allFingers.desc"),
+      order: 5,
+      status: "soon",
+    },
+    {
+      id: "numbers",
+      title: t("academy.modules.numbers.title"),
+      subtitle: t("academy.modules.numbers.subtitle"),
+      description: t("academy.modules.numbers.desc"),
+      order: 6,
+      status: "soon",
+    },
+    {
+      id: "symbols",
+      title: t("academy.modules.symbols.title"),
+      subtitle: t("academy.modules.symbols.subtitle"),
+      description: t("academy.modules.symbols.desc"),
+      order: 7,
+      status: "soon",
+    },
+  ]
+}
+
 export const ACADEMY_MODULES: AcademyModule[] = [
   {
     id: "intro",
@@ -78,7 +141,7 @@ export const ACADEMY_MODULES: AcademyModule[] = [
   },
 ]
 
-export const HOME_ROW_EXERCISES = [
+export const HOME_ROW_EXERCISES_PT = [
   "asdf jklç",
   "asdf jklç",
   "fdsa çlkj",
@@ -87,3 +150,19 @@ export const HOME_ROW_EXERCISES = [
   "fad jak lad ças",
   "fala sala dala cala",
 ]
+
+export const HOME_ROW_EXERCISES_EN = [
+  "asdf jkl;",
+  "asdf jkl;",
+  "fdsa ;lkj",
+  "asdf jkl;",
+  "a s d f j k l ;",
+  "fad jak lad gas",
+  "fall salsa flask glad",
+]
+
+export function getHomeRowExercises(locale: string = "pt-BR"): string[] {
+  return locale === "en" ? HOME_ROW_EXERCISES_EN : HOME_ROW_EXERCISES_PT
+}
+
+export const HOME_ROW_EXERCISES = HOME_ROW_EXERCISES_PT

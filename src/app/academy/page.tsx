@@ -2,15 +2,16 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { ACADEMY_MODULES } from "@/data/academyLessons"
+import { getAcademyModules } from "@/data/academyLessons"
 import { AcademyLesson } from "@/components/academy/AcademyLesson"
 import { BookOpen, ChevronRight, ChevronLeft, Lock, Sparkles } from "lucide-react"
 import Link from "next/link"
 import { useI18n } from "@/lib/i18n/i18nContext"
 
 export default function AcademyPage() {
-  const { t, locale } = useI18n()
+  const { t } = useI18n()
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null)
+  const modules = getAcademyModules(t)
 
   if (activeModuleId) {
     return (
@@ -51,18 +52,16 @@ export default function AcademyPage() {
           <BookOpen size={28} />
         </div>
         <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-white">
-          KEYFORGE <span className="text-emerald-400">ACADEMY</span>
+          KEYFORGE <span className="text-emerald-400">{t("academy.academyTag")}</span>
         </h1>
         <p className="text-white/40 text-sm mt-2 max-w-md mx-auto">
-          {locale === "pt-BR"
-            ? "Aprenda a arte do Touch Typing do zero. Abandone o vício de olhar para o teclado e digite com todos os dez dedos."
-            : "Master touch typing from the ground up. Stop looking at your keyboard and type with all ten fingers."}
+          {t("academy.heroDesc")}
         </p>
       </motion.div>
 
       {/* Modules List */}
       <div className="w-full max-w-2xl space-y-3 z-10">
-        {ACADEMY_MODULES.map((module, index) => {
+        {modules.map((module, index) => {
           const isAvailable = module.status === "available"
 
           return (
@@ -119,7 +118,7 @@ export default function AcademyPage() {
                     </div>
                   ) : (
                     <span className="text-[10px] uppercase font-mono text-white/30 px-2 py-1 rounded bg-white/5 border border-white/5">
-                      Soon
+                      {t("common.soon")}
                     </span>
                   )}
                 </div>
