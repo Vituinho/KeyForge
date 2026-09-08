@@ -14,14 +14,15 @@ export function TypingKeyboard({
   weakKeys = [],
   layout = "pt-BR",
   highlightFinger = false,
-  showHomeRowAnchors = true,
+  showHomeRowAnchors: propShowHomeRowAnchors,
   showFingerLegend = false,
   size = "md",
   className = "",
   skinVisual: propSkinVisual,
 }: TypingKeyboardProps) {
-  const { equippedSkin, settings } = useCosmetics()
+  const { equippedSkin, settings, updateSettings } = useCosmetics()
   const skinVisual = propSkinVisual ?? equippedSkin.visual
+  const showHomeRowAnchors = propShowHomeRowAnchors ?? settings?.showHomeRowAnchors ?? true
 
   const normalizedExpected = expectedKey ? expectedKey.toLowerCase() : null
   const normalizedPressed = pressedKey ? pressedKey.toLowerCase() : null
@@ -37,7 +38,19 @@ export function TypingKeyboard({
   const layoutLabel = layout === "en" ? "EN · ANSI" : "PT-BR · ABNT2"
 
   if (settings && !settings.showKeyboard) {
-    return null
+    return (
+      <div className="flex justify-center py-1">
+        <button
+          type="button"
+          onClick={() => updateSettings({ showKeyboard: true })}
+          className="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-mono font-bold text-white/50 hover:text-white transition-colors flex items-center gap-2 shadow-sm"
+          title="Show Visual Keyboard"
+        >
+          <span>⌨️</span>
+          <span>Show Visual Keyboard</span>
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -46,6 +59,7 @@ export function TypingKeyboard({
       className={className}
       skinVisual={skinVisual}
       effectIntensity={settings?.effectIntensity ?? "full"}
+      onToggleHide={() => updateSettings({ showKeyboard: false })}
     >
       {activeRows.map((row, rowIdx) => (
         <div key={rowIdx} className="flex gap-1 sm:gap-1.5 justify-center w-full">
