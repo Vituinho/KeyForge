@@ -97,3 +97,63 @@ export function generateMatchWords(
 
   return result
 }
+
+// In-memory cache for fast lookup during high-speed typing
+const matchWordsCache = new Map<string, string[]>()
+
+function getCacheKey(seed: number, count: number, language: string): string {
+  return `${seed}_${count}_${language}`
+}
+
+/**
+ * Gets the deterministic word list for a match, leveraging memory cache.
+ */
+export function getWordsForMatch(match: {
+  seed: number
+  word_count?: number
+  language?: "pt-BR" | "en"
+}): string[] {
+  const count = match.word_count || 30
+  const language = match.language || "pt-BR"
+  const key = getCacheKey(match.seed, count, language)
+
+  let words = matchWordsCache.get(key)
+  if (!words) {
+    words = generateMatchWords(match.seed, count, language)
+    if (matchWordsCache.size > 200) {
+      matchWordsCache.clear() // Prevent memory leak in long sessions
+    }
+    matchWordsCache.set(key, words)
+  }
+  return words
+}
+
+/**
+ * Retrieves the expected word at a given index for a match.
+ */
+export function getWordAt(
+  seed: number,
+  index: number,
+  count = 30,
+  language: "pt-BR" | "en" = "pt-BR"
+): string | null {
+  const words = getWordsForMatch({ seed, word_count: count, language })
+  if (index < 0 || index >= words.length) return null
+  return words[index]
+}
+
+/**
+ * Validates whether a typed word matches the deterministic sequence word at that index.
+ */
+export function verifyMatchWord(
+  seed: number,
+  index: number,
+  word: string,
+  count = 30,
+  language: "pt-BR" | "en" = "pt-BR"
+): boolean {
+  const expected = getWordAt(seed, index, count, language)
+  if (!expected) return false
+  return expected.trim().toLowerCase() === word.trim().toLowerCase()
+}
+
