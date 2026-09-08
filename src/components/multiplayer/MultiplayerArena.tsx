@@ -73,6 +73,8 @@ export function MultiplayerArena({
   const [lastWordPerfect, setLastWordPerfect] = useState(false)
   const [comboBreak, setComboBreak] = useState(false)
   const [ultimateActiveFlash, setUltimateActiveFlash] = useState(false)
+  const [screenShake, setScreenShake] = useState(false)
+  const [activeAttackBeam, setActiveAttackBeam] = useState<"p1_to_p2" | "p2_to_p1" | null>(null)
   const wordHadMistakeRef = useRef(false)
   const [startTime, setStartTime] = useState<number | null>(null)
 
@@ -236,6 +238,15 @@ export function MultiplayerArena({
         if (newOppHp < oldOppHp) {
           const diff = oldOppHp - newOppHp
           triggerDamageFloat(diff, isP1 ? "p2" : "p1", newCombo >= 10, `${newCombo}x COMBO!`)
+          setActiveAttackBeam(isP1 ? "p1_to_p2" : "p2_to_p1")
+          setTimeout(() => setActiveAttackBeam(null), 600)
+        }
+
+        const oldMyHp = isP1 ? currentMatch.player_1_hp : currentMatch.player_2_hp
+        const newMyHp = isP1 ? updated.player_1_hp : updated.player_2_hp
+        if (newMyHp < oldMyHp) {
+          setScreenShake(true)
+          setTimeout(() => setScreenShake(false), 400)
         }
 
         setCurrentMatch(updated)
@@ -259,6 +270,8 @@ export function MultiplayerArena({
       })
 
       triggerDamageFloat(160, isP1 ? "p2" : "p1", true, "SHINOBI ULTIMATE!")
+      setActiveAttackBeam(isP1 ? "p1_to_p2" : "p2_to_p1")
+      setTimeout(() => setActiveAttackBeam(null), 800)
       setCurrentMatch(updated)
     } catch (err) {
       console.warn("[Arena] Ultimate failed:", err)
@@ -301,14 +314,42 @@ export function MultiplayerArena({
   const isDraw = currentMatch.is_draw
 
   return (
-    <div className="relative min-h-screen bg-black text-white flex flex-col justify-between overflow-hidden selection:bg-orange-500/30 selection:text-orange-200">
-      {/* Background Anime Ambience */}
+    <motion.div
+      animate={screenShake ? { x: [-8, 8, -5, 5, -2, 2, 0] } : {}}
+      transition={{ duration: 0.35 }}
+      className="relative min-h-screen bg-black text-white flex flex-col justify-between overflow-hidden selection:bg-orange-500/30 selection:text-orange-200"
+    >
+      {/* Dynamic Background Anime Ambience */}
       <div
-        className={`absolute top-0 left-1/4 w-[600px] h-[350px] transition-all duration-700 blur-[140px] pointer-events-none ${
-          isMyHpCritical ? "bg-red-600/25 animate-pulse" : "bg-orange-600/10"
+        className={`absolute top-0 left-1/4 w-[650px] h-[400px] transition-all duration-700 blur-[150px] pointer-events-none ${
+          isMyHpCritical
+            ? "bg-red-600/35 animate-pulse"
+            : myUlt >= 100
+            ? "bg-purple-600/35 animate-pulse"
+            : localCombo >= 10
+            ? "bg-amber-500/30 animate-pulse"
+            : "bg-orange-600/10"
         }`}
       />
       <div className="absolute bottom-10 right-10 w-80 h-80 bg-blue-600/10 blur-[130px] pointer-events-none" />
+
+      {/* Danger Vignette Overlay (<25% HP) */}
+      {isMyHpCritical && (
+        <div className="fixed inset-0 pointer-events-none z-40 border-[6px] border-red-600/40 shadow-[inset_0_0_90px_rgba(220,38,38,0.6)] animate-pulse" />
+      )}
+
+      {/* Jutsu Attack Beam Effect */}
+      <AnimatePresence>
+        {activeAttackBeam && (
+          <motion.div
+            initial={{ scaleX: 0, opacity: 1, x: activeAttackBeam === "p1_to_p2" ? "-50%" : "50%" }}
+            animate={{ scaleX: 1, opacity: [1, 0.9, 0], x: activeAttackBeam === "p1_to_p2" ? "50%" : "-50%" }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.55, ease: "easeOut" }}
+            className="absolute top-1/2 left-0 right-0 h-3 bg-gradient-to-r from-yellow-300 via-orange-400 to-red-500 shadow-[0_0_35px_rgba(249,115,22,1)] z-40 pointer-events-none origin-center"
+          />
+        )}
+      </AnimatePresence>
 
       {/* TOP COMBAT HUD */}
       <header className="relative z-20 w-full max-w-6xl mx-auto px-4 pt-4 pb-2">
@@ -809,6 +850,6 @@ export function MultiplayerArena({
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   )
 }
