@@ -41,7 +41,12 @@ export function TypingKeyboard({
   }
 
   return (
-    <KeyboardFrame layoutName={layoutLabel} className={className} skinVisual={skinVisual}>
+    <KeyboardFrame
+      layoutName={layoutLabel}
+      className={className}
+      skinVisual={skinVisual}
+      effectIntensity={settings?.effectIntensity ?? "full"}
+    >
       {activeRows.map((row, rowIdx) => (
         <div key={rowIdx} className="flex gap-1 sm:gap-1.5 justify-center w-full">
           {row.map((meta) => {
@@ -83,6 +88,7 @@ export function TypingKeyboard({
                 isWeak={isWeak}
                 size={size}
                 skinVisual={skinVisual}
+                effectIntensity={settings?.effectIntensity ?? "full"}
               />
             )
           })}

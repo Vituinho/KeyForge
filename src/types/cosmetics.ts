@@ -28,6 +28,10 @@ export interface KeyboardVisualEffects {
   glowIntensity?: "none" | "low" | "medium" | "high" | "intense"
   borderEffect?: "solid" | "pulse" | "neon" | "rgb-flow" | "fire" | "lightning"
   activeKeyAnimation?: "bounce" | "glow" | "spark" | "ripple"
+  frameBorderGlow?: string
+  keyPressAura?: string
+  particleGlow?: boolean
+  pulseGlow?: boolean
 }
 
 export interface KeyboardSkinVisual {
