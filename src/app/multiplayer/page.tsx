@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
@@ -11,7 +11,6 @@ import {
   Zap,
   Users,
   Trophy,
-  Loader2,
   Copy,
   Check,
   Radio,
@@ -31,6 +30,11 @@ import { RoomState, MultiplayerPlayer } from "@/types/multiplayer"
 import { useMultiplayerPresence } from "@/hooks/useMultiplayerPresence"
 import { useCosmetics } from "@/hooks/useCosmetics"
 import { createMatch, joinMatch } from "@/lib/multiplayer/matchService"
+import {
+  enterMatchmakingQueue,
+  pollOrListenForMatch,
+  MatchedOpponent,
+} from "@/lib/multiplayer/matchmakingService"
 
 function MultiplayerContent() {
   const router = useRouter()
@@ -41,11 +45,25 @@ function MultiplayerContent() {
   const { onlineCount } = useMultiplayerPresence("in_lobby")
 
   const [isSearching, setIsSearching] = useState(false)
+  const [searchSeconds, setSearchSeconds] = useState(0)
+  const [matchedOpponent, setMatchedOpponent] = useState<MatchedOpponent | null>(null)
+  const cancelSearchRef = useRef<(() => void) | null>(null)
+
   const [roomCodeInput, setRoomCodeInput] = useState("")
   const [activeRoom, setActiveRoom] = useState<RoomState | null>(null)
   const [createdRoomCode, setCreatedRoomCode] = useState<string | null>(null)
   const [copiedCode, setCopiedCode] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  // Cleanup matchmaking on unmount
+  useEffect(() => {
+    return () => {
+      if (cancelSearchRef.current) {
+        cancelSearchRef.current()
+      }
+    }
+  }, [])
+
 
   const currentPlayer: MultiplayerPlayer = {
     id: user?.id || "player_local",
@@ -68,13 +86,67 @@ function MultiplayerContent() {
   // Initial ELO rating based on rank / level
   const eloRating = 1200 + (player.level - 1) * 25 + Math.round(player.stats.bestWpm * 1.5)
 
-  const handleStartQuickMatch = () => {
+  const handleStartQuickMatch = async () => {
     setIsSearching(true)
+    setSearchSeconds(0)
+    setMatchedOpponent(null)
     setErrorMessage(null)
+
+    const queueParams = {
+      userId: user?.id || "player_local",
+      username: user?.username || player.username,
+      level: player.level,
+      rank: player.rank,
+      language: (locale === "en" ? "en" : "pt-BR") as "pt-BR" | "en",
+      skinId: equippedSkin.id,
+      bestWpm: player.stats.bestWpm,
+    }
+
+    try {
+      const initResult = await enterMatchmakingQueue(queueParams)
+
+      if (initResult.status === "matched" && initResult.matchId) {
+        setMatchedOpponent(initResult.opponent || null)
+        setTimeout(() => {
+          router.push(`/multiplayer/arena?matchId=${initResult.matchId}`)
+        }, 900)
+        return
+      }
+
+      const cancelFn = pollOrListenForMatch({
+        userId: queueParams.userId,
+        queueParams,
+        timeoutSeconds: 5,
+        onStatusChange: (status) => {
+          if (status.status === "searching") {
+            setSearchSeconds(status.elapsedSeconds)
+          } else if (status.status === "matched" && status.matchedMatchId) {
+            setMatchedOpponent(status.opponent || null)
+            setTimeout(() => {
+              router.push(`/multiplayer/arena?matchId=${status.matchedMatchId}`)
+            }, 900)
+          } else if (status.status === "error") {
+            setIsSearching(false)
+            setErrorMessage(status.error || "Matchmaking error")
+          }
+        },
+      })
+
+      cancelSearchRef.current = cancelFn
+    } catch (err) {
+      setIsSearching(false)
+      setErrorMessage(err instanceof Error ? err.message : "Failed to enter queue")
+    }
   }
 
   const handleCancelQuickMatch = () => {
+    if (cancelSearchRef.current) {
+      cancelSearchRef.current()
+      cancelSearchRef.current = null
+    }
     setIsSearching(false)
+    setSearchSeconds(0)
+    setMatchedOpponent(null)
   }
 
   const handleCreatePrivateRoom = async () => {
@@ -321,18 +393,59 @@ function MultiplayerContent() {
 
             <div className="pt-6">
               {isSearching ? (
-                <div className="space-y-3">
-                  <div className="py-3 px-4 rounded-xl bg-orange-500/20 border border-orange-500/40 text-orange-300 text-xs font-bold flex items-center justify-center gap-2">
-                    <Loader2 size={16} className="animate-spin text-orange-400" />
-                    <span>{t("multiplayerHub.searchingOpponent")}</span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={handleCancelQuickMatch}
-                    className="w-full py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 text-xs font-bold transition-colors cursor-pointer"
-                  >
-                    {t("multiplayerHub.cancelSearchBtn")}
-                  </button>
+                <div className="space-y-4">
+                  {matchedOpponent ? (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/50 shadow-[0_0_25px_rgba(16,185,129,0.3)] space-y-2 text-center"
+                    >
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-mono text-[10px] font-black uppercase tracking-wider">
+                        <Check size={12} />
+                        <span>{t("multiplayerHub.matchFound")}</span>
+                      </div>
+                      <div>
+                        <h4 className="text-base font-black font-mono text-white">
+                          {matchedOpponent.username}
+                        </h4>
+                        <span className="text-[11px] font-mono text-emerald-300/80">
+                          Lv. {matchedOpponent.level} • Rank {matchedOpponent.rank}
+                        </span>
+                      </div>
+                      <p className="text-[10px] font-mono text-white/50 animate-pulse">
+                        Entering Battleground...
+                      </p>
+                    </motion.div>
+                  ) : (
+                    <>
+                      {/* Pulsing Anime Radar */}
+                      <div className="relative flex items-center justify-center py-3">
+                        <span className="absolute w-16 h-16 rounded-full bg-orange-500/20 animate-ping" />
+                        <span className="absolute w-12 h-12 rounded-full bg-orange-500/30 animate-pulse" />
+                        <div className="relative w-10 h-10 rounded-full bg-gradient-to-tr from-orange-600 to-amber-500 flex items-center justify-center shadow-[0_0_20px_rgba(249,115,22,0.6)]">
+                          <Radio size={18} className="text-black animate-pulse" />
+                        </div>
+                      </div>
+
+                      <div className="text-center space-y-1">
+                        <div className="flex items-center justify-center gap-2 text-xs font-mono font-bold text-orange-400">
+                          <Clock size={13} className="animate-spin" />
+                          <span>00:{searchSeconds.toString().padStart(2, "0")}</span>
+                        </div>
+                        <p className="text-[11px] font-mono text-white/60">
+                          {t("multiplayerHub.scanningArena")}
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={handleCancelQuickMatch}
+                        className="w-full py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white text-xs font-bold transition-colors cursor-pointer"
+                      >
+                        {t("multiplayerHub.cancelSearchBtn")}
+                      </button>
+                    </>
+                  )}
                 </div>
               ) : (
                 <button

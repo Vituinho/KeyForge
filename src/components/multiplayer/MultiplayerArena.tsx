@@ -119,6 +119,21 @@ export function MultiplayerArena({
   const p2Skin = getSkinById(currentMatch.player_2_skin_id || "default_forge")
   const mySkin = isP1 ? p1Skin : p2Skin
 
+  // Shadow Shinobi Opponent Detection
+  const isOpponentShadow = isP1
+    ? Boolean(currentMatch.player_2_id?.startsWith("shadow_"))
+    : Boolean(currentMatch.player_1_id?.startsWith("shadow_"))
+
+  const opponentShadowName = useMemo(() => {
+    const oppId = isP1 ? currentMatch.player_2_id : currentMatch.player_1_id
+    if (!oppId || !oppId.startsWith("shadow_")) return null
+    const raw = oppId.replace("shadow_", "").replace(/_/g, " ")
+    return raw
+      .split(" ")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ")
+  }, [isP1, currentMatch.player_1_id, currentMatch.player_2_id])
+
   // Match timer for pure WPM calculation
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
 
@@ -230,6 +245,96 @@ export function MultiplayerArena({
       unsubscribe()
     }
   }, [currentMatch.id, currentUserId, isP1, triggerDamageFloat])
+
+  // Shadow Shinobi AI autonomous simulation
+  useEffect(() => {
+    if (!isOpponentShadow || currentMatch.status !== "playing") return
+
+    const shadowId = isP1 ? currentMatch.player_2_id! : currentMatch.player_1_id
+    const targetWpm = Math.max(35, Math.min(85, Math.round(player.stats.bestWpm * 0.9) || 50))
+    const wordDelay = Math.max(1200, Math.round((60 / targetWpm) * 1000))
+
+    let isCancelled = false
+
+    const timer = setInterval(() => {
+      if (isCancelled) return
+
+      setCurrentMatch((prev) => {
+        if (prev.status !== "playing") return prev
+        const currentOppWordIdx = isP1 ? prev.player_2_word_index : prev.player_1_word_index
+        if (currentOppWordIdx >= words.length) return prev
+
+        const wordText = words[currentOppWordIdx]
+        const oppCombo = (isP1 ? prev.player_2_combo : prev.player_1_combo) + 1
+        const oppUlt = isP1 ? prev.player_2_ultimate_energy : prev.player_1_ultimate_energy
+
+        if (oppUlt >= 100) {
+          triggerUltimate({
+            matchId: prev.id,
+            playerId: shadowId,
+          })
+            .then((updated) => {
+              if (!isCancelled) {
+                triggerDamageFloat(160, isP1 ? "p1" : "p2", true, "SHADOW ULTIMATE!")
+                setActiveAttackBeam(isP1 ? "p2_to_p1" : "p1_to_p2")
+                setTimeout(() => setActiveAttackBeam(null), 800)
+                setScreenShake(true)
+                setTimeout(() => setScreenShake(false), 400)
+                setCurrentMatch(updated)
+              }
+            })
+            .catch(() => {})
+          return prev
+        }
+
+        const eventId = `shadow_evt_${Date.now()}_${currentOppWordIdx}`
+        submitWordCompletion({
+          matchId: prev.id,
+          eventId,
+          wordIndex: currentOppWordIdx,
+          wordText,
+          wpm: targetWpm,
+          accuracy: 97,
+          combo: oppCombo,
+          playerId: shadowId,
+        })
+          .then((updated) => {
+            if (!isCancelled) {
+              const oldMyHp = isP1 ? prev.player_1_hp : prev.player_2_hp
+              const newMyHp = isP1 ? updated.player_1_hp : updated.player_2_hp
+              if (newMyHp < oldMyHp) {
+                const diff = oldMyHp - newMyHp
+                triggerDamageFloat(diff, isP1 ? "p1" : "p2", oppCombo >= 10, "OPPONENT STRIKE!")
+                setActiveAttackBeam(isP1 ? "p2_to_p1" : "p1_to_p2")
+                setTimeout(() => setActiveAttackBeam(null), 600)
+                setScreenShake(true)
+                setTimeout(() => setScreenShake(false), 400)
+              }
+              setCurrentMatch(updated)
+            }
+          })
+          .catch(() => {})
+
+        return prev
+      })
+    }, wordDelay)
+
+    return () => {
+      isCancelled = true
+      clearInterval(timer)
+    }
+  }, [
+    isOpponentShadow,
+    currentMatch.status,
+    currentMatch.id,
+    currentMatch.player_1_id,
+    currentMatch.player_2_id,
+    isP1,
+    words,
+    player.stats.bestWpm,
+    triggerDamageFloat,
+  ])
+
 
   // Live match synchronization via broadcast channel if room_code exists
   useEffect(() => {
@@ -520,7 +625,7 @@ export function MultiplayerArena({
                   </div>
                   <div>
                     <span className="text-sm font-black text-white block leading-tight">
-                      {isP1 ? (user?.username || player.username) : "Host Shinobi"}
+                      {isP1 ? (user?.username || player.username) : (opponentShadowName || "Host Shinobi")}
                     </span>
                     <span className="text-[10px] font-mono text-orange-400 font-bold">
                       Lv. {player.level} • {p1Skin.name}
@@ -604,7 +709,7 @@ export function MultiplayerArena({
                 <div className="flex items-center gap-2 text-right">
                   <div>
                     <span className="text-sm font-black text-white block leading-tight">
-                      {!isP1 ? (user?.username || player.username) : "Rival Shinobi"}
+                      {!isP1 ? (user?.username || player.username) : (opponentShadowName || "Rival Shinobi")}
                     </span>
                     <span className="text-[10px] font-mono text-blue-400 font-bold">
                       {p2Skin.name}
