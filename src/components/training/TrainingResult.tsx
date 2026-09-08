@@ -55,9 +55,11 @@ export function TrainingResult({
         >
           <Dumbbell size={32} />
         </motion.div>
-        <h1 className="text-4xl font-black tracking-wider text-white">TRAINING COMPLETE</h1>
+        <h1 className="text-4xl font-black tracking-wider text-white">
+          {t("training.result.complete")}
+        </h1>
         <p className="text-white/40 text-sm mt-1">
-          Weakness drills concluded for:{" "}
+          {t("training.result.drillsConcluded")}{" "}
           <span className="text-orange-400 font-bold uppercase">
             {targetKeys.join(", ")}
           </span>
@@ -67,7 +69,7 @@ export function TrainingResult({
         <div className="flex items-center justify-center gap-2 mt-3 flex-wrap">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-400 text-xs font-bold font-mono">
             <Sparkles size={14} />
-            <span>+{rewardSummary.xpGained} XP Earned</span>
+            <span>{t("training.result.xpEarned", { xp: rewardSummary.xpGained })}</span>
           </div>
 
           {rewardSummary.didLevelUp && (
@@ -77,7 +79,12 @@ export function TrainingResult({
               animate={{ scale: 1, opacity: 1 }}
             >
               <ArrowUpCircle size={14} />
-              <span>LEVEL UP! Lv. {rewardSummary.prevLevel} → Lv. {rewardSummary.newLevel}</span>
+              <span>
+                {t("training.result.levelUp", {
+                  prev: rewardSummary.prevLevel,
+                  next: rewardSummary.newLevel,
+                })}
+              </span>
             </motion.div>
           )}
         </div>
@@ -86,7 +93,7 @@ export function TrainingResult({
       {/* Global Performance Cards */}
       <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-5">
         <h2 className="text-xs font-bold tracking-widest text-white/40 uppercase mb-4">
-          Training Performance
+          {t("training.result.performance")}
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatBox
@@ -126,7 +133,7 @@ export function TrainingResult({
       <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-5">
         <h2 className="text-xs font-bold tracking-widest text-white/40 uppercase mb-4 flex items-center gap-1.5">
           <TrendingUp size={14} />
-          Key Accuracy Breakdown
+          {t("training.result.breakdown")}
         </h2>
 
         <div className="space-y-3">
@@ -152,10 +159,10 @@ export function TrainingResult({
                   </span>
                   <div>
                     <p className="text-xs text-white/50">
-                      {attempts} attempts · {errors} errors
+                      {t("training.result.attemptsErrors", { attempts, errors })}
                     </p>
                     <p className="text-sm font-bold text-white">
-                      Training: <span className="text-green-400">{trainingAcc}%</span>
+                      {t("training.result.trainingLabel")}: <span className="text-green-400">{trainingAcc}%</span>
                     </p>
                   </div>
                 </div>
@@ -163,7 +170,9 @@ export function TrainingResult({
                 {/* Comparison display */}
                 {hasPrior && diff !== null ? (
                   <div className="text-right">
-                    <p className="text-xs text-white/40">Before: {priorAcc}%</p>
+                    <p className="text-xs text-white/40">
+                      {t("training.result.beforeLabel")}: {priorAcc}%
+                    </p>
                     <p
                       className={`text-sm font-black ${
                         diff > 0
@@ -173,12 +182,20 @@ export function TrainingResult({
                             : "text-white/60"
                       }`}
                     >
-                      {diff > 0 ? `+${diff}% Improvement` : diff < 0 ? `${diff}%` : "No Change"}
+                      {diff > 0
+                        ? t("training.result.improvement", { diff })
+                        : diff < 0
+                          ? `${diff}%`
+                          : t("training.result.noChange")}
                     </p>
                   </div>
                 ) : (
                   <div className="text-right text-xs text-white/40">
-                    <span>{attempts > 0 ? "Practiced" : "Untyped"}</span>
+                    <span>
+                      {attempts > 0
+                        ? t("training.result.practiced")
+                        : t("training.result.untyped")}
+                    </span>
                   </div>
                 )}
               </div>

@@ -23,7 +23,7 @@ export function WeakKeyTraining({
   baselineAccuracies = {},
   onRestart,
 }: WeakKeyTrainingProps) {
-  const { locale } = useI18n()
+  const { t, locale } = useI18n()
 
   // Generate sequence of drill sentences for the target keys
   const [exercises, setExercises] = useState<string[]>(() =>
@@ -115,7 +115,7 @@ export function WeakKeyTraining({
             <Dumbbell size={20} />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-white">Targeted Weak Keys</h2>
+            <h2 className="text-sm font-bold text-white">{t("training.weakKeys.targetedKeys")}</h2>
             <div className="flex gap-1.5 mt-0.5">
               {targetKeys.map((k) => (
                 <span
@@ -131,7 +131,7 @@ export function WeakKeyTraining({
 
         {/* Progress indicator */}
         <div className="flex items-center gap-2 text-xs text-white/50">
-          <span>Drill</span>
+          <span>{t("training.weakKeys.drill")}</span>
           <span className="font-mono font-bold text-white">
             {exerciseIndex + 1} / {exercises.length}
           </span>
@@ -168,7 +168,7 @@ export function WeakKeyTraining({
 
         {isTransitioning && (
           <div className="text-center text-xs text-orange-400 mt-2 font-bold animate-pulse flex items-center justify-center gap-1">
-            <span>Next drill loading</span>
+            <span>{t("training.weakKeys.nextDrill")}</span>
             <ArrowRight size={12} />
           </div>
         )}
@@ -189,8 +189,8 @@ export function WeakKeyTraining({
 
       {/* Step instructions */}
       <div className="text-center text-xs text-white/30 space-y-1">
-        <p>Type the sequence above with focus on precision and rhythm.</p>
-        <p>Backspace is enabled — correct mistakes deliberately to build muscle memory.</p>
+        <p>{t("training.weakKeys.instruction1")}</p>
+        <p>{t("training.weakKeys.instruction2")}</p>
       </div>
     </div>
   )

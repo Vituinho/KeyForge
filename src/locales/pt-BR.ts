@@ -446,15 +446,46 @@ export const ptBR: TranslationSchema = {
   training: {
     title: "Campo de Treinamento",
     backBtn: "Voltar ao Jogo",
+    trainingTag: "TREINO",
+    heroDesc:
+      "Aprimore sua memória muscular e elimine fraquezas específicas de digitação com prática deliberada.",
     modes: {
       weakKeys: "Teclas Fracas",
       freePractice: "Prática Livre",
       speedTest: "Teste de Velocidade",
     },
-    selectKeys: "Selecione as teclas que deseja praticar:",
+    selectKeys: "Selecione as teclas com dificuldade:",
+    resetDefaults: "Restaurar Padrão",
+    freePracticeComingSoon:
+      "Entrada de texto personalizada e contagem de palavras arbitrária estarão disponíveis em breve.",
+    speedTestComingSoon:
+      "Testes cronometrados de 15s, 30s e 60s com placares estarão disponíveis em breve.",
+    loading: "Carregando Campo de Treinamento...",
     trainAgain: "Treinar Novamente",
     backToBattle: "Voltar à Batalha",
     dashboard: "Painel Principal",
+    weakKeys: {
+      targetedKeys: "Teclas Alvo com Dificuldade",
+      drill: "Exercício",
+      nextDrill: "Carregando próximo exercício",
+      instruction1: "Digite a sequência acima com foco em precisão e ritmo.",
+      instruction2: "Backspace habilitado — corrija os erros deliberadamente para criar memória muscular.",
+    },
+    result: {
+      complete: "TREINO CONCLUÍDO",
+      drillsConcluded: "Exercícios concluídos para:",
+      xpEarned: "+{xp} XP Obtidos",
+      levelUp: "SUBIU DE NÍVEL! Nív. {prev} → Nív. {next}",
+      performance: "Desempenho do Treino",
+      breakdown: "Detalhamento de Precisão por Tecla",
+      attemptsErrors: "{attempts} tentativas · {errors} erros",
+      trainingLabel: "Treino",
+      beforeLabel: "Antes",
+      improvement: "Melhoria de +{diff}%",
+      noChange: "Sem Mudança",
+      practiced: "Praticado",
+      untyped: "Não digitado",
+    },
   },
   academy: {
     title: "Academia de Touch Typing",

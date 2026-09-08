@@ -43,7 +43,8 @@ const DEFAULT_EXERCISES = [
  */
 export function generateTrainingExercises(
   weakKeys: WeakKey[],
-  exercisesPerKey = 5
+  exercisesPerKey = 5,
+  locale: "en" | "pt-BR" = "en"
 ): TrainingExercise[] {
   return weakKeys.map((wk) => {
     const key = wk.key.toLowerCase()
@@ -51,7 +52,7 @@ export function generateTrainingExercises(
     return {
       targetKey: wk.key,
       exercises: exercises.slice(0, exercisesPerKey),
-      description: buildDescription(wk),
+      description: buildDescription(wk, locale),
     }
   })
 }
@@ -128,8 +129,16 @@ export function generateWeakKeysSession(keys: string[]): string[] {
   return session.slice(0, 5)
 }
 
-function buildDescription(wk: WeakKey): string {
+function buildDescription(wk: WeakKey, locale: "en" | "pt-BR" = "en"): string {
   const rate = Math.round(wk.errorRate * 100)
+  if (locale === "pt-BR") {
+    if (rate >= 50) {
+      return `Você teve bastante dificuldade com a letra "${wk.key.toUpperCase()}" (${rate}% de taxa de erro). Foque em toques controlados e deliberados.`
+    } else if (rate >= 25) {
+      return `A letra "${wk.key.toUpperCase()}" causou problemas perceptíveis (${rate}% de taxa de erro). Pratique os exercícios a seguir.`
+    }
+    return `Pequena fraqueza detectada em "${wk.key.toUpperCase()}" (${rate}% de taxa de erro). Um pouco de prática vai afiar sua precisão.`
+  }
   if (rate >= 50) {
     return `You struggled significantly with the letter "${wk.key.toUpperCase()}" (${rate}% error rate). Focus on controlled, deliberate presses.`
   } else if (rate >= 25) {
