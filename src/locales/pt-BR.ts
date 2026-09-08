@@ -365,6 +365,7 @@ export const ptBR: TranslationSchema = {
     subtitle: "Desafie outros ninjas ao redor do mundo em batalhas de digitação justas e sincronizadas.",
     onlineStatus: "Online",
     offlineStatus: "Offline",
+    shinobisOnline: "{count} Shinobis Online",
     eloRating: "Pontuação ELO",
     quickMatchTitle: "Partida Rápida",
     quickMatchDesc: "Entre em um duelo instantâneo contra um oponente disponível.",
