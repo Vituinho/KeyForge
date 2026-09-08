@@ -1,5 +1,6 @@
 import { getSupabaseClient } from "@/lib/supabase/client"
 import { MultiplayerMatchRow } from "@/types/database"
+import { getWordsForMatch, verifyMatchWord } from "@/lib/multiplayer/wordGenerator"
 
 export interface CreateMatchParams {
   mode: "quick" | "private"
@@ -309,6 +310,20 @@ export async function submitWordCompletion(
   }
   localMatchEventsStore.add(eventKey)
 
+  // Deterministic Anti-Cheat Word Verification
+  const isWordValid = verifyMatchWord(
+    match.seed,
+    params.wordIndex,
+    params.wordText,
+    match.word_count,
+    match.language
+  )
+  if (!isWordValid) {
+    console.warn(
+      `[MatchService] Word verification warning: word index ${params.wordIndex} with text '${params.wordText}' does not match seed ${match.seed}`
+    )
+  }
+
   const playerId = params.playerId || match.player_1_id
   const isP1 = match.player_1_id === playerId
 
@@ -587,3 +602,15 @@ export async function getMatchByCode(
 
   return localMatchesStore.get(norm) || null
 }
+
+/**
+ * Convenience method to get the full deterministic word list for a match record.
+ */
+export function getMatchWords(match: MultiplayerMatchRow): string[] {
+  return getWordsForMatch({
+    seed: match.seed,
+    word_count: match.word_count,
+    language: match.language,
+  })
+}
+
