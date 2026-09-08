@@ -772,14 +772,16 @@ export function MultiplayerArena({
             </div>
 
             {/* CENTER MATCH STATUS (1 col) */}
-            <div className="md:col-span-1 flex flex-col items-center justify-center text-center">
-              <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-lg">
-                <Swords size={18} className="text-orange-400" />
+            <div className="md:col-span-1 flex flex-row md:flex-col items-center justify-between md:justify-center text-center py-1.5 md:py-0 border-y md:border-y-0 border-white/10 px-2 md:px-0">
+              <div className="flex items-center gap-2 md:flex-col">
+                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shadow-lg">
+                  <Swords size={16} className="text-orange-400" />
+                </div>
+                <span className="text-[10px] font-mono font-bold text-white/50 tracking-widest uppercase">
+                  {currentMatch.room_code || "QUICK"}
+                </span>
               </div>
-              <span className="text-[10px] font-mono font-bold text-white/50 tracking-widest uppercase mt-1">
-                {currentMatch.room_code || "QUICK"}
-              </span>
-              <span className="text-[9px] font-mono text-orange-400/80 font-bold">
+              <span className="text-[10px] font-mono text-orange-400 font-bold">
                 {myWordIndex} / {currentMatch.word_count}
               </span>
             </div>
@@ -955,7 +957,7 @@ export function MultiplayerArena({
         </div>
 
         {/* Word Display Stream */}
-        <div className="w-full max-w-xl p-8 rounded-3xl bg-neutral-950/80 border border-white/15 backdrop-blur-xl shadow-2xl text-center relative overflow-hidden">
+        <div className="w-full max-w-xl p-5 sm:p-8 rounded-3xl bg-neutral-950/80 border border-white/15 backdrop-blur-xl shadow-2xl text-center relative overflow-hidden">
           {/* Typo Recoil Lockout Glow */}
           {isRecoilActive && (
             <motion.div
@@ -996,7 +998,7 @@ export function MultiplayerArena({
               TARGET WORD #{myWordIndex + 1}
             </span>
 
-            <div className="text-4xl sm:text-5xl font-black font-mono tracking-wider flex justify-center items-center gap-1">
+            <div className="text-3xl sm:text-5xl font-black font-mono tracking-wider flex justify-center items-center gap-0.5 sm:gap-1 flex-wrap break-all">
               {currentWord.split("").map((char, idx) => {
                 const typedChar = typedInput[idx]
                 let colorClass = "text-white/30"
@@ -1016,7 +1018,7 @@ export function MultiplayerArena({
           </div>
 
           {/* Upcoming Words Carousel */}
-          <div className="flex items-center justify-center gap-3 pt-3 border-t border-white/10 text-xs font-mono text-white/40">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 pt-3 border-t border-white/10 text-xs font-mono text-white/40">
             <span>NEXT:</span>
             {nextWords.map((nw, i) => (
               <span key={i} className="px-2 py-0.5 rounded bg-white/5 border border-white/5">
@@ -1380,9 +1382,9 @@ export function MultiplayerArena({
               </div>
 
               {/* Head-to-Head Clash Comparison */}
-              <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-white/[0.02] border border-white/10 text-left font-mono text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-2xl bg-white/[0.02] border border-white/10 text-left font-mono text-xs">
                 {/* Player 1 card */}
-                <div className="space-y-1.5 border-r border-white/10 pr-2">
+                <div className="space-y-1.5 border-b sm:border-b-0 sm:border-r border-white/10 pb-2.5 sm:pb-0 sm:pr-2">
                   <div className="flex items-center justify-between">
                     <span className="font-black text-white truncate max-w-[120px]">
                       {isP1 ? (user?.username || player.username) : "Host Shinobi"}
@@ -1402,7 +1404,7 @@ export function MultiplayerArena({
                 </div>
 
                 {/* Player 2 card */}
-                <div className="space-y-1.5 pl-1">
+                <div className="space-y-1.5 pt-1 sm:pt-0 sm:pl-1">
                   <div className="flex items-center justify-between">
                     <span className="font-black text-white truncate max-w-[120px]">
                       {!isP1 ? (user?.username || player.username) : "Rival Shinobi"}
@@ -1423,7 +1425,7 @@ export function MultiplayerArena({
               </div>
 
               {/* Personal Performance Stats Grid */}
-              <div className="grid grid-cols-4 gap-2 p-3 rounded-2xl bg-white/[0.03] border border-white/10 text-center font-mono">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 rounded-2xl bg-white/[0.03] border border-white/10 text-center font-mono">
                 <div>
                   <span className="text-[9px] text-white/40 block uppercase">WPM</span>
                   <span className="text-base font-black text-white">{liveWpm}</span>

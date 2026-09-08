@@ -190,14 +190,14 @@ export function PostMatchAnalysis({
       initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl flex items-center justify-center p-4 overflow-y-auto"
+      className="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
     >
-      <div className="max-w-2xl w-full p-6 sm:p-8 rounded-3xl border border-white/15 bg-neutral-950/95 shadow-[0_0_80px_rgba(0,0,0,0.95)] text-center space-y-6 my-auto">
+      <div className="max-w-2xl w-full p-4 sm:p-8 rounded-3xl border border-white/15 bg-neutral-950/95 shadow-[0_0_80px_rgba(0,0,0,0.95)] text-center space-y-4 sm:space-y-6 my-auto">
         {/* Top Header Badge */}
-        <div className="flex items-center justify-between border-b border-white/10 pb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-white/10 pb-4 gap-3">
           <div className="flex items-center gap-3 text-left">
             <div
-              className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg ${
+              className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center shadow-lg shrink-0 ${
                 isWinner
                   ? "bg-gradient-to-br from-yellow-400 to-amber-500 text-black shadow-[0_0_30px_rgba(245,158,11,0.5)]"
                   : isDraw
@@ -205,11 +205,11 @@ export function PostMatchAnalysis({
                   : "bg-rose-500/20 border border-rose-500/40 text-rose-400 shadow-[0_0_25px_rgba(244,63,94,0.3)]"
               }`}
             >
-              {isWinner ? <Trophy size={32} /> : <Swords size={28} />}
+              {isWinner ? <Trophy size={28} /> : <Swords size={24} />}
             </div>
             <div>
               <h2
-                className={`text-2xl sm:text-3xl font-black uppercase tracking-wider font-mono ${
+                className={`text-xl sm:text-3xl font-black uppercase tracking-wider font-mono ${
                   isWinner ? "text-yellow-400" : isDraw ? "text-white" : "text-rose-400"
                 }`}
               >
@@ -219,7 +219,7 @@ export function PostMatchAnalysis({
                   ? t("multiplayerArena.honorableDraw")
                   : t("multiplayerArena.chakraDepleted")}
               </h2>
-              <div className="flex items-center gap-2 text-xs font-mono text-white/50">
+              <div className="flex items-center gap-2 text-xs font-mono text-white/50 flex-wrap">
                 <span className="text-orange-400 font-bold uppercase">{victoryReason}</span>
                 <span>•</span>
                 <span className="flex items-center gap-1">
@@ -232,8 +232,8 @@ export function PostMatchAnalysis({
             </div>
           </div>
 
-          <div className="text-right font-mono space-y-1">
-            <div className="flex items-center justify-end gap-1.5">
+          <div className="text-left sm:text-right font-mono space-y-1 w-full sm:w-auto">
+            <div className="flex items-center sm:justify-end gap-1.5">
               <span
                 className={`text-sm font-black block px-3 py-1 rounded-xl border ${
                   isWinner
@@ -273,9 +273,9 @@ export function PostMatchAnalysis({
             <span>{t("multiplayerArena.clashComparisonTitle")}</span>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Left: You */}
-            <div className="space-y-2 border-r border-white/10 pr-3">
+            <div className="space-y-2 border-b sm:border-b-0 sm:border-r border-white/10 pb-3 sm:pb-0 sm:pr-3">
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-xs font-black text-white block">You</span>
@@ -328,7 +328,7 @@ export function PostMatchAnalysis({
             </div>
 
             {/* Right: Rival */}
-            <div className="space-y-2 pl-2">
+            <div className="space-y-2 pt-2 sm:pt-0 sm:pl-2">
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-xs font-black text-white block">Rival</span>
