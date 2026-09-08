@@ -9,8 +9,10 @@ import {
   KeyboardAccessibilitySettings,
   DEFAULT_STARTER_SKIN_IDS,
   DEFAULT_EQUIPPED_SKIN_ID,
+  CosmeticUnlockResult,
 } from "@/types/cosmetics"
 import { ProfileRow, UserCosmeticRow, PlayerCrateRow } from "@/types/database"
+import { getSkinById } from "@/data/keyboardSkins"
 
 /**
  * Fetch cosmetics state for an authenticated user from Supabase.
@@ -290,3 +292,48 @@ export async function syncLocalToCloud(
 
   return mergedState
 }
+
+/**
+ * Opens a player crate via server-authoritative Supabase RPC.
+ * Falls back to null if RPC is not deployed yet or fails, allowing graceful client fallback.
+ */
+export async function openCrateCloud(
+  crateId: string
+): Promise<CosmeticUnlockResult | null> {
+  const supabase = getSupabaseClient()
+  if (!supabase) return null
+
+  try {
+    const { data, error } = await supabase.rpc("open_player_crate", {
+      p_crate_id: crateId,
+    })
+
+    if (!error && data && typeof data === "object") {
+      const res = data as {
+        success: boolean
+        skin_id: string
+        is_duplicate: boolean
+        shards_awarded: number
+        remaining_crates: number
+        new_shards_balance: number
+      }
+
+      if (res.success && res.skin_id) {
+        return {
+          skin: getSkinById(res.skin_id),
+          isDuplicate: res.is_duplicate,
+          shardsAwarded: res.shards_awarded,
+        }
+      }
+    }
+
+    if (error) {
+      console.warn("[CloudCosmetics] open_player_crate RPC notice:", error.message)
+    }
+  } catch (err) {
+    console.warn("[CloudCosmetics] Unexpected RPC error:", err)
+  }
+
+  return null
+}
+
