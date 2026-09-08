@@ -7,7 +7,7 @@ import { useTypingEngine } from "@/hooks/useTypingEngine"
 import { TypingArea } from "@/components/battle/TypingArea"
 import { VirtualKeyboard } from "./VirtualKeyboard"
 import { FingerGuide } from "./FingerGuide"
-import { HOME_ROW_EXERCISES } from "@/data/academyLessons"
+import { getHomeRowExercises } from "@/data/academyLessons"
 import {
   Target,
   CheckCircle2,
@@ -24,6 +24,7 @@ import {
 import Link from "next/link"
 import { processAcademyLessonRewards, ActivityRewardSummary } from "@/lib/progression/processActivityRewards"
 import { RankUpModal } from "@/components/progression/RankUpModal"
+import { useI18n } from "@/lib/i18n/i18nContext"
 
 interface AcademyLessonProps {
   moduleId: string
@@ -49,6 +50,8 @@ function IntroLesson({
   onComplete: () => void
   onBack: () => void
 }) {
+  const { t } = useI18n()
+
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-8 space-y-8">
       <button
@@ -56,19 +59,21 @@ function IntroLesson({
         className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white transition-colors"
       >
         <ArrowLeft size={16} />
-        Back to Modules
+        {t("academy.backToModules")}
       </button>
 
       {/* Hero */}
       <div className="text-center space-y-2">
         <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-          Lesson 1 · Fundamentals
+          {t("academy.intro.tag")}
         </span>
         <h1 className="text-4xl font-black text-white tracking-tight">
-          O QUE É <span className="text-emerald-400">TOUCH TYPING</span>?
+          {t("academy.intro.headingPre")}{" "}
+          <span className="text-emerald-400">{t("academy.intro.headingHighlight")}</span>
+          {t("academy.intro.headingPost")}
         </h1>
         <p className="text-white/60 text-sm max-w-lg mx-auto">
-          Touch Typing é a técnica de digitar utilizando todos os dedos sem precisar olhar constantemente para o teclado.
+          {t("academy.intro.desc")}
         </p>
       </div>
 
@@ -76,37 +81,37 @@ function IntroLesson({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <PrincipleCard
           icon={<Target className="text-emerald-400" size={22} />}
-          title="1. Precisão Antes da Velocidade"
-          subtitle="Speed is a consequence of precision"
-          description="Nunca force digitar rápido no início. Digite de forma deliberada e rítmica. A velocidade é uma consequência natural da ausência de erros."
+          title={t("academy.intro.p1Title")}
+          subtitle={t("academy.intro.p1Sub")}
+          description={t("academy.intro.p1Desc")}
         />
 
         <PrincipleCard
           icon={<Sparkles className="text-cyan-400" size={22} />}
-          title="2. Todos os Dedos Têm Sua Função"
-          subtitle="Stop typing with just two fingers"
-          description="A maioria das pessoas digita usando apenas 2 a 4 dedos. No Touch Typing, cada dedo é responsável por uma coluna específica de teclas."
+          title={t("academy.intro.p2Title")}
+          subtitle={t("academy.intro.p2Sub")}
+          description={t("academy.intro.p2Desc")}
         />
 
         <PrincipleCard
           icon={<Crosshair className="text-amber-400" size={22} />}
-          title="3. A Posição Base (Home Row)"
-          subtitle="Always return home"
-          description="Seus dedos descansam na linha central (A S D F — J K L Ç). Após pressionar qualquer tecla distante, retorne imediatamente à posição base."
+          title={t("academy.intro.p3Title")}
+          subtitle={t("academy.intro.p3Sub")}
+          description={t("academy.intro.p3Desc")}
         />
 
         <PrincipleCard
           icon={<EyeOff className="text-rose-400" size={22} />}
-          title="4. Evite Olhar para o Teclado"
-          subtitle="Trust muscle memory"
-          description="Olhar para o teclado impede seu cérebro de criar conexões táteis. Confie nas marcas físicas das teclas F e J para se orientar no escuro."
+          title={t("academy.intro.p4Title")}
+          subtitle={t("academy.intro.p4Sub")}
+          description={t("academy.intro.p4Desc")}
         />
       </div>
 
       {/* Interactive Virtual Keyboard Preview */}
       <div className="space-y-2">
         <p className="text-xs font-bold uppercase tracking-wider text-white/40 text-center">
-          O Teclado como uma Extensão do seu Cérebro
+          {t("academy.intro.keyboardTitle")}
         </p>
         <VirtualKeyboard activeKey="f" />
       </div>
@@ -117,7 +122,7 @@ function IntroLesson({
           onClick={onComplete}
           className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm transition-all shadow-[0_0_25px_rgba(16,185,129,0.5)]"
         >
-          <span>PROCEED TO HOME ROW LESSON</span>
+          <span>{t("academy.intro.proceedBtn")}</span>
           <ChevronRight size={18} />
         </button>
       </div>
@@ -156,7 +161,9 @@ function PrincipleCard({
 // 2. Home Row Lesson & Practice Drill
 // ----------------------------------------------------------------------------
 function HomeRowLesson({ onBack }: { onBack: () => void }) {
-  const [exercises] = useState(HOME_ROW_EXERCISES)
+  const { t, locale } = useI18n()
+  const isEn = locale === "en"
+  const [exercises] = useState(() => getHomeRowExercises(locale))
   const [exerciseIndex, setExerciseIndex] = useState(0)
   const [isCompleted, setIsCompleted] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
@@ -196,8 +203,8 @@ function HomeRowLesson({ onBack }: { onBack: () => void }) {
     if (currentExercise !== prevExerciseRef.current) {
       prevExerciseRef.current = currentExercise
       reset(currentExercise, true)
-      const t = setTimeout(() => focus(), 50)
-      return () => clearTimeout(t)
+      const tId = setTimeout(() => focus(), 50)
+      return () => clearTimeout(tId)
     }
   }, [currentExercise, reset, focus])
 
@@ -217,19 +224,19 @@ function HomeRowLesson({ onBack }: { onBack: () => void }) {
         className="flex items-center gap-1.5 text-xs text-white/50 hover:text-white transition-colors"
       >
         <ArrowLeft size={16} />
-        Back to Modules
+        {t("academy.backToModules")}
       </button>
 
       {/* Header */}
       <div className="text-center space-y-1">
         <span className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-widest bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">
-          Lesson 2 · Home Row Masterclass
+          {t("academy.homeRow.tag")}
         </span>
         <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
-          A S D F — J K L Ç
+          {isEn ? t("academy.homeRow.keysTitleEn") : t("academy.homeRow.keysTitlePt")}
         </h1>
         <p className="text-white/50 text-xs max-w-md mx-auto">
-          Posicione seus dedos nas teclas centrais. Note as pequenas saliências físicas (bumps) nas teclas F e J.
+          {t("academy.homeRow.desc")}
         </p>
       </div>
 
@@ -240,10 +247,10 @@ function HomeRowLesson({ onBack }: { onBack: () => void }) {
       <div className="p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center gap-2 text-xs font-bold text-emerald-300">
           <Target size={16} />
-          <span>FOCUS ON ACCURACY</span>
+          <span>{t("academy.homeRow.focusTitle")}</span>
         </div>
         <div className="text-xs text-emerald-200/70">
-          Objetivo da Aula: <span className="font-mono font-bold text-white">≥ 95% Accuracy</span>
+          {t("academy.homeRow.goal")}
         </div>
       </div>
 
@@ -259,23 +266,26 @@ function HomeRowLesson({ onBack }: { onBack: () => void }) {
           {/* Drill progress and live metrics */}
           <div className="flex items-center justify-between text-xs text-white/50 px-1">
             <span>
-              Drill {exerciseIndex + 1} of {exercises.length}
+              {t("academy.homeRow.drillOf", {
+                current: exerciseIndex + 1,
+                total: exercises.length,
+              })}
             </span>
             <div className="flex gap-4">
               <span>
-                Accuracy:{" "}
+                {t("common.accuracy")}:{" "}
                 <strong className="text-emerald-400 font-mono">
                   {stats.currentAccuracy}%
                 </strong>
               </span>
               <span>
-                WPM:{" "}
+                {t("common.wpm")}:{" "}
                 <strong className="text-white font-mono">
                   {stats.currentWpm}
                 </strong>
               </span>
               <span>
-                Errors:{" "}
+                {t("common.errors")}:{" "}
                 <strong className="text-red-400 font-mono">
                   {stats.currentErrors}
                 </strong>
@@ -292,7 +302,7 @@ function HomeRowLesson({ onBack }: { onBack: () => void }) {
           />
 
           <p className="text-center text-[11px] text-white/30">
-            Olhe para a tela e sinta as teclas com os dedos. Use o teclado virtual como referência visual.
+            {t("academy.homeRow.instruction")}
           </p>
         </div>
       )}
@@ -307,6 +317,7 @@ function HomeRowLessonResult({
   stats: TypingStats
   onRetry: () => void
 }) {
+  const { t } = useI18n()
   const [rewardSummary] = useState<ActivityRewardSummary>(() =>
     processAcademyLessonRewards("home-row", stats)
   )
@@ -333,12 +344,14 @@ function HomeRowLessonResult({
           <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 mx-auto flex items-center justify-center mb-3">
             <CheckCircle2 size={36} />
           </div>
-          <h2 className="text-3xl font-black text-white">LESSON COMPLETE</h2>
+          <h2 className="text-3xl font-black text-white">
+            {t("academy.result.complete")}
+          </h2>
           <p className="text-emerald-400 font-bold text-sm mt-1">
-            Accuracy Target Met ({stats.battleAccuracy}%)!
+            {t("academy.result.metTitle", { acc: stats.battleAccuracy })}
           </p>
           <p className="text-white/40 text-xs mt-1">
-            You maintained great finger discipline across the Home Row.
+            {t("academy.result.metDesc")}
           </p>
         </div>
       ) : (
@@ -346,12 +359,17 @@ function HomeRowLessonResult({
           <div className="w-16 h-16 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-400 mx-auto flex items-center justify-center mb-3">
             <AlertTriangle size={36} />
           </div>
-          <h2 className="text-3xl font-black text-white">GOOD EFFORT</h2>
+          <h2 className="text-3xl font-black text-white">
+            {t("academy.result.effortTitle")}
+          </h2>
           <p className="text-amber-400 font-bold text-sm mt-1">
-            Accuracy was {stats.battleAccuracy}% (Target: 95%)
+            {t("academy.result.effortSub", {
+              acc: stats.battleAccuracy,
+              target: 95,
+            })}
           </p>
           <p className="text-white/40 text-xs mt-1">
-            Take your time to feel the bumps on F and J before pressing.
+            {t("academy.result.effortDesc")}
           </p>
         </div>
       )}
@@ -360,7 +378,7 @@ function HomeRowLessonResult({
       <div className="flex items-center justify-center gap-2 flex-wrap">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-bold font-mono">
           <Sparkles size={14} />
-          <span>+{rewardSummary.xpGained} XP Earned</span>
+          <span>{t("academy.result.xpEarned", { xp: rewardSummary.xpGained })}</span>
         </div>
 
         {rewardSummary.didLevelUp && (
@@ -370,7 +388,12 @@ function HomeRowLessonResult({
             animate={{ scale: 1, opacity: 1 }}
           >
             <ArrowUpCircle size={14} />
-            <span>LEVEL UP! Lv. {rewardSummary.prevLevel} → Lv. {rewardSummary.newLevel}</span>
+            <span>
+              {t("academy.result.levelUp", {
+                prev: rewardSummary.prevLevel,
+                next: rewardSummary.newLevel,
+              })}
+            </span>
           </motion.div>
         )}
       </div>
@@ -378,7 +401,9 @@ function HomeRowLessonResult({
       {/* Stats pills */}
       <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto">
         <div className="p-3 rounded-xl bg-black/40 border border-white/10">
-          <span className="text-[10px] uppercase text-white/40 block mb-0.5">Accuracy</span>
+          <span className="text-[10px] uppercase text-white/40 block mb-0.5">
+            {t("common.accuracy")}
+          </span>
           <span
             className={`text-2xl font-black ${
               stats.battleAccuracy >= 95 ? "text-emerald-400" : "text-amber-400"
@@ -388,13 +413,17 @@ function HomeRowLessonResult({
           </span>
         </div>
         <div className="p-3 rounded-xl bg-black/40 border border-white/10">
-          <span className="text-[10px] uppercase text-white/40 block mb-0.5">WPM</span>
+          <span className="text-[10px] uppercase text-white/40 block mb-0.5">
+            {t("common.wpm")}
+          </span>
           <span className="text-2xl font-black text-white">
             {stats.battleWpm || stats.currentWpm}
           </span>
         </div>
         <div className="p-3 rounded-xl bg-black/40 border border-white/10">
-          <span className="text-[10px] uppercase text-white/40 block mb-0.5">Errors</span>
+          <span className="text-[10px] uppercase text-white/40 block mb-0.5">
+            {t("common.errors")}
+          </span>
           <span className="text-2xl font-black text-white">
             {stats.totalErrors}
           </span>
@@ -407,14 +436,14 @@ function HomeRowLessonResult({
           className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white font-bold text-sm transition-colors"
         >
           <RotateCcw size={16} />
-          TRY AGAIN
+          {t("academy.result.tryAgain")}
         </button>
         <Link
           href="/battle"
           className="flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)]"
         >
           <Zap size={16} />
-          TEST IN BATTLE
+          {t("academy.result.testInBattle")}
         </Link>
       </div>
     </motion.div>
