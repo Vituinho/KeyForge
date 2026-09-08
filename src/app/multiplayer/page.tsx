@@ -30,13 +30,14 @@ import { createInitialRoomState, joinRoomState } from "@/lib/multiplayer/roomMan
 import { RoomState, MultiplayerPlayer } from "@/types/multiplayer"
 import { useMultiplayerPresence } from "@/hooks/useMultiplayerPresence"
 import { useCosmetics } from "@/hooks/useCosmetics"
+import { createMatch, joinMatch } from "@/lib/multiplayer/matchService"
 
 function MultiplayerContent() {
   const router = useRouter()
   const { user } = useAuth()
   const { player } = usePlayer()
   const { equippedSkin } = useCosmetics()
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const { onlineCount } = useMultiplayerPresence("in_lobby")
 
   const [isSearching, setIsSearching] = useState(false)
@@ -76,7 +77,7 @@ function MultiplayerContent() {
     setIsSearching(false)
   }
 
-  const handleCreatePrivateRoom = () => {
+  const handleCreatePrivateRoom = async () => {
     const hostPlayer: MultiplayerPlayer = {
       ...currentPlayer,
       isHost: true,
@@ -86,6 +87,18 @@ function MultiplayerContent() {
     setCreatedRoomCode(newRoom.code)
     setActiveRoom(newRoom)
     setErrorMessage(null)
+
+    try {
+      await createMatch({
+        mode: "private",
+        roomCode: newRoom.code,
+        language: locale === "en" ? "en" : "pt-BR",
+        skinId: equippedSkin.id,
+        guestPlayerId: user?.id || "player_local",
+      })
+    } catch (err) {
+      console.warn("[PrivateRoom] Authoritative match creation notice:", err)
+    }
   }
 
   const handleCopyCode = () => {
@@ -95,7 +108,7 @@ function MultiplayerContent() {
     setTimeout(() => setCopiedCode(false), 2000)
   }
 
-  const handleJoinRoom = (e: React.FormEvent) => {
+  const handleJoinRoom = async (e: React.FormEvent) => {
     e.preventDefault()
     const trimmed = roomCodeInput.trim().toUpperCase()
     if (!trimmed.startsWith("KF-") || trimmed.length < 6) {
@@ -103,28 +116,61 @@ function MultiplayerContent() {
       return
     }
     setErrorMessage(null)
-    const rivalHost: MultiplayerPlayer = {
-      id: "host_rival",
-      username: "Shinobi Rival",
-      level: Math.max(1, player.level),
-      rank: player.rank,
-      skinId: "default_forge",
-      ready: false,
-      isHost: true,
-      currentWpm: 0,
-      progress: 0,
-      errors: 0,
-      combo: 0,
-      currentStreak: 0,
-      health: 100,
-      isAlive: true,
-      lastActiveAt: new Date().toISOString(),
+
+    try {
+      const joinedMatch = await joinMatch({
+        roomCode: trimmed,
+        skinId: equippedSkin.id,
+        guestPlayerId: user?.id || "player_local",
+      })
+
+      const rivalHost: MultiplayerPlayer = {
+        id: joinedMatch.player_1_id,
+        username: "Shinobi Host",
+        level: Math.max(1, player.level),
+        rank: player.rank,
+        skinId: joinedMatch.player_1_skin_id || "default_forge",
+        ready: joinedMatch.player_1_ready,
+        isHost: true,
+        currentWpm: 0,
+        progress: 0,
+        errors: 0,
+        combo: 0,
+        currentStreak: 0,
+        health: 100,
+        isAlive: true,
+        lastActiveAt: new Date().toISOString(),
+      }
+
+      const joinedRoom = joinRoomState(
+        createInitialRoomState(rivalHost, trimmed),
+        currentPlayer
+      )
+      setActiveRoom(joinedRoom)
+    } catch {
+      const rivalHost: MultiplayerPlayer = {
+        id: "host_rival",
+        username: "Shinobi Host",
+        level: Math.max(1, player.level),
+        rank: player.rank,
+        skinId: "default_forge",
+        ready: false,
+        isHost: true,
+        currentWpm: 0,
+        progress: 0,
+        errors: 0,
+        combo: 0,
+        currentStreak: 0,
+        health: 100,
+        isAlive: true,
+        lastActiveAt: new Date().toISOString(),
+      }
+      const joinedRoom = joinRoomState(
+        createInitialRoomState(rivalHost, trimmed),
+        currentPlayer
+      )
+      setActiveRoom(joinedRoom)
     }
-    const joinedRoom = joinRoomState(
-      createInitialRoomState(rivalHost, trimmed),
-      currentPlayer
-    )
-    setActiveRoom(joinedRoom)
   }
 
   return (

@@ -287,7 +287,9 @@ export async function setPlayerReady(
   }
 
   // Local fallback
-  const match = localMatchesStore.get(params.matchId)
+  const match =
+    localMatchesStore.get(params.matchId) ||
+    localMatchesStore.get(params.matchId.trim().toUpperCase())
   if (!match) {
     throw new Error("Match not found")
   }
