@@ -446,6 +446,11 @@ export const ptBR: TranslationSchema = {
     backToHub: "Voltar para a Arena",
     playAgain: "Jogar Novamente",
     typeWordPlaceholder: "Digite a palavra alvo...",
+    opponentDisconnected: "CHAKRA DO OPONENTE INTERROMPIDO",
+    disconnectGraceDesc: "Oponente desconectou. Tempo de tolerância para reconexão:",
+    forfeitNotice: "Vitória por desistência será concedida quando o contador zerar.",
+    opponentReconnected: "Oponente reconectado! A batalha continua!",
+    disconnectVictoryReason: "DESISTÊNCIA (OPONENTE DESCONECTADO)",
   },
   lockerModule: {
     title: "Arsenal de Teclados",

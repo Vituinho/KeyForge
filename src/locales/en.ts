@@ -444,6 +444,11 @@ export const en = {
     backToHub: "Return to Arena Hub",
     playAgain: "Rematch",
     typeWordPlaceholder: "Type the target word...",
+    opponentDisconnected: "OPPONENT CHAKRA LINK LOST",
+    disconnectGraceDesc: "Rival shinobi disconnected. Reconnect grace period expiring in:",
+    forfeitNotice: "Automatic forfeit victory will be awarded when timer reaches zero.",
+    opponentReconnected: "Opponent reconnected! Battle resumes!",
+    disconnectVictoryReason: "FORFEIT (OPPONENT DISCONNECTED)",
   },
   lockerModule: {
     title: "Keyboard Skin Locker",

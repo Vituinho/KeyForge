@@ -1083,4 +1083,101 @@ BEGIN
 END;
 $$;
 
+-- 6.11 CLAIM DISCONNECT FORFEIT VICTORY
+CREATE OR REPLACE FUNCTION public.claim_disconnect_forfeit(
+  p_match_id UUID
+)
+RETURNS public.multiplayer_matches
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_caller_id UUID := auth.uid();
+  v_match public.multiplayer_matches;
+  v_disconnected_id UUID;
+  v_now TIMESTAMPTZ := TIMEZONE('utc', NOW());
+BEGIN
+  IF v_caller_id IS NULL THEN
+    RAISE EXCEPTION 'Not authenticated';
+  END IF;
+
+  SELECT * INTO v_match
+  FROM public.multiplayer_matches
+  WHERE id = p_match_id
+  FOR UPDATE;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Match not found';
+  END IF;
+
+  IF v_match.status IN ('finished', 'cancelled') THEN
+    RETURN v_match;
+  END IF;
+
+  IF v_match.player_1_id = v_caller_id THEN
+    v_disconnected_id := v_match.player_2_id;
+  ELSIF v_match.player_2_id = v_caller_id THEN
+    v_disconnected_id := v_match.player_1_id;
+  ELSE
+    RAISE EXCEPTION 'User not a participant in this match';
+  END IF;
+
+  UPDATE public.multiplayer_matches
+  SET
+    status = 'finished',
+    winner_id = v_caller_id,
+    is_draw = FALSE,
+    finished_at = v_now,
+    updated_at = v_now
+  WHERE id = p_match_id
+  RETURNING * INTO v_match;
+
+  INSERT INTO public.multiplayer_match_events (
+    match_id,
+    player_id,
+    event_id,
+    event_type,
+    payload
+  ) VALUES (
+    p_match_id,
+    v_caller_id,
+    'disc_forfeit_' || MD5(RANDOM()::TEXT),
+    'DISCONNECT_FORFEIT',
+    jsonb_build_object('forfeited_by', v_disconnected_id, 'winner_id', v_caller_id)
+  );
+
+  INSERT INTO public.multiplayer_match_results (
+    match_id,
+    mode,
+    winner_id,
+    loser_id,
+    is_draw,
+    duration_seconds,
+    player_1_id,
+    player_1_stats,
+    player_1_xp_earned,
+    player_2_id,
+    player_2_stats,
+    player_2_xp_earned
+  ) VALUES (
+    v_match.id,
+    v_match.mode,
+    v_caller_id,
+    v_disconnected_id,
+    FALSE,
+    GREATEST(1, ROUND(EXTRACT(EPOCH FROM (v_now - COALESCE(v_match.started_at, v_now))))::INTEGER),
+    v_match.player_1_id,
+    jsonb_build_object('wpm', v_match.player_1_wpm, 'accuracy', v_match.player_1_accuracy, 'hp', v_match.player_1_hp, 'disconnected', v_match.player_1_id = v_disconnected_id),
+    CASE WHEN v_caller_id = v_match.player_1_id THEN 120 ELSE 40 END,
+    v_match.player_2_id,
+    jsonb_build_object('wpm', v_match.player_2_wpm, 'accuracy', v_match.player_2_accuracy, 'hp', v_match.player_2_hp, 'disconnected', v_match.player_2_id = v_disconnected_id),
+    CASE WHEN v_caller_id = v_match.player_2_id THEN 120 ELSE 40 END
+  ) ON CONFLICT (match_id) DO NOTHING;
+
+  RETURN v_match;
+END;
+$$;
+
+
 

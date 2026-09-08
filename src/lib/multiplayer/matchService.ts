@@ -574,6 +574,54 @@ export async function forfeitMatch(
 }
 
 /**
+ * Authoritatively awards forfeit victory when opponent disconnects and fails to return within grace period.
+ */
+export async function claimDisconnectForfeit(
+  params: ForfeitMatchParams
+): Promise<MultiplayerMatchRow> {
+  const supabase = getSupabaseClient()
+
+  if (supabase) {
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      if (session?.user?.id) {
+        const { data, error } = await supabase.rpc("claim_disconnect_forfeit", {
+          p_match_id: params.matchId,
+        })
+
+        if (!error && data) {
+          return data as MultiplayerMatchRow
+        }
+      }
+    } catch (err) {
+      console.warn("[MatchService] Supabase claim_disconnect_forfeit failed, using local fallback:", err)
+    }
+  }
+
+  const match = localMatchesStore.get(params.matchId)
+  if (!match) throw new Error("Match not found")
+
+  const winnerId = params.playerId || match.player_1_id
+  const now = new Date().toISOString()
+
+  const updated: MultiplayerMatchRow = {
+    ...match,
+    status: "finished",
+    winner_id: winnerId,
+    is_draw: false,
+    finished_at: now,
+    updated_at: now,
+  }
+
+  localMatchesStore.set(match.id, updated)
+  recordLocalMatchResult(updated, now)
+  return updated
+}
+
+
+/**
  * Retrieves the authoritative match result record.
  */
 export async function getMatchResult(
@@ -734,14 +782,16 @@ export interface MatchBattleCallbacks {
   onOpponentTelemetry?: (telemetry: MatchTelemetryPayload) => void
   onAttackEvent?: (event: { attackerId: string; damage: number; isUlt?: boolean }) => void
   onMatchFinished?: (event: { winnerId: string | null; isDraw: boolean }) => void
+  onOpponentPresenceChange?: (isOnline: boolean) => void
 }
 
 /**
- * Subscribes to real-time PvP match telemetry and combat events.
+ * Subscribes to real-time PvP match telemetry, presence, and combat events.
  */
 export function subscribeToMatchBattle(
   matchId: string,
-  callbacks: MatchBattleCallbacks
+  callbacks: MatchBattleCallbacks,
+  currentUserId?: string
 ): {
   broadcastTelemetry: (telemetry: MatchTelemetryPayload) => Promise<void>
   broadcastAttack: (attackerId: string, damage: number, isUlt?: boolean) => Promise<void>
@@ -762,6 +812,7 @@ export function subscribeToMatchBattle(
   const channel = supabase.channel(`match:${matchId}`, {
     config: {
       broadcast: { self: false },
+      presence: { key: currentUserId || "anon" },
     },
   })
 
@@ -802,7 +853,51 @@ export function subscribeToMatchBattle(
     }
   )
 
-  channel.subscribe()
+  // Presence tracking for opponent disconnect detection
+  channel.on("presence", { event: "sync" }, () => {
+    const presenceState = channel.presenceState()
+    let oppFound = false
+    for (const key in presenceState) {
+      const presences = presenceState[key] as Array<{ playerId?: string }>
+      if (presences.some((p) => p.playerId && p.playerId !== currentUserId)) {
+        oppFound = true
+        break
+      }
+    }
+    callbacks.onOpponentPresenceChange?.(oppFound)
+  })
+
+  channel.on("presence", { event: "join" }, ({ newPresences }) => {
+    const oppJoined = (newPresences as Array<{ playerId?: string }>).some(
+      (p) => p.playerId && p.playerId !== currentUserId
+    )
+    if (oppJoined) {
+      callbacks.onOpponentPresenceChange?.(true)
+    }
+  })
+
+  channel.on("presence", { event: "leave" }, ({ leftPresences }) => {
+    const oppLeft = (leftPresences as Array<{ playerId?: string }>).some(
+      (p) => p.playerId && p.playerId !== currentUserId
+    )
+    if (oppLeft) {
+      callbacks.onOpponentPresenceChange?.(false)
+    }
+  })
+
+  channel.subscribe(async (status) => {
+    if (status === "SUBSCRIBED" && currentUserId) {
+      try {
+        await channel.track({
+          playerId: currentUserId,
+          onlineAt: new Date().toISOString(),
+        })
+      } catch {
+        // Suppress presence track error
+      }
+    }
+  })
+
 
   const broadcastTelemetry = async (telemetry: MatchTelemetryPayload) => {
     try {
