@@ -670,6 +670,16 @@ export async function getMatchById(
 }
 
 /**
+ * Saves or updates a match in the local matches store.
+ */
+export function saveLocalMatch(match: MultiplayerMatchRow): void {
+  localMatchesStore.set(match.id, match)
+  if (match.room_code) {
+    localMatchesStore.set(match.room_code.toUpperCase(), match)
+  }
+}
+
+/**
  * Retrieves match by room code from Supabase or local store.
  */
 export async function getMatchByCode(

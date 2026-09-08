@@ -930,3 +930,157 @@ BEGIN
 END;
 $$;
 
+-- 6.8 CASUAL QUICK MATCH MATCHMAKING
+CREATE OR REPLACE FUNCTION public.find_or_create_quick_match(
+  p_language TEXT DEFAULT 'pt-BR',
+  p_skin_id TEXT DEFAULT 'default_forge'
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_caller_id UUID := auth.uid();
+  v_caller_username TEXT;
+  v_caller_level INTEGER;
+  v_caller_rank TEXT;
+  v_waiting RECORD;
+  v_new_match public.multiplayer_matches;
+  v_seed BIGINT;
+BEGIN
+  IF v_caller_id IS NULL THEN
+    RAISE EXCEPTION 'Authentication required for matchmaking';
+  END IF;
+
+  SELECT username, level, rank INTO v_caller_username, v_caller_level, v_caller_rank
+  FROM public.profiles WHERE id = v_caller_id;
+
+  v_caller_username := COALESCE(v_caller_username, 'Shinobi');
+  v_caller_level := COALESCE(v_caller_level, 1);
+  v_caller_rank := COALESCE(v_caller_rank, 'E');
+
+  -- Look for an existing waiting player
+  SELECT * INTO v_waiting
+  FROM public.multiplayer_queue
+  WHERE status = 'searching'
+    AND user_id <> v_caller_id
+    AND updated_at >= NOW() - INTERVAL '60 seconds'
+  ORDER BY queued_at ASC
+  LIMIT 1
+  FOR UPDATE SKIP LOCKED;
+
+  IF FOUND THEN
+    v_seed := FLOOR(RANDOM() * 1000000 + 1)::BIGINT;
+
+    -- Create synchronized quick match
+    INSERT INTO public.multiplayer_matches (
+      mode,
+      status,
+      language,
+      seed,
+      word_count,
+      player_1_id,
+      player_2_id,
+      player_1_skin_id,
+      player_2_skin_id,
+      player_1_ready,
+      player_2_ready,
+      started_at
+    ) VALUES (
+      'quick',
+      'playing',
+      p_language,
+      v_seed,
+      30,
+      v_waiting.user_id,
+      v_caller_id,
+      v_waiting.skin_id,
+      p_skin_id,
+      true,
+      true,
+      TIMEZONE('utc', NOW())
+    )
+    RETURNING * INTO v_new_match;
+
+    -- Update waiting player entry
+    UPDATE public.multiplayer_queue
+    SET status = 'matched',
+        matched_match_id = v_new_match.id,
+        updated_at = TIMEZONE('utc', NOW())
+    WHERE id = v_waiting.id;
+
+    -- Upsert caller entry
+    INSERT INTO public.multiplayer_queue (
+      user_id, username, level, rank, language, skin_id, status, matched_match_id, queued_at, updated_at
+    ) VALUES (
+      v_caller_id, v_caller_username, v_caller_level, v_caller_rank, p_language, p_skin_id, 'matched', v_new_match.id, TIMEZONE('utc', NOW()), TIMEZONE('utc', NOW())
+    )
+    ON CONFLICT (user_id) DO UPDATE
+    SET status = 'matched',
+        matched_match_id = v_new_match.id,
+        updated_at = TIMEZONE('utc', NOW());
+
+    RETURN jsonb_build_object(
+      'status', 'matched',
+      'match_id', v_new_match.id,
+      'opponent_id', v_waiting.user_id,
+      'opponent_username', v_waiting.username
+    );
+  ELSE
+    -- No waiting player: register in queue
+    INSERT INTO public.multiplayer_queue (
+      user_id, username, level, rank, language, skin_id, status, matched_match_id, queued_at, updated_at
+    ) VALUES (
+      v_caller_id, v_caller_username, v_caller_level, v_caller_rank, p_language, p_skin_id, 'searching', NULL, TIMEZONE('utc', NOW()), TIMEZONE('utc', NOW())
+    )
+    ON CONFLICT (user_id) DO UPDATE
+    SET status = 'searching',
+        matched_match_id = NULL,
+        language = p_language,
+        skin_id = p_skin_id,
+        queued_at = TIMEZONE('utc', NOW()),
+        updated_at = TIMEZONE('utc', NOW());
+
+    RETURN jsonb_build_object(
+      'status', 'searching',
+      'match_id', NULL
+    );
+  END IF;
+END;
+$$;
+
+-- 6.9 LEAVE MULTIPLAYER QUEUE
+CREATE OR REPLACE FUNCTION public.leave_multiplayer_queue()
+RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  DELETE FROM public.multiplayer_queue WHERE user_id = auth.uid();
+END;
+$$;
+
+-- 6.10 CHECK MULTIPLAYER QUEUE
+CREATE OR REPLACE FUNCTION public.check_multiplayer_queue()
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_rec RECORD;
+BEGIN
+  SELECT * INTO v_rec FROM public.multiplayer_queue WHERE user_id = auth.uid();
+  IF NOT FOUND THEN
+    RETURN jsonb_build_object('status', 'idle', 'matched_match_id', NULL);
+  END IF;
+  RETURN jsonb_build_object(
+    'status', v_rec.status,
+    'matched_match_id', v_rec.matched_match_id
+  );
+END;
+$$;
+
+
