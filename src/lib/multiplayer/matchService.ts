@@ -614,3 +614,118 @@ export function getMatchWords(match: MultiplayerMatchRow): string[] {
   })
 }
 
+export interface MatchTelemetryPayload {
+  playerId: string
+  wordIndex: number
+  wpm: number
+  accuracy: number
+  combo: number
+  attackEnergy: number
+  ultimateEnergy: number
+  hp: number
+}
+
+export interface MatchBattleCallbacks {
+  onMatchUpdate?: (match: MultiplayerMatchRow) => void
+  onOpponentTelemetry?: (telemetry: MatchTelemetryPayload) => void
+  onAttackEvent?: (event: { attackerId: string; damage: number; isUlt?: boolean }) => void
+}
+
+/**
+ * Subscribes to real-time PvP match telemetry and combat events.
+ */
+export function subscribeToMatchBattle(
+  matchId: string,
+  callbacks: MatchBattleCallbacks
+): {
+  broadcastTelemetry: (telemetry: MatchTelemetryPayload) => Promise<void>
+  broadcastAttack: (attackerId: string, damage: number, isUlt?: boolean) => Promise<void>
+  unsubscribe: () => void
+} {
+  const supabase = getSupabaseClient()
+
+  if (!supabase) {
+    return {
+      broadcastTelemetry: async () => {},
+      broadcastAttack: async () => {},
+      unsubscribe: () => {},
+    }
+  }
+
+  const channel = supabase.channel(`match:${matchId}`, {
+    config: {
+      broadcast: { self: false },
+    },
+  })
+
+  // Telemetry stream
+  channel.on("broadcast", { event: "telemetry" }, ({ payload }) => {
+    if (payload && callbacks.onOpponentTelemetry) {
+      callbacks.onOpponentTelemetry(payload as MatchTelemetryPayload)
+    }
+  })
+
+  // Live attack animations
+  channel.on("broadcast", { event: "attack" }, ({ payload }) => {
+    if (payload && callbacks.onAttackEvent) {
+      callbacks.onAttackEvent(payload as { attackerId: string; damage: number; isUlt?: boolean })
+    }
+  })
+
+  // Authoritative Postgres DB table changes
+  channel.on(
+    "postgres_changes",
+    {
+      event: "UPDATE",
+      schema: "public",
+      table: "multiplayer_matches",
+      filter: `id=eq.${matchId}`,
+    },
+    (payload) => {
+      if (payload.new && callbacks.onMatchUpdate) {
+        callbacks.onMatchUpdate(payload.new as MultiplayerMatchRow)
+      }
+    }
+  )
+
+  channel.subscribe()
+
+  const broadcastTelemetry = async (telemetry: MatchTelemetryPayload) => {
+    try {
+      await channel.send({
+        type: "broadcast",
+        event: "telemetry",
+        payload: telemetry,
+      })
+    } catch {
+      // Ignore broadcast errors
+    }
+  }
+
+  const broadcastAttack = async (attackerId: string, damage: number, isUlt = false) => {
+    try {
+      await channel.send({
+        type: "broadcast",
+        event: "attack",
+        payload: { attackerId, damage, isUlt },
+      })
+    } catch {
+      // Ignore broadcast errors
+    }
+  }
+
+  const unsubscribe = () => {
+    try {
+      supabase.removeChannel(channel)
+    } catch {
+      // Ignore
+    }
+  }
+
+  return {
+    broadcastTelemetry,
+    broadcastAttack,
+    unsubscribe,
+  }
+}
+
