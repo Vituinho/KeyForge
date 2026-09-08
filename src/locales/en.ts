@@ -437,6 +437,23 @@ export const en = {
     playAgain: "Rematch",
     typeWordPlaceholder: "Type the target word...",
   },
+  connectionStates: {
+    connecting: "Connecting...",
+    connectingDesc: "Establishing secure websocket handshake with arena...",
+    waiting: "Waiting for Opponent...",
+    waitingDesc: "Broadcasting room presence to shinobi network...",
+    opponentFound: "Opponent Found!",
+    opponentFoundDesc: "Rival joined the battlefield. Preparing countdown...",
+    ready: "Chakra Synchronized",
+    readyDesc: "Both players connected with identical word sequence.",
+    reconnecting: "Reconnecting...",
+    reconnectingDesc: "Network jitter detected. Re-establishing connection...",
+    disconnected: "Disconnected",
+    disconnectedDesc: "Lost connection to the duel server.",
+    cancelled: "Match Cancelled",
+    cancelledDesc: "Duel was cancelled by the host or player.",
+    retryBtn: "Reconnect",
+  },
 }
 
 export type TranslationSchema = typeof en

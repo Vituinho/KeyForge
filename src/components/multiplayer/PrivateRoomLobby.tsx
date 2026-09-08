@@ -19,6 +19,7 @@ import {
   leaveRoomState,
 } from "@/lib/multiplayer/roomManager"
 import { useI18n } from "@/lib/i18n/i18nContext"
+import { ConnectionStateBadge } from "./ConnectionStateBadge"
 
 interface PrivateRoomLobbyProps {
   room: RoomState
@@ -125,6 +126,15 @@ export function PrivateRoomLobby({
         </div>
 
         <div className="flex items-center gap-3">
+          <ConnectionStateBadge
+            state={
+              bothReady
+                ? "ready"
+                : room.guest
+                ? "opponent_found"
+                : "waiting"
+            }
+          />
           <button
             type="button"
             onClick={handleExit}
