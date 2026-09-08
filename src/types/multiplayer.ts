@@ -3,17 +3,29 @@
  */
 
 export type MatchStatus =
+  | "waiting"
+  | "ready"
+  | "countdown"
+  | "playing"
+  | "finished"
+  | "cancelled"
   | "idle"
   | "searching"
   | "found"
-  | "countdown"
   | "in_progress"
-  | "finished"
-  | "cancelled"
 
 export type MatchMode = "quick" | "private" | "ranked"
 
 export type AttackType = "basic" | "combo_bonus" | "jutsu" | "ultimate"
+
+export type MatchEventType =
+  | "WORD_COMPLETED"
+  | "ATTACK_RESOLVED"
+  | "ULTIMATE_TRIGGERED"
+  | "TYPO_PENALTY"
+  | "PLAYER_DISCONNECTED"
+  | "PLAYER_RECONNECTED"
+  | "FORFEIT"
 
 export interface MultiplayerPlayer {
   id: string
