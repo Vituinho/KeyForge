@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test:security": "tsx scripts/verify-multiplayer-security.ts",
-    "test:battle": "tsx scripts/simulate-pvp-battle.ts"
+    "test:battle": "tsx scripts/simulate-pvp-battle.ts",
+    "i18n:audit": "tsx scripts/audit-i18n.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.115.0",
