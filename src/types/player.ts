@@ -1,3 +1,5 @@
+import { MultiplayerStats } from "./multiplayer"
+
 export type PlayerRank = "E" | "D" | "C" | "B" | "A" | "S" | "SS" | "SSS"
 
 export interface PlayerAttributes {
@@ -65,6 +67,7 @@ export interface PlayerProfile {
   attributes: PlayerAttributes
 
   stats: PlayerStats
+  multiplayerStats?: MultiplayerStats
   academyProgress?: Record<string, AcademyLessonProgress>
   campaignProgress: Record<string, CampaignWorldProgress>
   achievements?: string[]
@@ -73,6 +76,19 @@ export interface PlayerProfile {
 
   createdAt: string
   updatedAt: string
+}
+
+export function createDefaultMultiplayerStats(): MultiplayerStats {
+  return {
+    matchesPlayed: 0,
+    wins: 0,
+    losses: 0,
+    winRate: 0,
+    bestWpm: 0,
+    bestCombo: 0,
+    currentWinStreak: 0,
+    bestWinStreak: 0,
+  }
 }
 
 export function createDefaultNarutoWorldProgress(): CampaignWorldProgress {
@@ -125,6 +141,7 @@ export function createDefaultPlayerProfile(username = "Player"): PlayerProfile {
       trainingSessions: 0,
       academyLessonsCompleted: 0,
     },
+    multiplayerStats: createDefaultMultiplayerStats(),
     campaignProgress: createDefaultCampaignProgress(),
     achievements: [],
     createdAt: now,

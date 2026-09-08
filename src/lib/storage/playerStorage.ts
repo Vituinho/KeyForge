@@ -1,4 +1,8 @@
-import { PlayerProfile, createDefaultPlayerProfile } from "@/types/player"
+import {
+  PlayerProfile,
+  createDefaultPlayerProfile,
+  createDefaultMultiplayerStats,
+} from "@/types/player"
 
 export const STORAGE_KEY_V1 = "keyforge_player_v1"
 export const STORAGE_KEY = "keyforge_player_v2"
@@ -66,6 +70,10 @@ export function loadPlayerProfile(): PlayerProfile {
           stats: {
             ...defaultProfile.stats,
             ...(parsedV2.player.stats ?? {}),
+          },
+          multiplayerStats: {
+            ...createDefaultMultiplayerStats(),
+            ...(parsedV2.player.multiplayerStats ?? {}),
           },
           campaignProgress: {
             ...defaultProfile.campaignProgress,
