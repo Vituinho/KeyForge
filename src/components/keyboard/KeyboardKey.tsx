@@ -1,9 +1,7 @@
-"use client"
-
 import React from "react"
 import { motion } from "framer-motion"
 import { KeyMetadata, FINGER_COLORS } from "@/data/keyboardLayout"
-import { KeyVisualState } from "@/types/keyboard"
+import { KeyVisualState, FingerColorsMode } from "@/types/keyboard"
 import type { KeyboardSkinVisual } from "@/types/cosmetics"
 import { useI18n } from "@/lib/i18n/i18nContext"
 
@@ -11,6 +9,7 @@ export interface KeyboardKeyProps {
   meta: KeyMetadata
   state?: KeyVisualState
   isFingerActive?: boolean
+  fingerColors?: FingerColorsMode
   showHomeRowAnchors?: boolean
   isWeak?: boolean
   size?: "sm" | "md" | "lg"
@@ -23,6 +22,7 @@ export const KeyboardKey = React.memo(function KeyboardKey({
   meta,
   state = "neutral",
   isFingerActive = false,
+  fingerColors = "off",
   showHomeRowAnchors = true,
   isWeak = false,
   size = "md",
@@ -104,14 +104,22 @@ export const KeyboardKey = React.memo(function KeyboardKey({
       break
 
     case "home-row":
-      stateClasses = skinVisual
-        ? `${defaultKeyBg} ${defaultKeyText} ${defaultKeyBorder} shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_3px_0_rgba(0,0,0,0.6)]`
-        : "bg-neutral-800/90 text-white/90 border-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_3px_0_rgba(0,0,0,0.6)]"
+      if (isFingerActive && fingerColor) {
+        stateClasses = `${fingerColor.bg} ${fingerColor.text} ${fingerColor.border} font-black shadow-[0_0_14px_${fingerColor.glow}] z-10`
+      } else if (fingerColors === "full" && fingerColor) {
+        stateClasses = `${fingerColor.bg} ${fingerColor.text} ${fingerColor.border} font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_3px_0_rgba(0,0,0,0.6)]`
+      } else {
+        stateClasses = skinVisual
+          ? `${defaultKeyBg} ${defaultKeyText} ${defaultKeyBorder} shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_3px_0_rgba(0,0,0,0.6)]`
+          : "bg-neutral-800/90 text-white/90 border-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_3px_0_rgba(0,0,0,0.6)]"
+      }
       break
 
     default:
-      if (isFingerActive) {
-        stateClasses = `${fingerColor.bg} ${fingerColor.text} ${fingerColor.border} font-bold shadow-[0_0_12px_${fingerColor.glow}]`
+      if (isFingerActive && fingerColor) {
+        stateClasses = `${fingerColor.bg} ${fingerColor.text} ${fingerColor.border} font-black shadow-[0_0_14px_${fingerColor.glow}] z-10`
+      } else if (fingerColors === "full" && fingerColor) {
+        stateClasses = `${fingerColor.bg} ${fingerColor.text} ${fingerColor.border} shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_3px_0_rgba(0,0,0,0.6)]`
       }
       break
   }
@@ -126,6 +134,14 @@ export const KeyboardKey = React.memo(function KeyboardKey({
       whileTap={{ scale: 0.96, y: 1 }}
     >
       <span className="leading-none tracking-tight">{label}</span>
+
+      {/* Subtle Finger Zone Indicator Bar */}
+      {fingerColors === "subtle" && fingerColor && state !== "expected" && state !== "correct" && state !== "incorrect" && (
+        <span
+          className="absolute bottom-1 w-3 sm:w-4 h-0.5 rounded-full opacity-80"
+          style={{ backgroundColor: fingerColor.hex }}
+        />
+      )}
 
       {/* Tactile bump marker on Home Row index keys F and J */}
       {showHomeRowAnchors && meta.hasBump && (
