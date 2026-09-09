@@ -115,6 +115,22 @@ export const TypingFinger = React.memo(function TypingFinger({
         />
       )}
 
+      {/* Active High-Contrast Indicator Ring for Non-Color Visual Cue (WCAG 1.4.1) */}
+      {isActive && (
+        <rect
+          x={x - 1.5}
+          y={y - 1.5}
+          width={width + 3}
+          height={height + 3}
+          rx={radius + 1.5}
+          fill="none"
+          stroke="#ffffff"
+          strokeWidth={1.2}
+          strokeDasharray="3 1.5"
+          opacity={0.85}
+        />
+      )}
+
       {/* Home Row resting key letter badge */}
       {homeKey && (
         <text
@@ -124,7 +140,7 @@ export const TypingFinger = React.memo(function TypingFinger({
           dominantBaseline="central"
           className="font-mono font-bold select-none"
           fontSize={width > 15 ? 8.5 : 7.5}
-          fill={isActive ? "#ffffff" : "rgba(255, 255, 255, 0.45)"}
+          fill={isActive ? "#ffffff" : "rgba(255, 255, 255, 0.65)"}
         >
           {homeKey}
         </text>

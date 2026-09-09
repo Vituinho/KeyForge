@@ -49,13 +49,26 @@ export const FingerLegend = React.memo(function FingerLegend({
         return (
           <motion.div
             key={finger}
+            role={onSelectFinger ? "button" : undefined}
+            tabIndex={onSelectFinger ? 0 : undefined}
+            aria-pressed={onSelectFinger ? isActive : undefined}
             onClick={() => onSelectFinger?.(finger)}
+            onKeyDown={
+              onSelectFinger
+                ? (e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault()
+                      onSelectFinger(finger)
+                    }
+                  }
+                : undefined
+            }
             animate={{
               scale: isActive ? 1.05 : 1,
               opacity: activeFinger && !isActive ? 0.45 : 1,
             }}
             transition={{ duration: 0.15 }}
-            className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border transition-colors ${
+            className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 ${
               isActive
                 ? "bg-white/15 shadow-md"
                 : "bg-white/[0.03] hover:bg-white/10"
