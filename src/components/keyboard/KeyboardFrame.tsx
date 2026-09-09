@@ -85,7 +85,8 @@ export function KeyboardFrame({
               type="button"
               onClick={onToggleHide}
               title={t("keyboard.hideKeyboard")}
-              className="px-1.5 py-0.5 rounded-md bg-white/5 hover:bg-white/15 border border-white/10 text-white/40 hover:text-white transition-colors flex items-center gap-1 font-bold"
+              aria-label={t("keyboard.hideKeyboard")}
+              className="px-1.5 py-0.5 rounded-md bg-white/5 hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 border border-white/10 text-white/40 hover:text-white transition-colors flex items-center gap-1 font-bold"
             >
               <EyeOff size={11} />
               <span className="hidden sm:inline">{t("keyboard.hide")}</span>

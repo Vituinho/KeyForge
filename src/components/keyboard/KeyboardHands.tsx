@@ -66,6 +66,7 @@ export const KeyboardHands = React.memo(function KeyboardHands({
   return (
     <div
       className={`w-full flex flex-col items-center select-none ${className}`}
+      role="region"
       aria-label={t("keyboard.handsGuide")}
     >
       <div className="w-full max-w-2xl flex items-center justify-between gap-1.5 sm:gap-6 px-1.5 sm:px-6">
@@ -83,7 +84,11 @@ export const KeyboardHands = React.memo(function KeyboardHands({
 
         {/* Center Guidance HUD Pill */}
         {showStatusHud && (
-          <div className="flex flex-col items-center justify-center shrink-0 min-w-0 max-w-[120px] sm:max-w-xs text-center px-1">
+          <div
+            className="flex flex-col items-center justify-center shrink-0 min-w-0 max-w-[120px] sm:max-w-xs text-center px-1"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             <AnimatePresence mode="wait">
               {currentFinger && fingerConfig ? (
                 <motion.div
