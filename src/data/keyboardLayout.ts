@@ -1,5 +1,7 @@
-export type Hand = "left" | "right" | "thumb"
-export type Finger = "pinky" | "ring" | "middle" | "index" | "thumb"
+import { Finger as TouchFinger, Hand } from "@/lib/keyboard/fingerMap"
+
+export type { Hand }
+export type Finger = TouchFinger | "pinky" | "ring" | "middle" | "index"
 
 export interface KeyMetadata {
   key: string
@@ -14,38 +16,22 @@ export interface KeyMetadata {
 
 export const FINGER_COLORS: Record<
   Finger,
-  { bg: string; text: string; border: string; glow: string }
+  { bg: string; text: string; border: string; glow: string; hex: string }
 > = {
-  pinky: {
-    bg: "bg-rose-500/20",
-    text: "text-rose-400",
-    border: "border-rose-500/30",
-    glow: "rgba(244, 63, 94, 0.4)",
-  },
-  ring: {
-    bg: "bg-amber-500/20",
-    text: "text-amber-400",
-    border: "border-amber-500/30",
-    glow: "rgba(245, 158, 11, 0.4)",
-  },
-  middle: {
-    bg: "bg-emerald-500/20",
-    text: "text-emerald-400",
-    border: "border-emerald-500/30",
-    glow: "rgba(16, 185, 129, 0.4)",
-  },
-  index: {
-    bg: "bg-cyan-500/20",
-    text: "text-cyan-400",
-    border: "border-cyan-500/30",
-    glow: "rgba(6, 182, 212, 0.4)",
-  },
-  thumb: {
-    bg: "bg-violet-500/20",
-    text: "text-violet-400",
-    border: "border-violet-500/30",
-    glow: "rgba(139, 92, 246, 0.4)",
-  },
+  leftPinky: { bg: "bg-red-500/20", text: "text-red-400", border: "border-red-500/40", glow: "rgba(231, 76, 60, 0.4)", hex: "#e74c3c" },
+  leftRing: { bg: "bg-orange-500/20", text: "text-orange-400", border: "border-orange-500/40", glow: "rgba(230, 126, 34, 0.4)", hex: "#e67e22" },
+  leftMiddle: { bg: "bg-yellow-500/20", text: "text-yellow-400", border: "border-yellow-500/40", glow: "rgba(241, 196, 15, 0.4)", hex: "#f1c40f" },
+  leftIndex: { bg: "bg-emerald-500/20", text: "text-emerald-400", border: "border-emerald-500/40", glow: "rgba(46, 204, 113, 0.4)", hex: "#2ecc71" },
+  rightIndex: { bg: "bg-sky-500/20", text: "text-sky-400", border: "border-sky-500/40", glow: "rgba(52, 152, 219, 0.4)", hex: "#3498db" },
+  rightMiddle: { bg: "bg-indigo-500/20", text: "text-indigo-400", border: "border-indigo-500/40", glow: "rgba(99, 102, 241, 0.4)", hex: "#6366f1" },
+  rightRing: { bg: "bg-purple-500/20", text: "text-purple-400", border: "border-purple-500/40", glow: "rgba(168, 85, 247, 0.4)", hex: "#a855f7" },
+  rightPinky: { bg: "bg-pink-500/20", text: "text-pink-400", border: "border-pink-500/40", glow: "rgba(236, 72, 153, 0.4)", hex: "#ec4899" },
+  thumb: { bg: "bg-slate-500/20", text: "text-slate-400", border: "border-slate-500/40", glow: "rgba(148, 163, 184, 0.4)", hex: "#94a3b8" },
+  // Backward compatibility aliases
+  pinky: { bg: "bg-red-500/20", text: "text-red-400", border: "border-red-500/40", glow: "rgba(231, 76, 60, 0.4)", hex: "#e74c3c" },
+  ring: { bg: "bg-orange-500/20", text: "text-orange-400", border: "border-orange-500/40", glow: "rgba(230, 126, 34, 0.4)", hex: "#e67e22" },
+  middle: { bg: "bg-yellow-500/20", text: "text-yellow-400", border: "border-yellow-500/40", glow: "rgba(241, 196, 15, 0.4)", hex: "#f1c40f" },
+  index: { bg: "bg-emerald-500/20", text: "text-emerald-400", border: "border-emerald-500/40", glow: "rgba(46, 204, 113, 0.4)", hex: "#2ecc71" },
 }
 
 // ----------------------------------------------------
@@ -54,47 +40,47 @@ export const FINGER_COLORS: Record<
 export const LAYOUT_PT_BR: KeyMetadata[][] = [
   // Row 1: Tab, Q W E R T Y U I O P, Backspace
   [
-    { key: "Tab", display: "TAB", hand: "left", finger: "pinky", width: "wide", isModifier: true },
-    { key: "q", hand: "left", finger: "pinky" },
-    { key: "w", hand: "left", finger: "ring" },
-    { key: "e", hand: "left", finger: "middle" },
-    { key: "r", hand: "left", finger: "index" },
-    { key: "t", hand: "left", finger: "index" },
-    { key: "y", hand: "right", finger: "index" },
-    { key: "u", hand: "right", finger: "index" },
-    { key: "i", hand: "right", finger: "middle" },
-    { key: "o", hand: "right", finger: "ring" },
-    { key: "p", hand: "right", finger: "pinky" },
-    { key: "Backspace", display: "⌫", hand: "right", finger: "pinky", width: "wide", isModifier: true },
+    { key: "Tab", display: "TAB", hand: "left", finger: "leftPinky", width: "wide", isModifier: true },
+    { key: "q", hand: "left", finger: "leftPinky" },
+    { key: "w", hand: "left", finger: "leftRing" },
+    { key: "e", hand: "left", finger: "leftMiddle" },
+    { key: "r", hand: "left", finger: "leftIndex" },
+    { key: "t", hand: "left", finger: "leftIndex" },
+    { key: "y", hand: "right", finger: "rightIndex" },
+    { key: "u", hand: "right", finger: "rightIndex" },
+    { key: "i", hand: "right", finger: "rightMiddle" },
+    { key: "o", hand: "right", finger: "rightRing" },
+    { key: "p", hand: "right", finger: "rightPinky" },
+    { key: "Backspace", display: "⌫", hand: "right", finger: "rightPinky", width: "wide", isModifier: true },
   ],
   // Row 2: A S D F G H J K L Ç, Enter
   [
-    { key: "a", hand: "left", finger: "pinky", isHomeRow: true },
-    { key: "s", hand: "left", finger: "ring", isHomeRow: true },
-    { key: "d", hand: "left", finger: "middle", isHomeRow: true },
-    { key: "f", hand: "left", finger: "index", isHomeRow: true, hasBump: true },
-    { key: "g", hand: "left", finger: "index" },
-    { key: "h", hand: "right", finger: "index" },
-    { key: "j", hand: "right", finger: "index", isHomeRow: true, hasBump: true },
-    { key: "k", hand: "right", finger: "middle", isHomeRow: true },
-    { key: "l", hand: "right", finger: "ring", isHomeRow: true },
-    { key: "ç", display: "Ç", hand: "right", finger: "pinky", isHomeRow: true },
-    { key: "Enter", display: "↵ ENTER", hand: "right", finger: "pinky", width: "wide", isModifier: true },
+    { key: "a", hand: "left", finger: "leftPinky", isHomeRow: true },
+    { key: "s", hand: "left", finger: "leftRing", isHomeRow: true },
+    { key: "d", hand: "left", finger: "leftMiddle", isHomeRow: true },
+    { key: "f", hand: "left", finger: "leftIndex", isHomeRow: true, hasBump: true },
+    { key: "g", hand: "left", finger: "leftIndex" },
+    { key: "h", hand: "right", finger: "rightIndex" },
+    { key: "j", hand: "right", finger: "rightIndex", isHomeRow: true, hasBump: true },
+    { key: "k", hand: "right", finger: "rightMiddle", isHomeRow: true },
+    { key: "l", hand: "right", finger: "rightRing", isHomeRow: true },
+    { key: "ç", display: "Ç", hand: "right", finger: "rightPinky", isHomeRow: true },
+    { key: "Enter", display: "↵ ENTER", hand: "right", finger: "rightPinky", width: "wide", isModifier: true },
   ],
   // Row 3: Shift, Z X C V B N M , . ;, Shift
   [
-    { key: "ShiftLeft", display: "⇧ SHIFT", hand: "left", finger: "pinky", width: "wide", isModifier: true },
-    { key: "z", hand: "left", finger: "pinky" },
-    { key: "x", hand: "left", finger: "ring" },
-    { key: "c", hand: "left", finger: "middle" },
-    { key: "v", hand: "left", finger: "index" },
-    { key: "b", hand: "left", finger: "index" },
-    { key: "n", hand: "right", finger: "index" },
-    { key: "m", hand: "right", finger: "index" },
-    { key: ",", display: ",", hand: "right", finger: "middle" },
-    { key: ".", display: ".", hand: "right", finger: "ring" },
-    { key: ";", display: ";", hand: "right", finger: "pinky" },
-    { key: "ShiftRight", display: "⇧", hand: "right", finger: "pinky", width: "wide", isModifier: true },
+    { key: "ShiftLeft", display: "⇧ SHIFT", hand: "left", finger: "leftPinky", width: "wide", isModifier: true },
+    { key: "z", hand: "left", finger: "leftPinky" },
+    { key: "x", hand: "left", finger: "leftRing" },
+    { key: "c", hand: "left", finger: "leftMiddle" },
+    { key: "v", hand: "left", finger: "leftIndex" },
+    { key: "b", hand: "left", finger: "leftIndex" },
+    { key: "n", hand: "right", finger: "rightIndex" },
+    { key: "m", hand: "right", finger: "rightIndex" },
+    { key: ",", display: ",", hand: "right", finger: "rightMiddle" },
+    { key: ".", display: ".", hand: "right", finger: "rightRing" },
+    { key: ";", display: ";", hand: "right", finger: "rightPinky" },
+    { key: "ShiftRight", display: "⇧", hand: "right", finger: "rightPinky", width: "wide", isModifier: true },
   ],
   // Row 4: Space
   [
@@ -108,47 +94,47 @@ export const LAYOUT_PT_BR: KeyMetadata[][] = [
 export const LAYOUT_EN: KeyMetadata[][] = [
   // Row 1: Tab, Q W E R T Y U I O P, Backspace
   [
-    { key: "Tab", display: "TAB", hand: "left", finger: "pinky", width: "wide", isModifier: true },
-    { key: "q", hand: "left", finger: "pinky" },
-    { key: "w", hand: "left", finger: "ring" },
-    { key: "e", hand: "left", finger: "middle" },
-    { key: "r", hand: "left", finger: "index" },
-    { key: "t", hand: "left", finger: "index" },
-    { key: "y", hand: "right", finger: "index" },
-    { key: "u", hand: "right", finger: "index" },
-    { key: "i", hand: "right", finger: "middle" },
-    { key: "o", hand: "right", finger: "ring" },
-    { key: "p", hand: "right", finger: "pinky" },
-    { key: "Backspace", display: "⌫", hand: "right", finger: "pinky", width: "wide", isModifier: true },
+    { key: "Tab", display: "TAB", hand: "left", finger: "leftPinky", width: "wide", isModifier: true },
+    { key: "q", hand: "left", finger: "leftPinky" },
+    { key: "w", hand: "left", finger: "leftRing" },
+    { key: "e", hand: "left", finger: "leftMiddle" },
+    { key: "r", hand: "left", finger: "leftIndex" },
+    { key: "t", hand: "left", finger: "leftIndex" },
+    { key: "y", hand: "right", finger: "rightIndex" },
+    { key: "u", hand: "right", finger: "rightIndex" },
+    { key: "i", hand: "right", finger: "rightMiddle" },
+    { key: "o", hand: "right", finger: "rightRing" },
+    { key: "p", hand: "right", finger: "rightPinky" },
+    { key: "Backspace", display: "⌫", hand: "right", finger: "rightPinky", width: "wide", isModifier: true },
   ],
   // Row 2: A S D F G H J K L ;, Enter
   [
-    { key: "a", hand: "left", finger: "pinky", isHomeRow: true },
-    { key: "s", hand: "left", finger: "ring", isHomeRow: true },
-    { key: "d", hand: "left", finger: "middle", isHomeRow: true },
-    { key: "f", hand: "left", finger: "index", isHomeRow: true, hasBump: true },
-    { key: "g", hand: "left", finger: "index" },
-    { key: "h", hand: "right", finger: "index" },
-    { key: "j", hand: "right", finger: "index", isHomeRow: true, hasBump: true },
-    { key: "k", hand: "right", finger: "middle", isHomeRow: true },
-    { key: "l", hand: "right", finger: "ring", isHomeRow: true },
-    { key: ";", display: ";", hand: "right", finger: "pinky", isHomeRow: true },
-    { key: "Enter", display: "↵ ENTER", hand: "right", finger: "pinky", width: "wide", isModifier: true },
+    { key: "a", hand: "left", finger: "leftPinky", isHomeRow: true },
+    { key: "s", hand: "left", finger: "leftRing", isHomeRow: true },
+    { key: "d", hand: "left", finger: "leftMiddle", isHomeRow: true },
+    { key: "f", hand: "left", finger: "leftIndex", isHomeRow: true, hasBump: true },
+    { key: "g", hand: "left", finger: "leftIndex" },
+    { key: "h", hand: "right", finger: "rightIndex" },
+    { key: "j", hand: "right", finger: "rightIndex", isHomeRow: true, hasBump: true },
+    { key: "k", hand: "right", finger: "rightMiddle", isHomeRow: true },
+    { key: "l", hand: "right", finger: "rightRing", isHomeRow: true },
+    { key: ";", display: ";", hand: "right", finger: "rightPinky", isHomeRow: true },
+    { key: "Enter", display: "↵ ENTER", hand: "right", finger: "rightPinky", width: "wide", isModifier: true },
   ],
   // Row 3: Shift, Z X C V B N M , . /, Shift
   [
-    { key: "ShiftLeft", display: "⇧ SHIFT", hand: "left", finger: "pinky", width: "wide", isModifier: true },
-    { key: "z", hand: "left", finger: "pinky" },
-    { key: "x", hand: "left", finger: "ring" },
-    { key: "c", hand: "left", finger: "middle" },
-    { key: "v", hand: "left", finger: "index" },
-    { key: "b", hand: "left", finger: "index" },
-    { key: "n", hand: "right", finger: "index" },
-    { key: "m", hand: "right", finger: "index" },
-    { key: ",", display: ",", hand: "right", finger: "middle" },
-    { key: ".", display: ".", hand: "right", finger: "ring" },
-    { key: "/", display: "/", hand: "right", finger: "pinky" },
-    { key: "ShiftRight", display: "⇧", hand: "right", finger: "pinky", width: "wide", isModifier: true },
+    { key: "ShiftLeft", display: "⇧ SHIFT", hand: "left", finger: "leftPinky", width: "wide", isModifier: true },
+    { key: "z", hand: "left", finger: "leftPinky" },
+    { key: "x", hand: "left", finger: "leftRing" },
+    { key: "c", hand: "left", finger: "leftMiddle" },
+    { key: "v", hand: "left", finger: "leftIndex" },
+    { key: "b", hand: "left", finger: "leftIndex" },
+    { key: "n", hand: "right", finger: "rightIndex" },
+    { key: "m", hand: "right", finger: "rightIndex" },
+    { key: ",", display: ",", hand: "right", finger: "rightMiddle" },
+    { key: ".", display: ".", hand: "right", finger: "rightRing" },
+    { key: "/", display: "/", hand: "right", finger: "rightPinky" },
+    { key: "ShiftRight", display: "⇧", hand: "right", finger: "rightPinky", width: "wide", isModifier: true },
   ],
   // Row 4: Space
   [
@@ -176,7 +162,7 @@ KEY_METADATA_MAP["ç"] = {
   key: "ç",
   display: "Ç",
   hand: "right",
-  finger: "pinky",
+  finger: "rightPinky",
   isHomeRow: true,
 }
 KEY_METADATA_MAP[" "] = {

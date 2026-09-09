@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useMemo } from "react"
-import { LAYOUT_PT_BR, LAYOUT_EN, getKeyMetadata } from "@/data/keyboardLayout"
+import { LAYOUT_PT_BR, LAYOUT_EN, getKeyMetadata, FINGER_COLORS } from "@/data/keyboardLayout"
 import { TypingKeyboardProps, KeyVisualState } from "@/types/keyboard"
 import { useCosmetics } from "@/hooks/useCosmetics"
 import { useI18n } from "@/lib/i18n/i18nContext"
@@ -11,12 +11,20 @@ import { KeyboardKey } from "./KeyboardKey"
 function getFingerLabel(finger: string, t: (key: string) => string) {
   switch (finger) {
     case "pinky":
+    case "leftPinky":
+    case "rightPinky":
       return t("keyboard.fingerPinky")
     case "ring":
+    case "leftRing":
+    case "rightRing":
       return t("keyboard.fingerRing")
     case "middle":
+    case "leftMiddle":
+    case "rightMiddle":
       return t("keyboard.fingerMiddle")
     case "index":
+    case "leftIndex":
+    case "rightIndex":
       return t("keyboard.fingerIndex")
     case "thumb":
       return t("keyboard.fingerThumb")
@@ -32,6 +40,7 @@ export function TypingKeyboard({
   weakKeys = [],
   layout = "pt-BR",
   highlightFinger = false,
+  fingerColors = "off",
   showHomeRowAnchors: propShowHomeRowAnchors,
   showFingerLegend = false,
   size = "md",
@@ -51,10 +60,11 @@ export function TypingKeyboard({
     [weakKeys]
   )
 
-  const activeRows = layout === "en" ? LAYOUT_EN : LAYOUT_PT_BR
+  const isAnsi = layout === "en" || layout === "ANSI"
+  const activeRows = isAnsi ? LAYOUT_EN : LAYOUT_PT_BR
   const expectedMeta = normalizedExpected ? getKeyMetadata(normalizedExpected) : null
 
-  const layoutLabel = layout === "en" ? "EN · ANSI" : "PT-BR · ABNT2"
+  const layoutLabel = isAnsi ? "EN · ANSI" : "PT-BR · ABNT2"
 
   if (settings && !settings.showKeyboard) {
     return (
@@ -117,6 +127,7 @@ export function TypingKeyboard({
                 meta={meta}
                 state={state}
                 isFingerActive={isFingerActive}
+                fingerColors={fingerColors}
                 showHomeRowAnchors={showHomeRowAnchors}
                 isWeak={isWeak}
                 size={size}
@@ -137,16 +148,7 @@ export function TypingKeyboard({
           <span
             className="font-black"
             style={{
-              color:
-                expectedMeta.finger === "pinky"
-                  ? "#fb7185"
-                  : expectedMeta.finger === "ring"
-                  ? "#fbbf24"
-                  : expectedMeta.finger === "middle"
-                  ? "#34d399"
-                  : expectedMeta.finger === "index"
-                  ? "#22d3ee"
-                  : "#a78bfa",
+              color: FINGER_COLORS[expectedMeta.finger]?.hex ?? "#a78bfa",
             }}
           >
             {getFingerLabel(expectedMeta.finger, t)}

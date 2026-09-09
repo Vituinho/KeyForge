@@ -14,7 +14,9 @@ export type KeyVisualState =
   | "weak"
   | "home-row"
 
-export type KeyboardLayoutType = "pt-BR" | "en"
+export type KeyboardLayoutType = "pt-BR" | "en" | "ABNT2" | "ANSI"
+
+export type FingerColorsMode = "full" | "subtle" | "off"
 
 export type KeyWidth = "normal" | "wide" | "extra-wide" | "space"
 
@@ -36,6 +38,7 @@ export interface TypingKeyboardProps {
   weakKeys?: string[]
   layout?: KeyboardLayoutType
   highlightFinger?: boolean
+  fingerColors?: FingerColorsMode
   showHomeRowAnchors?: boolean
   showFingerLegend?: boolean
   size?: "sm" | "md" | "lg"
