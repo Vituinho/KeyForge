@@ -39,22 +39,36 @@ export function TypingKeyboard({
   pressedKey = null,
   lastErrorKey = null,
   weakKeys = [],
-  layout = "pt-BR",
+  layout: propLayout,
   highlightFinger = false,
-  fingerColors = "off",
+  fingerColors: propFingerColors,
   showHandsGuide: propShowHandsGuide,
-  handGuideMode = "full",
+  handGuideMode: propHandGuideMode,
   showHomeRowAnchors: propShowHomeRowAnchors,
   showFingerLegend = false,
   size = "md",
   className = "",
   skinVisual: propSkinVisual,
 }: TypingKeyboardProps) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const { equippedSkin, settings, updateSettings } = useCosmetics()
   const skinVisual = propSkinVisual ?? equippedSkin.visual
   const showHomeRowAnchors = propShowHomeRowAnchors ?? settings?.showHomeRowAnchors ?? true
-  const showHandsGuide = propShowHandsGuide ?? settings?.showHandsGuide ?? false
+  const showHandsGuide =
+    propShowHandsGuide ?? (settings?.handGuide !== "off" && (settings?.showHandsGuide ?? false))
+  const fingerColors = propFingerColors ?? settings?.fingerColors ?? "off"
+  const handGuideMode = propHandGuideMode ?? settings?.handGuide ?? "full"
+
+  // Decoupled layout preference: prop > settings > locale default
+  const resolvedLayout =
+    propLayout ??
+    (settings?.keyboardLayout === "ABNT2"
+      ? "ABNT2"
+      : settings?.keyboardLayout === "ANSI"
+      ? "ANSI"
+      : locale === "en"
+      ? "ANSI"
+      : "ABNT2")
 
   const normalizedExpected = expectedKey ? expectedKey.toLowerCase() : null
   const normalizedPressed = pressedKey ? pressedKey.toLowerCase() : null
@@ -64,7 +78,7 @@ export function TypingKeyboard({
     [weakKeys]
   )
 
-  const isAnsi = layout === "en" || layout === "ANSI"
+  const isAnsi = resolvedLayout === "en" || resolvedLayout === "ANSI"
   const activeRows = isAnsi ? LAYOUT_EN : LAYOUT_PT_BR
   const expectedMeta = normalizedExpected ? getKeyMetadata(normalizedExpected) : null
 
@@ -148,15 +162,16 @@ export function TypingKeyboard({
         <div className="w-full mt-3 pt-3 border-t border-white/10">
           <KeyboardHands
             expectedKey={expectedKey}
-            layout={layout}
+            layout={resolvedLayout}
             mode={handGuideMode}
+            showStatusHud={settings?.showFingerName ?? true}
             size={size === "lg" ? "md" : "sm"}
           />
         </div>
       )}
 
       {/* Optional Finger Legend for Academy */}
-      {showFingerLegend && expectedMeta && (
+      {showFingerLegend && (settings?.showFingerName ?? true) && expectedMeta && (
         <div className="mt-3 flex items-center justify-center gap-3 text-xs text-white/60 bg-white/5 px-4 py-1.5 rounded-full border border-white/10 font-mono">
           <span className="font-bold text-white">
             {expectedMeta.hand === "left" ? t("keyboard.handLeft") : t("keyboard.handRight")}:

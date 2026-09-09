@@ -104,11 +104,19 @@ export interface PlayerCosmeticsState {
   updatedAt: string
 }
 
+export type KeyboardLayoutPreference = "ABNT2" | "ANSI" | "auto"
+export type FingerColorsSetting = "full" | "subtle" | "off"
+export type HandGuideSetting = "full" | "subtle" | "off"
+
 export interface KeyboardAccessibilitySettings {
   showKeyboard: boolean
   effectIntensity: EffectIntensity
   showHandsGuide: boolean
   showHomeRowAnchors: boolean
+  fingerColors: FingerColorsSetting
+  handGuide: HandGuideSetting
+  keyboardLayout: KeyboardLayoutPreference
+  showFingerName: boolean
 }
 
 export const DEFAULT_KEYBOARD_ACCESSIBILITY: KeyboardAccessibilitySettings = {
@@ -116,6 +124,10 @@ export const DEFAULT_KEYBOARD_ACCESSIBILITY: KeyboardAccessibilitySettings = {
   effectIntensity: "full",
   showHandsGuide: false,
   showHomeRowAnchors: true,
+  fingerColors: "subtle",
+  handGuide: "subtle",
+  keyboardLayout: "auto",
+  showFingerName: true,
 }
 
 export const DEFAULT_STARTER_SKIN_IDS = [
