@@ -68,9 +68,13 @@ export const TypingHand = React.memo(function TypingHand({
       {/* SVG Hand Illustration */}
       <svg
         viewBox="0 0 140 140"
-        width={dimensions.width}
-        height={dimensions.height}
-        className="overflow-visible drop-shadow-md transition-all duration-300"
+        style={{
+          width: dimensions.width,
+          height: dimensions.height,
+          maxWidth: "100%",
+          maxHeight: "100%",
+        }}
+        className="overflow-visible drop-shadow-md transition-all duration-300 max-w-full h-auto aspect-square"
         aria-label={handTitle}
       >
         <defs>

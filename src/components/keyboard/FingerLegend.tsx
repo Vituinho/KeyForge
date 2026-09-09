@@ -35,7 +35,7 @@ export const FingerLegend = React.memo(function FingerLegend({
 
   return (
     <div
-      className={`flex items-center justify-center flex-wrap gap-1.5 sm:gap-2 select-none ${className}`}
+      className={`w-full max-w-2xl flex items-center justify-center flex-wrap gap-1 sm:gap-1.5 md:gap-2 select-none px-1 ${className}`}
       role="region"
       aria-label={t("keyboard.fingerLegendAria")}
     >
@@ -55,7 +55,7 @@ export const FingerLegend = React.memo(function FingerLegend({
               opacity: activeFinger && !isActive ? 0.45 : 1,
             }}
             transition={{ duration: 0.15 }}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border transition-colors ${
+            className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border transition-colors ${
               isActive
                 ? "bg-white/15 shadow-md"
                 : "bg-white/[0.03] hover:bg-white/10"
@@ -67,12 +67,12 @@ export const FingerLegend = React.memo(function FingerLegend({
           >
             <span
               className={`rounded-full shrink-0 ${
-                compact ? "w-1.5 h-1.5" : "w-2 h-2"
+                compact ? "w-1.5 h-1.5" : "w-1.5 sm:w-2 h-1.5 sm:h-2"
               } ${isActive ? "animate-pulse" : ""}`}
               style={{ backgroundColor: config.hex }}
             />
             <span
-              className={`font-mono text-[10px] sm:text-[11px] font-bold tracking-tight ${
+              className={`font-mono text-[9px] sm:text-[11px] font-bold tracking-tight whitespace-nowrap ${
                 isActive ? "text-white" : "text-white/60"
               }`}
             >
