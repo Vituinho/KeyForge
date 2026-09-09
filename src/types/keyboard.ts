@@ -17,6 +17,7 @@ export type KeyVisualState =
 export type KeyboardLayoutType = "pt-BR" | "en" | "ABNT2" | "ANSI"
 
 export type FingerColorsMode = "full" | "subtle" | "off"
+export type HandGuideMode = "full" | "subtle" | "off"
 
 export type KeyWidth = "normal" | "wide" | "extra-wide" | "space"
 
@@ -39,6 +40,8 @@ export interface TypingKeyboardProps {
   layout?: KeyboardLayoutType
   highlightFinger?: boolean
   fingerColors?: FingerColorsMode
+  showHandsGuide?: boolean
+  handGuideMode?: HandGuideMode
   showHomeRowAnchors?: boolean
   showFingerLegend?: boolean
   size?: "sm" | "md" | "lg"

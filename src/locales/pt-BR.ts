@@ -1172,5 +1172,8 @@ export const ptBR: TranslationSchema = {
     fingerMiddle: "Dedo Médio",
     fingerIndex: "Dedo Indicador",
     fingerThumb: "Polegar",
+    handsGuide: "Guia de Mãos Touch-Typing",
+    homeRowRest: "Posição de Descanso (Home Row)",
+    homeRowDesc: "ASDF para mão esquerda, JKLÇ para mão direita",
   },
 }

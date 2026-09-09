@@ -7,6 +7,7 @@ import { useCosmetics } from "@/hooks/useCosmetics"
 import { useI18n } from "@/lib/i18n/i18nContext"
 import { KeyboardFrame } from "./KeyboardFrame"
 import { KeyboardKey } from "./KeyboardKey"
+import { KeyboardHands } from "./KeyboardHands"
 
 function getFingerLabel(finger: string, t: (key: string) => string) {
   switch (finger) {
@@ -41,6 +42,8 @@ export function TypingKeyboard({
   layout = "pt-BR",
   highlightFinger = false,
   fingerColors = "off",
+  showHandsGuide: propShowHandsGuide,
+  handGuideMode = "full",
   showHomeRowAnchors: propShowHomeRowAnchors,
   showFingerLegend = false,
   size = "md",
@@ -51,6 +54,7 @@ export function TypingKeyboard({
   const { equippedSkin, settings, updateSettings } = useCosmetics()
   const skinVisual = propSkinVisual ?? equippedSkin.visual
   const showHomeRowAnchors = propShowHomeRowAnchors ?? settings?.showHomeRowAnchors ?? true
+  const showHandsGuide = propShowHandsGuide ?? settings?.showHandsGuide ?? false
 
   const normalizedExpected = expectedKey ? expectedKey.toLowerCase() : null
   const normalizedPressed = pressedKey ? pressedKey.toLowerCase() : null
@@ -138,6 +142,18 @@ export function TypingKeyboard({
           })}
         </div>
       ))}
+
+      {/* Optional Animated Touch Typing Hand Guide */}
+      {showHandsGuide && (
+        <div className="w-full mt-3 pt-3 border-t border-white/10">
+          <KeyboardHands
+            expectedKey={expectedKey}
+            layout={layout}
+            mode={handGuideMode}
+            size={size === "lg" ? "md" : "sm"}
+          />
+        </div>
+      )}
 
       {/* Optional Finger Legend for Academy */}
       {showFingerLegend && expectedMeta && (

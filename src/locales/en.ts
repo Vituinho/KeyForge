@@ -1170,6 +1170,9 @@ export const en = {
     fingerMiddle: "Middle Finger",
     fingerIndex: "Index Finger",
     fingerThumb: "Thumb",
+    handsGuide: "Touch Typing Hand Guide",
+    homeRowRest: "Home Row Resting Position",
+    homeRowDesc: "ASDF for left hand, JKLÇ for right hand",
   },
 }
 
