@@ -398,11 +398,14 @@ export async function submitWordCompletion(
   let newEnergy = currentEnergy + energyGain
   let damage = 0
 
-  // Attack resolution at 100 Energy
+  // Attack resolution at 100 Energy (100% typing-driven, pure automatic trigger)
   if (newEnergy >= 100) {
     const comboMult = 1.0 + Math.min(1.5, effectiveCombo * 0.05)
-    const accRatio = Math.max(0.5, effectiveAccuracy / 100)
-    damage = Math.round(70 * comboMult * accRatio)
+    // Non-linear accuracy curve heavily penalizes low accuracy (<80%) while strongly rewarding high precision (95-100%)
+    const accRatio = Math.max(0.25, Math.pow(effectiveAccuracy / 100, 1.8))
+    // Controlled speed velocity bonus (clamped between 0.8 and 1.3 to avoid runaway speed dominance)
+    const wpmFactor = Math.min(1.3, Math.max(0.8, effectiveWpm / 100))
+    damage = Math.round(70 * comboMult * accRatio * wpmFactor)
     newEnergy -= 100
   }
 
