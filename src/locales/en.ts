@@ -486,6 +486,7 @@ export const en = {
       nextDrill: "Next drill loading",
       instruction1: "Type the sequence above with focus on precision and rhythm.",
       instruction2: "Backspace is enabled — correct mistakes deliberately to build muscle memory.",
+      fingerGuide: "Designated Finger Guide",
     },
     result: {
       complete: "TRAINING COMPLETE",
@@ -501,6 +502,8 @@ export const en = {
       noChange: "No Change",
       practiced: "Practiced",
       untyped: "Untyped",
+      assignedFinger: "Designated Finger",
+      fingerAssociation: "Finger Association & Touch Typing Form",
     },
   },
   academy: {

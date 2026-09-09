@@ -488,6 +488,7 @@ export const ptBR: TranslationSchema = {
       nextDrill: "Carregando próximo exercício",
       instruction1: "Digite a sequência acima com foco em precisão e ritmo.",
       instruction2: "Backspace habilitado — corrija os erros deliberadamente para criar memória muscular.",
+      fingerGuide: "Guia de Dedos Designados",
     },
     result: {
       complete: "TREINO CONCLUÍDO",
@@ -503,6 +504,8 @@ export const ptBR: TranslationSchema = {
       noChange: "Sem Mudança",
       practiced: "Praticado",
       untyped: "Não digitado",
+      assignedFinger: "Dedo Designado",
+      fingerAssociation: "Associação de Dedo & Postura Touch Typing",
     },
   },
   academy: {
