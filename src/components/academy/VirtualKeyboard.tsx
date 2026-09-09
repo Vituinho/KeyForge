@@ -4,13 +4,18 @@ import React from "react"
 import { TypingKeyboard } from "@/components/keyboard/TypingKeyboard"
 import { useI18n } from "@/lib/i18n/i18nContext"
 
+import { FingerColorsMode, HandGuideMode, KeyboardLayoutType } from "@/types/keyboard"
+
 export interface VirtualKeyboardProps {
   activeKey?: string | null
   lastErrorKey?: string | null
   highlightFinger?: boolean
   showHomeRowAnchors?: boolean
+  showHandsGuide?: boolean
+  fingerColors?: FingerColorsMode
+  handGuideMode?: HandGuideMode
   className?: string
-  layout?: "pt-BR" | "en"
+  layout?: KeyboardLayoutType
 }
 
 export function VirtualKeyboard({
@@ -18,6 +23,9 @@ export function VirtualKeyboard({
   lastErrorKey = null,
   highlightFinger = true,
   showHomeRowAnchors = true,
+  showHandsGuide = true,
+  fingerColors = "full",
+  handGuideMode = "full",
   className = "",
   layout: propLayout,
 }: VirtualKeyboardProps) {
@@ -29,6 +37,9 @@ export function VirtualKeyboard({
       expectedKey={activeKey}
       lastErrorKey={lastErrorKey}
       highlightFinger={highlightFinger}
+      fingerColors={fingerColors}
+      showHandsGuide={showHandsGuide}
+      handGuideMode={handGuideMode}
       showHomeRowAnchors={showHomeRowAnchors}
       showFingerLegend={highlightFinger}
       className={className}

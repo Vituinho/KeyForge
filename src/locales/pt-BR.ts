@@ -602,6 +602,10 @@ export const ptBR: TranslationSchema = {
       drillOf: "Exercício {current} de {total}",
       instruction:
         "Olhe para a tela e sinta as teclas com os dedos. Use o teclado virtual como referência visual.",
+      activeKeyGuide: "Guia de Tecla Ativa",
+      fingerPlacement: "DISCIPLINA DE DEDOS",
+      perfectAccuracy: "Precisão Perfeita",
+      accuracyFirst: "Precisão em Primeiro Lugar",
     },
     result: {
       complete: "AULA CONCLUÍDA",

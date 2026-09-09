@@ -25,6 +25,11 @@ import Link from "next/link"
 import { processAcademyLessonRewards, ActivityRewardSummary } from "@/lib/progression/processActivityRewards"
 import { RankUpModal } from "@/components/progression/RankUpModal"
 import { useI18n } from "@/lib/i18n/i18nContext"
+import {
+  getFingerForKey,
+  FINGER_PALETTE,
+  KeyboardLayoutId,
+} from "@/lib/keyboard/fingerMap"
 
 interface AcademyLessonProps {
   moduleId: string
@@ -209,6 +214,10 @@ function HomeRowLesson({ onBack }: { onBack: () => void }) {
   }, [currentExercise, reset, focus])
 
   const activeChar = chars[stats.currentIndex]?.char ?? null
+  const normalizedLayout: KeyboardLayoutId = isEn ? "ANSI" : "ABNT2"
+  const activeFingerInfo = getFingerForKey(activeChar, normalizedLayout)
+  const lang = isEn ? "en" : "pt-BR"
+  const activeFingerConfig = activeFingerInfo ? FINGER_PALETTE[activeFingerInfo.finger] : null
 
   const handleRetry = () => {
     setExerciseIndex(0)
@@ -260,38 +269,104 @@ function HomeRowLesson({ onBack }: { onBack: () => void }) {
       ) : (
         /* Active practice drill */
         <div className="space-y-4">
-          {/* Virtual Keyboard with real-time active key guidance */}
-          <VirtualKeyboard activeKey={activeChar} highlightFinger={true} />
+          {/* Academy Metrics Header - Accuracy Prominently Highlighted Above WPM */}
+          <div className="grid grid-cols-3 gap-3 p-3.5 rounded-2xl bg-white/[0.03] border border-white/10">
+            {/* Accuracy Hero Card */}
+            <div className="col-span-1 flex flex-col items-center justify-center p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 shadow-sm">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-300 font-bold flex items-center gap-1">
+                <Target size={12} />
+                {t("common.accuracy")}
+              </span>
+              <span className="text-2xl sm:text-3xl font-black font-mono text-emerald-400">
+                {stats.currentAccuracy}%
+              </span>
+              <span className="text-[9px] text-emerald-300/60 font-mono">
+                {t("academy.homeRow.goal")}
+              </span>
+            </div>
 
-          {/* Drill progress and live metrics */}
-          <div className="flex items-center justify-between text-xs text-white/50 px-1">
-            <span>
-              {t("academy.homeRow.drillOf", {
-                current: exerciseIndex + 1,
-                total: exercises.length,
-              })}
-            </span>
-            <div className="flex gap-4">
-              <span>
-                {t("common.accuracy")}:{" "}
-                <strong className="text-emerald-400 font-mono">
-                  {stats.currentAccuracy}%
-                </strong>
+            {/* WPM Metric Card */}
+            <div className="col-span-1 flex flex-col items-center justify-center p-2.5 rounded-xl bg-white/5 border border-white/5">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-white/40 font-bold flex items-center gap-1">
+                <Zap size={12} />
+                {t("common.wpm")}
               </span>
-              <span>
-                {t("common.wpm")}:{" "}
-                <strong className="text-white font-mono">
-                  {stats.currentWpm}
-                </strong>
+              <span className="text-xl sm:text-2xl font-bold font-mono text-white">
+                {stats.currentWpm}
               </span>
-              <span>
-                {t("common.errors")}:{" "}
-                <strong className="text-red-400 font-mono">
-                  {stats.currentErrors}
-                </strong>
+              <span className="text-[9px] text-white/40 font-mono">
+                {t("academy.homeRow.drillOf", {
+                  current: exerciseIndex + 1,
+                  total: exercises.length,
+                })}
+              </span>
+            </div>
+
+            {/* Errors Metric Card */}
+            <div className="col-span-1 flex flex-col items-center justify-center p-2.5 rounded-xl bg-white/5 border border-white/5">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-white/40 font-bold flex items-center gap-1">
+                <AlertTriangle size={12} />
+                {t("common.errors")}
+              </span>
+              <span
+                className={`text-xl sm:text-2xl font-bold font-mono ${
+                  stats.currentErrors > 0 ? "text-red-400" : "text-white/60"
+                }`}
+              >
+                {stats.currentErrors}
+              </span>
+              <span className="text-[9px] text-white/40 font-mono">
+                {stats.currentErrors === 0
+                  ? t("academy.homeRow.perfectAccuracy")
+                  : `${stats.currentErrors} ${t("common.errors").toLowerCase()}`}
               </span>
             </div>
           </div>
+
+          {/* Active Finger & Hand Guidance Banner */}
+          {activeFingerInfo && activeFingerConfig && (
+            <div className="flex items-center justify-between px-4 py-2.5 rounded-2xl bg-neutral-900/90 border border-white/10 text-xs font-mono shadow-md">
+              <div className="flex items-center gap-2.5">
+                <span
+                  className="w-3 h-3 rounded-full animate-pulse shrink-0"
+                  style={{
+                    backgroundColor: activeFingerConfig.hex,
+                    boxShadow: `0 0 10px ${activeFingerConfig.hex}`,
+                  }}
+                />
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="font-bold text-white">
+                    {activeFingerInfo.hand === "left"
+                      ? t("keyboard.handLeft")
+                      : t("keyboard.handRight")}
+                    :
+                  </span>
+                  <span
+                    className="font-black"
+                    style={{ color: activeFingerConfig.hex }}
+                  >
+                    {activeFingerConfig.name[lang]}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-white/50">
+                <span className="text-[11px] hidden sm:inline">{t("academy.homeRow.activeKeyGuide")}:</span>
+                <span className="px-2 py-0.5 rounded-lg bg-white/15 text-white font-black text-sm border border-white/20">
+                  {activeFingerInfo.display ?? activeChar?.toUpperCase()}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Virtual Keyboard with real-time active key guidance, fingerColors full and handGuide full */}
+          <VirtualKeyboard
+            activeKey={activeChar}
+            highlightFinger={true}
+            showHandsGuide={true}
+            fingerColors="full"
+            handGuideMode="full"
+            layout={normalizedLayout}
+          />
 
           {/* Reusing TypingArea */}
           <TypingArea

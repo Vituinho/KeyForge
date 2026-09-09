@@ -21,34 +21,34 @@ export function FingerGuide() {
         </div>
         <div className="space-y-1.5 text-xs">
           <FingerRow
-            finger="pinky"
+            finger="leftPinky"
             label={t("academy.fingerGuide.pinky")}
             keyLetter="A"
-            color={FINGER_COLORS.pinky}
+            color={FINGER_COLORS.leftPinky}
             bumpTooltip={t("academy.fingerGuide.bumpTooltip")}
             bumpLabel={t("academy.fingerGuide.bump")}
           />
           <FingerRow
-            finger="ring"
+            finger="leftRing"
             label={t("academy.fingerGuide.ring")}
             keyLetter="S"
-            color={FINGER_COLORS.ring}
+            color={FINGER_COLORS.leftRing}
             bumpTooltip={t("academy.fingerGuide.bumpTooltip")}
             bumpLabel={t("academy.fingerGuide.bump")}
           />
           <FingerRow
-            finger="middle"
+            finger="leftMiddle"
             label={t("academy.fingerGuide.middle")}
             keyLetter="D"
-            color={FINGER_COLORS.middle}
+            color={FINGER_COLORS.leftMiddle}
             bumpTooltip={t("academy.fingerGuide.bumpTooltip")}
             bumpLabel={t("academy.fingerGuide.bump")}
           />
           <FingerRow
-            finger="index"
+            finger="leftIndex"
             label={t("academy.fingerGuide.index")}
             keyLetter="F"
-            color={FINGER_COLORS.index}
+            color={FINGER_COLORS.leftIndex}
             hasBump
             bumpTooltip={t("academy.fingerGuide.bumpTooltip")}
             bumpLabel={t("academy.fingerGuide.bump")}
@@ -68,35 +68,35 @@ export function FingerGuide() {
         </div>
         <div className="space-y-1.5 text-xs">
           <FingerRow
-            finger="index"
+            finger="rightIndex"
             label={t("academy.fingerGuide.index")}
             keyLetter="J"
-            color={FINGER_COLORS.index}
+            color={FINGER_COLORS.rightIndex}
             hasBump
             bumpTooltip={t("academy.fingerGuide.bumpTooltip")}
             bumpLabel={t("academy.fingerGuide.bump")}
           />
           <FingerRow
-            finger="middle"
+            finger="rightMiddle"
             label={t("academy.fingerGuide.middle")}
             keyLetter="K"
-            color={FINGER_COLORS.middle}
+            color={FINGER_COLORS.rightMiddle}
             bumpTooltip={t("academy.fingerGuide.bumpTooltip")}
             bumpLabel={t("academy.fingerGuide.bump")}
           />
           <FingerRow
-            finger="ring"
+            finger="rightRing"
             label={t("academy.fingerGuide.ring")}
             keyLetter="L"
-            color={FINGER_COLORS.ring}
+            color={FINGER_COLORS.rightRing}
             bumpTooltip={t("academy.fingerGuide.bumpTooltip")}
             bumpLabel={t("academy.fingerGuide.bump")}
           />
           <FingerRow
-            finger="pinky"
+            finger="rightPinky"
             label={t("academy.fingerGuide.pinky")}
             keyLetter={isEn ? ";" : "Ç"}
-            color={FINGER_COLORS.pinky}
+            color={FINGER_COLORS.rightPinky}
             bumpTooltip={t("academy.fingerGuide.bumpTooltip")}
             bumpLabel={t("academy.fingerGuide.bump")}
           />

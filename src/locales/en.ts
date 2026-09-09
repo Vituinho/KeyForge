@@ -600,6 +600,10 @@ export const en = {
       drillOf: "Drill {current} of {total}",
       instruction:
         "Keep your eyes on the screen and feel keys by touch. Use the virtual keyboard for visual reference.",
+      activeKeyGuide: "Active Key Guide",
+      fingerPlacement: "FINGER DISCIPLINE",
+      perfectAccuracy: "Perfect Accuracy",
+      accuracyFirst: "Accuracy First",
     },
     result: {
       complete: "LESSON COMPLETE",
