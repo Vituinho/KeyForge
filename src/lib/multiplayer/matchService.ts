@@ -36,11 +36,6 @@ export interface SubmitWordParams {
   playerId?: string
 }
 
-export interface TriggerUltimateParams {
-  matchId: string
-  playerId?: string
-}
-
 export interface ForfeitMatchParams {
   matchId: string
   playerId?: string
@@ -180,8 +175,8 @@ export async function createMatch(
     player_2_combo: 0,
     player_1_attack_energy: 0,
     player_2_attack_energy: 0,
-    player_1_ultimate_energy: 0,
-    player_2_ultimate_energy: 0,
+    player_1_ultimate_energy: 0, // @deprecated — kept for DB compat, never written to
+    player_2_ultimate_energy: 0, // @deprecated — kept for DB compat, never written to
     player_1_wpm: 0,
     player_2_wpm: 0,
     player_1_accuracy: 100,
@@ -418,8 +413,6 @@ export async function submitWordCompletion(
   const p2Hp = isP1 ? oppHp : match.player_2_hp
   const p1Energy = isP1 ? newEnergy : match.player_1_attack_energy
   const p2Energy = isP1 ? match.player_2_attack_energy : newEnergy
-  const p1Ult = isP1 ? Math.min(100, match.player_1_ultimate_energy + 5) : match.player_1_ultimate_energy
-  const p2Ult = isP1 ? match.player_2_ultimate_energy : Math.min(100, match.player_2_ultimate_energy + 5)
 
   let isFinished = oppHp <= 0 || (params.wordIndex + 1) >= match.word_count
   let winnerId: string | null = null
@@ -452,8 +445,6 @@ export async function submitWordCompletion(
     player_2_combo: !isP1 ? effectiveCombo : match.player_2_combo,
     player_1_attack_energy: p1Energy,
     player_2_attack_energy: p2Energy,
-    player_1_ultimate_energy: p1Ult,
-    player_2_ultimate_energy: p2Ult,
     player_1_wpm: isP1 ? effectiveWpm : match.player_1_wpm,
     player_2_wpm: !isP1 ? effectiveWpm : match.player_2_wpm,
     player_1_accuracy: isP1 ? effectiveAccuracy : match.player_1_accuracy,
@@ -468,70 +459,6 @@ export async function submitWordCompletion(
     localMatchesStore.set(match.room_code.toUpperCase(), updated)
   }
 
-  if (isFinished) {
-    recordLocalMatchResult(updated, now)
-  }
-
-  return updated
-}
-
-/**
- * Triggers an ultimate attack when the gauge is 100%.
- */
-export async function triggerUltimate(
-  params: TriggerUltimateParams
-): Promise<MultiplayerMatchRow> {
-  const supabase = getSupabaseClient()
-
-  if (supabase) {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      if (session?.user?.id) {
-        const { data, error } = await supabase.rpc("trigger_ultimate", {
-          p_match_id: params.matchId,
-        })
-
-        if (!error && data) {
-          return data as MultiplayerMatchRow
-        }
-      }
-    } catch (err) {
-      console.warn("[MatchService] Supabase trigger_ultimate failed, using local fallback:", err)
-    }
-  }
-
-  // Local fallback
-  const match = localMatchesStore.get(params.matchId)
-  if (!match) throw new Error("Match not found")
-
-  const playerId = params.playerId || match.player_1_id
-  const isP1 = match.player_1_id === playerId
-  const ultEnergy = isP1 ? match.player_1_ultimate_energy : match.player_2_ultimate_energy
-
-  if (ultEnergy < 100) {
-    throw new Error("Ultimate gauge not fully charged")
-  }
-
-  const damage = 160
-  const oppHp = Math.max(0, (isP1 ? match.player_2_hp : match.player_1_hp) - damage)
-  const isFinished = oppHp <= 0
-  const now = new Date().toISOString()
-
-  const updated: MultiplayerMatchRow = {
-    ...match,
-    player_1_ultimate_energy: isP1 ? 0 : match.player_1_ultimate_energy,
-    player_2_ultimate_energy: !isP1 ? 0 : match.player_2_ultimate_energy,
-    player_1_hp: isP1 ? match.player_1_hp : oppHp,
-    player_2_hp: isP1 ? oppHp : match.player_2_hp,
-    status: isFinished ? "finished" : match.status,
-    winner_id: isFinished ? playerId : match.winner_id,
-    finished_at: isFinished ? now : match.finished_at,
-    updated_at: now,
-  }
-
-  localMatchesStore.set(match.id, updated)
   if (isFinished) {
     recordLocalMatchResult(updated, now)
   }
@@ -791,14 +718,13 @@ export interface MatchTelemetryPayload {
   accuracy: number
   combo: number
   attackEnergy: number
-  ultimateEnergy: number
   hp: number
 }
 
 export interface MatchBattleCallbacks {
   onMatchUpdate?: (match: MultiplayerMatchRow) => void
   onOpponentTelemetry?: (telemetry: MatchTelemetryPayload) => void
-  onAttackEvent?: (event: { attackerId: string; damage: number; isUlt?: boolean }) => void
+  onAttackEvent?: (event: { attackerId: string; damage: number }) => void
   onMatchFinished?: (event: { winnerId: string | null; isDraw: boolean }) => void
   onOpponentPresenceChange?: (isOnline: boolean) => void
 }
@@ -812,7 +738,7 @@ export function subscribeToMatchBattle(
   currentUserId?: string
 ): {
   broadcastTelemetry: (telemetry: MatchTelemetryPayload) => Promise<void>
-  broadcastAttack: (attackerId: string, damage: number, isUlt?: boolean) => Promise<void>
+  broadcastAttack: (attackerId: string, damage: number) => Promise<void>
   broadcastMatchFinished: (winnerId: string | null, isDraw: boolean) => Promise<void>
   unsubscribe: () => void
 } {
@@ -929,12 +855,12 @@ export function subscribeToMatchBattle(
     }
   }
 
-  const broadcastAttack = async (attackerId: string, damage: number, isUlt = false) => {
+  const broadcastAttack = async (attackerId: string, damage: number) => {
     try {
       await channel.send({
         type: "broadcast",
         event: "attack",
-        payload: { attackerId, damage, isUlt },
+        payload: { attackerId, damage },
       })
     } catch {
       // Ignore broadcast errors

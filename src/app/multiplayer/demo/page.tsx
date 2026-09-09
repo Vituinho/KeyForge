@@ -11,7 +11,6 @@ import {
   RotateCcw,
   Trophy,
   AlertTriangle,
-  Sparkles,
   Heart,
   Activity,
 } from "lucide-react"
@@ -24,7 +23,6 @@ import { generateMatchWords } from "@/lib/multiplayer/wordGenerator"
 import {
   DEFAULT_MULTIPLAYER_CONFIG,
   calculateWordDamage,
-  calculateNextUltimate,
 } from "@/lib/multiplayer/matchConfig"
 import { useCosmetics } from "@/hooks/useCosmetics"
 
@@ -63,7 +61,6 @@ function ArenaContent() {
   const [p1Hp, setP1Hp] = useState(DEFAULT_MULTIPLAYER_CONFIG.initialHealth)
   const [p1Combo, setP1Combo] = useState(0)
   const [p1MaxCombo, setP1MaxCombo] = useState(0)
-  const [p1Ultimate, setP1Ultimate] = useState(0)
   const [p1DamageDealt, setP1DamageDealt] = useState(0)
   const [p1CorrectChars, setP1CorrectChars] = useState(0)
   const [p1TotalChars, setP1TotalChars] = useState(0)
@@ -73,7 +70,6 @@ function ArenaContent() {
   const [p2WordIndex, setP2WordIndex] = useState(0)
   const [p2Hp, setP2Hp] = useState(DEFAULT_MULTIPLAYER_CONFIG.initialHealth)
   const [p2Combo, setP2Combo] = useState(0)
-  const [p2Ultimate, setP2Ultimate] = useState(0)
 
   // Floating Damage Indicators
   const [p1LastHit, setP1LastHit] = useState<{ amount: number; id: number } | null>(null)
@@ -153,8 +149,6 @@ function ArenaContent() {
         setP1LastHit({ amount: dmg, id: Date.now() })
         return nextCombo
       })
-
-      setP2Ultimate((curr) => calculateNextUltimate(curr))
     }, 1700)
 
     return () => clearInterval(rivalInterval)
@@ -194,9 +188,6 @@ function ArenaContent() {
         setP1DamageDealt((d) => d + dmg)
         setP2LastHit({ amount: dmg, id: Date.now() })
 
-        const nextUlt = calculateNextUltimate(p1Ultimate)
-        setP1Ultimate(nextUlt)
-
         // Deal damage to rival
         setP2Hp((curr) => {
           const next = Math.max(0, curr - dmg)
@@ -229,22 +220,6 @@ function ArenaContent() {
     }
   }
 
-  // Trigger Ultimate Skill Blast
-  const triggerUltimateJutsu = () => {
-    if (phase !== "BATTLE" || p1Ultimate < 100) return
-    const ultDamage = 180
-    setP1Ultimate(0)
-    setP1DamageDealt((d) => d + ultDamage)
-    setP2LastHit({ amount: ultDamage, id: Date.now() })
-    setP2Hp((curr) => {
-      const next = Math.max(0, curr - ultDamage)
-      if (next <= 0) {
-        finishMatch("VICTORY")
-      }
-      return next
-    })
-  }
-
   // Reset Match for Rematch
   const handleRematch = () => {
     setPhase("COUNTDOWN")
@@ -256,9 +231,7 @@ function ArenaContent() {
     setTypedInput("")
     setP1Combo(0)
     setP1MaxCombo(0)
-    setP1Ultimate(0)
     setP2Combo(0)
-    setP2Ultimate(0)
     setP1DamageDealt(0)
     setP1CorrectChars(0)
     setP1TotalChars(0)
@@ -388,39 +361,7 @@ function ArenaContent() {
               </div>
             </div>
 
-            {/* Ultimate Gauge Bar */}
-            <div className="space-y-1.5 mt-3">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-amber-400/90 flex items-center gap-1.5 font-bold">
-                  <Sparkles size={13} className="text-amber-400" />
-                  {t("multiplayerArena.ultimate")}
-                </span>
-                <span className="font-bold text-amber-400">{p1Ultimate}%</span>
-              </div>
-              <div className="h-2 rounded-full bg-neutral-900 border border-white/10 overflow-hidden p-0.5">
-                <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 shadow-[0_0_10px_rgba(245,158,11,0.6)]"
-                  initial={false}
-                  animate={{ width: `${p1Ultimate}%` }}
-                  transition={{ duration: 0.2 }}
-                />
-              </div>
-            </div>
 
-            {/* Ultimate Activation Trigger */}
-            {p1Ultimate >= 100 && phase === "BATTLE" && (
-              <motion.button
-                type="button"
-                onClick={triggerUltimateJutsu}
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                className="w-full mt-3 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-400 to-orange-500 text-black font-black text-xs uppercase tracking-widest shadow-[0_0_25px_rgba(245,158,11,0.6)] cursor-pointer"
-              >
-                {t("multiplayerArena.rasenganBurst", { dmg: 180 })}
-              </motion.button>
-            )}
 
             {/* Damage Indicator Floating */}
             <AnimatePresence>
@@ -496,24 +437,7 @@ function ArenaContent() {
               </div>
             </div>
 
-            {/* Ultimate Gauge Bar */}
-            <div className="space-y-1.5 mt-3">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-purple-400 flex items-center gap-1.5 font-bold">
-                  <Sparkles size={13} className="text-purple-400" />
-                  {t("multiplayerArena.ultimate")}
-                </span>
-                <span className="font-bold text-purple-400">{p2Ultimate}%</span>
-              </div>
-              <div className="h-2 rounded-full bg-neutral-900 border border-white/10 overflow-hidden p-0.5">
-                <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-purple-500 to-indigo-500"
-                  initial={false}
-                  animate={{ width: `${p2Ultimate}%` }}
-                  transition={{ duration: 0.2 }}
-                />
-              </div>
-            </div>
+
 
             {/* Rival Typing Progress Indicator */}
             <div className="mt-3 text-xs font-mono text-white/40 flex items-center justify-between">

@@ -25,7 +25,6 @@ import { MultiplayerMatchRow, MultiplayerMatchResultRow } from "@/types/database
 import {
   getMatchWords,
   submitWordCompletion,
-  triggerUltimate,
   forfeitMatch,
   claimDisconnectForfeit,
   subscribeToMatchBattle,
@@ -85,7 +84,6 @@ export function MultiplayerArena({
   const [perfectWords, setPerfectWords] = useState(0)
   const [lastWordPerfect, setLastWordPerfect] = useState(false)
   const [comboBreak, setComboBreak] = useState(false)
-  const [ultimateActiveFlash, setUltimateActiveFlash] = useState(false)
   const [screenShake, setScreenShake] = useState(false)
   const [activeAttackBeam, setActiveAttackBeam] = useState<"p1_to_p2" | "p2_to_p1" | null>(null)
   const wordHadMistakeRef = useRef(false)
@@ -104,14 +102,12 @@ export function MultiplayerArena({
   const [reconnectedNotice, setReconnectedNotice] = useState(false)
   const [matchResult, setMatchResult] = useState<MultiplayerMatchResultRow | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  const isTriggeringUltRef = useRef(false)
   const isForfeitingRef = useRef(false)
 
   // Health and energy variables
   const p1Hp = currentMatch.player_1_hp
   const p2Hp = currentMatch.player_2_hp
   const myHp = isP1 ? p1Hp : p2Hp
-  const myUlt = isP1 ? currentMatch.player_1_ultimate_energy : currentMatch.player_2_ultimate_energy
 
   // Opponent Live Telemetry
   const oppWordIndex = isP1 ? currentMatch.player_2_word_index : currentMatch.player_1_word_index
@@ -218,7 +214,6 @@ export function MultiplayerArena({
           const safeAccuracy = Math.max(0, Math.min(100, telemetry.accuracy))
           const safeCombo = Math.max(0, Math.min(safeWordIndex + 1, telemetry.combo))
           const safeAttackEnergy = Math.max(0, Math.min(100, telemetry.attackEnergy))
-          const safeUltEnergy = Math.max(0, Math.min(100, telemetry.ultimateEnergy))
           const safeHp = Math.max(0, Math.min(1000, telemetry.hp))
 
           setCurrentMatch((prev) => {
@@ -235,8 +230,6 @@ export function MultiplayerArena({
               player_2_combo: !isOppP1 ? safeCombo : prev.player_2_combo,
               player_1_attack_energy: isOppP1 ? safeAttackEnergy : prev.player_1_attack_energy,
               player_2_attack_energy: !isOppP1 ? safeAttackEnergy : prev.player_2_attack_energy,
-              player_1_ultimate_energy: isOppP1 ? safeUltEnergy : prev.player_1_ultimate_energy,
-              player_2_ultimate_energy: !isOppP1 ? safeUltEnergy : prev.player_2_ultimate_energy,
               player_1_hp: isOppP1 ? safeHp : prev.player_1_hp,
               player_2_hp: !isOppP1 ? safeHp : prev.player_2_hp,
             }
@@ -247,8 +240,8 @@ export function MultiplayerArena({
             triggerDamageFloat(
               event.damage,
               isP1 ? "p1" : "p2",
-              event.isUlt,
-              event.isUlt ? t("multiplayerArena.opponentUltimate") : t("multiplayerArena.opponentStrike")
+              false,
+              t("multiplayerArena.opponentStrike")
             )
             setActiveAttackBeam(isP1 ? "p2_to_p1" : "p1_to_p2")
             setTimeout(() => setActiveAttackBeam(null), 600)
@@ -334,26 +327,6 @@ export function MultiplayerArena({
 
         const wordText = words[currentOppWordIdx]
         const oppCombo = (isP1 ? prev.player_2_combo : prev.player_1_combo) + 1
-        const oppUlt = isP1 ? prev.player_2_ultimate_energy : prev.player_1_ultimate_energy
-
-        if (oppUlt >= 100) {
-          triggerUltimate({
-            matchId: prev.id,
-            playerId: shadowId,
-          })
-            .then((updated) => {
-              if (!isCancelled) {
-                triggerDamageFloat(160, isP1 ? "p1" : "p2", true, t("multiplayerArena.shadowUltimate"))
-                setActiveAttackBeam(isP1 ? "p2_to_p1" : "p1_to_p2")
-                setTimeout(() => setActiveAttackBeam(null), 800)
-                setScreenShake(true)
-                setTimeout(() => setScreenShake(false), 400)
-                setCurrentMatch(updated)
-              }
-            })
-            .catch(() => {})
-          return prev
-        }
 
         const eventId = `shadow_evt_${Date.now()}_${currentOppWordIdx}`
         submitWordCompletion({
@@ -558,7 +531,6 @@ export function MultiplayerArena({
           accuracy: liveAccuracy,
           combo: newCombo,
           attackEnergy: isP1 ? updated.player_1_attack_energy : updated.player_2_attack_energy,
-          ultimateEnergy: isP1 ? updated.player_1_ultimate_energy : updated.player_2_ultimate_energy,
           hp: isP1 ? updated.player_1_hp : updated.player_2_hp,
         })
 
@@ -572,61 +544,6 @@ export function MultiplayerArena({
       }
     }
   }
-
-  // Handle Ultimate Activation
-  const handleTriggerUltimate = useCallback(async () => {
-    if (isTriggeringUltRef.current || myUlt < 100 || currentMatch.status !== "playing") return
-    isTriggeringUltRef.current = true
-
-    setUltimateActiveFlash(true)
-    setTimeout(() => setUltimateActiveFlash(false), 1200)
-
-    try {
-      const updated = await triggerUltimate({
-        matchId: currentMatch.id,
-        playerId: currentUserId,
-      })
-
-      triggerDamageFloat(160, isP1 ? "p2" : "p1", true, t("multiplayerArena.shinobiUltimate"))
-      setActiveAttackBeam(isP1 ? "p1_to_p2" : "p2_to_p1")
-      setTimeout(() => setActiveAttackBeam(null), 800)
-      broadcastRef.current?.broadcastAttack(currentUserId, 160, true)
-      broadcastRef.current?.broadcastTelemetry({
-        playerId: currentUserId,
-        wordIndex: myWordIndex,
-        wpm: liveWpm,
-        accuracy: liveAccuracy,
-        combo: localCombo,
-        attackEnergy: isP1 ? updated.player_1_attack_energy : updated.player_2_attack_energy,
-        ultimateEnergy: 0,
-        hp: isP1 ? updated.player_1_hp : updated.player_2_hp,
-      })
-
-      if (updated.status === "finished") {
-        broadcastRef.current?.broadcastMatchFinished(updated.winner_id, updated.is_draw)
-      }
-
-      setCurrentMatch(updated)
-    } catch (err) {
-      console.warn("[Arena] Ultimate failed:", err)
-    } finally {
-      setTimeout(() => {
-        isTriggeringUltRef.current = false
-      }, 1500)
-    }
-  }, [myUlt, currentMatch.status, currentMatch.id, currentUserId, isP1, triggerDamageFloat, myWordIndex, liveWpm, liveAccuracy, localCombo, t])
-
-  // Keyboard shortcut: Tab triggers ultimate
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Tab" && myUlt >= 100 && currentMatch.status === "playing") {
-        e.preventDefault()
-        handleTriggerUltimate()
-      }
-    }
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [myUlt, currentMatch.status, handleTriggerUltimate])
 
   // Handle Forfeit
   const handleForfeit = async () => {
@@ -665,8 +582,6 @@ export function MultiplayerArena({
         className={`absolute top-0 left-1/4 w-[650px] h-[400px] transition-all duration-700 blur-[150px] pointer-events-none ${
           isMyHpCritical
             ? "bg-red-600/35 animate-pulse"
-            : myUlt >= 100
-            ? "bg-purple-600/35 animate-pulse"
             : localCombo >= 10
             ? "bg-amber-500/30 animate-pulse"
             : "bg-orange-600/10"
@@ -750,25 +665,12 @@ export function MultiplayerArena({
                 />
               </div>
 
-              {/* P1 Attack Energy & Ultimate Bar */}
-              <div className="grid grid-cols-2 gap-2 pt-1 text-[10px] font-mono">
+              {/* P1 Attack Energy Bar */}
+              <div className="pt-1 text-[10px] font-mono">
                 <AttackEnergyGauge
                   energy={currentMatch.player_1_attack_energy}
                   isPlayer1={true}
                 />
-
-                <div>
-                  <div className="flex justify-between text-white/60 mb-0.5">
-                    <span>{t("multiplayerArena.ultimate")}</span>
-                    <span className="text-purple-400 font-bold">{currentMatch.player_1_ultimate_energy}%</span>
-                  </div>
-                  <div className="w-full h-2.5 bg-neutral-900 rounded-full overflow-hidden border border-white/10 p-[1px]">
-                    <div
-                      className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-200"
-                      style={{ width: `${currentMatch.player_1_ultimate_energy}%` }}
-                    />
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -841,25 +743,12 @@ export function MultiplayerArena({
                 />
               </div>
 
-              {/* P2 Attack Energy & Ultimate Bar */}
-              <div className="grid grid-cols-2 gap-2 pt-1 text-[10px] font-mono">
+              {/* P2 Attack Energy Bar */}
+              <div className="pt-1 text-[10px] font-mono">
                 <AttackEnergyGauge
                   energy={currentMatch.player_2_attack_energy}
                   isPlayer1={false}
                 />
-
-                <div>
-                  <div className="flex justify-between text-white/60 mb-0.5">
-                    <span>{t("multiplayerArena.ultimate")}</span>
-                    <span className="text-pink-400 font-bold">{currentMatch.player_2_ultimate_energy}%</span>
-                  </div>
-                  <div className="w-full h-2.5 bg-neutral-900 rounded-full overflow-hidden border border-white/10 p-[1px]">
-                    <div
-                      className="h-full bg-gradient-to-r from-pink-500 to-purple-500 rounded-full transition-all duration-200"
-                      style={{ width: `${currentMatch.player_2_ultimate_energy}%` }}
-                    />
-                  </div>
-                </div>
               </div>
 
             </div>
@@ -1041,31 +930,12 @@ export function MultiplayerArena({
         </div>
 
         {/* Combat Action Controls */}
-        <div className="flex items-center justify-between w-full max-w-xl gap-4">
-          {/* Ultimate Trigger Button */}
-          <button
-            type="button"
-            disabled={myUlt < 100 || isFinished}
-            onClick={handleTriggerUltimate}
-            className={`flex-1 py-3 px-4 rounded-2xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer ${
-              myUlt >= 100
-                ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-[0_0_25px_rgba(168,85,247,0.6)] animate-pulse"
-                : "bg-white/5 border border-white/10 text-white/30 cursor-not-allowed"
-            }`}
-          >
-            <Sparkles size={16} />
-            <span>
-              {myUlt >= 100
-                ? t("multiplayerArena.ultimateReady")
-                : t("multiplayerArena.ultimateCharging", { pct: myUlt })}
-            </span>
-          </button>
-
+        <div className="flex items-center justify-end w-full max-w-xl">
           {/* Forfeit Safeguard */}
           <button
             type="button"
             onClick={() => setShowForfeitConfirm(true)}
-            className="py-3 px-4 rounded-2xl bg-white/5 hover:bg-rose-500/20 hover:text-rose-300 border border-white/10 text-xs font-mono font-bold text-white/60 transition-colors flex items-center gap-1.5 cursor-pointer"
+            className="py-2.5 px-4 rounded-2xl bg-white/5 hover:bg-rose-500/20 hover:text-rose-300 border border-white/10 text-xs font-mono font-bold text-white/60 transition-colors flex items-center gap-1.5 cursor-pointer"
             title={t("multiplayerArena.forfeitActionBtn")}
           >
             <Flag size={14} />
@@ -1224,44 +1094,7 @@ export function MultiplayerArena({
         )}
       </AnimatePresence>
 
-      {/* ANIME ULTIMATE CUT-IN OVERLAY */}
-      <AnimatePresence>
-        {ultimateActiveFlash && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-purple-950/75 backdrop-blur-sm" />
 
-            <motion.div
-              initial={{ x: "-100%", skewX: -12 }}
-              animate={{ x: "0%", skewX: -12 }}
-              exit={{ x: "100%", skewX: -12 }}
-              transition={{ type: "spring", stiffness: 260, damping: 22 }}
-              className="relative w-full py-10 bg-gradient-to-r from-purple-950 via-pink-600 to-amber-500 border-y-4 border-yellow-400 shadow-[0_0_60px_rgba(234,179,8,0.8)] text-center"
-            >
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.1, duration: 0.25 }}
-                className="space-y-1"
-              >
-                <span className="text-xs sm:text-sm font-mono font-black uppercase tracking-widest text-yellow-300 drop-shadow-[0_0_12px_rgba(253,224,71,1)]">
-                  奥義 • {t("multiplayerArena.forgeUltimateJutsu")}
-                </span>
-                <h1 className="text-4xl sm:text-6xl font-black font-mono tracking-wider text-white drop-shadow-[0_0_30px_rgba(0,0,0,0.9)]">
-                  {t("multiplayerArena.chakraOverdriveBurst")}
-                </h1>
-                <span className="text-xs font-mono text-white/90 font-bold uppercase tracking-widest">
-                  {t("multiplayerArena.devastatingDamageImpact")}
-                </span>
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* POST-MATCH AUTHORITATIVE RESOLUTION OVERLAY */}
       <AnimatePresence>

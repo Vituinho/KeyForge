@@ -7,7 +7,7 @@
  * 2. Deterministic Word Synchronization
  * 3. Realtime Word Submissions & Anti-Cheat Validation
  * 4. Attack Energy Gauge & Combo-Scaled Damage Resolution
- * 5. Ultimate Jutsu Execution (100% threshold -> 160 dmg)
+ * 5. Pure Typing-Based Combat Execution
  * 6. Authoritative Knockout & Winner Resolution
  * 7. Post-Match Progression, Anti-Farm Checks & Rewards
  */
@@ -17,7 +17,6 @@ import {
   joinMatch,
   setPlayerReady,
   submitWordCompletion,
-  triggerUltimate,
 } from "../src/lib/multiplayer/matchService"
 import { getWordsForMatch } from "../src/lib/multiplayer/wordGenerator"
 import { processMultiplayerRewards } from "../src/lib/multiplayer/processMultiplayerRewards"
@@ -30,7 +29,6 @@ interface SimPlayer {
   wpm: number
   accuracy: number
   attackCount: number
-  ultimateFired: boolean
 }
 
 function renderBar(current: number, max: number, length = 20, fillChar = "█", emptyChar = "░"): string {
@@ -59,7 +57,6 @@ async function runBattleSimulation(mode: "quick" | "private" = "quick") {
     wpm: 92,
     accuracy: 98,
     attackCount: 0,
-    ultimateFired: false,
   }
 
   const player2: SimPlayer = {
@@ -69,7 +66,6 @@ async function runBattleSimulation(mode: "quick" | "private" = "quick") {
     wpm: 76,
     accuracy: 94,
     attackCount: 0,
-    ultimateFired: false,
   }
 
   console.log(`[LOBBY] P1: ${player1.name} (Skin: ${player1.skinId} | Target: ${player1.wpm} WPM)`)
@@ -163,17 +159,6 @@ async function runBattleSimulation(mode: "quick" | "private" = "quick") {
         console.log(`💥 [ROUND ${round}] ${player1.name} STRIKES! Dealt ${dmg} DMG (Combo: ${p1Combo}x)`)
       }
 
-      // Check ultimate activation for P1
-      if (match.player_1_ultimate_energy >= 100 && !player1.ultimateFired && match.player_2_hp > 160) {
-        console.log(`🌟 [ULTIMATE READY] ${player1.name} unleashes SECRET JUTSU!`)
-        match = await triggerUltimate({
-          matchId: match.id,
-          playerId: player1.id,
-        })
-        player1.ultimateFired = true
-        console.log(`🔥 [ULTIMATE HIT] 160 Direct Damage! P2 HP reduced to ${match.player_2_hp}`)
-      }
-
       p1WordIdx++
     }
 
@@ -205,8 +190,8 @@ async function runBattleSimulation(mode: "quick" | "private" = "quick") {
     // Display HUD Status every 4 rounds
     if (round % 4 === 0 || match.status === "finished") {
       console.log(`\n  --- Battle HUD (Turn ${round}) ---`)
-      console.log(`  P1 HP: ${renderBar(match.player_1_hp, 1000)} | Energy: ${match.player_1_attack_energy}% | Ult: ${match.player_1_ultimate_energy}%`)
-      console.log(`  P2 HP: ${renderBar(match.player_2_hp, 1000)} | Energy: ${match.player_2_attack_energy}% | Ult: ${match.player_2_ultimate_energy}%`)
+      console.log(`  P1 HP: ${renderBar(match.player_1_hp, 1000)} | Energy: ${match.player_1_attack_energy}%`)
+      console.log(`  P2 HP: ${renderBar(match.player_2_hp, 1000)} | Energy: ${match.player_2_attack_energy}%`)
       console.log("  ---------------------------------")
     }
 
@@ -230,7 +215,7 @@ async function runBattleSimulation(mode: "quick" | "private" = "quick") {
   console.log(`💀 DEFEATED: ${loser.name}`)
   console.log(`Final P1 HP: ${match.player_1_hp} | Final P2 HP: ${match.player_2_hp}`)
   console.log(`P1 Completed Words: ${match.player_1_word_index} | P2 Completed Words: ${match.player_2_word_index}`)
-  console.log(`P1 Attacks: ${player1.attackCount} | P1 Ult: ${player1.ultimateFired ? "Yes" : "No"}`)
+  console.log(`P1 Attacks: ${player1.attackCount}`)
 
   // --- 7. PROGRESSION & REWARDS VERIFICATION ---
   console.log("\n[PROGRESSION] Processing authoritative rewards...")
