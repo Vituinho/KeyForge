@@ -44,7 +44,7 @@ export function KeyboardFrame({
 
   return (
     <div
-      className={`relative p-3 sm:p-4 rounded-3xl border ${frameBorder} ${frameBg} transition-all duration-300 max-w-full overflow-x-auto ${
+      className={`relative p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border ${frameBorder} ${frameBg} transition-all duration-300 max-w-full overflow-x-auto touch-pan-x ${
         hasPulse ? "animate-pulse" : ""
       } ${className}`}
       style={{
