@@ -11,6 +11,11 @@ import { TrainingResult } from "./TrainingResult"
 import { Dumbbell, ArrowRight } from "lucide-react"
 import { TypingKeyboard } from "@/components/keyboard/TypingKeyboard"
 import { useI18n } from "@/lib/i18n/i18nContext"
+import {
+  getFingerForKey,
+  FINGER_PALETTE,
+  KeyboardLayoutId,
+} from "@/lib/keyboard/fingerMap"
 
 interface WeakKeyTrainingProps {
   targetKeys: string[]
@@ -106,9 +111,14 @@ export function WeakKeyTraining({
     )
   }
 
+  const normalizedLayout: KeyboardLayoutId = locale === "en" ? "ANSI" : "ABNT2"
+  const activeFingerInfo = getFingerForKey(expectedKey, normalizedLayout)
+  const lang = locale === "en" ? "en" : "pt-BR"
+  const activeFingerConfig = activeFingerInfo ? FINGER_PALETTE[activeFingerInfo.finger] : null
+
   return (
     <div className="w-full max-w-3xl mx-auto px-4 py-8 space-y-6">
-      {/* Target keys pill bar */}
+      {/* Target keys pill bar with designated finger guidance */}
       <div className="flex items-center justify-between flex-wrap gap-3 p-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400 flex items-center justify-center">
@@ -116,15 +126,32 @@ export function WeakKeyTraining({
           </div>
           <div>
             <h2 className="text-sm font-bold text-white">{t("training.weakKeys.targetedKeys")}</h2>
-            <div className="flex gap-1.5 mt-0.5">
-              {targetKeys.map((k) => (
-                <span
-                  key={k}
-                  className="px-2 py-0.5 rounded bg-orange-500/20 text-orange-400 font-mono font-bold text-xs uppercase border border-orange-500/30"
-                >
-                  {k}
-                </span>
-              ))}
+            <div className="flex gap-2 mt-1.5 flex-wrap">
+              {targetKeys.map((k) => {
+                const fInfo = getFingerForKey(k, normalizedLayout)
+                const fConfig = fInfo ? FINGER_PALETTE[fInfo.finger] : null
+                return (
+                  <span
+                    key={k}
+                    className="px-2.5 py-1 rounded-xl text-white font-mono font-bold text-xs uppercase flex items-center gap-1.5 border backdrop-blur-sm shadow-sm"
+                    style={{
+                      backgroundColor: "rgba(255, 255, 255, 0.05)",
+                      borderColor: fConfig ? `${fConfig.hex}60` : "rgba(249, 115, 22, 0.3)",
+                    }}
+                  >
+                    <span
+                      className="w-2 h-2 rounded-full"
+                      style={{ backgroundColor: fConfig?.hex ?? "#f97316" }}
+                    />
+                    <span className="text-white font-black">{k}</span>
+                    {fConfig && (
+                      <span className="text-[10px] text-white/50 font-sans font-medium hidden sm:inline">
+                        · {fConfig.name[lang]}
+                      </span>
+                    )}
+                  </span>
+                )
+              })}
             </div>
           </div>
         </div>
@@ -174,14 +201,53 @@ export function WeakKeyTraining({
         )}
       </div>
 
-      {/* Weak Keys Training Visual Keyboard */}
+      {/* Active Finger Guidance HUD */}
+      {activeFingerInfo && activeFingerConfig && (
+        <div className="flex items-center justify-between px-4 py-2.5 rounded-2xl bg-neutral-900/90 border border-white/10 text-xs font-mono shadow-md max-w-lg mx-auto">
+          <div className="flex items-center gap-2.5">
+            <span
+              className="w-3 h-3 rounded-full animate-pulse shrink-0"
+              style={{
+                backgroundColor: activeFingerConfig.hex,
+                boxShadow: `0 0 10px ${activeFingerConfig.hex}`,
+              }}
+            />
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="font-bold text-white">
+                {activeFingerInfo.hand === "left"
+                  ? t("keyboard.handLeft")
+                  : t("keyboard.handRight")}
+                :
+              </span>
+              <span
+                className="font-black"
+                style={{ color: activeFingerConfig.hex }}
+              >
+                {activeFingerConfig.name[lang]}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-white/50">
+            <span className="text-[11px] hidden sm:inline">{t("training.weakKeys.drill")}:</span>
+            <span className="px-2 py-0.5 rounded-lg bg-white/15 text-white font-black text-sm border border-white/20">
+              {activeFingerInfo.display ?? expectedKey?.toUpperCase()}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Weak Keys Training Visual Keyboard with full fingerColors and handGuide */}
       <div className="flex justify-center pt-2">
         <TypingKeyboard
           expectedKey={expectedKey}
           pressedKey={pressedKey}
           lastErrorKey={lastErrorKey}
           weakKeys={targetKeys}
-          layout={locale === "en" ? "en" : "pt-BR"}
+          layout={normalizedLayout}
+          highlightFinger={true}
+          fingerColors="full"
+          showHandsGuide={true}
+          handGuideMode="full"
           size="sm"
           className="scale-90 sm:scale-95"
         />

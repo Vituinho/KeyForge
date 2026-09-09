@@ -8,6 +8,11 @@ import Link from "next/link"
 import { processTrainingRewards, ActivityRewardSummary } from "@/lib/progression/processActivityRewards"
 import { RankUpModal } from "@/components/progression/RankUpModal"
 import { useI18n } from "@/lib/i18n/i18nContext"
+import {
+  getFingerForKey,
+  FINGER_PALETTE,
+  KeyboardLayoutId,
+} from "@/lib/keyboard/fingerMap"
 
 interface TrainingResultProps {
   stats: TypingStats
@@ -22,7 +27,9 @@ export function TrainingResult({
   baselineAccuracies = {},
   onRetry,
 }: TrainingResultProps) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
+  const normalizedLayout: KeyboardLayoutId = locale === "en" ? "ANSI" : "ABNT2"
+  const lang = locale === "en" ? "en" : "pt-BR"
   const [rewardSummary] = useState<ActivityRewardSummary>(() =>
     processTrainingRewards(stats, targetKeys)
   )
@@ -148,6 +155,9 @@ export function TrainingResult({
             const hasPrior = typeof priorAcc === "number" && Number.isFinite(priorAcc)
             const diff = hasPrior ? trainingAcc - priorAcc : null
 
+            const fInfo = getFingerForKey(key, normalizedLayout)
+            const fConfig = fInfo ? FINGER_PALETTE[fInfo.finger] : null
+
             return (
               <div
                 key={key}
@@ -158,11 +168,31 @@ export function TrainingResult({
                     {key}
                   </span>
                   <div>
-                    <p className="text-xs text-white/50">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-sm font-bold text-white">
+                        {t("training.result.trainingLabel")}: <span className="text-green-400">{trainingAcc}%</span>
+                      </p>
+                      {fConfig && (
+                        <span
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold border"
+                          style={{
+                            backgroundColor: `${fConfig.hex}18`,
+                            borderColor: `${fConfig.hex}40`,
+                            color: fConfig.hex,
+                          }}
+                        >
+                          <span
+                            className="w-1.5 h-1.5 rounded-full"
+                            style={{ backgroundColor: fConfig.hex }}
+                          />
+                          <span>
+                            {fInfo?.hand === "left" ? t("keyboard.handLeft") : t("keyboard.handRight")}: {fConfig.name[lang]}
+                          </span>
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-white/50 mt-0.5">
                       {t("training.result.attemptsErrors", { attempts, errors })}
-                    </p>
-                    <p className="text-sm font-bold text-white">
-                      {t("training.result.trainingLabel")}: <span className="text-green-400">{trainingAcc}%</span>
                     </p>
                   </div>
                 </div>
@@ -198,6 +228,48 @@ export function TrainingResult({
                     </span>
                   </div>
                 )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Touch Typing Finger Association & Form Guidance */}
+      <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-5 space-y-3">
+        <h2 className="text-xs font-bold tracking-widest text-white/40 uppercase flex items-center gap-1.5">
+          <Sparkles size={14} className="text-amber-400" />
+          {t("training.result.fingerAssociation")}
+        </h2>
+        <p className="text-xs text-white/60">
+          {t("training.weakKeys.instruction1")}
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+          {targetKeys.map((k) => {
+            const fInfo = getFingerForKey(k, normalizedLayout)
+            const fConfig = fInfo ? FINGER_PALETTE[fInfo.finger] : null
+            if (!fConfig) return null
+            return (
+              <div
+                key={`assoc-${k}`}
+                className="flex items-center justify-between p-2.5 rounded-xl bg-black/30 border border-white/5 text-xs font-mono"
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="w-7 h-7 rounded-lg bg-white/10 border border-white/15 text-white font-black flex items-center justify-center text-sm uppercase">
+                    {k}
+                  </span>
+                  <div className="flex flex-col">
+                    <span className="font-bold" style={{ color: fConfig.hex }}>
+                      {fConfig.name[lang]}
+                    </span>
+                    <span className="text-[10px] text-white/40">
+                      {fInfo?.hand === "left" ? t("keyboard.handLeft") : t("keyboard.handRight")}
+                    </span>
+                  </div>
+                </div>
+                <span
+                  className="w-2.5 h-2.5 rounded-full shadow-sm"
+                  style={{ backgroundColor: fConfig.hex, boxShadow: `0 0 8px ${fConfig.hex}` }}
+                />
               </div>
             )
           })}
