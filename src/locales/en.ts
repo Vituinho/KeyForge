@@ -1183,6 +1183,7 @@ export const en = {
     handsGuide: "Touch Typing Hand Guide",
     homeRowRest: "Home Row Resting Position",
     homeRowDesc: "ASDF for left hand, JKLÇ for right hand",
+    fingerLegendAria: "Touch typing finger color legend",
   },
   settings: {
     fingerColors: "Finger Colors",

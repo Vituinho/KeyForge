@@ -8,6 +8,8 @@ import { useI18n } from "@/lib/i18n/i18nContext"
 import { KeyboardFrame } from "./KeyboardFrame"
 import { KeyboardKey } from "./KeyboardKey"
 import { KeyboardHands } from "./KeyboardHands"
+import { FingerLegend } from "./FingerLegend"
+import type { Finger as TouchFinger } from "@/lib/keyboard/fingerMap"
 
 function getFingerLabel(finger: string, t: (key: string) => string) {
   switch (finger) {
@@ -170,24 +172,32 @@ export function TypingKeyboard({
         </div>
       )}
 
-      {/* Optional Finger Legend for Academy */}
-      {showFingerLegend && (settings?.showFingerName ?? true) && expectedMeta && (
-        <div className="mt-3 flex items-center justify-center gap-3 text-xs text-white/60 bg-white/5 px-4 py-1.5 rounded-full border border-white/10 font-mono">
-          <span className="font-bold text-white">
-            {expectedMeta.hand === "left" ? t("keyboard.handLeft") : t("keyboard.handRight")}:
-          </span>
-          <span
-            className="font-black"
-            style={{
-              color: FINGER_COLORS[expectedMeta.finger]?.hex ?? "#a78bfa",
-            }}
-          >
-            {getFingerLabel(expectedMeta.finger, t)}
-          </span>
-          <span className="text-white/30">→</span>
-          <span className="font-mono font-black text-white px-2 py-0.5 rounded bg-white/15">
-            {expectedMeta.display ?? expectedMeta.key.toUpperCase()}
-          </span>
+      {/* Optional Finger Legend */}
+      {showFingerLegend && (settings?.showFingerName ?? true) && (
+        <div className="mt-3 pt-2 border-t border-white/10 w-full flex flex-col items-center gap-2">
+          {expectedMeta && (
+            <div className="flex items-center justify-center gap-2 text-xs text-white/70 font-mono">
+              <span className="font-bold text-white">
+                {expectedMeta.hand === "left" ? t("keyboard.handLeft") : t("keyboard.handRight")}:
+              </span>
+              <span
+                className="font-black"
+                style={{
+                  color: FINGER_COLORS[expectedMeta.finger]?.hex ?? "#a78bfa",
+                }}
+              >
+                {getFingerLabel(expectedMeta.finger, t)}
+              </span>
+              <span className="text-white/30">→</span>
+              <span className="font-mono font-black text-white px-2 py-0.5 rounded bg-white/15 border border-white/15">
+                {expectedMeta.display ?? expectedMeta.key.toUpperCase()}
+              </span>
+            </div>
+          )}
+          <FingerLegend
+            activeFinger={expectedMeta?.finger as TouchFinger}
+            compact={size === "sm"}
+          />
         </div>
       )}
     </KeyboardFrame>
