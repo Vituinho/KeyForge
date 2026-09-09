@@ -16,12 +16,11 @@ export type MatchStatus =
 
 export type MatchMode = "quick" | "private" | "ranked"
 
-export type AttackType = "basic" | "combo_bonus" | "jutsu" | "ultimate"
+export type AttackType = "basic" | "combo_bonus" | "jutsu"
 
 export type MatchEventType =
   | "WORD_COMPLETED"
   | "ATTACK_RESOLVED"
-  | "ULTIMATE_TRIGGERED"
   | "TYPO_PENALTY"
   | "PLAYER_DISCONNECTED"
   | "PLAYER_RECONNECTED"

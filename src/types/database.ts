@@ -117,7 +117,9 @@ export interface MultiplayerMatchRow {
   player_2_combo: number
   player_1_attack_energy: number
   player_2_attack_energy: number
+  /** @deprecated Ultimate system removed in v3.2 — field kept for DB backward compat only */
   player_1_ultimate_energy: number
+  /** @deprecated Ultimate system removed in v3.2 — field kept for DB backward compat only */
   player_2_ultimate_energy: number
   player_1_wpm: number
   player_2_wpm: number
@@ -144,7 +146,6 @@ export interface MultiplayerMatchEventRow {
   event_type:
     | "WORD_COMPLETED"
     | "ATTACK_RESOLVED"
-    | "ULTIMATE_TRIGGERED"
     | "TYPO_PENALTY"
     | "PLAYER_DISCONNECTED"
     | "PLAYER_RECONNECTED"
