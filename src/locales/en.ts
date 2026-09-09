@@ -1184,6 +1184,22 @@ export const en = {
     homeRowRest: "Home Row Resting Position",
     homeRowDesc: "ASDF for left hand, JKLÇ for right hand",
   },
+  settings: {
+    fingerColors: "Finger Colors",
+    handGuide: "Hand Guide",
+    showFingerName: "Show Finger Name",
+    keyboardLayout: "Keyboard Layout",
+    full: "Full",
+    subtle: "Subtle",
+    off: "Off",
+    auto: "Auto (Matches Language)",
+    abnt2: "ABNT2 (Brazilian Portuguese)",
+    ansi: "ANSI (US English)",
+    fingerColorsDesc: "Color code keys according to designated touch-typing fingers",
+    handGuideDesc: "Display animated resting hands and finger guidance",
+    keyboardLayoutDesc: "Choose physical keyboard layout standard",
+    showFingerNameDesc: "Show active finger name badge when typing",
+  },
 }
 
 export type TranslationSchema = typeof en

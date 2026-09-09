@@ -147,6 +147,10 @@ export function loadKeyboardAccessibilitySettings(): KeyboardAccessibilitySettin
       effectIntensity: parsed.effectIntensity ?? DEFAULT_KEYBOARD_ACCESSIBILITY.effectIntensity,
       showHandsGuide: parsed.showHandsGuide ?? DEFAULT_KEYBOARD_ACCESSIBILITY.showHandsGuide,
       showHomeRowAnchors: parsed.showHomeRowAnchors ?? DEFAULT_KEYBOARD_ACCESSIBILITY.showHomeRowAnchors,
+      fingerColors: parsed.fingerColors ?? DEFAULT_KEYBOARD_ACCESSIBILITY.fingerColors,
+      handGuide: parsed.handGuide ?? DEFAULT_KEYBOARD_ACCESSIBILITY.handGuide,
+      keyboardLayout: parsed.keyboardLayout ?? DEFAULT_KEYBOARD_ACCESSIBILITY.keyboardLayout,
+      showFingerName: parsed.showFingerName ?? DEFAULT_KEYBOARD_ACCESSIBILITY.showFingerName,
     }
   } catch {
     return DEFAULT_KEYBOARD_ACCESSIBILITY

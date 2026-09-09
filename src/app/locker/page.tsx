@@ -26,6 +26,9 @@ import {
   SkinCollection,
   KeyboardSkin,
   EffectIntensity,
+  FingerColorsSetting,
+  HandGuideSetting,
+  KeyboardLayoutPreference,
 } from "@/types/cosmetics"
 
 const ALL_RARITIES: SkinRarity[] = [
@@ -632,6 +635,121 @@ export default function KeyboardLockerPage() {
                   <div
                     className={`w-5 h-5 rounded-full bg-white transition-transform ${
                       settings.showHomeRowAnchors ? "translate-x-6" : "translate-x-0"
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* Physical Keyboard Layout Preference */}
+              <div className="space-y-2">
+                <div>
+                  <span className="font-bold text-sm text-white block">
+                    {t("settings.keyboardLayout")}
+                  </span>
+                  <span className="text-xs text-white/40">
+                    {t("settings.keyboardLayoutDesc")}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {(["auto", "ABNT2", "ANSI"] as KeyboardLayoutPreference[]).map((layout) => (
+                    <button
+                      key={layout}
+                      type="button"
+                      onClick={() => updateSettings({ keyboardLayout: layout })}
+                      className={`py-2 px-2.5 rounded-xl border text-xs font-mono font-bold transition-all ${
+                        settings.keyboardLayout === layout
+                          ? "bg-orange-500 text-black border-orange-500"
+                          : "bg-white/5 text-white/60 border-white/10 hover:text-white"
+                      }`}
+                    >
+                      {layout === "auto"
+                        ? t("settings.auto")
+                        : layout === "ABNT2"
+                        ? "ABNT2"
+                        : "ANSI"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Finger Colors Mode */}
+              <div className="space-y-2">
+                <div>
+                  <span className="font-bold text-sm text-white block">
+                    {t("settings.fingerColors")}
+                  </span>
+                  <span className="text-xs text-white/40">
+                    {t("settings.fingerColorsDesc")}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {(["full", "subtle", "off"] as FingerColorsSetting[]).map((mode) => (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => updateSettings({ fingerColors: mode })}
+                      className={`py-2 px-3 rounded-xl border text-xs font-mono font-bold capitalize transition-all ${
+                        settings.fingerColors === mode
+                          ? "bg-orange-500 text-black border-orange-500"
+                          : "bg-white/5 text-white/60 border-white/10 hover:text-white"
+                      }`}
+                    >
+                      {t(`settings.${mode}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Touch Typing Hand Guide */}
+              <div className="space-y-2">
+                <div>
+                  <span className="font-bold text-sm text-white block">
+                    {t("settings.handGuide")}
+                  </span>
+                  <span className="text-xs text-white/40">
+                    {t("settings.handGuideDesc")}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {(["full", "subtle", "off"] as HandGuideSetting[]).map((guide) => (
+                    <button
+                      key={guide}
+                      type="button"
+                      onClick={() => updateSettings({ handGuide: guide })}
+                      className={`py-2 px-3 rounded-xl border text-xs font-mono font-bold capitalize transition-all ${
+                        settings.handGuide === guide
+                          ? "bg-orange-500 text-black border-orange-500"
+                          : "bg-white/5 text-white/60 border-white/10 hover:text-white"
+                      }`}
+                    >
+                      {t(`settings.${guide}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Show Finger Name Toggle */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="font-bold text-sm text-white block">
+                    {t("settings.showFingerName")}
+                  </span>
+                  <span className="text-xs text-white/40">
+                    {t("settings.showFingerNameDesc")}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    updateSettings({ showFingerName: !settings.showFingerName })
+                  }
+                  className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
+                    settings.showFingerName ? "bg-orange-500" : "bg-white/20"
+                  }`}
+                >
+                  <div
+                    className={`w-5 h-5 rounded-full bg-white transition-transform ${
+                      settings.showFingerName ? "translate-x-6" : "translate-x-0"
                     }`}
                   />
                 </button>
