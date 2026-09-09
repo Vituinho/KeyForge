@@ -549,6 +549,10 @@ function ArenaContent() {
               pressedKey={lastPressedKey}
               lastErrorKey={lastErrorKey}
               layout={locale === "en" ? "en" : "pt-BR"}
+              highlightFinger={true}
+              fingerColors="subtle"
+              showHandsGuide={false}
+              handGuideMode="off"
               className="shadow-2xl"
             />
           </div>
