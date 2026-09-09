@@ -1185,6 +1185,7 @@ export const ptBR: TranslationSchema = {
     handsGuide: "Guia de Mãos Touch-Typing",
     homeRowRest: "Posição de Descanso (Home Row)",
     homeRowDesc: "ASDF para mão esquerda, JKLÇ para mão direita",
+    fingerLegendAria: "Legenda de cores dos dedos de digitação",
   },
   settings: {
     fingerColors: "Cores dos Dedos",
