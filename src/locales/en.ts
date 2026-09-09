@@ -254,6 +254,9 @@ export const en = {
       acc: "ACC",
       combo: "COMBO",
       errors: "ERRORS",
+      touchGuideOn: "Touch Guide: ON",
+      touchGuideOff: "Touch Guide: OFF",
+      touchGuideToggle: "Toggle Touch Typing Guide",
     },
     typingArea: {
       clickToFocus: "Click here and start typing…",

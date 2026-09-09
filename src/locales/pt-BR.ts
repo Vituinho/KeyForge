@@ -256,6 +256,9 @@ export const ptBR: TranslationSchema = {
       acc: "PREC",
       combo: "COMBO",
       errors: "ERROS",
+      touchGuideOn: "Guia Touch: LIGADO",
+      touchGuideOff: "Guia Touch: DESLIGADO",
+      touchGuideToggle: "Alternar Guia Touch-Typing",
     },
     typingArea: {
       clickToFocus: "Clique aqui e comece a digitar…",
