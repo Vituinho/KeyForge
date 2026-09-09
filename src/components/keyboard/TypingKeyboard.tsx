@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useMemo } from "react"
+import React, { useMemo, useCallback } from "react"
 import { LAYOUT_PT_BR, LAYOUT_EN, getKeyMetadata, FINGER_COLORS } from "@/data/keyboardLayout"
 import { TypingKeyboardProps, KeyVisualState } from "@/types/keyboard"
 import { useCosmetics } from "@/hooks/useCosmetics"
@@ -36,12 +36,12 @@ function getFingerLabel(finger: string, t: (key: string) => string) {
   }
 }
 
-export function TypingKeyboard({
+export const TypingKeyboard = React.memo(function TypingKeyboard({
   expectedKey = null,
   pressedKey = null,
   lastErrorKey = null,
-  weakKeys = [],
   layout: propLayout,
+  weakKeys = [],
   highlightFinger = false,
   fingerColors: propFingerColors,
   showHandsGuide: propShowHandsGuide,
@@ -60,6 +60,14 @@ export function TypingKeyboard({
     propShowHandsGuide ?? (settings?.handGuide !== "off" && (settings?.showHandsGuide ?? false))
   const fingerColors = propFingerColors ?? settings?.fingerColors ?? "off"
   const handGuideMode = propHandGuideMode ?? settings?.handGuide ?? "full"
+
+  const handleToggleHide = useCallback(() => {
+    updateSettings({ showKeyboard: false })
+  }, [updateSettings])
+
+  const handleToggleShow = useCallback(() => {
+    updateSettings({ showKeyboard: true })
+  }, [updateSettings])
 
   // Decoupled layout preference: prop > settings > locale default
   const resolvedLayout =
@@ -83,6 +91,8 @@ export function TypingKeyboard({
   const isAnsi = resolvedLayout === "en" || resolvedLayout === "ANSI"
   const activeRows = isAnsi ? LAYOUT_EN : LAYOUT_PT_BR
   const expectedMeta = normalizedExpected ? getKeyMetadata(normalizedExpected) : null
+  const expectedFinger = expectedMeta?.finger ?? null
+  const expectedHand = expectedMeta?.hand ?? null
 
   const layoutLabel = isAnsi ? "EN · ANSI" : "PT-BR · ABNT2"
 
@@ -91,7 +101,7 @@ export function TypingKeyboard({
       <div className="flex justify-center py-1">
         <button
           type="button"
-          onClick={() => updateSettings({ showKeyboard: true })}
+          onClick={handleToggleShow}
           className="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-mono font-bold text-white/50 hover:text-white transition-colors flex items-center gap-2 shadow-sm"
           title={t("keyboard.showKeyboard")}
         >
@@ -108,7 +118,7 @@ export function TypingKeyboard({
       className={className}
       skinVisual={skinVisual}
       effectIntensity={settings?.effectIntensity ?? "full"}
-      onToggleHide={() => updateSettings({ showKeyboard: false })}
+      onToggleHide={handleToggleHide}
     >
       {activeRows.map((row, rowIdx) => (
         <div key={rowIdx} className="flex gap-1 sm:gap-1.5 justify-center w-full">
@@ -136,9 +146,8 @@ export function TypingKeyboard({
 
             const isFingerActive = Boolean(
               highlightFinger &&
-                expectedMeta &&
-                expectedMeta.finger === meta.finger &&
-                expectedMeta.hand === meta.hand
+                expectedFinger === meta.finger &&
+                expectedHand === meta.hand
             )
 
             return (
@@ -202,4 +211,4 @@ export function TypingKeyboard({
       )}
     </KeyboardFrame>
   )
-}
+})

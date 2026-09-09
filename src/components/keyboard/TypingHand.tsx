@@ -22,6 +22,31 @@ const SIZE_MAP = {
   lg: { width: 160, height: 160 },
 }
 
+// Static finger definitions hoisted to module-level to avoid GC allocations on keystroke re-renders
+const LEFT_FINGERS = [
+  { finger: "leftPinky" as Finger, homeKey: "A", x: 12, y: 32, width: 14, height: 46, angle: 0, isHomeRow: false },
+  { finger: "leftRing" as Finger, homeKey: "S", x: 32, y: 16, width: 14, height: 60, angle: 0, isHomeRow: false },
+  { finger: "leftMiddle" as Finger, homeKey: "D", x: 52, y: 10, width: 14, height: 66, angle: 0, isHomeRow: false },
+  { finger: "leftIndex" as Finger, homeKey: "F", x: 72, y: 18, width: 14, height: 58, angle: 0, isHomeRow: true },
+  { finger: "thumb" as Finger, homeKey: "␣", x: 96, y: 48, width: 15, height: 40, angle: 28, isHomeRow: false },
+]
+
+const RIGHT_FINGERS_ANSI = [
+  { finger: "thumb" as Finger, homeKey: "␣", x: 29, y: 48, width: 15, height: 40, angle: -28, isHomeRow: false },
+  { finger: "rightIndex" as Finger, homeKey: "J", x: 54, y: 18, width: 14, height: 58, angle: 0, isHomeRow: true },
+  { finger: "rightMiddle" as Finger, homeKey: "K", x: 74, y: 10, width: 14, height: 66, angle: 0, isHomeRow: false },
+  { finger: "rightRing" as Finger, homeKey: "L", x: 94, y: 16, width: 14, height: 60, angle: 0, isHomeRow: false },
+  { finger: "rightPinky" as Finger, homeKey: ";", x: 114, y: 32, width: 14, height: 46, angle: 0, isHomeRow: false },
+]
+
+const RIGHT_FINGERS_ABNT2 = [
+  { finger: "thumb" as Finger, homeKey: "␣", x: 29, y: 48, width: 15, height: 40, angle: -28, isHomeRow: false },
+  { finger: "rightIndex" as Finger, homeKey: "J", x: 54, y: 18, width: 14, height: 58, angle: 0, isHomeRow: true },
+  { finger: "rightMiddle" as Finger, homeKey: "K", x: 74, y: 10, width: 14, height: 66, angle: 0, isHomeRow: false },
+  { finger: "rightRing" as Finger, homeKey: "L", x: 94, y: 16, width: 14, height: 60, angle: 0, isHomeRow: false },
+  { finger: "rightPinky" as Finger, homeKey: "Ç", x: 114, y: 32, width: 14, height: 46, angle: 0, isHomeRow: false },
+]
+
 export const TypingHand = React.memo(function TypingHand({
   hand,
   activeFinger = null,
@@ -38,25 +63,11 @@ export const TypingHand = React.memo(function TypingHand({
   const isLeft = hand === "left"
   const handTitle = isLeft ? t("keyboard.handLeft") : t("keyboard.handRight")
 
-  // Left hand finger definitions
-  const leftFingers = [
-    { finger: "leftPinky" as Finger, homeKey: "A", x: 12, y: 32, width: 14, height: 46, angle: 0 },
-    { finger: "leftRing" as Finger, homeKey: "S", x: 32, y: 16, width: 14, height: 60, angle: 0 },
-    { finger: "leftMiddle" as Finger, homeKey: "D", x: 52, y: 10, width: 14, height: 66, angle: 0 },
-    { finger: "leftIndex" as Finger, homeKey: "F", x: 72, y: 18, width: 14, height: 58, angle: 0, isHomeRow: true },
-    { finger: "thumb" as Finger, homeKey: "␣", x: 96, y: 48, width: 15, height: 40, angle: 28 },
-  ]
-
-  // Right hand finger definitions
-  const rightFingers = [
-    { finger: "thumb" as Finger, homeKey: "␣", x: 29, y: 48, width: 15, height: 40, angle: -28 },
-    { finger: "rightIndex" as Finger, homeKey: "J", x: 54, y: 18, width: 14, height: 58, angle: 0, isHomeRow: true },
-    { finger: "rightMiddle" as Finger, homeKey: "K", x: 74, y: 10, width: 14, height: 66, angle: 0 },
-    { finger: "rightRing" as Finger, homeKey: "L", x: 94, y: 16, width: 14, height: 60, angle: 0 },
-    { finger: "rightPinky" as Finger, homeKey: isAnsi ? ";" : "Ç", x: 114, y: 32, width: 14, height: 46, angle: 0 },
-  ]
-
-  const fingers = isLeft ? leftFingers : rightFingers
+  const fingers = isLeft
+    ? LEFT_FINGERS
+    : isAnsi
+    ? RIGHT_FINGERS_ANSI
+    : RIGHT_FINGERS_ABNT2
 
   return (
     <div className={`flex flex-col items-center ${className}`}>
