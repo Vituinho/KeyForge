@@ -1005,6 +1005,10 @@ export function MultiplayerArena({
             pressedKey={lastPressedKey}
             lastErrorKey={lastErrorKey}
             layout={currentMatch.language === "en" ? "en" : "pt-BR"}
+            highlightFinger={true}
+            fingerColors="subtle"
+            showHandsGuide={false}
+            handGuideMode="off"
             size="sm"
             skinVisual={activeKeyboardSkin.visual}
           />
