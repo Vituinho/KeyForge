@@ -30,6 +30,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
   const [enemyUnderAttack, setEnemyUnderAttack] = useState(false)
   const [playerUnderAttack, setPlayerUnderAttack] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const [showTouchGuide, setShowTouchGuide] = useState(true)
 
   // Track latest typing stats snapshot from engine
   const latestStatsRef = useRef<TypingStats | null>(null)
@@ -311,18 +312,39 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
             </motion.div>
           </AnimatePresence>
 
-          {/* Gameplay Visual Keyboard below TypingArea */}
+          {/* Gameplay Visual Keyboard & Touch Typing Guide below TypingArea */}
           {phase === "fighting" && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex justify-center pt-2"
+              className="flex flex-col items-center pt-2 gap-2"
             >
+              {/* Touch Guide Toggle Button */}
+              <div className="flex items-center justify-end w-full max-w-xl px-2">
+                <button
+                  type="button"
+                  onClick={() => setShowTouchGuide((prev) => !prev)}
+                  title={t("battle.hud.touchGuideToggle")}
+                  className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-full border transition-all flex items-center gap-1.5 ${
+                    showTouchGuide
+                      ? "bg-white/10 text-white/80 border-white/20 hover:bg-white/15"
+                      : "bg-white/5 text-white/40 border-white/5 hover:text-white/60"
+                  }`}
+                >
+                  <span className={showTouchGuide ? "text-emerald-400" : "text-white/30"}>✋</span>
+                  <span>{showTouchGuide ? t("battle.hud.touchGuideOn") : t("battle.hud.touchGuideOff")}</span>
+                </button>
+              </div>
+
               <TypingKeyboard
                 expectedKey={expectedKey}
                 pressedKey={pressedKey}
                 lastErrorKey={lastErrorKey}
                 layout={locale === "en" ? "en" : "pt-BR"}
+                highlightFinger={showTouchGuide}
+                fingerColors={showTouchGuide ? "subtle" : "off"}
+                showHandsGuide={showTouchGuide}
+                handGuideMode="subtle"
                 size="sm"
                 className="scale-90 sm:scale-95"
               />
