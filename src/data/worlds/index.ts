@@ -9,6 +9,7 @@ import { PlayerProfile } from "@/types/player"
 import { NARUTO_WORLD } from "./naruto"
 import { JUJUTSU_WORLD } from "./jujutsu"
 import { DRAGON_WORLD } from "./dragon"
+import { PIRATE_WORLD } from "./pirate"
 
 // Ordered progression list of all 7 Anime Worlds
 export const ANIME_WORLD_ORDER: AnimeWorldId[] = [
@@ -26,45 +27,7 @@ export const WORLD_REGISTRY: Record<AnimeWorldId, AnimeWorld> = {
   naruto: NARUTO_WORLD,
   jujutsu: JUJUTSU_WORLD,
   dragon: DRAGON_WORLD,
-  pirate: {
-    id: "pirate",
-    order: 4,
-    nameKey: "animeWorld.worlds.pirate.name",
-    series: "One Piece",
-    descriptionKey: "animeWorld.worlds.pirate.desc",
-    taglineKey: "animeWorld.worlds.pirate.tagline",
-    theme: {
-      primaryColor: "#3b82f6",
-      secondaryColor: "#2563eb",
-      accentColor: "#fbbf24",
-      glowColor: "rgba(59, 130, 246, 0.4)",
-      bgGradient: "from-blue-950/40 via-neutral-950/80 to-black",
-      cardGradient: "from-blue-500/20 via-neutral-900/90 to-neutral-950",
-      badgeClass: "bg-blue-500/10 text-blue-400 border-blue-500/30",
-      borderClass: "border-blue-500/30 hover:border-blue-500/60",
-    },
-    focus: "consistency",
-    focusKey: "animeWorld.focus.consistency",
-    baseDifficulty: 6,
-    unlockRequirement: {
-      previousWorldId: "dragon",
-      requiredStagesCleared: 8,
-      descriptionKey: "animeWorld.unlock.defeatDragonBoss",
-    },
-    stages: [],
-    completionReward: {
-      xp: 1250,
-      title: "SEA CONQUEROR",
-      crateId: "crate_mecha_epic",
-      badgeKey: "animeWorld.badges.pirateChampion",
-    },
-    masteryReward: {
-      xp: 2500,
-      title: "PIRATE KING",
-      crateId: "crate_divine_celestial",
-      badgeKey: "animeWorld.badges.pirateMaster",
-    },
-  },
+  pirate: PIRATE_WORLD,
   hunter: {
     id: "hunter",
     order: 5,

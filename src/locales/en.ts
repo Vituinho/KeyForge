@@ -784,6 +784,38 @@ export const en = {
         name: "Ultra Instinct Transcendence",
         desc: "Supreme WPM crucible. Below 85 WPM suffers -70% damage reduction. 95+ WPM deals +40%, and 105+ WPM unlocks +60% godlike damage.",
       },
+      usopp: {
+        name: "Sniper's Steady Breath",
+        desc: "Consistency check. Maintaining steady WPM (within 12 WPM) grants +20% damage. Erratic swings suffer -25%.",
+      },
+      sanji: {
+        name: "Black Leg Cadence",
+        desc: "Rhythm stability. Keeping pace within 10 WPM grants +25% bonus damage. Inconsistent cadence deals -30%.",
+      },
+      zoro: {
+        name: "Three-Sword Combo Focus",
+        desc: "Combo mastery. 10x (+25%), 20x (+50%), 30x (+80%). Breaking combo triggers a 6 HP counter-strike.",
+      },
+      law: {
+        name: "Room Spatial Consistency",
+        desc: "Surgical consistency. Variance under 8 WPM grants +30% damage. Erratics suffer -35%.",
+      },
+      doflamingo: {
+        name: "Parasite String Flow",
+        desc: "Endurance trial. Keeping pace within 7 WPM grants +35% damage. Drastic swings suffer -40%.",
+      },
+      katakuri: {
+        name: "Future Sight Cadence",
+        desc: "Anticipation flow. Fluctuating by more than 6 WPM incurs -45% damage. Flawless consistency yields +40% bonus.",
+      },
+      kaido: {
+        name: "Thunder Bagua Endurance",
+        desc: "Colossal stamina check. Variance under 6 WPM grants +45% damage. Fatigue swings suffer -50%.",
+      },
+      luffy: {
+        name: "Sun God Nika Rhythm of Liberation",
+        desc: "The Drums of Liberation demand metronomic stamina over long prose. Variance within 5 WPM yields +50% bonus. Erratic bursts suffer -60%.",
+      },
     },
     worlds: {
       naruto: {

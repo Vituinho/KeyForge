@@ -1103,6 +1103,369 @@ export const CHARACTERS: Enemy[] = [
       },
     ],
   },
+
+  // -------------------------------------------------------------
+  // PIRATE WORLD — Consistency, Long Texts & Stamina Endurance
+  // -------------------------------------------------------------
+  // 25. Usopp — Sniper's Steady Breath (Baseline Rhythmic Consistency)
+  {
+    id: "usopp",
+    name: "Usopp",
+    anime: "One Piece",
+    world: "pirate",
+    stage: 1,
+    level: 25,
+    type: "normal",
+    typingFocus: "consistency",
+    maxHp: 750,
+    attack: 10,
+    attackInterval: 4800,
+    recommendedWpm: 48,
+    recommendedAccuracy: 92,
+    difficulty: 40,
+    xpReward: 80,
+    firstClearBonusXp: 160,
+    isBoss: false,
+    themeColor: "#f59e0b",
+    accentColor: "#d97706",
+    description:
+      "Sniper King of the Straw Hat Pirates. Demands patient, steady rhythmic breathing across extended sentences.",
+    abilities: [
+      {
+        id: "firebird-star",
+        name: "Firebird Star",
+        description: "Launches a flaming projectile requiring steady, unhurried cadence.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "consistency",
+        id: "usopp-steady-breath",
+        name: "Sniper's Steady Breath",
+        description: "Keeping WPM within 12 of your match average grants +20% damage. Erratic swings suffer -25%.",
+        maxWpmVariance: 12,
+        maxAccVariance: 5,
+        bonusMultiplier: 1.2,
+        penaltyMultiplier: 0.75,
+      },
+    ],
+  },
+
+  // 26. Sanji — Black Leg Cadence (Culinary Rhythm Stability)
+  {
+    id: "sanji",
+    name: "Sanji",
+    anime: "One Piece",
+    world: "pirate",
+    stage: 2,
+    level: 28,
+    type: "normal",
+    typingFocus: "consistency",
+    maxHp: 900,
+    attack: 12,
+    attackInterval: 4500,
+    recommendedWpm: 56,
+    recommendedAccuracy: 93,
+    difficulty: 50,
+    xpReward: 100,
+    firstClearBonusXp: 200,
+    isBoss: false,
+    themeColor: "#3b82f6",
+    accentColor: "#f97316",
+    description:
+      "Cook of the Straw Hats and master of Black Leg style. Demands consistent, rhythmic kicks without frantic tempo swings.",
+    abilities: [
+      {
+        id: "diable-jambe",
+        name: "Diable Jambe",
+        description: "Friction-ignited kicks reward flawless, continuous rhythmic pacing.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "consistency",
+        id: "sanji-leg-cadence",
+        name: "Black Leg Cadence",
+        description: "Keeping pace within 10 WPM of your battle average grants +25% bonus. Inconsistent swings deal -30%.",
+        maxWpmVariance: 10,
+        maxAccVariance: 4,
+        bonusMultiplier: 1.25,
+        penaltyMultiplier: 0.7,
+      },
+    ],
+  },
+
+  // 27. Roronoa Zoro — King of Hell (Combo Endurance & Focus)
+  {
+    id: "zoro",
+    name: "Roronoa Zoro",
+    anime: "One Piece",
+    world: "pirate",
+    stage: 3,
+    level: 31,
+    type: "elite",
+    typingFocus: "consistency",
+    maxHp: 1150,
+    attack: 14,
+    attackInterval: 4200,
+    recommendedWpm: 64,
+    recommendedAccuracy: 93,
+    difficulty: 60,
+    xpReward: 130,
+    firstClearBonusXp: 250,
+    isBoss: false,
+    themeColor: "#10b981",
+    accentColor: "#047857",
+    description:
+      "Master swordsman of the Three-Sword Style. Protects an unbroken combo string through grueling, high-stamina trials.",
+    abilities: [
+      {
+        id: "ashura-nine-blades",
+        name: "Demon Aura: Ashura",
+        description: "Manifests nine spirit blades requiring unwavering combo discipline.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "combo-scaling",
+        id: "zoro-three-sword-combo",
+        name: "Three-Sword Combo Focus",
+        description: "Combo x10 (+25%), x20 (+50%), x30 (+80%). Errors trigger a 6 HP counter-strike.",
+        tiers: [
+          { minCombo: 30, multiplier: 1.8, label: "KING OF HELL STRIKE" },
+          { minCombo: 20, multiplier: 1.5, label: "ASHURA FLOW" },
+          { minCombo: 10, multiplier: 1.25, label: "THREE-SWORD SYNC" },
+        ],
+        breakComboCounterAttack: 6,
+      },
+    ],
+  },
+
+  // 28. Trafalgar Law — Surgeon of Death (Spatial Cadence Precision)
+  {
+    id: "law",
+    name: "Trafalgar Law",
+    anime: "One Piece",
+    world: "pirate",
+    stage: 4,
+    level: 34,
+    type: "elite",
+    typingFocus: "consistency",
+    maxHp: 1400,
+    attack: 17,
+    attackInterval: 3900,
+    recommendedWpm: 70,
+    recommendedAccuracy: 94,
+    difficulty: 70,
+    xpReward: 160,
+    firstClearBonusXp: 300,
+    isBoss: false,
+    themeColor: "#eab308",
+    accentColor: "#0f172a",
+    description:
+      "Captain of the Heart Pirates. The Room creates an isolated operational theater requiring steady, methodical cadence.",
+    abilities: [
+      {
+        id: "room-shambles",
+        name: "Room: Shambles",
+        description: "Rearranges the spatial battlefield, demanding disciplined composure.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "consistency",
+        id: "law-room-consistency",
+        name: "Room Spatial Consistency",
+        description: "Maintaining cadence within 8 WPM grants +30% damage. Erratic swings suffer -35%.",
+        maxWpmVariance: 8,
+        maxAccVariance: 3,
+        bonusMultiplier: 1.3,
+        penaltyMultiplier: 0.65,
+      },
+    ],
+  },
+
+  // 29. Donquixote Doflamingo — Heavenly Yaksha (Long-Text Puppet Flow)
+  {
+    id: "doflamingo",
+    name: "Donquixote Doflamingo",
+    anime: "One Piece",
+    world: "pirate",
+    stage: 5,
+    level: 37,
+    type: "elite",
+    typingFocus: "consistency",
+    maxHp: 1680,
+    attack: 20,
+    attackInterval: 3600,
+    recommendedWpm: 76,
+    recommendedAccuracy: 94,
+    difficulty: 80,
+    xpReward: 200,
+    firstClearBonusXp: 370,
+    isBoss: false,
+    themeColor: "#ec4899",
+    accentColor: "#be185d",
+    description:
+      "Ruler of Dressrosa. Weaves Birdcage strings into long-form sentences that test typing stamina and unbroken concentration.",
+    abilities: [
+      {
+        id: "birdcage",
+        name: "Birdcage Awakening",
+        description: "Constricts the arena with razor-sharp strings as the battle progresses.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "consistency",
+        id: "doflamingo-string-flow",
+        name: "Parasite String Flow",
+        description: "Keeping pace within 7 WPM grants +35% damage. Drastic swings suffer -40%.",
+        maxWpmVariance: 7,
+        maxAccVariance: 3,
+        bonusMultiplier: 1.35,
+        penaltyMultiplier: 0.6,
+      },
+    ],
+  },
+
+  // 30. Charlotte Katakuri — Sweet Commander (Future Sight Rhythm)
+  {
+    id: "katakuri",
+    name: "Charlotte Katakuri",
+    anime: "One Piece",
+    world: "pirate",
+    stage: 6,
+    level: 40,
+    type: "elite",
+    typingFocus: "consistency",
+    maxHp: 1950,
+    attack: 23,
+    attackInterval: 3400,
+    recommendedWpm: 82,
+    recommendedAccuracy: 95,
+    difficulty: 88,
+    xpReward: 240,
+    firstClearBonusXp: 440,
+    isBoss: false,
+    themeColor: "#9333ea",
+    accentColor: "#581c87",
+    description:
+      "Supreme Commander of the Big Mom Pirates. Advanced Observation Haki reads your keystrokes ahead of time.",
+    abilities: [
+      {
+        id: "future-sight",
+        name: "Advanced Observation: Future Sight",
+        description: "Anticipates each word before it appears, punishing hesitation immediately.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "consistency",
+        id: "katakuri-future-sight",
+        name: "Future Sight Cadence",
+        description: "Fluctuating by more than 6 WPM incurs -45% damage. Flawless consistency yields +40% bonus.",
+        maxWpmVariance: 6,
+        maxAccVariance: 2,
+        bonusMultiplier: 1.4,
+        penaltyMultiplier: 0.55,
+      },
+    ],
+  },
+
+  // 31. Kaido — King of the Beasts (Titan Endurance Trial)
+  {
+    id: "kaido",
+    name: "Kaido",
+    anime: "One Piece",
+    world: "pirate",
+    stage: 7,
+    level: 44,
+    type: "boss",
+    typingFocus: "consistency",
+    maxHp: 2350,
+    attack: 26,
+    attackInterval: 3200,
+    recommendedWpm: 88,
+    recommendedAccuracy: 95,
+    difficulty: 94,
+    xpReward: 290,
+    firstClearBonusXp: 550,
+    isBoss: true,
+    themeColor: "#475569",
+    accentColor: "#0284c7",
+    description:
+      "Emperor of the Sea and the world's strongest creature. Demands relentless multi-round stamina to wear down his draconic scale defense.",
+    abilities: [
+      {
+        id: "thunder-bagua",
+        name: "Thunder Bagua",
+        description: "Strikes with devastating imperial haki, testing your defensive typing stamina.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "consistency",
+        id: "kaido-titan-endurance",
+        name: "Thunder Bagua Endurance",
+        description: "Variance under 6 WPM grants +45% damage. Fatigue swings suffer -50%.",
+        maxWpmVariance: 6,
+        maxAccVariance: 2,
+        bonusMultiplier: 1.45,
+        penaltyMultiplier: 0.5,
+      },
+    ],
+  },
+
+  // 32. Monkey D. Luffy — Gear 5 Sun God Nika (The Liberation Endurance Crucible)
+  {
+    id: "luffy",
+    name: "Monkey D. Luffy",
+    anime: "One Piece",
+    world: "pirate",
+    stage: 8,
+    level: 48,
+    type: "boss",
+    typingFocus: "consistency",
+    maxHp: 2750,
+    attack: 29,
+    attackInterval: 2900,
+    recommendedWpm: 94,
+    recommendedAccuracy: 95,
+    difficulty: 100,
+    xpReward: 380,
+    firstClearBonusXp: 750,
+    isBoss: true,
+    themeColor: "#38bdf8",
+    accentColor: "#fbbf24",
+    description:
+      "Sun God Nika Awakening (Gear 5). The Drums of Liberation demand joy, stamina, and metronomic rhythm across long-form prose.",
+    abilities: [
+      {
+        id: "drums-of-liberation",
+        name: "Drums of Liberation",
+        description: "Rhythmic heartbeat pulses across the battlefield, demanding metronomic consistency.",
+      },
+      {
+        id: "bajrang-gun",
+        name: "Gomu Gomu no Bajrang Gun",
+        description: "An island-sized fist descending from the heavens that tests final combat endurance.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "consistency",
+        id: "luffy-gear5-rhythm",
+        name: "Sun God Nika Rhythm of Liberation",
+        description:
+          "Variance within 5 WPM yields +50% bonus damage. Erratic bursts suffer -60% penalty.",
+        maxWpmVariance: 5,
+        maxAccVariance: 2,
+        bonusMultiplier: 1.5,
+        penaltyMultiplier: 0.4,
+      },
+    ],
+  },
 ]
 
 export function getCharacterById(id: string): Enemy | undefined {

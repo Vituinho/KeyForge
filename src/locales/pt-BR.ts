@@ -786,6 +786,38 @@ export const ptBR: TranslationSchema = {
         name: "Transcendência do Instinto Superior",
         desc: "Crisol supremo de WPM. Abaixo de 85 WPM sofre -70% de redução de dano. 95+ WPM causa +40%, e 105+ WPM desbloqueia +60% de dano divino.",
       },
+      usopp: {
+        name: "Respiração Firme do Atirador",
+        desc: "Checagem de consistência. Manter WPM estável (variação de até 12 WPM) concede +20% de dano. Oscilações sofrem -25%.",
+      },
+      sanji: {
+        name: "Cadência do Perna Negra",
+        desc: "Estabilidade de ritmo. Manter o ritmo dentro de 10 WPM concede +25% de dano. Ritmo inconstante causa -30%.",
+      },
+      zoro: {
+        name: "Foco de Combo Três Espadas",
+        desc: "Maestria em combo. 10x (+25%), 20x (+50%), 30x (+80%). Quebrar o combo ativa contra-ataque de 6 HP.",
+      },
+      law: {
+        name: "Consistência Espacial da Room",
+        desc: "Consistência cirúrgica. Variação abaixo de 8 WPM concede +30% de dano. Oscilações sofrem -35%.",
+      },
+      doflamingo: {
+        name: "Fluxo dos Fios Parasitas",
+        desc: "Prova de resistência. Manter o ritmo dentro de 7 WPM concede +35% de dano. Grandes oscilações sofrem -40%.",
+      },
+      katakuri: {
+        name: "Cadência da Visão do Futuro",
+        desc: "Fluxo de antecipação. Oscilar mais de 6 WPM causa -45% de dano. Consistência impecável concede +40% de bônus.",
+      },
+      kaido: {
+        name: "Resistência do Trovão Bagua",
+        desc: "Teste colossal de estamina. Variação abaixo de 6 WPM concede +45% de dano. Oscilações por fadiga sofrem -50%.",
+      },
+      luffy: {
+        name: "Ritmo da Libertação do Deus do Sol",
+        desc: "Os Tambores da Libertação exigem estamina metronômica em textos longos. Variação de até 5 WPM rende +50% de bônus. Disparos desgovernados sofrem -60%.",
+      },
     },
     worlds: {
       naruto: {
