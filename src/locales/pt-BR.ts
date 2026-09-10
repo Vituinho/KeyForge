@@ -754,6 +754,38 @@ export const ptBR: TranslationSchema = {
         name: "Infinito Ilimitado",
         desc: "A barreira do Infinito absorve todos os golpes abaixo de 98% de precisão (-90% de penalidade). Precisão impecável de 98%+ supera o Infinito para +45% de bônus.",
       },
+      krillin: {
+        name: "Corrida da Escola Tartaruga",
+        desc: "Checagem de velocidade. Abaixo de 35 WPM sofre redução de 30% no dano. 45+ WPM concede +15% de bônus.",
+      },
+      piccolo: {
+        name: "Foco do Makankosappo",
+        desc: "Checagem de explosão. Abaixo de 45 WPM causa -35% de dano. 55+ WPM causa +20% de bônus.",
+      },
+      vegeta: {
+        name: "Velocidade do Orgulho Saiyajin",
+        desc: "Limiar de velocidade. Abaixo de 55 WPM causa -40% de dano. 70+ WPM causa +30% de bônus.",
+      },
+      frieza: {
+        name: "Investida do Raio da Morte",
+        desc: "Escalonamento de velocidade. Abaixo de 60 WPM sofre -45% de dano. 78+ WPM concede +35% de bônus.",
+      },
+      cell: {
+        name: "Forma da Velocidade Perfeita",
+        desc: "Teste extremo de cadência. Abaixo de 68 WPM causa -50% de dano. 85+ WPM concede +40% de bônus.",
+      },
+      gohan: {
+        name: "Ímpeto do Super Saiyajin 2",
+        desc: "Checagem de velocidade explosiva. Abaixo de 72 WPM causa -55% de dano. 92+ WPM libera +45% de bônus.",
+      },
+      broly: {
+        name: "Fúria Berserker Lendária",
+        desc: "Alta velocidade sustentada. Abaixo de 78 WPM causa -60% de dano. 98+ WPM causa +50% de bônus.",
+      },
+      goku: {
+        name: "Transcendência do Instinto Superior",
+        desc: "Crisol supremo de WPM. Abaixo de 85 WPM sofre -70% de redução de dano. 95+ WPM causa +40%, e 105+ WPM desbloqueia +60% de dano divino.",
+      },
     },
     worlds: {
       naruto: {

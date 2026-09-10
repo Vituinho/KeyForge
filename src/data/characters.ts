@@ -732,6 +732,377 @@ export const CHARACTERS: Enemy[] = [
       },
     ],
   },
+
+  // -------------------------------------------------------------
+  // DRAGON WORLD — Velocity, Speed Bursts & High-WPM Scaling
+  // -------------------------------------------------------------
+  // 17. Krillin — Turtle School Sprint (Base Speed Warmup)
+  {
+    id: "krillin",
+    name: "Krillin",
+    anime: "Dragon Ball Z",
+    world: "dragon",
+    stage: 1,
+    level: 18,
+    type: "normal",
+    typingFocus: "speed",
+    maxHp: 700,
+    attack: 9,
+    attackInterval: 4800,
+    recommendedWpm: 45,
+    recommendedAccuracy: 90,
+    difficulty: 35,
+    xpReward: 70,
+    firstClearBonusXp: 140,
+    isBoss: false,
+    themeColor: "#f97316",
+    accentColor: "#ea580c",
+    description:
+      "Loyal martial artist of the Turtle School. Tests baseline sprint speed with Destructo Disc acceleration.",
+    abilities: [
+      {
+        id: "destructo-disc",
+        name: "Destructo Disc",
+        description: "Spins razor-sharp ki blades, demanding swift keystrokes.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "speed-check",
+        id: "krillin-turtle-sprint",
+        name: "Turtle School Sprint",
+        description: "Below 35 WPM deals -30% damage. 45+ WPM deals +15% bonus damage.",
+        slowThreshold: 35,
+        slowMultiplier: 0.7,
+        thresholds: [{ minWpm: 45, multiplier: 1.15, label: "TURTLE VELOCITY" }],
+      },
+    ],
+  },
+
+  // 18. Piccolo — Special Beam Cannon (Concentrated Speed Burst)
+  {
+    id: "piccolo",
+    name: "Piccolo",
+    anime: "Dragon Ball Z",
+    world: "dragon",
+    stage: 2,
+    level: 21,
+    type: "normal",
+    typingFocus: "speed",
+    maxHp: 850,
+    attack: 11,
+    attackInterval: 4500,
+    recommendedWpm: 55,
+    recommendedAccuracy: 91,
+    difficulty: 45,
+    xpReward: 90,
+    firstClearBonusXp: 180,
+    isBoss: false,
+    themeColor: "#22c55e",
+    accentColor: "#15803d",
+    description:
+      "Namekian tactician and master mentor. Demands concentrated burst velocity to penetrate his defensive guard.",
+    abilities: [
+      {
+        id: "special-beam-cannon",
+        name: "Special Beam Cannon (Makankosappo)",
+        description: "Drills through physical defenses with a hyper-focused ki laser.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "speed-check",
+        id: "piccolo-beam-focus",
+        name: "Special Beam Focus",
+        description: "Below 45 WPM deals -35% damage. 55+ WPM deals +20% bonus damage.",
+        slowThreshold: 45,
+        slowMultiplier: 0.65,
+        thresholds: [{ minWpm: 55, multiplier: 1.2, label: "LIGHT GRENADE SPEED" }],
+      },
+    ],
+  },
+
+  // 19. Vegeta — Saiyan Prince Pride (High-Speed Threshold)
+  {
+    id: "vegeta",
+    name: "Vegeta",
+    anime: "Dragon Ball Z",
+    world: "dragon",
+    stage: 3,
+    level: 24,
+    type: "elite",
+    typingFocus: "speed",
+    maxHp: 1050,
+    attack: 13,
+    attackInterval: 4200,
+    recommendedWpm: 65,
+    recommendedAccuracy: 92,
+    difficulty: 55,
+    xpReward: 115,
+    firstClearBonusXp: 220,
+    isBoss: false,
+    themeColor: "#3b82f6",
+    accentColor: "#1d4ed8",
+    description:
+      "Prince of all Saiyans. Unforgiving pride rewards rapid, aggressive typing cadence while crushing slow keystrokes.",
+    abilities: [
+      {
+        id: "final-flash",
+        name: "Final Flash",
+        description: "Channels imperial pride into a devastating high-velocity beam.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "speed-check",
+        id: "vegeta-saiyan-speed",
+        name: "Saiyan Pride Velocity",
+        description: "Below 55 WPM deals -40% damage. 70+ WPM deals +30% bonus damage.",
+        slowThreshold: 55,
+        slowMultiplier: 0.6,
+        thresholds: [
+          { minWpm: 70, multiplier: 1.3, label: "FINAL FLASH CADENCE" },
+          { minWpm: 60, multiplier: 1.15, label: "SAIYAN PRIDE SURGE" },
+        ],
+      },
+    ],
+  },
+
+  // 20. Frieza — Death Beam Barrage (Rapid Consecutive Speed)
+  {
+    id: "frieza",
+    name: "Frieza",
+    anime: "Dragon Ball Z",
+    world: "dragon",
+    stage: 4,
+    level: 27,
+    type: "elite",
+    typingFocus: "speed",
+    maxHp: 1300,
+    attack: 16,
+    attackInterval: 3900,
+    recommendedWpm: 72,
+    recommendedAccuracy: 92,
+    difficulty: 65,
+    xpReward: 145,
+    firstClearBonusXp: 270,
+    isBoss: false,
+    themeColor: "#a855f7",
+    accentColor: "#7e22ce",
+    description:
+      "Galactic tyrant in his final form. Fires rapid consecutive death beams that demand rapid, non-stop typing bursts.",
+    abilities: [
+      {
+        id: "death-beam",
+        name: "Death Beam Barrage",
+        description: "Fires piercing finger lasers at hypersonic frequency.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "speed-check",
+        id: "frieza-death-blitz",
+        name: "Death Beam Blitz",
+        description: "Below 60 WPM suffers -45% damage. 78+ WPM grants +35% bonus damage.",
+        slowThreshold: 60,
+        slowMultiplier: 0.55,
+        thresholds: [
+          { minWpm: 78, multiplier: 1.35, label: "DEATH BEAM BLITZ" },
+          { minWpm: 68, multiplier: 1.2, label: "GOLDEN EMPEROR SPEED" },
+        ],
+      },
+    ],
+  },
+
+  // 21. Cell — Perfect Form Speed (Extreme Velocity Check)
+  {
+    id: "cell",
+    name: "Cell",
+    anime: "Dragon Ball Z",
+    world: "dragon",
+    stage: 5,
+    level: 30,
+    type: "elite",
+    typingFocus: "speed",
+    maxHp: 1550,
+    attack: 19,
+    attackInterval: 3600,
+    recommendedWpm: 80,
+    recommendedAccuracy: 93,
+    difficulty: 75,
+    xpReward: 180,
+    firstClearBonusXp: 330,
+    isBoss: false,
+    themeColor: "#16a34a",
+    accentColor: "#15803d",
+    description:
+      "The ultimate bio-android in his Perfect Form. Synthesizes every warrior's DNA into a blistering typing cadence.",
+    abilities: [
+      {
+        id: "solar-kamehameha",
+        name: "Solar Kamehameha",
+        description: "Unleashes solar-system-shattering velocity through flawless execution.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "speed-check",
+        id: "cell-perfect-velocity",
+        name: "Perfect Velocity Form",
+        description: "Below 68 WPM deals -50% damage. 85+ WPM grants +40% bonus damage.",
+        slowThreshold: 68,
+        slowMultiplier: 0.5,
+        thresholds: [
+          { minWpm: 85, multiplier: 1.4, label: "PERFECT SPEED FORM" },
+          { minWpm: 75, multiplier: 1.25, label: "SOLAR KAMEHAMEHA VELOCITY" },
+        ],
+      },
+    ],
+  },
+
+  // 22. Gohan — Super Saiyan 2 Unleashed (Emotional Burst Velocity)
+  {
+    id: "gohan",
+    name: "Gohan",
+    anime: "Dragon Ball Z",
+    world: "dragon",
+    stage: 6,
+    level: 33,
+    type: "elite",
+    typingFocus: "speed",
+    maxHp: 1800,
+    attack: 22,
+    attackInterval: 3400,
+    recommendedWpm: 86,
+    recommendedAccuracy: 93,
+    difficulty: 85,
+    xpReward: 220,
+    firstClearBonusXp: 400,
+    isBoss: false,
+    themeColor: "#eab308",
+    accentColor: "#ca8a04",
+    description:
+      "The hidden prodigy awakening Super Saiyan 2. Unleashes golden lightning and furious high-speed combos.",
+    abilities: [
+      {
+        id: "father-son-kamehameha",
+        name: "Father-Son Kamehameha",
+        description: "Channels ancestral power into an explosive, unyielding speed burst.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "speed-check",
+        id: "gohan-ssj2-surge",
+        name: "Super Saiyan 2 Surge",
+        description: "Below 72 WPM incurs -55% damage. 92+ WPM unleashes +45% bonus damage.",
+        slowThreshold: 72,
+        slowMultiplier: 0.45,
+        thresholds: [
+          { minWpm: 92, multiplier: 1.45, label: "SUPER SAIYAN 2 BURST" },
+          { minWpm: 80, multiplier: 1.25, label: "UNLEASHED POTENTIAL" },
+        ],
+      },
+    ],
+  },
+
+  // 23. Broly — Legendary Wrath (Overwhelming Speed & Endurance)
+  {
+    id: "broly",
+    name: "Broly",
+    anime: "Dragon Ball Z",
+    world: "dragon",
+    stage: 7,
+    level: 36,
+    type: "boss",
+    typingFocus: "speed",
+    maxHp: 2200,
+    attack: 25,
+    attackInterval: 3100,
+    recommendedWpm: 92,
+    recommendedAccuracy: 94,
+    difficulty: 92,
+    xpReward: 270,
+    firstClearBonusXp: 500,
+    isBoss: true,
+    themeColor: "#84cc16",
+    accentColor: "#4d7c0f",
+    description:
+      "The Legendary Super Saiyan. Boundless ki and unstoppable momentum require relentless, non-stop typing velocity.",
+    abilities: [
+      {
+        id: "gigantic-roar",
+        name: "Gigantic Roar",
+        description: "An uncontrollable tempest of emerald energy tearing through the arena.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "speed-check",
+        id: "broly-berserker-rush",
+        name: "Legendary Berserker Rush",
+        description: "Below 78 WPM deals -60% damage. 98+ WPM deals +50% bonus damage.",
+        slowThreshold: 78,
+        slowMultiplier: 0.4,
+        thresholds: [
+          { minWpm: 98, multiplier: 1.5, label: "MAXIMUM POWER RUSH" },
+          { minWpm: 88, multiplier: 1.3, label: "LEGENDARY BERSERKER SPEED" },
+        ],
+      },
+    ],
+  },
+
+  // 24. Son Goku — Autonomous Ultra Instinct (The Supreme Velocity Crucible)
+  {
+    id: "goku",
+    name: "Son Goku",
+    anime: "Dragon Ball Z",
+    world: "dragon",
+    stage: 8,
+    level: 40,
+    type: "boss",
+    typingFocus: "speed",
+    maxHp: 2600,
+    attack: 28,
+    attackInterval: 2800,
+    recommendedWpm: 98,
+    recommendedAccuracy: 94,
+    difficulty: 100,
+    xpReward: 350,
+    firstClearBonusXp: 700,
+    isBoss: true,
+    themeColor: "#f59e0b",
+    accentColor: "#ef4444",
+    description:
+      "Autonomous Ultra Instinct. The body reacts and strikes without conscious thought. Demands sustained 95–105+ WPM to overcome.",
+    abilities: [
+      {
+        id: "ultra-instinct",
+        name: "Autonomous Ultra Instinct",
+        description: "Fingers move at pure neural reflex, dodging hesitation and striking at godlike cadence.",
+      },
+      {
+        id: "divine-kamehameha",
+        name: "God Kamehameha",
+        description: "Surfs across enemy attacks to deliver an overwhelming blast.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "speed-check",
+        id: "goku-ultra-instinct-velocity",
+        name: "Ultra Instinct Transcendence",
+        description:
+          "Below 85 WPM suffers -70% damage reduction. 95+ WPM deals +40%, and 105+ WPM unlocks +60% godlike damage.",
+        slowThreshold: 85,
+        slowMultiplier: 0.3,
+        thresholds: [
+          { minWpm: 105, multiplier: 1.6, label: "AUTONOMOUS ULTRA INSTINCT" },
+          { minWpm: 95, multiplier: 1.4, label: "GODLIKE ACCELERATION" },
+        ],
+      },
+    ],
+  },
 ]
 
 export function getCharacterById(id: string): Enemy | undefined {

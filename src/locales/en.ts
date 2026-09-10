@@ -752,6 +752,38 @@ export const en = {
         name: "Limitless Infinity",
         desc: "Absolute Infinity barrier absorbs all strikes below 98% accuracy (-90% penalty). Flawless 98%+ precision bypasses Infinity for +45% bonus damage.",
       },
+      krillin: {
+        name: "Turtle School Sprint",
+        desc: "Speed check. Below 35 WPM incurs -30% damage reduction. 45+ WPM grants +15% speed bonus.",
+      },
+      piccolo: {
+        name: "Special Beam Focus",
+        desc: "Burst velocity check. Below 45 WPM deals -35% damage. 55+ WPM deals +20% bonus damage.",
+      },
+      vegeta: {
+        name: "Saiyan Pride Velocity",
+        desc: "Speed threshold. Below 55 WPM deals -40% damage. 70+ WPM deals +30% bonus damage.",
+      },
+      frieza: {
+        name: "Death Beam Blitz",
+        desc: "Speed scaling. Below 60 WPM suffers -45% damage. 78+ WPM grants +35% bonus damage.",
+      },
+      cell: {
+        name: "Perfect Velocity Form",
+        desc: "Extreme cadence test. Below 68 WPM deals -50% damage. 85+ WPM grants +40% bonus damage.",
+      },
+      gohan: {
+        name: "Super Saiyan 2 Surge",
+        desc: "Burst velocity check. Below 72 WPM incurs -55% damage. 92+ WPM unleashes +45% bonus damage.",
+      },
+      broly: {
+        name: "Legendary Berserker Rush",
+        desc: "Sustained high velocity. Below 78 WPM deals -60% damage. 98+ WPM deals +50% bonus damage.",
+      },
+      goku: {
+        name: "Ultra Instinct Transcendence",
+        desc: "Supreme WPM crucible. Below 85 WPM suffers -70% damage reduction. 95+ WPM deals +40%, and 105+ WPM unlocks +60% godlike damage.",
+      },
     },
     worlds: {
       naruto: {

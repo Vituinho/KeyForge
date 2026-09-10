@@ -8,6 +8,7 @@ import {
 import { PlayerProfile } from "@/types/player"
 import { NARUTO_WORLD } from "./naruto"
 import { JUJUTSU_WORLD } from "./jujutsu"
+import { DRAGON_WORLD } from "./dragon"
 
 // Ordered progression list of all 7 Anime Worlds
 export const ANIME_WORLD_ORDER: AnimeWorldId[] = [
@@ -24,45 +25,7 @@ export const ANIME_WORLD_ORDER: AnimeWorldId[] = [
 export const WORLD_REGISTRY: Record<AnimeWorldId, AnimeWorld> = {
   naruto: NARUTO_WORLD,
   jujutsu: JUJUTSU_WORLD,
-  dragon: {
-    id: "dragon",
-    order: 3,
-    nameKey: "animeWorld.worlds.dragon.name",
-    series: "Dragon Ball Z",
-    descriptionKey: "animeWorld.worlds.dragon.desc",
-    taglineKey: "animeWorld.worlds.dragon.tagline",
-    theme: {
-      primaryColor: "#f59e0b",
-      secondaryColor: "#d97706",
-      accentColor: "#ef4444",
-      glowColor: "rgba(245, 158, 11, 0.4)",
-      bgGradient: "from-amber-950/40 via-neutral-950/80 to-black",
-      cardGradient: "from-amber-500/20 via-neutral-900/90 to-neutral-950",
-      badgeClass: "bg-amber-500/10 text-amber-400 border-amber-500/30",
-      borderClass: "border-amber-500/30 hover:border-amber-500/60",
-    },
-    focus: "speed",
-    focusKey: "animeWorld.focus.speed",
-    baseDifficulty: 5,
-    unlockRequirement: {
-      previousWorldId: "jujutsu",
-      requiredStagesCleared: 8,
-      descriptionKey: "animeWorld.unlock.defeatJujutsuBoss",
-    },
-    stages: [],
-    completionReward: {
-      xp: 1000,
-      title: "SUPER WARRIOR",
-      crateId: "crate_mecha_epic",
-      badgeKey: "animeWorld.badges.dragonChampion",
-    },
-    masteryReward: {
-      xp: 2000,
-      title: "ULTRA INSTINCT",
-      crateId: "crate_divine_celestial",
-      badgeKey: "animeWorld.badges.dragonMaster",
-    },
-  },
+  dragon: DRAGON_WORLD,
   pirate: {
     id: "pirate",
     order: 4,
