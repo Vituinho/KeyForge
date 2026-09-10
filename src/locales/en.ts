@@ -848,6 +848,38 @@ export const en = {
         name: "Shadow Monarch's Arise",
         desc: "The System tests your weakest keys. Mistakes trigger -65% damage reduction. Flawless accuracy with unbroken combos yields +55% sovereign damage.",
       },
+      zenitsu: {
+        name: "Thunder Breathing First Form",
+        desc: "Index finger sprint. Accuracy under 93% breaks rhythm (-25% damage). 93%+ grants +15% thunder speed bonus.",
+      },
+      inosuke: {
+        name: "Beast Breathing Spatial Sense",
+        desc: "Middle and ring finger coordination. Below 94% accuracy incurs -30% damage. 94%+ yields +20% beast fury bonus.",
+      },
+      shinobu: {
+        name: "Insect Breathing Wisteria Thrust",
+        desc: "Pinky finger precision test. Below 95% accuracy drops damage by -35%. 95%+ grants +25% venom bonus.",
+      },
+      rengoku: {
+        name: "Set Your Heart Ablaze",
+        desc: "Alternating hand harmony. Below 95% accuracy incurs -40% damage. 95%+ ignites +30% blazing bonus.",
+      },
+      akaza: {
+        name: "Destructive Death Compass",
+        desc: "Two-hand symmetry check. Below 95% accuracy suffers -45% damage. 95%+ grants +35% martial bonus.",
+      },
+      gyutaro: {
+        name: "Dual Blood Demon Coordination",
+        desc: "Dual hand synchronization. Below 96% accuracy drops damage by -50%. 96%+ yields +40% severed bond bonus.",
+      },
+      kokushibo: {
+        name: "Moon Breathing Total Concentration",
+        desc: "Ten-finger moon discipline. Below 96% accuracy incurs -55% damage penalty. 96%+ grants +45% celestial crescent bonus.",
+      },
+      muzan: {
+        name: "Total Concentration Constant Crucible",
+        desc: "The supreme touch-typing test. Below 97% accuracy suffers -65% cellular decay. 97%+ accuracy yields +60% dawn sunlight damage.",
+      },
     },
     worlds: {
       naruto: {

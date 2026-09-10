@@ -8,6 +8,7 @@ import {
   FocusGenjutsuConfig,
   PrecisionStrikeConfig,
   SpeedCheckConfig,
+  TouchTypingConfig,
 } from "@/types/mechanics"
 
 export interface MechanicEvaluationContext {
@@ -147,6 +148,23 @@ export function evaluateEnemyMechanics(
           multiplier *= config.flawlessBonusMultiplier
           const bonusPct = Math.round((config.flawlessBonusMultiplier - 1) * 100)
           activeEffects.push(`WEAKNESS OVERCOME (+${bonusPct}%)`)
+        }
+        break
+      }
+
+      case "touch-typing": {
+        const config = mech as TouchTypingConfig
+        if (roundStats.currentAccuracy < config.accuracyThreshold) {
+          multiplier *= config.penaltyMultiplier
+          const penPct = Math.round((1 - config.penaltyMultiplier) * 100)
+          activeEffects.push(`DISCIPLINE BROKEN (-${penPct}%)`)
+          feedbackNotes.push(
+            `Total Concentration Breathing requires ${config.accuracyThreshold}% touch-typing precision across all keys.`
+          )
+        } else {
+          multiplier *= config.bonusMultiplier
+          const bonPct = Math.round((config.bonusMultiplier - 1) * 100)
+          activeEffects.push(`TOTAL CONCENTRATION (+${bonPct}%)`)
         }
         break
       }

@@ -1846,6 +1846,401 @@ export const CHARACTERS: Enemy[] = [
       },
     ],
   },
+
+  // 41. Zenitsu Agatsuma — Thunderclap and Flash (Home Row & Index Sprint)
+  {
+    id: "zenitsu",
+    name: "Zenitsu Agatsuma",
+    anime: "Demon Slayer",
+    world: "demon",
+    stage: 1,
+    level: 36,
+    type: "normal",
+    typingFocus: "touch_typing",
+    maxHp: 1400,
+    attack: 20,
+    attackInterval: 4000,
+    recommendedWpm: 54,
+    recommendedAccuracy: 93,
+    difficulty: 50,
+    xpReward: 100,
+    firstClearBonusXp: 200,
+    isBoss: false,
+    themeColor: "#eab308",
+    accentColor: "#ca8a04",
+    description:
+      "Thunder Breathing First Form: Thunderclap and Flash. Demands lightning-fast index finger bursts and home-row anchors.",
+    abilities: [
+      {
+        id: "thunderclap-flash",
+        name: "Thunderclap and Flash",
+        description: "A blinding forward dash powered by rapid index finger strikes.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "touch-typing",
+        id: "zenitsu-thunder-discipline",
+        name: "Thunder Breathing First Form",
+        description:
+          "Index finger sprint. Accuracy under 93% breaks rhythm (-25% damage). 93%+ grants +15% thunder speed bonus.",
+        accuracyThreshold: 93,
+        bonusMultiplier: 1.15,
+        penaltyMultiplier: 0.75,
+      },
+    ],
+  },
+
+  // 42. Inosuke Hashibira — Beast Breathing (Middle & Ring Finger Reach)
+  {
+    id: "inosuke",
+    name: "Inosuke Hashibira",
+    anime: "Demon Slayer",
+    world: "demon",
+    stage: 2,
+    level: 39,
+    type: "normal",
+    typingFocus: "touch_typing",
+    maxHp: 1580,
+    attack: 22,
+    attackInterval: 3800,
+    recommendedWpm: 62,
+    recommendedAccuracy: 94,
+    difficulty: 60,
+    xpReward: 125,
+    firstClearBonusXp: 250,
+    isBoss: false,
+    themeColor: "#0284c7",
+    accentColor: "#0369a1",
+    description:
+      "Beast Breathing Fang Styles. Aggressive serrated twin blades test middle and ring finger reach across rows.",
+    abilities: [
+      {
+        id: "crazy-cutting",
+        name: "Crazy Cutting",
+        description: "Feral dual-blade flurry slicing through uncoordinated finger movements.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "touch-typing",
+        id: "inosuke-beast-reach",
+        name: "Beast Breathing Spatial Sense",
+        description:
+          "Middle and ring finger coordination. Below 94% accuracy incurs -30% damage. 94%+ yields +20% beast fury bonus.",
+        accuracyThreshold: 94,
+        bonusMultiplier: 1.2,
+        penaltyMultiplier: 0.7,
+      },
+    ],
+  },
+
+  // 43. Shinobu Kocho — Insect Breathing (Pinky Precision & Flutter)
+  {
+    id: "shinobu",
+    name: "Shinobu Kocho",
+    anime: "Demon Slayer",
+    world: "demon",
+    stage: 3,
+    level: 42,
+    type: "normal",
+    typingFocus: "touch_typing",
+    maxHp: 1780,
+    attack: 23,
+    attackInterval: 3600,
+    recommendedWpm: 68,
+    recommendedAccuracy: 95,
+    difficulty: 70,
+    xpReward: 155,
+    firstClearBonusXp: 300,
+    isBoss: false,
+    themeColor: "#c084fc",
+    accentColor: "#a855f7",
+    description:
+      "Insect Breathing Dance of the Butterfly. Lethal wisteria poison delivered through delicate pinky finger precision.",
+    abilities: [
+      {
+        id: "butterfly-dance",
+        name: "Dance of the Butterfly",
+        description: "Fluttering thrusts injecting lethal wisteria poison into typographical flaws.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "touch-typing",
+        id: "shinobu-pinky-flutter",
+        name: "Insect Breathing Wisteria Thrust",
+        description:
+          "Pinky finger precision test. Below 95% accuracy drops damage by -35%. 95%+ grants +25% venom bonus.",
+        accuracyThreshold: 95,
+        bonusMultiplier: 1.25,
+        penaltyMultiplier: 0.65,
+      },
+    ],
+  },
+
+  // 44. Kyojuro Rengoku — Flame Hashira (Alternating Hand Cadence)
+  {
+    id: "rengoku",
+    name: "Kyojuro Rengoku",
+    anime: "Demon Slayer",
+    world: "demon",
+    stage: 4,
+    level: 45,
+    type: "elite",
+    typingFocus: "touch_typing",
+    maxHp: 2050,
+    attack: 25,
+    attackInterval: 3400,
+    recommendedWpm: 76,
+    recommendedAccuracy: 95,
+    difficulty: 78,
+    xpReward: 190,
+    firstClearBonusXp: 370,
+    isBoss: false,
+    themeColor: "#f97316",
+    accentColor: "#ea580c",
+    description:
+      "Flame Breathing Ninth Form: Rengoku. Set your heart ablaze and maintain harmonic alternating hand cadence.",
+    abilities: [
+      {
+        id: "flame-tiger",
+        name: "Flame Tiger",
+        description: "A ferocious roaring tiger of pure flame devouring hesitant typists.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "touch-typing",
+        id: "rengoku-flame-cadence",
+        name: "Set Your Heart Ablaze",
+        description:
+          "Alternating hand harmony. Below 95% accuracy incurs -40% damage. 95%+ ignites +30% blazing bonus.",
+        accuracyThreshold: 95,
+        bonusMultiplier: 1.3,
+        penaltyMultiplier: 0.6,
+      },
+    ],
+  },
+
+  // 45. Akaza — Upper Moon Three (Compass Needle Symmetry)
+  {
+    id: "akaza",
+    name: "Akaza",
+    anime: "Demon Slayer",
+    world: "demon",
+    stage: 5,
+    level: 48,
+    type: "elite",
+    typingFocus: "touch_typing",
+    maxHp: 2300,
+    attack: 27,
+    attackInterval: 3200,
+    recommendedWpm: 82,
+    recommendedAccuracy: 95,
+    difficulty: 86,
+    xpReward: 230,
+    firstClearBonusXp: 440,
+    isBoss: false,
+    themeColor: "#ec4899",
+    accentColor: "#db2777",
+    description:
+      "Destructive Death: Compass Needle. Senses fighting spirit and punishes any hand asymmetry or dropped combo.",
+    abilities: [
+      {
+        id: "compass-needle",
+        name: "Compass Needle",
+        description: "Deploys a snowflake compass instantly homing in on finger hesitation.",
+      },
+      {
+        id: "air-type",
+        name: "Air Type Shockwaves",
+        description: "Invisible fist shockwaves punishing errors with counter-damage.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "touch-typing",
+        id: "akaza-compass-symmetry",
+        name: "Destructive Death Compass",
+        description:
+          "Two-hand symmetry check. Below 95% accuracy suffers -45% damage. 95%+ grants +35% martial bonus.",
+        accuracyThreshold: 95,
+        bonusMultiplier: 1.35,
+        penaltyMultiplier: 0.55,
+      },
+      {
+        type: "combo-scaling",
+        id: "akaza-annihilation-counter",
+        name: "Annihilation Type Counter",
+        description: "Combo drops trigger immediate counter-damage.",
+        tiers: [
+          { minCombo: 15, multiplier: 1.15, label: "MARTIAL HARMONY (x1.15)" },
+          { minCombo: 30, multiplier: 1.3, label: "COMPASS SYMMETRY (x1.3)" },
+        ],
+        breakComboCounterAttack: 20,
+      },
+    ],
+  },
+
+  // 46. Gyutaro & Daki — Upper Moon Six (Dual Hand Coordination)
+  {
+    id: "gyutaro",
+    name: "Gyutaro & Daki",
+    anime: "Demon Slayer",
+    world: "demon",
+    stage: 6,
+    level: 51,
+    type: "boss",
+    typingFocus: "touch_typing",
+    maxHp: 2550,
+    attack: 29,
+    attackInterval: 3000,
+    recommendedWpm: 88,
+    recommendedAccuracy: 96,
+    difficulty: 92,
+    xpReward: 280,
+    firstClearBonusXp: 530,
+    isBoss: false,
+    themeColor: "#84cc16",
+    accentColor: "#65a30d",
+    description:
+      "Blood Demon Art: Flying Blood Scythes and Obi Sashes. Twin battle requiring synchronized left and right hand touch-typing.",
+    abilities: [
+      {
+        id: "blood-scythes",
+        name: "Flying Blood Scythes",
+        description: "Rotating razor-sharp blood scythes tracking typing cadence.",
+      },
+      {
+        id: "obi-slashes",
+        name: "Obi Sash Entanglement",
+        description: "Constricting ribbon ribbons that punish uncoordinated finger strikes.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "touch-typing",
+        id: "gyutaro-twin-coordination",
+        name: "Dual Blood Demon Coordination",
+        description:
+          "Dual hand synchronization. Below 96% accuracy drops damage by -50%. 96%+ yields +40% severed bond bonus.",
+        accuracyThreshold: 96,
+        bonusMultiplier: 1.4,
+        penaltyMultiplier: 0.5,
+      },
+    ],
+  },
+
+  // 47. Kokushibo — Upper Moon One (Ten-Finger Total Concentration)
+  {
+    id: "kokushibo",
+    name: "Kokushibo",
+    anime: "Demon Slayer",
+    world: "demon",
+    stage: 7,
+    level: 54,
+    type: "boss",
+    typingFocus: "touch_typing",
+    maxHp: 2800,
+    attack: 31,
+    attackInterval: 2800,
+    recommendedWpm: 94,
+    recommendedAccuracy: 96,
+    difficulty: 96,
+    xpReward: 340,
+    firstClearBonusXp: 650,
+    isBoss: true,
+    themeColor: "#6b21a8",
+    accentColor: "#581c87",
+    description:
+      "Moon Breathing: First to Sixteenth Form. Upper Moon One commands supreme swordsmanship across all ten fingers.",
+    abilities: [
+      {
+        id: "moon-dragon-ring",
+        name: "Moon Dragon Ringtail",
+        description: "A sweeping gigantic blade arc releasing hundreds of chaotic crescent moon blades.",
+      },
+      {
+        id: "calamity-moon",
+        name: "Catastrophe: Ten-Eyed Moon",
+        description: "Unleashes dimensional moon crescent slashes across the arena.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "touch-typing",
+        id: "kokushibo-moon-discipline",
+        name: "Moon Breathing Total Concentration",
+        description:
+          "Ten-finger moon discipline. Below 96% accuracy incurs -55% damage penalty. 96%+ grants +45% celestial crescent bonus.",
+        accuracyThreshold: 96,
+        bonusMultiplier: 1.45,
+        penaltyMultiplier: 0.45,
+      },
+    ],
+  },
+
+  // 48. Muzan Kibutsuji — The Demon King (Flawless Ten-Finger Biokinesis Crucible)
+  {
+    id: "muzan",
+    name: "Muzan Kibutsuji",
+    anime: "Demon Slayer",
+    world: "demon",
+    stage: 8,
+    level: 60,
+    type: "boss",
+    typingFocus: "touch_typing",
+    maxHp: 3100,
+    attack: 33,
+    attackInterval: 2600,
+    recommendedWpm: 100,
+    recommendedAccuracy: 97,
+    difficulty: 100,
+    xpReward: 450,
+    firstClearBonusXp: 900,
+    isBoss: true,
+    themeColor: "#e11d48",
+    accentColor: "#be123c",
+    description:
+      "The Demon Progenitor. Biokinesis whip arms and cellular regeneration test ultimate touch-typing mastery across every finger.",
+    abilities: [
+      {
+        id: "flesh-whips",
+        name: "Biokinesis Flesh Whips",
+        description: "Supersonic serrated arm whips shredding through any typing hesitation.",
+      },
+      {
+        id: "black-blood-bramble",
+        name: "Black Blood: Bramble Web",
+        description: "Cellular poison webs covering the arena to crush uncoordinated hands.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "touch-typing",
+        id: "muzan-total-concentration-constant",
+        name: "Total Concentration Constant Crucible",
+        description:
+          "The supreme touch-typing test. Below 97% accuracy suffers -65% cellular decay. 97%+ accuracy yields +60% dawn sunlight damage.",
+        accuracyThreshold: 97,
+        bonusMultiplier: 1.6,
+        penaltyMultiplier: 0.35,
+      },
+      {
+        type: "combo-scaling",
+        id: "muzan-sun-breathing-combo",
+        name: "Sun Breathing Thirteenth Form",
+        description: "Continuous combo streaks chain the 12 breathing forms into the sun form; error counter-attack.",
+        tiers: [
+          { minCombo: 20, multiplier: 1.2, label: "SUN HARMONY (x1.2)" },
+          { minCombo: 35, multiplier: 1.35, label: "HINOKAMI KAGURA (x1.35)" },
+          { minCombo: 50, multiplier: 1.6, label: "SUN BREATHING FORM 13 (x1.6)" },
+        ],
+        breakComboCounterAttack: 30,
+      },
+    ],
+  },
 ]
 
 export function getCharacterById(id: string): Enemy | undefined {

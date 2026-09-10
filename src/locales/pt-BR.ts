@@ -850,6 +850,38 @@ export const ptBR: TranslationSchema = {
         name: "Erga-se do Monarca das Sombras",
         desc: "O Sistema sonda suas fraquezas no teclado. Erros sofrem -65% de redução. Precisão impecável com combos sustentados libera +55% de dano soberano.",
       },
+      zenitsu: {
+        name: "Primeira Forma da Respiração do Trovão",
+        desc: "Disparo rápido com os indicadores. Precisão abaixo de 93% quebra o ritmo (-25% de dano). 93%+ concede +15% de bônus de velocidade.",
+      },
+      inosuke: {
+        name: "Sentido Espacial da Respiração da Fera",
+        desc: "Coordenação dos médios e anelares. Abaixo de 94% de precisão sofre -30% de dano. 94%+ gera +20% de fúria da fera.",
+      },
+      shinobu: {
+        name: "Estocada de Glicínia da Respiração do Inseto",
+        desc: "Teste de precisão dos mindinhos. Abaixo de 95% de precisão reduz o dano em -35%. 95%+ concede +25% de bônus de veneno.",
+      },
+      rengoku: {
+        name: "Incendeie Seu Coração",
+        desc: "Harmonia alternada entre as mãos. Abaixo de 95% de precisão sofre -40% de dano. 95%+ acende +30% de dano flamejante.",
+      },
+      akaza: {
+        name: "Agulha da Bússola da Morte Destrutiva",
+        desc: "Simetria estrita entre as duas mãos. Abaixo de 95% de precisão sofre -45% de dano. 95%+ concede +35% de bônus marcial.",
+      },
+      gyutaro: {
+        name: "Coordenação dos Demônios de Sangue Gêmeos",
+        desc: "Sincronização entre mãos esquerda e direita. Abaixo de 96% de precisão reduz o dano em -50%. 96%+ gera +40% de bônus de vínculo rompido.",
+      },
+      kokushibo: {
+        name: "Concentração Total da Respiração da Lua",
+        desc: "Disciplina lunar nos dez dedos. Abaixo de 96% de precisão impõe -55% de penalidade. 96%+ concede +45% de bônus do crescente celestial.",
+      },
+      muzan: {
+        name: "Crisol da Concentração Total Constante",
+        desc: "A prova máxima de touch typing. Abaixo de 97% de precisão sofre -65% de corrosão celular. 97%+ de precisão libera +60% de dano do sol da alvorada.",
+      },
     },
     worlds: {
       naruto: {

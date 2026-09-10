@@ -11,6 +11,7 @@ import { JUJUTSU_WORLD } from "./jujutsu"
 import { DRAGON_WORLD } from "./dragon"
 import { PIRATE_WORLD } from "./pirate"
 import { HUNTER_WORLD } from "./hunter"
+import { DEMON_WORLD } from "./demon"
 
 // Ordered progression list of all 7 Anime Worlds
 export const ANIME_WORLD_ORDER: AnimeWorldId[] = [
@@ -30,45 +31,7 @@ export const WORLD_REGISTRY: Record<AnimeWorldId, AnimeWorld> = {
   dragon: DRAGON_WORLD,
   pirate: PIRATE_WORLD,
   hunter: HUNTER_WORLD,
-  demon: {
-    id: "demon",
-    order: 6,
-    nameKey: "animeWorld.worlds.demon.name",
-    series: "Demon Slayer",
-    descriptionKey: "animeWorld.worlds.demon.desc",
-    taglineKey: "animeWorld.worlds.demon.tagline",
-    theme: {
-      primaryColor: "#ef4444",
-      secondaryColor: "#dc2626",
-      accentColor: "#f97316",
-      glowColor: "rgba(239, 68, 68, 0.4)",
-      bgGradient: "from-red-950/40 via-neutral-950/80 to-black",
-      cardGradient: "from-red-500/20 via-neutral-900/90 to-neutral-950",
-      badgeClass: "bg-red-500/10 text-red-400 border-red-500/30",
-      borderClass: "border-red-500/30 hover:border-red-500/60",
-    },
-    focus: "touch-typing",
-    focusKey: "animeWorld.focus.touchTyping",
-    baseDifficulty: 8,
-    unlockRequirement: {
-      previousWorldId: "hunter",
-      requiredStagesCleared: 8,
-      descriptionKey: "animeWorld.unlock.defeatHunterBoss",
-    },
-    stages: [],
-    completionReward: {
-      xp: 1750,
-      title: "HASHIRA BLADE",
-      crateId: "crate_divine_celestial",
-      badgeKey: "animeWorld.badges.demonChampion",
-    },
-    masteryReward: {
-      xp: 3500,
-      title: "SUN BREATHING MASTER",
-      crateId: "crate_divine_celestial",
-      badgeKey: "animeWorld.badges.demonMaster",
-    },
-  },
+  demon: DEMON_WORLD,
   nexus: {
     id: "nexus",
     order: 7,

@@ -6,6 +6,7 @@ export type BattleMechanicType =
   | "combo-scaling"
   | "focus-genjutsu"
   | "adaptive-weakness"
+  | "touch-typing"
   | "multi-phase"
   | "multi-phase-boss"
 
@@ -69,6 +70,15 @@ export interface AdaptiveWeaknessConfig extends BaseMechanicConfig {
   minAccuracyRequirement?: number // e.g. 95
 }
 
+export interface TouchTypingConfig extends BaseMechanicConfig {
+  type: "touch-typing"
+  targetFingerGroup?: "index" | "middle" | "ring" | "pinky" | "all"
+  requireHomeRowFocus?: boolean
+  accuracyThreshold: number // e.g. 96
+  bonusMultiplier: number // e.g. 1.35
+  penaltyMultiplier: number // e.g. 0.65
+}
+
 export interface MultiPhaseConfig extends BaseMechanicConfig {
   type: "multi-phase" | "multi-phase-boss"
   totalPhases: number
@@ -83,4 +93,5 @@ export type EnemyMechanicConfig =
   | ComboScalingConfig
   | FocusGenjutsuConfig
   | AdaptiveWeaknessConfig
+  | TouchTypingConfig
   | MultiPhaseConfig
