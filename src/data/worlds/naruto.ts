@@ -235,7 +235,7 @@ export const NARUTO_STAGES: WorldStage[] = [
       bonusXp: 500,
       forgeShards: 250,
       title: "SHINOBI TYPIST",
-      crateId: "crate_cyber_rare",
+      crateId: "shinobi_crate",
     },
     isBoss: true,
     masteryObjectives: [
@@ -273,13 +273,13 @@ export const NARUTO_WORLD: AnimeWorld = {
   completionReward: {
     xp: 500,
     title: "SHINOBI TYPIST",
-    crateId: "crate_cyber_rare",
+    crateId: "shinobi_crate",
     badgeKey: "animeWorld.badges.narutoChampion",
   },
   masteryReward: {
     xp: 1000,
     title: "HOKAGE MASTER",
-    crateId: "crate_divine_celestial",
+    crateId: "elite_crate",
     badgeKey: "animeWorld.badges.narutoMaster",
   },
 }

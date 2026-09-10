@@ -274,13 +274,13 @@ export const HUNTER_WORLD: AnimeWorld = {
   completionReward: {
     xp: 1500,
     title: "SHADOW MONARCH",
-    crateId: "crate_divine_celestial",
+    crateId: "elite_crate",
     badgeKey: "animeWorld.badges.hunterChampion",
   },
   masteryReward: {
     xp: 3000,
     title: "ARISE SOVEREIGN",
-    crateId: "crate_divine_celestial",
+    crateId: "mythic_crate",
     badgeKey: "animeWorld.badges.hunterMaster",
   },
 }

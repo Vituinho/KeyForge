@@ -274,13 +274,13 @@ export const DEMON_WORLD: AnimeWorld = {
   completionReward: {
     xp: 1750,
     title: "TOTAL CONCENTRATION",
-    crateId: "crate_divine_celestial",
+    crateId: "elite_crate",
     badgeKey: "animeWorld.badges.demonChampion",
   },
   masteryReward: {
     xp: 3500,
     title: "SUN BREATHING HASHIRA",
-    crateId: "crate_divine_celestial",
+    crateId: "mythic_crate",
     badgeKey: "animeWorld.badges.demonMaster",
   },
 }

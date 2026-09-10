@@ -274,13 +274,13 @@ export const NEXUS_WORLD: AnimeWorld = {
   completionReward: {
     xp: 2500,
     title: "KEYFORGE MASTER",
-    crateId: "crate_divine_celestial",
+    crateId: "mythic_crate",
     badgeKey: "animeWorld.badges.nexusChampion",
   },
   masteryReward: {
     xp: 5000,
     title: "FORGED LEGEND",
-    crateId: "crate_divine_celestial",
+    crateId: "mythic_crate",
     badgeKey: "animeWorld.badges.nexusMaster",
   },
 }

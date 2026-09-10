@@ -43,16 +43,21 @@ export interface StageScore {
   bestAccuracy: number
   bestCombo: number
   completedAt: string
+  stars?: number
 }
 
 export interface CampaignWorldProgress {
   unlocked: boolean
   completed: boolean
+  mastered?: boolean
   currentStage: number // 1 to 8
   completedStages: number[]
   defeatedEnemies: string[]
   bestScores: Record<string, StageScore>
   firstClearClaimed: Record<string, boolean>
+  claimedWorldReward?: boolean
+  claimedMasteryReward?: boolean
+  masteryStars?: number
 }
 
 export interface PlayerProfile {
@@ -70,12 +75,40 @@ export interface PlayerProfile {
   multiplayerStats?: MultiplayerStats
   academyProgress?: Record<string, AcademyLessonProgress>
   campaignProgress: Record<string, CampaignWorldProgress>
+  worldsUnlocked?: number
+  worldsCompleted?: number
+  worldMastery?: number
+  totalStagesCleared?: number
+  keyErrors?: Record<string, number>
   achievements?: string[]
   title?: string
   titles?: string[]
 
   createdAt: string
   updatedAt: string
+}
+
+export function syncCampaignSummary(profile: PlayerProfile): PlayerProfile {
+  const cp = profile.campaignProgress || {}
+  let worldsUnlocked = 0
+  let worldsCompleted = 0
+  let worldMastery = 0
+  let totalStagesCleared = 0
+
+  for (const progress of Object.values(cp)) {
+    if (progress.unlocked) worldsUnlocked++
+    if (progress.completed) worldsCompleted++
+    if (progress.mastered) worldMastery++
+    totalStagesCleared += progress.completedStages?.length || 0
+  }
+
+  return {
+    ...profile,
+    worldsUnlocked,
+    worldsCompleted,
+    worldMastery,
+    totalStagesCleared,
+  }
 }
 
 export function createDefaultMultiplayerStats(): MultiplayerStats {
@@ -143,6 +176,11 @@ export function createDefaultPlayerProfile(username = "Player"): PlayerProfile {
     },
     multiplayerStats: createDefaultMultiplayerStats(),
     campaignProgress: createDefaultCampaignProgress(),
+    worldsUnlocked: 1,
+    worldsCompleted: 0,
+    worldMastery: 0,
+    totalStagesCleared: 0,
+    keyErrors: {},
     achievements: [],
     createdAt: now,
     updatedAt: now,

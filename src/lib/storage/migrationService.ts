@@ -7,11 +7,15 @@ import { saveCloudPlayerProfile } from "./cloudPlayerStorage"
  */
 export function hasMeaningfulProgress(profile: PlayerProfile | null | undefined): boolean {
   if (!profile) return false
+  const stagesCleared = Object.values(profile.campaignProgress || {}).reduce(
+    (acc, world) => acc + (world.completedStages?.length ?? 0),
+    0
+  )
   return (
     profile.level > 1 ||
     profile.stats.battlesPlayed > 0 ||
     profile.stats.totalCharactersTyped > 0 ||
-    (profile.campaignProgress?.naruto?.completedStages?.length ?? 0) > 0 ||
+    stagesCleared > 0 ||
     (profile.achievements?.length ?? 0) > 0
   )
 }

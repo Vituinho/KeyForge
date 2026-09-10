@@ -2,6 +2,7 @@ import {
   PlayerProfile,
   createDefaultPlayerProfile,
   createDefaultMultiplayerStats,
+  syncCampaignSummary,
 } from "@/types/player"
 
 export const STORAGE_KEY_V1 = "keyforge_player_v1"
@@ -60,7 +61,7 @@ export function loadPlayerProfile(): PlayerProfile {
         isValidProfileShape(parsedV2.player)
       ) {
         const defaultProfile = createDefaultPlayerProfile()
-        return {
+        const merged: PlayerProfile = {
           ...defaultProfile,
           ...parsedV2.player,
           attributes: {
@@ -79,8 +80,12 @@ export function loadPlayerProfile(): PlayerProfile {
             ...defaultProfile.campaignProgress,
             ...(parsedV2.player.campaignProgress ?? {}),
           },
+          keyErrors: {
+            ...(parsedV2.player.keyErrors ?? {}),
+          },
           achievements: parsedV2.player.achievements ?? defaultProfile.achievements ?? [],
         }
+        return syncCampaignSummary(merged)
       }
 
       console.warn("[KeyForge Storage] Corrupted v2 save data detected. Attempting recovery...")
@@ -101,7 +106,7 @@ export function loadPlayerProfile(): PlayerProfile {
           console.info("[KeyForge Storage] Migrating save data from v1 to v2...")
           const defaultProfile = createDefaultPlayerProfile(parsedV1.player.username)
 
-          const migratedProfile: PlayerProfile = {
+          const migratedProfile: PlayerProfile = syncCampaignSummary({
             ...defaultProfile,
             ...parsedV1.player,
             attributes: {
@@ -116,7 +121,7 @@ export function loadPlayerProfile(): PlayerProfile {
             campaignProgress: defaultProfile.campaignProgress,
             achievements: parsedV1.player.achievements ?? [],
             updatedAt: new Date().toISOString(),
-          }
+          })
 
           savePlayerProfile(migratedProfile)
           return migratedProfile
@@ -127,12 +132,12 @@ export function loadPlayerProfile(): PlayerProfile {
     }
 
     // 3. New player: create safe default v2 profile
-    const defaultProfile = createDefaultPlayerProfile()
+    const defaultProfile = syncCampaignSummary(createDefaultPlayerProfile())
     savePlayerProfile(defaultProfile)
     return defaultProfile
   } catch (error) {
     console.error("[KeyForge Storage] Failed to load player profile from localStorage:", error)
-    const fallback = createDefaultPlayerProfile()
+    const fallback = syncCampaignSummary(createDefaultPlayerProfile())
     savePlayerProfile(fallback)
     return fallback
   }
@@ -146,10 +151,10 @@ export function savePlayerProfile(profile: PlayerProfile): boolean {
   if (!isBrowser()) return false
 
   try {
-    const updatedProfile: PlayerProfile = {
+    const updatedProfile: PlayerProfile = syncCampaignSummary({
       ...profile,
       updatedAt: new Date().toISOString(),
-    }
+    })
 
     const payload: PlayerSaveData = {
       version: CURRENT_SAVE_VERSION,

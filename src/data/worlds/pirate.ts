@@ -274,13 +274,13 @@ export const PIRATE_WORLD: AnimeWorld = {
   completionReward: {
     xp: 1250,
     title: "SEA CONQUEROR",
-    crateId: "crate_mecha_epic",
+    crateId: "shinobi_crate",
     badgeKey: "animeWorld.badges.pirateChampion",
   },
   masteryReward: {
     xp: 2500,
     title: "PIRATE KING",
-    crateId: "crate_divine_celestial",
+    crateId: "elite_crate",
     badgeKey: "animeWorld.badges.pirateMaster",
   },
 }

@@ -274,13 +274,13 @@ export const DRAGON_WORLD: AnimeWorld = {
   completionReward: {
     xp: 1000,
     title: "SUPER WARRIOR",
-    crateId: "crate_mecha_epic",
+    crateId: "elite_crate",
     badgeKey: "animeWorld.badges.dragonChampion",
   },
   masteryReward: {
     xp: 2000,
     title: "ULTRA INSTINCT",
-    crateId: "crate_divine_celestial",
+    crateId: "mythic_crate",
     badgeKey: "animeWorld.badges.dragonMaster",
   },
 }

@@ -274,13 +274,13 @@ export const JUJUTSU_WORLD: AnimeWorld = {
   completionReward: {
     xp: 750,
     title: "CURSED PRECISION",
-    crateId: "crate_cyber_rare",
+    crateId: "shinobi_crate",
     badgeKey: "animeWorld.badges.jujutsuChampion",
   },
   masteryReward: {
     xp: 1500,
     title: "SPECIAL GRADE",
-    crateId: "crate_divine_celestial",
+    crateId: "elite_crate",
     badgeKey: "animeWorld.badges.jujutsuMaster",
   },
 }

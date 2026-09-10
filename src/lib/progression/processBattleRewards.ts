@@ -6,6 +6,7 @@ import {
   PlayerStats,
   CampaignWorldProgress,
   createDefaultNarutoWorldProgress,
+  syncCampaignSummary,
 } from "@/types/player"
 import { loadPlayerProfile, savePlayerProfile } from "@/lib/storage/playerStorage"
 import { addBattleHistoryEntry } from "@/lib/storage/battleHistoryStorage"
@@ -17,6 +18,8 @@ import { calculateBattleXp, BattleXpResult } from "./calculateXp"
 import { applyXpGain, LevelProgressionResult } from "./calculateLevel"
 import { calculatePlayerAttributes } from "./calculateAttributes"
 import { calculateRankFromAttributes, isRankUp } from "./calculateRank"
+import { getStageByEnemyId, getWorldById, ANIME_WORLD_ORDER } from "@/data/worlds"
+import { AnimeWorldId } from "@/types/world"
 
 export interface AwardedCrateReward {
   crateId: string
@@ -36,6 +39,7 @@ export interface BattleRewardSummary {
   isFirstClear?: boolean
   firstClearBonusXp?: number
   campaignCompleted?: boolean
+  campaignMastered?: boolean
   stageUnlocked?: number
   unlockedTitle?: string
   awardedCrates?: AwardedCrateReward[]
@@ -55,17 +59,31 @@ export function processBattleRewards(
   // 1. Campaign Progression Tracking & First Clear Detection
   let isFirstClear = false
   let firstClearBonus = 0
+  let worldBonusXp = 0
   let campaignCompleted = false
+  let campaignMastered = false
   let stageUnlocked: number | undefined = undefined
+  let unlockedTitle: string | undefined = undefined
+  const awardedCrates: AwardedCrateReward[] = []
 
   const updatedCampaignProgress: Record<string, CampaignWorldProgress> = {
     ...(currentProfile.campaignProgress ?? {}),
   }
 
   const updatedAchievements = [...(currentProfile.achievements ?? [])]
+  const updatedTitles = [...(currentProfile.titles ?? [])]
+  let currentTitle = currentProfile.title
 
   if (victory && enemy.world) {
-    const worldKey = enemy.world
+    const worldKey = enemy.world as AnimeWorldId
+    const stageLookup = getStageByEnemyId(enemy.id)
+    const worldConfig = stageLookup?.world ?? getWorldById(worldKey)
+    const stageConfig =
+      stageLookup?.stage ??
+      worldConfig?.stages.find(
+        (s) => s.id === enemy.id || s.enemyId === enemy.id || s.stageNumber === enemy.stage
+      )
+
     const existingWorldProgress: CampaignWorldProgress =
       updatedCampaignProgress[worldKey] ??
       (worldKey === "naruto"
@@ -84,7 +102,27 @@ export function processBattleRewards(
     const alreadyClaimed = existingWorldProgress.firstClearClaimed?.[enemy.id] ?? false
     if (!alreadyClaimed) {
       isFirstClear = true
-      firstClearBonus = enemy.firstClearBonusXp ?? 0
+      firstClearBonus =
+        stageConfig?.firstClearRewards?.bonusXp ?? enemy.firstClearBonusXp ?? 0
+
+      // Stage first clear crate reward
+      if (stageConfig?.firstClearRewards?.crateId) {
+        awardedCrates.push({
+          crateId: stageConfig.firstClearRewards.crateId,
+          count: 1,
+          reason: `${enemy.name} First Clear`,
+        })
+      }
+
+      // Stage first clear title reward
+      if (stageConfig?.firstClearRewards?.title) {
+        const stageTitle = stageConfig.firstClearRewards.title
+        if (!updatedTitles.includes(stageTitle)) {
+          updatedTitles.push(stageTitle)
+          unlockedTitle = stageTitle
+          currentTitle = stageTitle
+        }
+      }
     }
 
     const newFirstClearClaimed = {
@@ -93,7 +131,7 @@ export function processBattleRewards(
     }
 
     // Stage progression
-    const stageNum = enemy.stage ?? 1
+    const stageNum = enemy.stage ?? stageConfig?.stageNumber ?? 1
     const newCompletedStages = existingWorldProgress.completedStages.includes(stageNum)
       ? existingWorldProgress.completedStages
       : [...existingWorldProgress.completedStages, stageNum].sort((a, b) => a - b)
@@ -107,8 +145,18 @@ export function processBattleRewards(
       stageUnlocked = nextStage
     }
 
+    // Calculate mastery stars for this stage (1 to 3 stars)
+    let stageStars = 1 // Star 1: Completed victory
+    const accTarget =
+      stageConfig?.masteryObjectives?.[1]?.minAccuracy ?? stageConfig?.recommendedAccuracy ?? 90
+    if (finalStats.battleAccuracy >= accTarget) stageStars += 1
+    const wpmTarget =
+      stageConfig?.masteryObjectives?.[2]?.minWpm ?? stageConfig?.recommendedWpm ?? 30
+    if (finalStats.battleWpm >= wpmTarget) stageStars += 1
+
     // Best scores update
     const prevBest = existingWorldProgress.bestScores?.[enemy.id]
+    const bestStars = Math.max(prevBest?.stars ?? 0, stageStars)
     const newBestScores = {
       ...existingWorldProgress.bestScores,
       [enemy.id]: {
@@ -116,16 +164,105 @@ export function processBattleRewards(
         bestAccuracy: Math.max(prevBest?.bestAccuracy ?? 0, finalStats.battleAccuracy),
         bestCombo: Math.max(prevBest?.bestCombo ?? 0, finalStats.bestCombo),
         completedAt: new Date().toISOString(),
+        stars: bestStars,
       },
     }
 
+    // Calculate total stars earned across world stages
+    let totalWorldStars = 0
+    for (const score of Object.values(newBestScores)) {
+      totalWorldStars += score.stars ?? 1
+    }
+
     // Check boss defeat & campaign completion
-    const isBossCleared = enemy.isBoss === true
+    const isBossCleared = enemy.isBoss === true || stageNum >= (worldConfig?.stages.length ?? 8)
     const isWorldCompleted = existingWorldProgress.completed || isBossCleared
+
     if (isBossCleared) {
       campaignCompleted = true
-      if (!updatedAchievements.includes("naruto_world_completed")) {
-        updatedAchievements.push("naruto_world_completed")
+      const completionAchievement = `${worldKey}_world_completed`
+      if (!updatedAchievements.includes(completionAchievement)) {
+        updatedAchievements.push(completionAchievement)
+      }
+
+      // Claim world completion rewards if not yet claimed
+      if (!existingWorldProgress.claimedWorldReward && worldConfig?.completionReward) {
+        if (worldConfig.completionReward.title) {
+          const compTitle = worldConfig.completionReward.title
+          if (!updatedTitles.includes(compTitle)) {
+            updatedTitles.push(compTitle)
+            unlockedTitle = compTitle
+            currentTitle = compTitle
+          }
+        }
+        if (worldConfig.completionReward.crateId) {
+          awardedCrates.push({
+            crateId: worldConfig.completionReward.crateId,
+            count: 1,
+            reason: `${worldConfig.series} World Completion`,
+          })
+        }
+        if (worldConfig.completionReward.xp) {
+          worldBonusXp += worldConfig.completionReward.xp
+        }
+      }
+
+      // Unlock next world in progression sequence
+      const worldIndex = ANIME_WORLD_ORDER.indexOf(worldKey)
+      if (worldIndex >= 0 && worldIndex < ANIME_WORLD_ORDER.length - 1) {
+        const nextWorldId = ANIME_WORLD_ORDER[worldIndex + 1]
+        if (!updatedCampaignProgress[nextWorldId]) {
+          updatedCampaignProgress[nextWorldId] = {
+            unlocked: true,
+            completed: false,
+            currentStage: 1,
+            completedStages: [],
+            defeatedEnemies: [],
+            bestScores: {},
+            firstClearClaimed: {},
+          }
+        } else {
+          updatedCampaignProgress[nextWorldId] = {
+            ...updatedCampaignProgress[nextWorldId],
+            unlocked: true,
+          }
+        }
+      }
+    }
+
+    // Check world mastery (all stages cleared with high stars >= 95% of max)
+    const totalPossibleStars = (worldConfig?.stages.length ?? 8) * 3
+    const isWorldMastered =
+      existingWorldProgress.mastered ||
+      (isWorldCompleted && totalWorldStars >= Math.floor(totalPossibleStars * 0.95))
+
+    if (isWorldMastered) {
+      campaignMastered = true
+      const masteryAchievement = `${worldKey}_world_mastered`
+      if (!updatedAchievements.includes(masteryAchievement)) {
+        updatedAchievements.push(masteryAchievement)
+      }
+
+      // Claim world mastery rewards if not yet claimed
+      if (!existingWorldProgress.claimedMasteryReward && worldConfig?.masteryReward) {
+        if (worldConfig.masteryReward.title) {
+          const mastTitle = worldConfig.masteryReward.title
+          if (!updatedTitles.includes(mastTitle)) {
+            updatedTitles.push(mastTitle)
+            unlockedTitle = mastTitle
+            currentTitle = mastTitle
+          }
+        }
+        if (worldConfig.masteryReward.crateId) {
+          awardedCrates.push({
+            crateId: worldConfig.masteryReward.crateId,
+            count: 1,
+            reason: `${worldConfig.series} World Mastery`,
+          })
+        }
+        if (worldConfig.masteryReward.xp) {
+          worldBonusXp += worldConfig.masteryReward.xp
+        }
       }
     }
 
@@ -133,28 +270,33 @@ export function processBattleRewards(
       ...existingWorldProgress,
       unlocked: true,
       completed: isWorldCompleted,
+      mastered: isWorldMastered,
       currentStage: nextStage,
       completedStages: newCompletedStages,
       defeatedEnemies: newDefeatedEnemies,
       bestScores: newBestScores,
       firstClearClaimed: newFirstClearClaimed,
+      claimedWorldReward: existingWorldProgress.claimedWorldReward || isWorldCompleted,
+      claimedMasteryReward: existingWorldProgress.claimedMasteryReward || isWorldMastered,
+      masteryStars: totalWorldStars,
     }
   }
 
-  // Check title unlock
-  let unlockedTitle: string | undefined = undefined
-  const updatedTitles = [...(currentProfile.titles ?? [])]
-  let currentTitle = currentProfile.title
-
-  if (campaignCompleted) {
-    if (!updatedTitles.includes("SHINOBI TYPIST")) {
-      updatedTitles.push("SHINOBI TYPIST")
-      unlockedTitle = "SHINOBI TYPIST"
+  // 2. Track weak keys from battle
+  const updatedKeyErrors: Record<string, number> = {
+    ...(currentProfile.keyErrors ?? {}),
+  }
+  if (result.weakKeys && result.weakKeys.length > 0) {
+    for (const wk of result.weakKeys) {
+      if (wk.key) {
+        const k = wk.key.toLowerCase()
+        updatedKeyErrors[k] = (updatedKeyErrors[k] ?? 0) + (wk.errors || 1)
+      }
     }
-    currentTitle = "SHINOBI TYPIST"
   }
 
-  // 2. Calculate XP earned
+  // 3. Calculate XP earned
+  const totalFirstClearAndBonusXp = firstClearBonus + worldBonusXp
   const xpResult = calculateBattleXp({
     victory,
     enemyLevel: enemy.level,
@@ -163,15 +305,15 @@ export function processBattleRewards(
     totalErrors: finalStats.totalErrors,
     bestCombo: finalStats.bestCombo,
     baseXpOverride: enemy.xpReward,
-    firstClearBonus,
+    firstClearBonus: totalFirstClearAndBonusXp,
   })
 
-  // 3. Apply Level progression and XP overflow
+  // 4. Apply Level progression and XP overflow
   const prevLevel = currentProfile.level
   const prevXp = currentProfile.xp
   const levelResult = applyXpGain(prevLevel, prevXp, xpResult.totalXp)
 
-  // 4. Update lifetime player stats
+  // 5. Update lifetime player stats
   const prevPlayed = currentProfile.stats.battlesPlayed
   const newBattlesPlayed = prevPlayed + 1
   const newAverageWpm =
@@ -205,13 +347,13 @@ export function processBattleRewards(
     averageAccuracy: newAverageAccuracy,
   }
 
-  // 5. Recalculate performance ratings and rank
+  // 6. Recalculate performance ratings and rank
   const newAttributes = calculatePlayerAttributes(updatedStats)
   const prevRank = currentProfile.rank
   const newRank = calculateRankFromAttributes(newAttributes)
   const didRankUp = isRankUp(prevRank, newRank)
 
-  const updatedProfile: PlayerProfile = {
+  const updatedProfile: PlayerProfile = syncCampaignSummary({
     ...currentProfile,
     level: levelResult.newLevel,
     xp: levelResult.newXp,
@@ -220,16 +362,17 @@ export function processBattleRewards(
     attributes: newAttributes,
     stats: updatedStats,
     campaignProgress: updatedCampaignProgress,
+    keyErrors: updatedKeyErrors,
     achievements: updatedAchievements,
     title: currentTitle,
     titles: updatedTitles,
     updatedAt: new Date().toISOString(),
-  }
+  })
 
-  // 6. Persist to storage
+  // 7. Persist to storage
   savePlayerProfile(updatedProfile)
 
-  // 7. Record into persistent battle history
+  // 8. Record into persistent battle history
   const historyEntry = addBattleHistoryEntry({
     enemyId: enemy.id,
     enemyName: enemy.name,
@@ -247,7 +390,7 @@ export function processBattleRewards(
     durationSeconds: Math.round(elapsedTime),
   })
 
-  // 8. Asynchronous Cloud Synchronization (non-blocking for animations)
+  // 9. Asynchronous Cloud Synchronization (non-blocking for animations)
   const authUser = getStoredUser()
   if (authUser && !authUser.isGuest && authUser.id) {
     saveCloudPlayerProfile(authUser.id, updatedProfile).catch((err) =>
@@ -259,9 +402,7 @@ export function processBattleRewards(
     )
   }
 
-  // 9. Crate Milestone Rewards (Cosmetics Progression)
-  const awardedCrates: AwardedCrateReward[] = []
-
+  // 10. Crate Milestone Rewards (Cosmetics Progression)
   if (victory) {
     if (isFirstClear) {
       const stageNum = enemy.stage ?? 1
@@ -319,6 +460,7 @@ export function processBattleRewards(
     isFirstClear,
     firstClearBonusXp: firstClearBonus > 0 ? firstClearBonus : undefined,
     campaignCompleted,
+    campaignMastered,
     stageUnlocked,
     unlockedTitle,
     awardedCrates: awardedCrates.length > 0 ? awardedCrates : undefined,
