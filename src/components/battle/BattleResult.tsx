@@ -30,6 +30,8 @@ import { RankUpModal } from "@/components/progression/RankUpModal"
 import { getDefeatAdvice, DefeatAdvice } from "@/lib/battle/defeatAdvice"
 import { useI18n } from "@/lib/i18n/i18nContext"
 import { getCrateById } from "@/data/crates"
+import { getWorldById } from "@/data/worlds"
+import { getFingerForKey, FINGER_PALETTE, resolveDefaultLayout } from "@/lib/keyboard/fingerMap"
 
 function formatCrateReason(
   reason: string,
@@ -60,7 +62,7 @@ export function BattleResult({
   exercises,
   onRematch,
 }: BattleResultProps) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const { finalStats } = result
 
   // Process rewards strictly once upon initial mount
@@ -75,6 +77,14 @@ export function BattleResult({
     () => getDefeatAdvice(enemy, finalStats, t),
     [enemy, finalStats, t]
   )
+
+  const nextStage = useMemo(() => {
+    if (!enemy.world) return undefined
+    const world = getWorldById(enemy.world)
+    if (!world) return undefined
+    const currentNum = enemy.stage ?? 1
+    return world.stages.find((s) => s.stageNumber === currentNum + 1)
+  }, [enemy.world, enemy.stage])
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center py-12 relative overflow-hidden">
@@ -387,6 +397,45 @@ export function BattleResult({
           </div>
         </div>
 
+        {/* Victory Tactical Analysis — on victory */}
+        {victory && (
+          <motion.div
+            className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 backdrop-blur-sm p-5 space-y-3"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+          >
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400">
+                  <Sparkles size={16} />
+                </div>
+                <div>
+                  <span className="text-[10px] font-mono text-emerald-400/80 font-bold uppercase tracking-wider block">
+                    {t("battleResult.performanceHeader")} · {enemy.name.toUpperCase()}
+                  </span>
+                  <h3 className="text-sm font-black text-white">
+                    {finalStats.battleAccuracy >= 98
+                      ? "Flawless Keystroke Execution"
+                      : finalStats.battleWpm >= enemy.recommendedWpm
+                        ? "Superior Velocity Overdrive"
+                        : "Strategic Focus Mastery"}
+                  </h3>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-mono">
+                <span className="text-white/40">{t("animeWorld.targetSpeed")}:</span>
+                <span className="font-black px-2 py-0.5 rounded border bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+                  {finalStats.battleWpm} / {enemy.recommendedWpm} WPM
+                </span>
+              </div>
+            </div>
+            <p className="text-xs text-white/70 leading-relaxed">
+              Your sustained {finalStats.battleWpm} WPM and {finalStats.battleAccuracy}% accuracy successfully neutralized {enemy.name}&apos;s trial. Maintaining consistent typing momentum without pausing overcame the incoming combat pressure.
+            </p>
+          </motion.div>
+        )}
+
         {/* Character Tactical Coaching Advice — on defeat */}
         {!victory && defeatAdvice && (
           <motion.div
@@ -444,7 +493,7 @@ export function BattleResult({
           </motion.div>
         )}
 
-        {/* Weakness Analysis — only on defeat */}
+        {/* Weakness Analysis & Finger Mapping */}
         {!victory && weakKeys.length > 0 && (
           <motion.div
             className="rounded-2xl border border-red-500/20 bg-red-500/5 backdrop-blur-sm p-5"
@@ -463,39 +512,64 @@ export function BattleResult({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {weakKeys.slice(0, 3).map((wk, index) => (
-                <div
-                  key={wk.key}
-                  className="rounded-xl border border-red-500/20 bg-black/40 p-4 flex flex-col justify-between"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-black text-red-400/60">
-                      {index + 1}.
-                    </span>
-                    <span className="text-3xl font-black text-red-400">
-                      {wk.key.toUpperCase()}
-                    </span>
-                  </div>
-                  <div className="space-y-1 text-xs">
-                    <div className="flex justify-between text-white/70">
-                      <span>{t("common.accuracy")}:</span>
-                      <span className="font-bold text-white">
-                        {Math.round((1 - wk.errorRate) * 100)}%
+              {weakKeys.slice(0, 3).map((wk, index) => {
+                const layout = resolveDefaultLayout(locale)
+                const fingerInfo = getFingerForKey(wk.key, layout)
+                const fingerConfig = fingerInfo ? FINGER_PALETTE[fingerInfo.finger] : undefined
+                const fingerName =
+                  fingerConfig?.name?.[locale === "pt-BR" ? "pt-BR" : "en"] || fingerInfo?.finger
+
+                return (
+                  <div
+                    key={wk.key}
+                    className="rounded-xl border border-red-500/20 bg-black/40 p-4 flex flex-col justify-between"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-black text-red-400/60">
+                        {index + 1}.
+                      </span>
+                      <span className="text-3xl font-black text-red-400">
+                        {wk.key.toUpperCase()}
                       </span>
                     </div>
-                    <div className="flex justify-between text-white/70">
-                      <span>{t("common.errors")}:</span>
-                      <span className="font-bold text-red-400">{wk.errors}</span>
-                    </div>
-                    <div className="flex justify-between text-white/70">
-                      <span>{t("battleResult.avgResponse")}</span>
-                      <span className="font-bold text-white">
-                        {Math.round(wk.averageResponseTime)}ms
-                      </span>
+
+                    {/* Finger Telemetry */}
+                    {fingerConfig && (
+                      <div className="mb-2 pb-2 border-b border-white/5">
+                        <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold">
+                          <span
+                            className="w-2 h-2 rounded-full"
+                            style={{ backgroundColor: fingerConfig.hex }}
+                          />
+                          <span style={{ color: fingerConfig.hex }}>{fingerName}</span>
+                        </div>
+                        <span className="text-[10px] text-white/40 capitalize">
+                          {fingerInfo?.hand} hand {fingerInfo?.isHomeRow ? "· Home Row" : ""}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="space-y-1 text-xs">
+                      <div className="flex justify-between text-white/70">
+                        <span>{t("common.accuracy")}:</span>
+                        <span className="font-bold text-white">
+                          {Math.round((1 - wk.errorRate) * 100)}%
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-white/70">
+                        <span>{t("common.errors")}:</span>
+                        <span className="font-bold text-red-400">{wk.errors}</span>
+                      </div>
+                      <div className="flex justify-between text-white/70">
+                        <span>{t("battleResult.avgResponse")}</span>
+                        <span className="font-bold text-white">
+                          {Math.round(wk.averageResponseTime)}ms
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </motion.div>
         )}
@@ -534,6 +608,15 @@ export function BattleResult({
 
         {/* Actions */}
         <div className="flex gap-3 justify-center flex-wrap">
+          {victory && nextStage && (
+            <Link
+              href={`/battle?enemy=${nextStage.enemyId}`}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-black font-black text-sm transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)]"
+            >
+              <span>{t("animeWorld.nextRecommended").toUpperCase()} (Stage {nextStage.stageNumber})</span>
+              <ChevronRight size={16} />
+            </Link>
+          )}
           {enemy.world && (
             <Link
               href={`/anime-world/${enemy.world}`}

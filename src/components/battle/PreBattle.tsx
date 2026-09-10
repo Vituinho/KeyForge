@@ -2,10 +2,11 @@
 
 import { motion } from "framer-motion"
 import { Enemy } from "@/types/character"
-import { Swords, ChevronRight, ChevronLeft } from "lucide-react"
+import { Swords, ChevronRight, ChevronLeft, Star, Award, Sparkles, Package } from "lucide-react"
 import { usePlayer } from "@/hooks/usePlayer"
 import Link from "next/link"
 import { useI18n } from "@/lib/i18n/i18nContext"
+import { getStageByEnemyId } from "@/data/worlds"
 
 interface PreBattleProps {
   enemy: Enemy
@@ -15,6 +16,14 @@ interface PreBattleProps {
 export function PreBattle({ enemy, onFight }: PreBattleProps) {
   const { t } = useI18n()
   const { player } = usePlayer()
+
+  const stageMatch = getStageByEnemyId(enemy.id)
+  const stage = stageMatch?.stage
+  const savedScore = enemy.world
+    ? player.campaignProgress?.[enemy.world]?.bestScores?.[enemy.id]
+    : undefined
+  const isCleared = Boolean(savedScore)
+  const starsEarned = savedScore?.stars ?? (isCleared ? 1 : 0)
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4 py-16 sm:py-8">
@@ -133,12 +142,111 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
         <StatChip label={t("animeWorld.combatFocus").toUpperCase()} value={enemy.difficulty} color={enemy.themeColor} />
       </motion.div>
 
+      {/* Personal Best & Telemetry Info */}
+      <motion.div
+        className="relative z-10 mt-6 w-full max-w-lg grid grid-cols-1 sm:grid-cols-2 gap-3 px-2"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7, duration: 0.4 }}
+      >
+        {/* Personal Best / Record */}
+        <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-4 flex flex-col justify-between">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[11px] font-mono font-bold text-white/50 uppercase tracking-wider flex items-center gap-1.5">
+              <Award size={14} className="text-amber-400" />
+              {t("animeWorld.personalBestRecord")}
+            </span>
+            {/* Stars */}
+            <div className="flex items-center gap-0.5">
+              {[1, 2, 3].map((starIndex) => (
+                <Star
+                  key={starIndex}
+                  size={14}
+                  className={
+                    starIndex <= starsEarned
+                      ? "text-yellow-400 fill-yellow-400 drop-shadow-[0_0_6px_rgba(250,204,21,0.5)]"
+                      : "text-white/20"
+                  }
+                />
+              ))}
+            </div>
+          </div>
+          {savedScore ? (
+            <div className="text-sm font-bold text-white font-mono">
+              {savedScore.bestWpm} WPM · {savedScore.bestAccuracy}% ACC · {savedScore.bestCombo}x
+            </div>
+          ) : (
+            <div className="text-xs text-amber-400/80 font-medium">
+              {t("animeWorld.firstClearBonus", {
+                xp: stage?.firstClearRewards?.bonusXp ?? enemy.firstClearBonusXp ?? 100,
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Potential Rewards */}
+        <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm p-4 flex flex-col justify-between">
+          <span className="text-[11px] font-mono font-bold text-white/50 uppercase tracking-wider flex items-center gap-1.5 mb-2">
+            <Sparkles size={14} className="text-emerald-400" />
+            {t("animeWorld.standardReward", {
+              xp: stage?.rewards?.xp ?? enemy.xpReward ?? 100,
+            })}
+          </span>
+          <div className="flex items-center gap-2 text-xs font-mono text-white/80">
+            {stage?.firstClearRewards?.crateId && !isCleared && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                <Package size={12} />
+                +1 Crate
+              </span>
+            )}
+            {stage?.firstClearRewards?.title && !isCleared && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                Title: {stage.firstClearRewards.title}
+              </span>
+            )}
+            {isCleared && (
+              <span className="text-white/40">{t("animeWorld.clearedBadge")}</span>
+            )}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Mechanic & Rule Briefing Card */}
+      {stage && (
+        <motion.div
+          className="relative z-10 mt-4 w-full max-w-lg rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm p-4 text-left"
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.4 }}
+        >
+          <div className="flex items-center gap-2 mb-1.5">
+            <span
+              className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded border"
+              style={{
+                borderColor: `${enemy.themeColor}50`,
+                backgroundColor: `${enemy.themeColor}15`,
+                color: enemy.themeColor,
+              }}
+            >
+              {stage.typingFocus.toUpperCase()}
+            </span>
+            <span className="text-xs font-black text-white">{stage.name}</span>
+          </div>
+          <p className="text-xs text-white/70 leading-relaxed">
+            {t(stage.mechanicSummaryKey as Parameters<typeof t>[0]) ||
+              stage.characterTitle ||
+              enemy.description}
+          </p>
+        </motion.div>
+      )}
+
+      {/* Description quote */}
       {enemy.description && (
         <motion.p
-          className="relative z-10 mt-6 max-w-md text-center text-white/40 text-sm italic px-4"
+          className="relative z-10 mt-4 max-w-md text-center text-white/40 text-sm italic px-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
+          transition={{ delay: 0.9 }}
         >
           &ldquo;
           {t(`battle.characterDescriptions.${enemy.id.replace("-", "_")}` as Parameters<typeof t>[0]) ||
