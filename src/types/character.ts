@@ -4,6 +4,7 @@ export type EnemyType = "normal" | "elite" | "boss"
 export type TypingFocus =
   | "balanced"
   | "accuracy"
+  | "precision"
   | "speed"
   | "consistency"
   | "combo"

@@ -379,6 +379,359 @@ export const CHARACTERS: Enemy[] = [
       },
     ],
   },
+
+  // -------------------------------------------------------------
+  // JUJUTSU KAISEN — Precision, Punctuation & Special Characters
+  // -------------------------------------------------------------
+  // 9. Yuji Itadori — Divergent Fist (Precision Basics)
+  {
+    id: "yuji",
+    name: "Yuji Itadori",
+    anime: "Jujutsu Kaisen",
+    world: "jujutsu",
+    stage: 1,
+    level: 12,
+    type: "normal",
+    typingFocus: "precision",
+    maxHp: 650,
+    attack: 8,
+    attackInterval: 5000,
+    recommendedWpm: 40,
+    recommendedAccuracy: 92,
+    difficulty: 30,
+    xpReward: 60,
+    firstClearBonusXp: 120,
+    isBoss: false,
+    themeColor: "#ef4444",
+    accentColor: "#f59e0b",
+    description:
+      "Vessel of the King of Curses. Delivers devastating Divergent Fist blows requiring precise timing and accurate punctuation.",
+    abilities: [
+      {
+        id: "divergent-fist",
+        name: "Divergent Fist",
+        description: "Delayed impact strike reinforcing basic punctuation precision.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "precision-strike",
+        id: "yuji-divergent-precision",
+        name: "Divergent Precision",
+        description: "Accuracy below 92% reduces damage by 40%.",
+        targetAccuracy: 92,
+        belowThresholdPenalty: 0.6,
+        aboveThresholdBonus: 1.15,
+      },
+    ],
+  },
+
+  // 10. Nobara Kugisaki — Resonance (Punctuation Nails)
+  {
+    id: "nobara",
+    name: "Nobara Kugisaki",
+    anime: "Jujutsu Kaisen",
+    world: "jujutsu",
+    stage: 2,
+    level: 14,
+    type: "normal",
+    typingFocus: "precision",
+    maxHp: 750,
+    attack: 10,
+    attackInterval: 4800,
+    recommendedWpm: 45,
+    recommendedAccuracy: 93,
+    difficulty: 40,
+    xpReward: 75,
+    firstClearBonusXp: 150,
+    isBoss: false,
+    themeColor: "#ec4899",
+    accentColor: "#f43f5e",
+    description:
+      "Fierce sorcerer wielding hammer and nails. Demands surgical precision across apostrophes, hyphens, and exclamation marks.",
+    abilities: [
+      {
+        id: "resonance",
+        name: "Resonance",
+        description: "Transmits damage directly through needle-sharp punctuation accuracy.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "precision-strike",
+        id: "nobara-hairpin-precision",
+        name: "Hairpin Precision",
+        description: "Accuracy below 93% reduces damage by 45%.",
+        targetAccuracy: 93,
+        belowThresholdPenalty: 0.55,
+        aboveThresholdBonus: 1.2,
+      },
+    ],
+  },
+
+  // 11. Megumi Fushiguro — Ten Shadows (Quotation Marks & Semicolons)
+  {
+    id: "megumi",
+    name: "Megumi Fushiguro",
+    anime: "Jujutsu Kaisen",
+    world: "jujutsu",
+    stage: 3,
+    level: 16,
+    type: "normal",
+    typingFocus: "precision",
+    maxHp: 880,
+    attack: 12,
+    attackInterval: 4500,
+    recommendedWpm: 50,
+    recommendedAccuracy: 94,
+    difficulty: 50,
+    xpReward: 95,
+    firstClearBonusXp: 180,
+    isBoss: false,
+    themeColor: "#3b82f6",
+    accentColor: "#1d4ed8",
+    description:
+      "Shadow technique inheritor. Challenges mental composure with complex quotations, semicolons, and parentheses.",
+    abilities: [
+      {
+        id: "shadow-summons",
+        name: "Ten Shadows Summoning",
+        description: "Summons divine hounds and Nue through disciplined symbol keystrokes.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "precision-strike",
+        id: "megumi-shadow-focus",
+        name: "Shadow Domain Focus",
+        description: "Accuracy below 94% reduces damage by 50%.",
+        targetAccuracy: 94,
+        belowThresholdPenalty: 0.5,
+        aboveThresholdBonus: 1.25,
+      },
+    ],
+  },
+
+  // 12. Aoi Todo — Boogie Woogie (Punctuation Rhythm Swaps)
+  {
+    id: "todo",
+    name: "Aoi Todo",
+    anime: "Jujutsu Kaisen",
+    world: "jujutsu",
+    stage: 4,
+    level: 18,
+    type: "elite",
+    typingFocus: "precision",
+    maxHp: 1050,
+    attack: 14,
+    attackInterval: 4200,
+    recommendedWpm: 56,
+    recommendedAccuracy: 95,
+    difficulty: 60,
+    xpReward: 120,
+    firstClearBonusXp: 220,
+    isBoss: false,
+    themeColor: "#8b5cf6",
+    accentColor: "#a855f7",
+    description:
+      "530,000 IQ sorcerer. Swaps rhythmic patterns and tests punctuation shifts with sudden cadence changes.",
+    abilities: [
+      {
+        id: "boogie-woogie",
+        name: "Boogie Woogie",
+        description: "Claps hands to shift sentence rhythm unpredictably.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "precision-strike",
+        id: "todo-clap-precision",
+        name: "Boogie Woogie Sync",
+        description: "Accuracy below 95% reduces damage by 50%.",
+        targetAccuracy: 95,
+        belowThresholdPenalty: 0.5,
+        aboveThresholdBonus: 1.25,
+      },
+    ],
+  },
+
+  // 13. Kento Nanami — 7:3 Ratio Technique (Numerical & Critical Precision)
+  {
+    id: "nanami",
+    name: "Kento Nanami",
+    anime: "Jujutsu Kaisen",
+    world: "jujutsu",
+    stage: 5,
+    level: 20,
+    type: "elite",
+    typingFocus: "precision",
+    maxHp: 1250,
+    attack: 16,
+    attackInterval: 4000,
+    recommendedWpm: 62,
+    recommendedAccuracy: 95,
+    difficulty: 70,
+    xpReward: 150,
+    firstClearBonusXp: 260,
+    isBoss: false,
+    themeColor: "#eab308",
+    accentColor: "#ca8a04",
+    description:
+      "The salaryman sorcerer. Forces a weak point at the 7:3 ratio, requiring precision on numbers, percentages, and colons.",
+    abilities: [
+      {
+        id: "ratio-strike",
+        name: "Ratio Technique: 7:3",
+        description: "Delivers guaranteed critical strikes when symbol precision meets the ratio standard.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "precision-strike",
+        id: "nanami-ratio-precision",
+        name: "7:3 Ratio Critical",
+        description: "Accuracy below 95% deals 55% reduced damage. 95%+ precision deals +30% critical bonus.",
+        targetAccuracy: 95,
+        belowThresholdPenalty: 0.45,
+        aboveThresholdBonus: 1.3,
+      },
+    ],
+  },
+
+  // 14. Toji Fushiguro — Heavenly Restriction (Zero Cursed Energy, Pure Speed & Precision)
+  {
+    id: "toji",
+    name: "Toji Fushiguro",
+    anime: "Jujutsu Kaisen",
+    world: "jujutsu",
+    stage: 6,
+    level: 23,
+    type: "elite",
+    typingFocus: "precision",
+    maxHp: 1500,
+    attack: 19,
+    attackInterval: 3800,
+    recommendedWpm: 70,
+    recommendedAccuracy: 96,
+    difficulty: 80,
+    xpReward: 185,
+    firstClearBonusXp: 300,
+    isBoss: false,
+    themeColor: "#64748b",
+    accentColor: "#0f172a",
+    description:
+      "The Sorcerer Killer. Wields the Inverted Spear of Heaven with raw physical speed and zero room for input error.",
+    abilities: [
+      {
+        id: "inverted-spear",
+        name: "Inverted Spear of Heaven",
+        description: "Pierces through all defensive mistakes with lethal velocity.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "precision-strike",
+        id: "toji-lethal-precision",
+        name: "Heavenly Restriction",
+        description: "Accuracy below 96% reduces damage by 60%.",
+        targetAccuracy: 96,
+        belowThresholdPenalty: 0.4,
+        aboveThresholdBonus: 1.35,
+      },
+    ],
+  },
+
+  // 15. Ryomen Sukuna — Malevolent Shrine (Dismantle & Cleave)
+  {
+    id: "sukuna",
+    name: "Ryomen Sukuna",
+    anime: "Jujutsu Kaisen",
+    world: "jujutsu",
+    stage: 7,
+    level: 26,
+    type: "boss",
+    typingFocus: "precision",
+    maxHp: 1850,
+    attack: 22,
+    attackInterval: 3500,
+    recommendedWpm: 78,
+    recommendedAccuracy: 97,
+    difficulty: 90,
+    xpReward: 230,
+    firstClearBonusXp: 400,
+    isBoss: true,
+    themeColor: "#dc2626",
+    accentColor: "#7f1d1d",
+    description:
+      "The King of Curses. Unleashes Malevolent Shrine with an unrelenting barrage of complex punctuation and multi-clause sentences.",
+    abilities: [
+      {
+        id: "malevolent-shrine",
+        name: "Domain Expansion: Malevolent Shrine",
+        description: "Inundates the typing space with endless slicing keystrokes.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "precision-strike",
+        id: "sukuna-dismantle-precision",
+        name: "Cleave & Dismantle",
+        description: "Accuracy below 97% suffers 70% damage reduction.",
+        targetAccuracy: 97,
+        belowThresholdPenalty: 0.3,
+        aboveThresholdBonus: 1.4,
+      },
+    ],
+  },
+
+  // 16. Satoru Gojo — Limitless & Infinite Void (98%–100% Precision Requirement)
+  {
+    id: "gojo",
+    name: "Satoru Gojo",
+    anime: "Jujutsu Kaisen",
+    world: "jujutsu",
+    stage: 8,
+    level: 30,
+    type: "boss",
+    typingFocus: "precision",
+    maxHp: 2300,
+    attack: 26,
+    attackInterval: 3200,
+    recommendedWpm: 88,
+    recommendedAccuracy: 98,
+    difficulty: 98,
+    xpReward: 300,
+    firstClearBonusXp: 600,
+    isBoss: true,
+    themeColor: "#06b6d4",
+    accentColor: "#8b5cf6",
+    description:
+      "The Honored One. The Infinity barrier blocks all imperfect strikes. Demands 98% to 100% accuracy to penetrate his defense.",
+    abilities: [
+      {
+        id: "infinite-void",
+        name: "Domain Expansion: Infinite Void",
+        description: "Floods the mind with limitless information, demanding absolute cognitive focus.",
+      },
+      {
+        id: "hollow-purple",
+        name: "Secret Technique: Hollow Purple",
+        description: "Combines red and blue into an unstoppable singularity.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "precision-strike",
+        id: "gojo-infinity-barrier",
+        name: "Infinity Absolute Barrier",
+        description:
+          "Accuracy below 98% is absorbed by Infinity, reducing damage by 90%. 98%+ precision penetrates the barrier for +45% bonus damage.",
+        targetAccuracy: 98,
+        belowThresholdPenalty: 0.1,
+        aboveThresholdBonus: 1.45,
+      },
+    ],
+  },
 ]
 
 export function getCharacterById(id: string): Enemy | undefined {

@@ -720,6 +720,38 @@ export const en = {
         name: "Godlike Calamity",
         desc: "Phase 1: Edo Tensei (Balanced). Phase 2: Perfect Susanoo (Speed & Combo). Phase 3: Ten-Tails Jinchuriki (Accuracy & Endurance).",
       },
+      yuji: {
+        name: "Divergent Fist",
+        desc: "Delayed impact strike. Accuracy below 92% suffers -40% damage penalty.",
+      },
+      nobara: {
+        name: "Straw Doll Resonance",
+        desc: "Precision with punctuation nails (apostrophes, hyphens). Accuracy below 93% deals -45% damage.",
+      },
+      megumi: {
+        name: "Ten Shadows Domain",
+        desc: "Symbol control with quotes, parentheses, and semicolons. Accuracy below 94% reduces damage by 50%.",
+      },
+      todo: {
+        name: "Boogie Woogie Swaps",
+        desc: "Sudden punctuation swaps and cadence shifts. Accuracy below 95% incurs -50% damage reduction.",
+      },
+      nanami: {
+        name: "7:3 Ratio Technique",
+        desc: "Numbers and symbols critical strike. Accuracy below 95% deals -55% damage, while 95%+ precision grants +30% critical bonus.",
+      },
+      toji: {
+        name: "Heavenly Restriction",
+        desc: "Zero cursed energy, raw lethal speed. Accuracy below 96% deals -60% damage with zero margin for sloppy errors.",
+      },
+      sukuna: {
+        name: "Malevolent Shrine",
+        desc: "Relentless multi-clause punctuation slaughter. Accuracy below 97% suffers severe -70% damage reduction.",
+      },
+      gojo: {
+        name: "Limitless Infinity",
+        desc: "Absolute Infinity barrier absorbs all strikes below 98% accuracy (-90% penalty). Flawless 98%+ precision bypasses Infinity for +45% bonus damage.",
+      },
     },
     worlds: {
       naruto: {

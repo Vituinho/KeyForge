@@ -720,7 +720,39 @@ export const ptBR: TranslationSchema = {
       },
       madara: {
         name: "Calamidade Divina",
-        desc: "Fase 1: Edo Tensei (Equilíbrio). Fase 2: Susanoo Perfeito (Velocidade & Combo). Fase 3: Jinchuriki do Dez-Caudas (Precisão & Resistência).",
+        desc: "Fase 1: Edo Tensei (Equilibrado). Fase 2: Susanoo Perfeito (Velocidade & Combo). Fase 3: Jinchuriki do Dez-Caudas (Precisão & Resistência).",
+      },
+      yuji: {
+        name: "Punho Divergente",
+        desc: "Impacto atrasado. Precisão abaixo de 92% sofre penalidade de -40% de dano.",
+      },
+      nobara: {
+        name: "Ressonância do Boneco",
+        desc: "Precisão com pregos de pontuação (apóstrofos, hífens). Precisão abaixo de 93% causa -45% de dano.",
+      },
+      megumi: {
+        name: "Domínio das Dez Sombras",
+        desc: "Controle de símbolos com aspas, parênteses e ponto e vírgula. Precisão abaixo de 94% reduz o dano em 50%.",
+      },
+      todo: {
+        name: "Trocas do Boogie Woogie",
+        desc: "Trocas súbitas de pontuação e ritmo. Precisão abaixo de 95% causa -50% de redução de dano.",
+      },
+      nanami: {
+        name: "Proporção 7:3",
+        desc: "Golpe crítico com números e símbolos. Precisão abaixo de 95% causa -55% de dano; precisão ≥ 95% concede +30% de bônus crítico.",
+      },
+      toji: {
+        name: "Restrição Celestial",
+        desc: "Sem energia amaldiçoada, velocidade letal. Precisão abaixo de 96% causa -60% de dano sem margem para erros.",
+      },
+      sukuna: {
+        name: "Santuário Malevolente",
+        desc: "Investida implacável de pontuações e orações complexas. Precisão abaixo de 97% sofre corte severo de -70% no dano.",
+      },
+      gojo: {
+        name: "Infinito Ilimitado",
+        desc: "A barreira do Infinito absorve todos os golpes abaixo de 98% de precisão (-90% de penalidade). Precisão impecável de 98%+ supera o Infinito para +45% de bônus.",
       },
     },
     worlds: {

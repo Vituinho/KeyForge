@@ -7,6 +7,7 @@ import {
 } from "@/types/world"
 import { PlayerProfile } from "@/types/player"
 import { NARUTO_WORLD } from "./naruto"
+import { JUJUTSU_WORLD } from "./jujutsu"
 
 // Ordered progression list of all 7 Anime Worlds
 export const ANIME_WORLD_ORDER: AnimeWorldId[] = [
@@ -22,45 +23,7 @@ export const ANIME_WORLD_ORDER: AnimeWorldId[] = [
 // Registry map of all anime worlds
 export const WORLD_REGISTRY: Record<AnimeWorldId, AnimeWorld> = {
   naruto: NARUTO_WORLD,
-  jujutsu: {
-    id: "jujutsu",
-    order: 2,
-    nameKey: "animeWorld.worlds.jujutsu.name",
-    series: "Jujutsu Kaisen",
-    descriptionKey: "animeWorld.worlds.jujutsu.desc",
-    taglineKey: "animeWorld.worlds.jujutsu.tagline",
-    theme: {
-      primaryColor: "#8b5cf6",
-      secondaryColor: "#6d28d9",
-      accentColor: "#06b6d4",
-      glowColor: "rgba(139, 92, 246, 0.4)",
-      bgGradient: "from-purple-950/40 via-neutral-950/80 to-black",
-      cardGradient: "from-purple-500/20 via-neutral-900/90 to-neutral-950",
-      badgeClass: "bg-purple-500/10 text-purple-400 border-purple-500/30",
-      borderClass: "border-purple-500/30 hover:border-purple-500/60",
-    },
-    focus: "precision",
-    focusKey: "animeWorld.focus.precision",
-    baseDifficulty: 4,
-    unlockRequirement: {
-      previousWorldId: "naruto",
-      requiredStagesCleared: 8,
-      descriptionKey: "animeWorld.unlock.defeatNarutoBoss",
-    },
-    stages: [],
-    completionReward: {
-      xp: 750,
-      title: "CURSED PRECISION",
-      crateId: "crate_cyber_rare",
-      badgeKey: "animeWorld.badges.jujutsuChampion",
-    },
-    masteryReward: {
-      xp: 1500,
-      title: "SPECIAL GRADE",
-      crateId: "crate_divine_celestial",
-      badgeKey: "animeWorld.badges.jujutsuMaster",
-    },
-  },
+  jujutsu: JUJUTSU_WORLD,
   dragon: {
     id: "dragon",
     order: 3,
