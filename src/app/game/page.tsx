@@ -1,14 +1,22 @@
 "use client"
 
+import { useMemo } from "react"
+import Link from "next/link"
 import { motion } from "framer-motion"
-import { Swords, Globe, Dumbbell, BookOpen, BarChart2, Zap, Sparkles } from "lucide-react"
+import { Swords, Globe, Dumbbell, BookOpen, BarChart2, Zap, Sparkles, ChevronRight, Target } from "lucide-react"
 import { PlayerQuickWidget } from "@/components/dashboard/PlayerQuickWidget"
 import { DashboardNavCard, DashboardNavItem } from "@/components/dashboard/DashboardNavCard"
-
+import { usePlayer } from "@/hooks/usePlayer"
+import { getRecommendedNextStage } from "@/data/worlds"
+import { getTopWeakKeys } from "@/lib/worlds/hunterAdaptiveEngine"
 import { useI18n } from "@/lib/i18n/i18nContext"
 
 export default function GameDashboardPage() {
   const { t } = useI18n()
+  const { player } = usePlayer()
+
+  const nextRecommendation = useMemo(() => getRecommendedNextStage(player), [player])
+  const topWeakKeys = useMemo(() => getTopWeakKeys(player.keyErrors ?? {}, 3), [player])
 
   const navItems: DashboardNavItem[] = [
     {
@@ -120,6 +128,80 @@ export default function GameDashboardPage() {
           {t("landing.hero.subtitle")}
         </motion.p>
       </motion.div>
+
+      {/* Recommended Next Campaign Stage */}
+      {nextRecommendation && (
+        <motion.div
+          className="relative z-10 w-full max-w-2xl mb-4 p-4 rounded-2xl border border-orange-500/30 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent backdrop-blur-md flex items-center justify-between gap-4"
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg border shrink-0 shadow-lg"
+              style={{
+                backgroundColor: `${nextRecommendation.world.theme.primaryColor}25`,
+                borderColor: `${nextRecommendation.world.theme.primaryColor}60`,
+                color: nextRecommendation.world.theme.primaryColor,
+              }}
+            >
+              {nextRecommendation.stage.stageNumber}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-orange-400">
+                  {t("animeWorld.continueCampaign")}
+                </span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded bg-white/10 text-white/60 font-mono">
+                  {nextRecommendation.world.series}
+                </span>
+              </div>
+              <h3 className="text-sm font-black text-white">
+                {nextRecommendation.stage.name}
+              </h3>
+              <p className="text-[11px] text-white/50 font-mono">
+                {nextRecommendation.stage.typingFocus} · {nextRecommendation.stage.recommendedWpm}+ WPM · {nextRecommendation.stage.recommendedAccuracy}% ACC
+              </p>
+            </div>
+          </div>
+
+          <Link
+            href={`/battle?enemy=${nextRecommendation.stage.enemyId}`}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-black font-black text-xs uppercase tracking-wider transition-all shrink-0 shadow-[0_0_20px_rgba(249,115,22,0.4)]"
+          >
+            <span>{t("animeWorld.startBattle")}</span>
+            <ChevronRight size={14} />
+          </Link>
+        </motion.div>
+      )}
+
+      {/* Weak-Key Training Recommendation */}
+      {topWeakKeys.length > 0 && (
+        <motion.div
+          className="relative z-10 w-full max-w-2xl mb-6 p-3 rounded-xl border border-violet-500/20 bg-violet-500/5 backdrop-blur-md flex items-center justify-between gap-3 text-xs"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.45 }}
+        >
+          <div className="flex items-center gap-2">
+            <Target size={14} className="text-violet-400 shrink-0" />
+            <span className="text-white/70">
+              {t("battleResult.weaknessesHeader")}:{" "}
+              <strong className="text-violet-300 font-mono tracking-widest">
+                {topWeakKeys.map((k) => k.toUpperCase()).join(", ")}
+              </strong>
+            </span>
+          </div>
+          <Link
+            href={`/training?mode=weak-keys&keys=${topWeakKeys.join(",")}`}
+            className="text-violet-400 hover:text-violet-300 font-bold font-mono inline-flex items-center gap-1 shrink-0"
+          >
+            <span>{t("battleResult.trainBtn")}</span>
+            <ChevronRight size={12} />
+          </Link>
+        </motion.div>
+      )}
 
       {/* Navigation */}
       <motion.div

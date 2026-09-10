@@ -51,11 +51,11 @@ export function PlayerQuickWidget() {
               {t("common.rank")} {player.rank} · {t(`ranks.${player.rank}`)}
             </span>
             <span>·</span>
-            {player.campaignProgress?.naruto?.completed ? (
-              <span className="text-emerald-400 font-bold">{t("dashboard.quickWidget.completed")}</span>
-            ) : (
-              <span>Naruto: {t("common.stage")} {player.campaignProgress?.naruto?.currentStage ?? 1}/8</span>
-            )}
+            <span>
+              {player.worldsCompleted && player.worldsCompleted > 0
+                ? `${player.worldsCompleted}/7 ${t("animeWorld.clearedBadge")}`
+                : `${player.totalStagesCleared ?? 0}/56 Stages`}
+            </span>
             <span>·</span>
             <span>
               {player.xp} / {xpNeeded} XP ({xpPercent}%)

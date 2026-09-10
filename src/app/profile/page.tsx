@@ -19,11 +19,13 @@ import {
   Trash2,
   Trophy,
   ChevronRight,
+  Lock,
+  Star,
 } from "lucide-react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
-
+import { getAllWorlds, getWorldProgress } from "@/data/worlds"
 import { useI18n } from "@/lib/i18n/i18nContext"
 
 function formatDate(iso: string, locale: string, unknownText = "Unknown"): string {
@@ -391,78 +393,142 @@ export default function ProfilePage() {
           </div>
 
           <Link
-            href="/anime-world/naruto"
+            href="/anime-world"
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/40 text-orange-300 font-bold text-xs uppercase tracking-wider transition-colors"
           >
-            <span>{t("profile.openNarutoMap")}</span>
+            <span>{t("animeWorld.hubTitle")}</span>
             <ChevronRight size={14} />
           </Link>
         </div>
 
-        {/* Naruto World Campaign Status */}
-        <div className="p-5 rounded-2xl bg-black/40 border border-white/10 space-y-4">
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center gap-2">
-              <span className="text-base font-black text-orange-400">
-                {t("profile.narutoWorldTitle")}
-              </span>
-              {player.campaignProgress?.naruto?.completed ? (
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
-                  <Check size={10} />
-                  {t("profile.narutoCompletedBadge")}
-                </span>
-              ) : (
-                <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/40 text-[10px] font-black uppercase tracking-wider">
-                  {t("profile.stageCurrent", {
-                    stage: player.campaignProgress?.naruto?.currentStage ?? 1,
-                  })}
-                </span>
-              )}
-            </div>
-
-            <span className="text-xs font-mono text-white/60">
-              {t("profile.stagesCleared", {
-                cleared: player.campaignProgress?.naruto?.completedStages?.length ?? 0,
-              })}
+        {/* Global Campaign Telemetry Chips */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="p-3.5 rounded-xl bg-black/40 border border-white/10 text-center">
+            <span className="text-[10px] uppercase font-mono text-white/40 block">
+              {t("animeWorld.activeWorld")}
+            </span>
+            <span className="text-lg font-black text-orange-400 font-mono">
+              {player.worldsUnlocked ?? 1} / 7
             </span>
           </div>
-
-          <div className="h-2.5 rounded-full bg-white/10 overflow-hidden">
-            <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-orange-500 to-amber-400"
-              initial={{ width: 0 }}
-              animate={{
-                width: `${Math.min(
-                  100,
-                  (((player.campaignProgress?.naruto?.completedStages?.length ?? 0)) / 8) * 100
-                )}%`,
-              }}
-              transition={{ duration: 0.6 }}
-            />
-          </div>
-
-          {/* Unlocked Achievements list */}
-          <div className="pt-2 border-t border-white/5 flex items-center gap-3 flex-wrap">
-            <span className="text-xs text-white/40 font-mono uppercase tracking-wider">
-              {t("profile.achievementsLabel")}
+          <div className="p-3.5 rounded-xl bg-black/40 border border-white/10 text-center">
+            <span className="text-[10px] uppercase font-mono text-white/40 block">
+              {t("animeWorld.clearedBadge")}
             </span>
-            {player.achievements && player.achievements.includes("naruto_world_completed") ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-yellow-500/10 border border-yellow-500/30 text-yellow-300 font-mono font-bold text-xs">
-                <Trophy size={13} />
-                {t("profile.narutoChampion")}
-              </span>
-            ) : (
-              <span className="text-xs text-white/30 italic">
-                {t("profile.narutoLockedAchievement")}
-              </span>
-            )}
-            {player.title && (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 font-mono font-bold text-xs">
-                <Sparkles size={13} />
-                {t("profile.titlePrefix", { title: player.title })}
-              </span>
-            )}
+            <span className="text-lg font-black text-emerald-400 font-mono">
+              {player.worldsCompleted ?? 0} / 7
+            </span>
           </div>
+          <div className="p-3.5 rounded-xl bg-black/40 border border-white/10 text-center">
+            <span className="text-[10px] uppercase font-mono text-white/40 block">
+              {t("animeWorld.masteredBadge")}
+            </span>
+            <span className="text-lg font-black text-yellow-400 font-mono">
+              {player.worldMastery ?? 0} / 7
+            </span>
+          </div>
+          <div className="p-3.5 rounded-xl bg-black/40 border border-white/10 text-center">
+            <span className="text-[10px] uppercase font-mono text-white/40 block">
+              {t("animeWorld.stagesCleared")}
+            </span>
+            <span className="text-lg font-black text-white font-mono">
+              {player.totalStagesCleared ?? 0} / 56
+            </span>
+          </div>
+        </div>
+
+        {/* 7 Anime Worlds Campaign Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          {getAllWorlds().map((world) => {
+            const progress = getWorldProgress(world.id, player)
+            return (
+              <Link
+                key={world.id}
+                href={progress.unlocked ? `/anime-world/${world.id}` : "/anime-world"}
+                className={`p-4 rounded-2xl border transition-all ${
+                  progress.unlocked
+                    ? "bg-black/40 border-white/10 hover:border-white/20 hover:scale-[1.01]"
+                    : "bg-black/20 border-white/5 opacity-50 cursor-not-allowed"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="w-2.5 h-2.5 rounded-full"
+                      style={{ backgroundColor: world.theme.primaryColor }}
+                    />
+                    <span className="text-sm font-bold text-white">{world.series}</span>
+                  </div>
+                  {progress.mastered ? (
+                    <span className="px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 text-[9px] font-black uppercase font-mono">
+                      {t("animeWorld.masteredBadge")}
+                    </span>
+                  ) : progress.completed ? (
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-black uppercase font-mono">
+                      {t("animeWorld.clearedBadge")}
+                    </span>
+                  ) : progress.unlocked ? (
+                    <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[9px] font-black uppercase font-mono">
+                      {progress.stagesClearedCount} / {progress.totalStages}
+                    </span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded-full bg-white/5 text-white/40 border border-white/10 text-[9px] font-black uppercase font-mono flex items-center gap-1">
+                      <Lock size={10} />
+                      {t("animeWorld.lockedWorld")}
+                    </span>
+                  )}
+                </div>
+
+                <div className="h-2 rounded-full bg-white/10 overflow-hidden mb-2">
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{
+                      width: `${progress.progressPercent}%`,
+                      background: `linear-gradient(90deg, ${world.theme.primaryColor}, ${world.theme.accentColor})`,
+                    }}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between text-[10px] font-mono text-white/50">
+                  <span>{progress.stagesClearedCount} / {progress.totalStages} Stages</span>
+                  <span className="flex items-center gap-1 text-yellow-400/80">
+                    <Star size={10} className="fill-yellow-400 text-yellow-400" />
+                    {progress.masteryStarsCount} Stars
+                  </span>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+
+        {/* Unlocked Campaign Badges & Titles list */}
+        <div className="pt-3 border-t border-white/5 flex items-center gap-3 flex-wrap">
+          <span className="text-xs text-white/40 font-mono uppercase tracking-wider">
+            {t("profile.achievementsLabel")}
+          </span>
+          {player.achievements && player.achievements.length > 0 ? (
+            player.achievements
+              .filter((a) => a.includes("_world_"))
+              .map((ach) => (
+                <span
+                  key={ach}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-yellow-500/10 border border-yellow-500/30 text-yellow-300 font-mono font-bold text-xs"
+                >
+                  <Trophy size={13} />
+                  {ach.replace(/_/g, " ").toUpperCase()}
+                </span>
+              ))
+          ) : (
+            <span className="text-xs text-white/30 italic">
+              {t("profile.narutoLockedAchievement")}
+            </span>
+          )}
+          {player.title && (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 font-mono font-bold text-xs">
+              <Sparkles size={13} />
+              {t("profile.titlePrefix", { title: player.title })}
+            </span>
+          )}
         </div>
       </div>
 

@@ -21,11 +21,13 @@ import {
   History as HistoryIcon,
   CheckCircle2,
   XCircle,
+  Globe,
+  Star,
 } from "lucide-react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
-
+import { getAllWorlds, getWorldProgress } from "@/data/worlds"
 import { useI18n } from "@/lib/i18n/i18nContext"
 
 function formatDuration(totalSeconds: number): string {
@@ -284,6 +286,111 @@ export default function StatisticsPage() {
             icon={<Clock size={14} />}
             color="#a855f7"
           />
+        </div>
+      </div>
+
+      {/* Anime Worlds Campaign Progression Telemetry */}
+      <div className="p-6 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md space-y-5">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <h2 className="text-lg font-black text-white flex items-center gap-2">
+              <Globe className="text-orange-400" size={20} />
+              <span>{t("animeWorld.globalCampaignStats")}</span>
+            </h2>
+            <p className="text-xs text-white/40 mt-0.5">
+              {t("animeWorld.hubDesc")}
+            </p>
+          </div>
+
+          <Link
+            href="/anime-world"
+            className="inline-flex items-center gap-1.5 text-xs text-orange-400 hover:text-orange-300 font-bold font-mono"
+          >
+            <span>{t("animeWorld.hubTitle")}</span>
+            <ChevronLeft size={14} className="rotate-180" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <StatCard
+            label={t("animeWorld.activeWorld")}
+            value={`${player.worldsUnlocked ?? 1} / 7`}
+            icon={<Globe size={14} />}
+            color="#f97316"
+          />
+          <StatCard
+            label={t("animeWorld.clearedBadge")}
+            value={`${player.worldsCompleted ?? 0} / 7`}
+            icon={<Trophy size={14} />}
+            color="#10b981"
+          />
+          <StatCard
+            label={t("animeWorld.masteredBadge")}
+            value={`${player.worldMastery ?? 0} / 7`}
+            icon={<Star size={14} />}
+            color="#eab308"
+          />
+          <StatCard
+            label={t("animeWorld.stagesCleared")}
+            value={`${player.totalStagesCleared ?? 0} / 56`}
+            icon={<Swords size={14} />}
+            color="#8b5cf6"
+          />
+        </div>
+
+        <div className="space-y-2.5 pt-2">
+          {getAllWorlds().map((world) => {
+            const progress = getWorldProgress(world.id, player)
+            return (
+              <div
+                key={world.id}
+                className="p-3.5 rounded-2xl bg-black/40 border border-white/10 flex items-center justify-between flex-wrap gap-3"
+              >
+                <div className="flex items-center gap-3">
+                  <span
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: world.theme.primaryColor }}
+                  />
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-white">{world.series}</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-white/50 border border-white/10 font-mono">
+                        {world.focus.toUpperCase()}
+                      </span>
+                    </div>
+                    <span className="text-xs text-white/40 font-mono">
+                      {progress.stagesClearedCount} / {progress.totalStages} Stages · {progress.masteryStarsCount} Stars
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  {progress.bestWpm > 0 && (
+                    <span className="text-xs font-mono text-white/70">
+                      Best: <strong className="text-amber-400">{progress.bestWpm}</strong> WPM
+                    </span>
+                  )}
+                  {progress.mastered ? (
+                    <span className="px-2.5 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 text-[10px] font-black uppercase font-mono">
+                      {t("animeWorld.masteredBadge")}
+                    </span>
+                  ) : progress.completed ? (
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-black uppercase font-mono">
+                      {t("animeWorld.clearedBadge")}
+                    </span>
+                  ) : progress.unlocked ? (
+                    <span className="px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-black uppercase font-mono">
+                      {progress.progressPercent}%
+                    </span>
+                  ) : (
+                    <span className="px-2.5 py-0.5 rounded-full bg-white/5 text-white/40 border border-white/10 text-[10px] font-black uppercase font-mono">
+                      {t("animeWorld.lockedWorld")}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )
+          })}
         </div>
       </div>
 
