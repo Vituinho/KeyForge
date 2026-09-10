@@ -2,6 +2,7 @@ import { TypingStats } from "@/types/typing"
 import { Enemy } from "@/types/character"
 import { RoundResult } from "@/types/battle"
 import {
+  AdaptiveWeaknessConfig,
   ComboScalingConfig,
   ConsistencyConfig,
   FocusGenjutsuConfig,
@@ -130,6 +131,22 @@ export function evaluateEnemyMechanics(
             activeEffects.push("TRAPPED IN GENJUTSU (-30%)")
             feedbackNotes.push("Genjutsu texts test precision on punctuation and symbols. Stay focused.")
           }
+        }
+        break
+      }
+
+      case "adaptive-weakness": {
+        const config = mech as AdaptiveWeaknessConfig
+        const minAcc = config.minAccuracyRequirement ?? 95
+        if (roundStats.currentErrors > 0 || roundStats.currentAccuracy < minAcc) {
+          multiplier *= config.errorPenaltyMultiplier
+          const penaltyPct = Math.round((1 - config.errorPenaltyMultiplier) * 100)
+          activeEffects.push(`WEAKNESS EXPLOITED (-${penaltyPct}%)`)
+          feedbackNotes.push("Typos or inaccurate keystrokes expose your weaknesses. Focus on deliberate control.")
+        } else {
+          multiplier *= config.flawlessBonusMultiplier
+          const bonusPct = Math.round((config.flawlessBonusMultiplier - 1) * 100)
+          activeEffects.push(`WEAKNESS OVERCOME (+${bonusPct}%)`)
         }
         break
       }

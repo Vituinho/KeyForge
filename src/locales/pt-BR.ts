@@ -818,6 +818,38 @@ export const ptBR: TranslationSchema = {
         name: "Ritmo da Libertação do Deus do Sol",
         desc: "Os Tambores da Libertação exigem estamina metronômica em textos longos. Variação de até 5 WPM rende +50% de bônus. Disparos desgovernados sofrem -60%.",
       },
+      dungeon_guardian: {
+        name: "Portão do Sistema da Dungeon",
+        desc: "Checagem do sistema. Erros de digitação causam -25% de penalidade no dano. Digitação limpa concede +15% de bônus.",
+      },
+      cerberus: {
+        name: "Pressão dos Portões do Inferno",
+        desc: "Prova do cão infernal. Erros impõem -30% de penalidade. Digitação sem falhas com 94%+ de precisão causa +20% de bônus.",
+      },
+      igris: {
+        name: "Vigília do Comandante Cavaleiro",
+        desc: "Precisão cavalheiresca. O Comandante Vermelho Sangue pune erros com -35% de dano. Digitação limpa concede +25% de bônus.",
+      },
+      iron: {
+        name: "Barreira do Bastião Blindado",
+        desc: "Barreira pesada. Qualquer erro sofre -40% de penalidade. Execução impecável perfura a blindagem com +30% de bônus.",
+      },
+      tusk: {
+        name: "Maldição do Hino da Agonia",
+        desc: "Maldição do xamã orc. Teclas vacilantes sofrem -45% de redução no dano. Superar pontos fracos concede +35% de bônus.",
+      },
+      beru: {
+        name: "Investida do Rei Predador",
+        desc: "Instinto supremo de caçador. Erros causam -50% de penalidade e contra-ataques. Digitação limpa concede +40% de bônus.",
+      },
+      bellion: {
+        name: "Autoridade do Grão-Marechal",
+        desc: "Comando supremo das sombras. Falhas reduzem o dano em -55%. Digitação impecável com 96%+ de precisão concede +45% de bônus.",
+      },
+      jinwoo: {
+        name: "Erga-se do Monarca das Sombras",
+        desc: "O Sistema sonda suas fraquezas no teclado. Erros sofrem -65% de redução. Precisão impecável com combos sustentados libera +55% de dano soberano.",
+      },
     },
     worlds: {
       naruto: {

@@ -816,6 +816,38 @@ export const en = {
         name: "Sun God Nika Rhythm of Liberation",
         desc: "The Drums of Liberation demand metronomic stamina over long prose. Variance within 5 WPM yields +50% bonus. Erratic bursts suffer -60%.",
       },
+      dungeon_guardian: {
+        name: "Dungeon System Gate",
+        desc: "Gate system check. Typing errors trigger -25% damage penalty. Clean typing grants +15% damage bonus.",
+      },
+      cerberus: {
+        name: "Hell Gate Pressure",
+        desc: "Hellhound trial. Errors incur -30% penalty. Clean typing with 94%+ accuracy deals +20% bonus damage.",
+      },
+      igris: {
+        name: "Knight Commander's Vigil",
+        desc: "Chivalric precision. Blood-Red Commander punishes mistakes with -35% damage. Clean precision grants +25% bonus.",
+      },
+      iron: {
+        name: "Shield Bastion Barrier",
+        desc: "Heavy armor barrier. Any error incurs -40% damage penalty. Flawless execution pierces armor for +30% bonus.",
+      },
+      tusk: {
+        name: "Hymn of Agony Curse",
+        desc: "High Orc Shaman curse. Weak keystrokes trigger -45% damage reduction. Overcoming weak keys grants +35% bonus.",
+      },
+      beru: {
+        name: "Predator King Strike",
+        desc: "Extreme hunter instincts. Mistakes trigger -50% penalty and enemy counter-strikes. Flawless execution yields +40% bonus.",
+      },
+      bellion: {
+        name: "Grand Marshal Authority",
+        desc: "Supreme shadow command. Errors reduce damage by -55%. Flawless keystrokes with 96%+ accuracy grant +45% bonus.",
+      },
+      jinwoo: {
+        name: "Shadow Monarch's Arise",
+        desc: "The System tests your weakest keys. Mistakes trigger -65% damage reduction. Flawless accuracy with unbroken combos yields +55% sovereign damage.",
+      },
     },
     worlds: {
       naruto: {

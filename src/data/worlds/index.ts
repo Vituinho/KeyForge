@@ -10,6 +10,7 @@ import { NARUTO_WORLD } from "./naruto"
 import { JUJUTSU_WORLD } from "./jujutsu"
 import { DRAGON_WORLD } from "./dragon"
 import { PIRATE_WORLD } from "./pirate"
+import { HUNTER_WORLD } from "./hunter"
 
 // Ordered progression list of all 7 Anime Worlds
 export const ANIME_WORLD_ORDER: AnimeWorldId[] = [
@@ -28,45 +29,7 @@ export const WORLD_REGISTRY: Record<AnimeWorldId, AnimeWorld> = {
   jujutsu: JUJUTSU_WORLD,
   dragon: DRAGON_WORLD,
   pirate: PIRATE_WORLD,
-  hunter: {
-    id: "hunter",
-    order: 5,
-    nameKey: "animeWorld.worlds.hunter.name",
-    series: "Solo Leveling",
-    descriptionKey: "animeWorld.worlds.hunter.desc",
-    taglineKey: "animeWorld.worlds.hunter.tagline",
-    theme: {
-      primaryColor: "#06b6d4",
-      secondaryColor: "#0891b2",
-      accentColor: "#a855f7",
-      glowColor: "rgba(6, 182, 212, 0.4)",
-      bgGradient: "from-cyan-950/40 via-neutral-950/80 to-black",
-      cardGradient: "from-cyan-500/20 via-neutral-900/90 to-neutral-950",
-      badgeClass: "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
-      borderClass: "border-cyan-500/30 hover:border-cyan-500/60",
-    },
-    focus: "weak-keys",
-    focusKey: "animeWorld.focus.weakKeys",
-    baseDifficulty: 7,
-    unlockRequirement: {
-      previousWorldId: "pirate",
-      requiredStagesCleared: 8,
-      descriptionKey: "animeWorld.unlock.defeatPirateBoss",
-    },
-    stages: [],
-    completionReward: {
-      xp: 1500,
-      title: "SHADOW MONARCH",
-      crateId: "crate_divine_celestial",
-      badgeKey: "animeWorld.badges.hunterChampion",
-    },
-    masteryReward: {
-      xp: 3000,
-      title: "ARISE SOVEREIGN",
-      crateId: "crate_divine_celestial",
-      badgeKey: "animeWorld.badges.hunterMaster",
-    },
-  },
+  hunter: HUNTER_WORLD,
   demon: {
     id: "demon",
     order: 6,

@@ -5,6 +5,7 @@ export type BattleMechanicType =
   | "consistency"
   | "combo-scaling"
   | "focus-genjutsu"
+  | "adaptive-weakness"
   | "multi-phase"
   | "multi-phase-boss"
 
@@ -60,6 +61,14 @@ export interface FocusGenjutsuConfig extends BaseMechanicConfig {
   complexPunctuation: boolean
 }
 
+export interface AdaptiveWeaknessConfig extends BaseMechanicConfig {
+  type: "adaptive-weakness"
+  targetWeakLetters?: string[]
+  errorPenaltyMultiplier: number // e.g. 0.70 (deals 70% damage if errors occur)
+  flawlessBonusMultiplier: number // e.g. 1.25 (deals 125% damage if flawless)
+  minAccuracyRequirement?: number // e.g. 95
+}
+
 export interface MultiPhaseConfig extends BaseMechanicConfig {
   type: "multi-phase" | "multi-phase-boss"
   totalPhases: number
@@ -73,4 +82,5 @@ export type EnemyMechanicConfig =
   | ConsistencyConfig
   | ComboScalingConfig
   | FocusGenjutsuConfig
+  | AdaptiveWeaknessConfig
   | MultiPhaseConfig

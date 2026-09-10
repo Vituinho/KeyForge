@@ -1466,6 +1466,386 @@ export const CHARACTERS: Enemy[] = [
       },
     ],
   },
+
+  // 33. Dungeon Guardian — E-Rank Gate Sentry (Weak Keys Introduction)
+  {
+    id: "dungeon_guardian",
+    name: "Dungeon Guardian",
+    anime: "Solo Leveling",
+    world: "hunter",
+    stage: 1,
+    level: 32,
+    type: "normal",
+    typingFocus: "weak_keys",
+    maxHp: 1300,
+    attack: 18,
+    attackInterval: 4200,
+    recommendedWpm: 50,
+    recommendedAccuracy: 93,
+    difficulty: 45,
+    xpReward: 90,
+    firstClearBonusXp: 180,
+    isBoss: false,
+    themeColor: "#06b6d4",
+    accentColor: "#64748b",
+    description:
+      "Dungeon Sentry of the Double Lair. Tests fundamental key control and punishes inaccurate strikes.",
+    abilities: [
+      {
+        id: "stone-slam",
+        name: "Stone Slam",
+        description: "Heavy stone club swing that punishes sloppy keystrokes.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "adaptive-weakness",
+        id: "guardian-system-check",
+        name: "Dungeon System Gate",
+        description:
+          "Gate system check. Typing errors trigger -25% damage penalty. Clean typing grants +15% damage bonus.",
+        errorPenaltyMultiplier: 0.75,
+        flawlessBonusMultiplier: 1.15,
+        minAccuracyRequirement: 93,
+      },
+    ],
+  },
+
+  // 34. Cerberus — Keeper of the Hell Gate (Hellhound Weak Key Trial)
+  {
+    id: "cerberus",
+    name: "Cerberus",
+    anime: "Solo Leveling",
+    world: "hunter",
+    stage: 2,
+    level: 35,
+    type: "normal",
+    typingFocus: "weak_keys",
+    maxHp: 1480,
+    attack: 20,
+    attackInterval: 4000,
+    recommendedWpm: 58,
+    recommendedAccuracy: 94,
+    difficulty: 55,
+    xpReward: 110,
+    firstClearBonusXp: 220,
+    isBoss: false,
+    themeColor: "#ef4444",
+    accentColor: "#f97316",
+    description:
+      "Gatekeeper of the Demon Castle. Three-headed demon hound punishing hesitation on difficult letter transitions.",
+    abilities: [
+      {
+        id: "hellfire-breath",
+        name: "Hellfire Breath",
+        description: "Blazing breath covering the battlefield in sulfurous flame.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "adaptive-weakness",
+        id: "cerberus-gate-pressure",
+        name: "Hell Gate Pressure",
+        description:
+          "Hellhound trial. Errors incur -30% penalty. Clean typing with 94%+ accuracy deals +20% bonus damage.",
+        errorPenaltyMultiplier: 0.7,
+        flawlessBonusMultiplier: 1.2,
+        minAccuracyRequirement: 94,
+      },
+    ],
+  },
+
+  // 35. Blood-Red Commander Igris — The Crimson Knight (Chivalric Precision)
+  {
+    id: "igris",
+    name: "Blood-Red Commander Igris",
+    anime: "Solo Leveling",
+    world: "hunter",
+    stage: 3,
+    level: 38,
+    type: "elite",
+    typingFocus: "weak_keys",
+    maxHp: 1680,
+    attack: 22,
+    attackInterval: 3800,
+    recommendedWpm: 66,
+    recommendedAccuracy: 94,
+    difficulty: 65,
+    xpReward: 140,
+    firstClearBonusXp: 270,
+    isBoss: false,
+    themeColor: "#dc2626",
+    accentColor: "#991b1b",
+    description:
+      "Commander of the Throne Room. Chivalric longsword duelist punishing weak key fumbles with lethal counters.",
+    abilities: [
+      {
+        id: "longsword-cleave",
+        name: "Longsword Cleave",
+        description: "A sweeping crimson blade arc that parries flawed keystrokes.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "adaptive-weakness",
+        id: "igris-chivalric-vigil",
+        name: "Knight Commander's Vigil",
+        description:
+          "Chivalric precision. Blood-Red Commander punishes mistakes with -35% damage. Clean precision grants +25% bonus.",
+        errorPenaltyMultiplier: 0.65,
+        flawlessBonusMultiplier: 1.25,
+        minAccuracyRequirement: 94,
+      },
+    ],
+  },
+
+  // 36. Iron — The Indomitable Shadow Tank (Shield Bastion Barrier)
+  {
+    id: "iron",
+    name: "Iron",
+    anime: "Solo Leveling",
+    world: "hunter",
+    stage: 4,
+    level: 41,
+    type: "normal",
+    typingFocus: "weak_keys",
+    maxHp: 1900,
+    attack: 23,
+    attackInterval: 3600,
+    recommendedWpm: 72,
+    recommendedAccuracy: 94,
+    difficulty: 72,
+    xpReward: 170,
+    firstClearBonusXp: 320,
+    isBoss: false,
+    themeColor: "#64748b",
+    accentColor: "#334155",
+    description:
+      "Indomitable Shadow Tank. Massive shield and heavy armor demand clean strikes to break through.",
+    abilities: [
+      {
+        id: "taunting-roar",
+        name: "Taunting Roar",
+        description: "Echoing war cry that shakes player resolve.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "adaptive-weakness",
+        id: "iron-shield-bastion",
+        name: "Shield Bastion Barrier",
+        description:
+          "Heavy armor barrier. Any error incurs -40% damage penalty. Flawless execution pierces armor for +30% bonus.",
+        errorPenaltyMultiplier: 0.6,
+        flawlessBonusMultiplier: 1.3,
+        minAccuracyRequirement: 95,
+      },
+    ],
+  },
+
+  // 37. Tusk — High Orc Shaman (Hymn of Agony Curse)
+  {
+    id: "tusk",
+    name: "Tusk",
+    anime: "Solo Leveling",
+    world: "hunter",
+    stage: 5,
+    level: 44,
+    type: "elite",
+    typingFocus: "weak_keys",
+    maxHp: 2100,
+    attack: 25,
+    attackInterval: 3400,
+    recommendedWpm: 78,
+    recommendedAccuracy: 95,
+    difficulty: 80,
+    xpReward: 210,
+    firstClearBonusXp: 390,
+    isBoss: false,
+    themeColor: "#d97706",
+    accentColor: "#b45309",
+    description:
+      "High Orc Grand Shaman Kargalgan. Gravity and hymn curses test focus on the most difficult key patterns.",
+    abilities: [
+      {
+        id: "hymn-of-dragons",
+        name: "Hymn of Fire Dragons",
+        description: "Incinerating flame pillars summoned by ancient orc incantations.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "adaptive-weakness",
+        id: "tusk-hymn-curse",
+        name: "Hymn of Agony Curse",
+        description:
+          "High Orc Shaman curse. Weak keystrokes trigger -45% damage reduction. Overcoming weak keys grants +35% bonus.",
+        errorPenaltyMultiplier: 0.55,
+        flawlessBonusMultiplier: 1.35,
+        minAccuracyRequirement: 95,
+      },
+    ],
+  },
+
+  // 38. Beru — The Ant King (Apex Predator Speed & Reflexes)
+  {
+    id: "beru",
+    name: "Beru",
+    anime: "Solo Leveling",
+    world: "hunter",
+    stage: 6,
+    level: 47,
+    type: "boss",
+    typingFocus: "weak_keys",
+    maxHp: 2350,
+    attack: 27,
+    attackInterval: 3200,
+    recommendedWpm: 84,
+    recommendedAccuracy: 95,
+    difficulty: 88,
+    xpReward: 260,
+    firstClearBonusXp: 480,
+    isBoss: false,
+    themeColor: "#8b5cf6",
+    accentColor: "#6d28d9",
+    description:
+      "The Apex Predator of Jeju Island. Supreme speed and lethal claws that counter-attack on any dropped combo.",
+    abilities: [
+      {
+        id: "predator-rush",
+        name: "Predator Rush",
+        description: "Supersonic blitz shredding anything caught hesitating.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "adaptive-weakness",
+        id: "beru-predator-strike",
+        name: "Predator King Strike",
+        description:
+          "Extreme hunter instincts. Mistakes trigger -50% penalty and enemy counter-strikes. Flawless execution yields +40% bonus.",
+        errorPenaltyMultiplier: 0.5,
+        flawlessBonusMultiplier: 1.4,
+        minAccuracyRequirement: 96,
+      },
+      {
+        type: "combo-scaling",
+        id: "beru-combo-counter",
+        name: "Predator Counter",
+        description: "Combo drops trigger immediate counter-damage.",
+        tiers: [
+          { minCombo: 15, multiplier: 1.15, label: "HIVE SHATTER (x1.15)" },
+          { minCombo: 30, multiplier: 1.3, label: "PREDATOR DOMINANCE (x1.3)" },
+        ],
+        breakComboCounterAttack: 20,
+      },
+    ],
+  },
+
+  // 39. Bellion — Grand Marshal of the Shadow Army (Supreme Authority)
+  {
+    id: "bellion",
+    name: "Bellion",
+    anime: "Solo Leveling",
+    world: "hunter",
+    stage: 7,
+    level: 50,
+    type: "boss",
+    typingFocus: "weak_keys",
+    maxHp: 2600,
+    attack: 29,
+    attackInterval: 3000,
+    recommendedWpm: 90,
+    recommendedAccuracy: 96,
+    difficulty: 94,
+    xpReward: 310,
+    firstClearBonusXp: 580,
+    isBoss: true,
+    themeColor: "#6366f1",
+    accentColor: "#4338ca",
+    description:
+      "Grand Marshal born from the World Tree. Centipede segmented greatsword sweeps through any keyboard flaws.",
+    abilities: [
+      {
+        id: "centipede-blade",
+        name: "Centipede Blade",
+        description: "Segmented whip-sword that coils around uncoordinated finger movements.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "adaptive-weakness",
+        id: "bellion-marshal-authority",
+        name: "Grand Marshal Authority",
+        description:
+          "Supreme shadow command. Errors reduce damage by -55%. Flawless keystrokes with 96%+ accuracy grant +45% bonus.",
+        errorPenaltyMultiplier: 0.45,
+        flawlessBonusMultiplier: 1.45,
+        minAccuracyRequirement: 96,
+      },
+    ],
+  },
+
+  // 40. Sung Jin-Woo — The Shadow Monarch (The System Crucible & Arise)
+  {
+    id: "jinwoo",
+    name: "Sung Jin-Woo",
+    anime: "Solo Leveling",
+    world: "hunter",
+    stage: 8,
+    level: 55,
+    type: "boss",
+    typingFocus: "weak_keys",
+    maxHp: 2900,
+    attack: 31,
+    attackInterval: 2800,
+    recommendedWpm: 96,
+    recommendedAccuracy: 96,
+    difficulty: 100,
+    xpReward: 400,
+    firstClearBonusXp: 800,
+    isBoss: true,
+    themeColor: "#06b6d4",
+    accentColor: "#a855f7",
+    description:
+      "The Shadow Monarch. The System identifies every weak key in your muscle memory and tests your ultimate mastery.",
+    abilities: [
+      {
+        id: "arise-call",
+        name: "Arise",
+        description: "Extracts shadows from every imperfection in your cadence.",
+      },
+      {
+        id: "monarch-domain",
+        name: "Monarch's Domain",
+        description: "Shadow domain amplifying damage on flawless execution.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "adaptive-weakness",
+        id: "jinwoo-monarch-arise",
+        name: "Shadow Monarch's Arise",
+        description:
+          "The System tests your weakest keys. Mistakes trigger -65% damage reduction. Flawless accuracy with unbroken combos yields +55% sovereign damage.",
+        errorPenaltyMultiplier: 0.35,
+        flawlessBonusMultiplier: 1.55,
+        minAccuracyRequirement: 96,
+      },
+      {
+        type: "combo-scaling",
+        id: "jinwoo-shadow-dominion",
+        name: "Shadow Dominion",
+        description: "Combo streaks empower shadow strikes; dropping combo triggers counter-attack.",
+        tiers: [
+          { minCombo: 20, multiplier: 1.2, label: "SHADOW SURGE (x1.2)" },
+          { minCombo: 35, multiplier: 1.35, label: "MONARCH'S DOMAIN (x1.35)" },
+          { minCombo: 50, multiplier: 1.5, label: "ARISE SOVEREIGN (x1.5)" },
+        ],
+        breakComboCounterAttack: 25,
+      },
+    ],
+  },
 ]
 
 export function getCharacterById(id: string): Enemy | undefined {
