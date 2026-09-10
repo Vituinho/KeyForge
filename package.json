@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test:security": "tsx scripts/verify-multiplayer-security.ts",
     "test:battle": "tsx scripts/simulate-pvp-battle.ts",
+    "test:campaign": "tsx scripts/verify-world-campaign.ts",
     "i18n:audit": "tsx scripts/audit-i18n.ts"
   },
   "dependencies": {
