@@ -12,6 +12,7 @@ import { DRAGON_WORLD } from "./dragon"
 import { PIRATE_WORLD } from "./pirate"
 import { HUNTER_WORLD } from "./hunter"
 import { DEMON_WORLD } from "./demon"
+import { NEXUS_WORLD } from "./nexus"
 
 // Ordered progression list of all 7 Anime Worlds
 export const ANIME_WORLD_ORDER: AnimeWorldId[] = [
@@ -32,45 +33,7 @@ export const WORLD_REGISTRY: Record<AnimeWorldId, AnimeWorld> = {
   pirate: PIRATE_WORLD,
   hunter: HUNTER_WORLD,
   demon: DEMON_WORLD,
-  nexus: {
-    id: "nexus",
-    order: 7,
-    nameKey: "animeWorld.worlds.nexus.name",
-    series: "KeyForge Original",
-    descriptionKey: "animeWorld.worlds.nexus.desc",
-    taglineKey: "animeWorld.worlds.nexus.tagline",
-    theme: {
-      primaryColor: "#f97316",
-      secondaryColor: "#eab308",
-      accentColor: "#a855f7",
-      glowColor: "rgba(249, 115, 22, 0.5)",
-      bgGradient: "from-amber-950/50 via-purple-950/30 to-black",
-      cardGradient: "from-orange-500/25 via-purple-900/30 to-neutral-950",
-      badgeClass: "bg-gradient-to-r from-orange-500/20 to-purple-500/20 text-orange-300 border-orange-500/40",
-      borderClass: "border-orange-500/40 hover:border-orange-400",
-    },
-    focus: "mastery",
-    focusKey: "animeWorld.focus.mastery",
-    baseDifficulty: 10,
-    unlockRequirement: {
-      previousWorldId: "demon",
-      requiredStagesCleared: 8,
-      descriptionKey: "animeWorld.unlock.defeatDemonBoss",
-    },
-    stages: [],
-    completionReward: {
-      xp: 2500,
-      title: "KEYFORGE MASTER",
-      crateId: "crate_divine_celestial",
-      badgeKey: "animeWorld.badges.nexusChampion",
-    },
-    masteryReward: {
-      xp: 5000,
-      title: "FORGED LEGEND",
-      crateId: "crate_divine_celestial",
-      badgeKey: "animeWorld.badges.nexusMaster",
-    },
-  },
+  nexus: NEXUS_WORLD,
 }
 
 /**

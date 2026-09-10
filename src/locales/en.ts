@@ -880,6 +880,38 @@ export const en = {
         name: "Total Concentration Constant Crucible",
         desc: "The supreme touch-typing test. Below 97% accuracy suffers -65% cellular decay. 97%+ accuracy yields +60% dawn sunlight damage.",
       },
+      cipher_initiate: {
+        name: "Cipher Protocol",
+        desc: "Simultaneous speed and precision. Requires 68+ WPM and 94%+ accuracy for +20% bonus; otherwise deals -30% damage.",
+      },
+      lexicon_warden: {
+        name: "Lexical Complexity Protocol",
+        desc: "Advanced vocabulary crucible. Requires 74+ WPM and 95%+ accuracy for +25% bonus; otherwise -35% penalty.",
+      },
+      rhythm_weaver: {
+        name: "Harmonic Cadence Lock",
+        desc: "Variance within 6 WPM grants +35% damage bonus. Speed swings greater than 6 WPM suffer -40% damage penalty.",
+      },
+      accuracy_arbiter: {
+        name: "Zero-Error Crystalline Shield",
+        desc: "Below 97% accuracy suffers -50% damage reduction. 97%+ accuracy pierces shield for +35% bonus.",
+      },
+      velocity_phantom: {
+        name: "Hyper-Velocity Overdrive",
+        desc: "Velocity barrier. Below 90 WPM deals -50% damage. 96+ WPM deals +25% bonus; 104+ WPM unlocks +45% hyper-damage.",
+      },
+      endurance_colossus: {
+        name: "Monolithic Combo Resonator",
+        desc: "Sustained combo streaks scale damage up to +60%; breaking combo triggers heavy counter-attack.",
+      },
+      keystroke_sovereign: {
+        name: "Grand Architect Mastery",
+        desc: "Requires 95+ WPM and 97%+ accuracy simultaneously for +45% sovereign bonus; otherwise deals -55% damage.",
+      },
+      nexus_mirror: {
+        name: "The Mirror Sovereign Crucible",
+        desc: "The supreme mastery threshold. Requires 100+ WPM and 98%+ accuracy simultaneously for +65% transcendence bonus; otherwise deals -65% penalty.",
+      },
     },
     worlds: {
       naruto: {

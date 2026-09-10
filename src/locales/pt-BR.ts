@@ -882,6 +882,38 @@ export const ptBR: TranslationSchema = {
         name: "Crisol da Concentração Total Constante",
         desc: "A prova máxima de touch typing. Abaixo de 97% de precisão sofre -65% de corrosão celular. 97%+ de precisão libera +60% de dano do sol da alvorada.",
       },
+      cipher_initiate: {
+        name: "Protocolo da Cifra",
+        desc: "Velocidade e precisão simultâneas. Exige 68+ WPM e 94%+ de precisão para +20% de bônus; caso contrário sofre -30% no dano.",
+      },
+      lexicon_warden: {
+        name: "Protocolo de Complexidade Lexical",
+        desc: "Crisol de vocabulário avançado. Exige 74+ WPM e 95%+ de precisão para +25% de bônus; caso contrário -35% de penalidade.",
+      },
+      rhythm_weaver: {
+        name: "Trava Harmônica de Cadência",
+        desc: "Variação dentro de 6 WPM concede +35% de bônus. Oscilações acima de 6 WPM sofrem -40% de penalidade.",
+      },
+      accuracy_arbiter: {
+        name: "Escudo Cristalino de Zero Erro",
+        desc: "Abaixo de 97% de precisão sofre -50% de redução no dano. 97%+ perfura o escudo para +35% de bônus.",
+      },
+      velocity_phantom: {
+        name: "Sobrecarga de Hipervelocidade",
+        desc: "Barreira de velocidade. Abaixo de 90 WPM causa -50% de dano. 96+ WPM causa +25% de bônus; 104+ WPM libera +45% de hiperdano.",
+      },
+      endurance_colossus: {
+        name: "Ressonador de Combo Monolítico",
+        desc: "Combos sustentados escalam o dano até +60%; quebrar o combo ativa contra-ataque devastador.",
+      },
+      keystroke_sovereign: {
+        name: "Maestria do Grão-Arquiteto",
+        desc: "Exige 95+ WPM e 97%+ de precisão simultaneamente para +45% de bônus soberano; caso contrário causa -55% de dano.",
+      },
+      nexus_mirror: {
+        name: "O Crisol do Soberano Espelho",
+        desc: "O limiar supremo da maestria. Exige 100+ WPM e 98%+ de precisão simultaneamente para +65% de transcendência; caso contrário sofre -65% de penalidade.",
+      },
     },
     worlds: {
       naruto: {

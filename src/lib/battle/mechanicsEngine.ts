@@ -6,6 +6,7 @@ import {
   ComboScalingConfig,
   ConsistencyConfig,
   FocusGenjutsuConfig,
+  NexusMasteryConfig,
   PrecisionStrikeConfig,
   SpeedCheckConfig,
   TouchTypingConfig,
@@ -165,6 +166,26 @@ export function evaluateEnemyMechanics(
           multiplier *= config.bonusMultiplier
           const bonPct = Math.round((config.bonusMultiplier - 1) * 100)
           activeEffects.push(`TOTAL CONCENTRATION (+${bonPct}%)`)
+        }
+        break
+      }
+
+      case "nexus-mastery": {
+        const config = mech as NexusMasteryConfig
+        const meetsWpm = roundStats.currentWpm >= config.minWpm
+        const meetsAcc = roundStats.currentAccuracy >= config.minAccuracy
+
+        if (meetsWpm && meetsAcc) {
+          multiplier *= config.bonusMultiplier
+          const bonPct = Math.round((config.bonusMultiplier - 1) * 100)
+          activeEffects.push(`NEXUS SOVEREIGN (+${bonPct}%)`)
+        } else {
+          multiplier *= config.penaltyMultiplier
+          const penPct = Math.round((1 - config.penaltyMultiplier) * 100)
+          activeEffects.push(`CRUCIBLE SUPPRESSION (-${penPct}%)`)
+          feedbackNotes.push(
+            `Nexus mastery requires both ${config.minWpm} WPM and ${config.minAccuracy}% accuracy simultaneously.`
+          )
         }
         break
       }

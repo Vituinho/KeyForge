@@ -2241,6 +2241,385 @@ export const CHARACTERS: Enemy[] = [
       },
     ],
   },
+
+  // 49. Cipher Initiate — The Digital Gatekeeper (Nexus Mastery Stage 1)
+  {
+    id: "cipher_initiate",
+    name: "Cipher Initiate",
+    anime: "KeyForge",
+    world: "nexus",
+    stage: 1,
+    level: 50,
+    type: "normal",
+    typingFocus: "mastery",
+    maxHp: 1800,
+    attack: 24,
+    attackInterval: 3600,
+    recommendedWpm: 70,
+    recommendedAccuracy: 94,
+    difficulty: 70,
+    xpReward: 160,
+    firstClearBonusXp: 320,
+    isBoss: false,
+    themeColor: "#f97316",
+    accentColor: "#ea580c",
+    description:
+      "First sentinel of the KeyForge Core. Tests simultaneous speed and precision discipline.",
+    abilities: [
+      {
+        id: "binary-barrage",
+        name: "Binary Barrage",
+        description: "A cascade of encrypted datastreams testing core typing cadence.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "nexus-mastery",
+        id: "cipher-gate-mastery",
+        name: "Cipher Protocol",
+        description:
+          "Simultaneous speed and precision. Requires 68+ WPM and 94%+ accuracy for +20% bonus; otherwise deals -30% damage.",
+        minWpm: 68,
+        minAccuracy: 94,
+        bonusMultiplier: 1.2,
+        penaltyMultiplier: 0.7,
+      },
+    ],
+  },
+
+  // 50. Lexicon Warden — Vocabulary Complexity (Nexus Mastery Stage 2)
+  {
+    id: "lexicon_warden",
+    name: "Lexicon Warden",
+    anime: "KeyForge",
+    world: "nexus",
+    stage: 2,
+    level: 53,
+    type: "normal",
+    typingFocus: "mastery",
+    maxHp: 2050,
+    attack: 26,
+    attackInterval: 3400,
+    recommendedWpm: 76,
+    recommendedAccuracy: 95,
+    difficulty: 78,
+    xpReward: 190,
+    firstClearBonusXp: 380,
+    isBoss: false,
+    themeColor: "#eab308",
+    accentColor: "#ca8a04",
+    description:
+      "Guardian of the Infinite Lexicon. Complex syllables and multi-clause sentences demand linguistic mastery.",
+    abilities: [
+      {
+        id: "lexical-bind",
+        name: "Lexical Bind",
+        description: "Spells woven from esoteric vocabulary that tangle hesitant hands.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "nexus-mastery",
+        id: "lexicon-syntax-mastery",
+        name: "Lexical Complexity Protocol",
+        description:
+          "Advanced vocabulary crucible. Requires 74+ WPM and 95%+ accuracy for +25% bonus; otherwise -35% penalty.",
+        minWpm: 74,
+        minAccuracy: 95,
+        bonusMultiplier: 1.25,
+        penaltyMultiplier: 0.65,
+      },
+    ],
+  },
+
+  // 51. Rhythm Weaver — The Metronome Core (Nexus Mastery Stage 3)
+  {
+    id: "rhythm_weaver",
+    name: "Rhythm Weaver",
+    anime: "KeyForge",
+    world: "nexus",
+    stage: 3,
+    level: 56,
+    type: "elite",
+    typingFocus: "mastery",
+    maxHp: 2300,
+    attack: 28,
+    attackInterval: 3200,
+    recommendedWpm: 82,
+    recommendedAccuracy: 95,
+    difficulty: 84,
+    xpReward: 230,
+    firstClearBonusXp: 450,
+    isBoss: false,
+    themeColor: "#06b6d4",
+    accentColor: "#0891b2",
+    description:
+      "Pulsing metronome of the Crucible. Punishes erratic burst swings and rewards seamless typing flow.",
+    abilities: [
+      {
+        id: "cadence-pulse",
+        name: "Cadence Pulse",
+        description: "Rhythmic waves radiating across the screen measuring typing variance.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "consistency",
+        id: "rhythm-weaver-metronome",
+        name: "Harmonic Cadence Lock",
+        description:
+          "Variance within 6 WPM grants +35% damage bonus. Speed swings greater than 6 WPM suffer -40% damage penalty.",
+        maxWpmVariance: 6,
+        maxAccVariance: 2,
+        bonusMultiplier: 1.35,
+        penaltyMultiplier: 0.6,
+      },
+    ],
+  },
+
+  // 52. Accuracy Arbiter — The Zero-Error Sentinel (Nexus Mastery Stage 4)
+  {
+    id: "accuracy_arbiter",
+    name: "Accuracy Arbiter",
+    anime: "KeyForge",
+    world: "nexus",
+    stage: 4,
+    level: 59,
+    type: "elite",
+    typingFocus: "mastery",
+    maxHp: 2550,
+    attack: 30,
+    attackInterval: 3000,
+    recommendedWpm: 88,
+    recommendedAccuracy: 97,
+    difficulty: 90,
+    xpReward: 270,
+    firstClearBonusXp: 530,
+    isBoss: false,
+    themeColor: "#8b5cf6",
+    accentColor: "#7c3aed",
+    description:
+      "Flawless perfectionist sentinel. Absorbs all damage if accuracy falls below 97%.",
+    abilities: [
+      {
+        id: "purity-barrier",
+        name: "Purity Barrier",
+        description: "Crystalline barrier reflecting any imperfect typing keystroke.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "precision-strike",
+        id: "accuracy-arbiter-null-error",
+        name: "Zero-Error Crystalline Shield",
+        description:
+          "Below 97% accuracy suffers -50% damage reduction. 97%+ accuracy pierces shield for +35% bonus.",
+        targetAccuracy: 97,
+        belowThresholdPenalty: 0.5,
+        aboveThresholdBonus: 1.35,
+      },
+    ],
+  },
+
+  // 53. Velocity Phantom — The Hyper-Cadence Core (Nexus Mastery Stage 5)
+  {
+    id: "velocity_phantom",
+    name: "Velocity Phantom",
+    anime: "KeyForge",
+    world: "nexus",
+    stage: 5,
+    level: 62,
+    type: "elite",
+    typingFocus: "mastery",
+    maxHp: 2800,
+    attack: 32,
+    attackInterval: 2800,
+    recommendedWpm: 96,
+    recommendedAccuracy: 95,
+    difficulty: 94,
+    xpReward: 310,
+    firstClearBonusXp: 600,
+    isBoss: false,
+    themeColor: "#10b981",
+    accentColor: "#059669",
+    description:
+      "Tachyon-infused speed phantom. Requires blinding velocity of 96+ WPM to overcome.",
+    abilities: [
+      {
+        id: "lightspeed-phase",
+        name: "Lightspeed Phase",
+        description: "Phases through keystrokes struck below supersonic cadence.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "speed-check",
+        id: "velocity-phantom-blitz",
+        name: "Hyper-Velocity Overdrive",
+        description:
+          "Velocity barrier. Below 90 WPM deals -50% damage. 96+ WPM deals +25% bonus; 104+ WPM unlocks +45% hyper-damage.",
+        slowThreshold: 90,
+        slowMultiplier: 0.5,
+        thresholds: [
+          { minWpm: 96, multiplier: 1.25, label: "VELOCITY BREAKTHROUGH" },
+          { minWpm: 104, multiplier: 1.45, label: "HYPER-SPEED TRANSCENDENCE" },
+        ],
+      },
+    ],
+  },
+
+  // 54. Endurance Colossus — The Unyielding Monolith (Nexus Mastery Stage 6)
+  {
+    id: "endurance_colossus",
+    name: "Endurance Colossus",
+    anime: "KeyForge",
+    world: "nexus",
+    stage: 6,
+    level: 65,
+    type: "boss",
+    typingFocus: "mastery",
+    maxHp: 3100,
+    attack: 34,
+    attackInterval: 2700,
+    recommendedWpm: 92,
+    recommendedAccuracy: 96,
+    difficulty: 96,
+    xpReward: 360,
+    firstClearBonusXp: 700,
+    isBoss: false,
+    themeColor: "#6366f1",
+    accentColor: "#4f46e5",
+    description:
+      "Gargantuan titan carved from monolithic data strata. Massive HP pool tests marathon combo stamina.",
+    abilities: [
+      {
+        id: "monolithic-weight",
+        name: "Monolithic Weight",
+        description: "Crushing gravity demanding continuous uninterrupted combo strings.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "combo-scaling",
+        id: "endurance-colossus-chain",
+        name: "Monolithic Combo Resonator",
+        description:
+          "Sustained combo streaks scale damage up to +60%; breaking combo triggers heavy counter-attack.",
+        tiers: [
+          { minCombo: 20, multiplier: 1.2, label: "MOMENTUM RESONANCE (x1.2)" },
+          { minCombo: 40, multiplier: 1.4, label: "TITANIC FORCE (x1.4)" },
+          { minCombo: 60, multiplier: 1.6, label: "UNBREAKABLE MONOLITH (x1.6)" },
+        ],
+        breakComboCounterAttack: 25,
+      },
+    ],
+  },
+
+  // 55. Keystroke Sovereign — The Grand Architect (Nexus Mastery Stage 7)
+  {
+    id: "keystroke_sovereign",
+    name: "Keystroke Sovereign",
+    anime: "KeyForge",
+    world: "nexus",
+    stage: 7,
+    level: 68,
+    type: "boss",
+    typingFocus: "mastery",
+    maxHp: 3400,
+    attack: 36,
+    attackInterval: 2500,
+    recommendedWpm: 98,
+    recommendedAccuracy: 97,
+    difficulty: 98,
+    xpReward: 420,
+    firstClearBonusXp: 850,
+    isBoss: true,
+    themeColor: "#ec4899",
+    accentColor: "#db2777",
+    description:
+      "Architect of the Crucible. Harmonizes speed, accuracy, and endurance into a unified final challenge.",
+    abilities: [
+      {
+        id: "architect-matrix",
+        name: "Architect Matrix",
+        description: "Rearranges the digital battlefield into a comprehensive mastery trial.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "nexus-mastery",
+        id: "sovereign-grand-mastery",
+        name: "Grand Architect Mastery",
+        description:
+          "Requires 95+ WPM and 97%+ accuracy simultaneously for +45% sovereign bonus; otherwise deals -55% damage.",
+        minWpm: 95,
+        minAccuracy: 97,
+        bonusMultiplier: 1.45,
+        penaltyMultiplier: 0.45,
+      },
+    ],
+  },
+
+  // 56. The Nexus Mirror — The Mirror Sovereign (KeyForge Grand Climax Final Boss)
+  {
+    id: "nexus_mirror",
+    name: "The Nexus Mirror",
+    anime: "KeyForge",
+    world: "nexus",
+    stage: 8,
+    level: 75,
+    type: "boss",
+    typingFocus: "mastery",
+    maxHp: 3800,
+    attack: 40,
+    attackInterval: 2300,
+    recommendedWpm: 105,
+    recommendedAccuracy: 98,
+    difficulty: 100,
+    xpReward: 500,
+    firstClearBonusXp: 1000,
+    isBoss: true,
+    themeColor: "#f97316",
+    accentColor: "#a855f7",
+    description:
+      "The Living Reflection of the Typist. Adapts to your personal speed, accuracy, and rhythm. The ultimate crucible of KeyForge.",
+    abilities: [
+      {
+        id: "mirror-reflection",
+        name: "Soul Mirror",
+        description: "Reflects your own typing prowess against you in real-time combat.",
+      },
+      {
+        id: "crucible-ascendance",
+        name: "Crucible Ascendance",
+        description: "The entire digital universe concentrates into the ultimate test of human typing mastery.",
+      },
+    ],
+    mechanics: [
+      {
+        type: "nexus-mastery",
+        id: "nexus-mirror-sovereign-test",
+        name: "The Mirror Sovereign Crucible",
+        description:
+          "The supreme mastery threshold. Requires 100+ WPM and 98%+ accuracy simultaneously for +65% transcendence bonus; otherwise deals -65% penalty.",
+        minWpm: 100,
+        minAccuracy: 98,
+        bonusMultiplier: 1.65,
+        penaltyMultiplier: 0.35,
+      },
+      {
+        type: "combo-scaling",
+        id: "nexus-mirror-combo",
+        name: "Echoing Reflection Chain",
+        description: "Unbroken combo streak amplifies damage; dropping combo triggers devastating reflection shockwave.",
+        tiers: [
+          { minCombo: 25, multiplier: 1.25, label: "PERFECT REFLECTION (x1.25)" },
+          { minCombo: 50, multiplier: 1.5, label: "SOVEREIGN HARMONY (x1.5)" },
+        ],
+        breakComboCounterAttack: 35,
+      },
+    ],
+  },
 ]
 
 export function getCharacterById(id: string): Enemy | undefined {

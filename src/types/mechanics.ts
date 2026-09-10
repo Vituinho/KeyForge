@@ -7,6 +7,7 @@ export type BattleMechanicType =
   | "focus-genjutsu"
   | "adaptive-weakness"
   | "touch-typing"
+  | "nexus-mastery"
   | "multi-phase"
   | "multi-phase-boss"
 
@@ -79,6 +80,14 @@ export interface TouchTypingConfig extends BaseMechanicConfig {
   penaltyMultiplier: number // e.g. 0.65
 }
 
+export interface NexusMasteryConfig extends BaseMechanicConfig {
+  type: "nexus-mastery"
+  minWpm: number
+  minAccuracy: number
+  bonusMultiplier: number
+  penaltyMultiplier: number
+}
+
 export interface MultiPhaseConfig extends BaseMechanicConfig {
   type: "multi-phase" | "multi-phase-boss"
   totalPhases: number
@@ -94,4 +103,5 @@ export type EnemyMechanicConfig =
   | FocusGenjutsuConfig
   | AdaptiveWeaknessConfig
   | TouchTypingConfig
+  | NexusMasteryConfig
   | MultiPhaseConfig
