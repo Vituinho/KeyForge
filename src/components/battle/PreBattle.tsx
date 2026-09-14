@@ -1,12 +1,14 @@
 "use client"
 
+import { useState, useEffect, useCallback } from "react"
 import { motion } from "framer-motion"
 import { Enemy } from "@/types/character"
-import { Swords, ChevronRight, ChevronLeft, Star, Award, Sparkles, Package } from "lucide-react"
+import { Swords, ChevronRight, ChevronLeft, Star, Award, Sparkles, Package, Skull } from "lucide-react"
 import { usePlayer } from "@/hooks/usePlayer"
 import Link from "next/link"
 import { useI18n } from "@/lib/i18n/i18nContext"
 import { getStageByEnemyId } from "@/data/worlds"
+import { BossIntroModal } from "@/components/campaign/BossIntroModal"
 
 interface PreBattleProps {
   enemy: Enemy
@@ -25,6 +27,29 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
     : undefined
   const isCleared = Boolean(savedScore)
   const starsEarned = savedScore?.stars ?? (isCleared ? 1 : 0)
+  const isBoss = Boolean(enemy.isWorldBoss || enemy.stage === 8 || stage?.isBoss)
+
+  const [showBossIntro, setShowBossIntro] = useState(false)
+
+  const handleStartBattle = useCallback(() => {
+    if (isBoss) {
+      setShowBossIntro(true)
+      return
+    }
+    onFight()
+  }, [isBoss, onFight, setShowBossIntro])
+
+  // Listen to Enter key to start fight smoothly
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter" && !showBossIntro) {
+        e.preventDefault()
+        handleStartBattle()
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [handleStartBattle, showBossIntro])
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden px-4 py-16 sm:py-8">
@@ -47,24 +72,43 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
         }}
       />
 
-      {/* Typing focus banner */}
-      {enemy.typingFocus && (
+      {/* Typing focus and stage badge banner */}
+      <div className="relative z-10 mb-8 flex items-center gap-2 flex-wrap justify-center">
         <motion.div
-          className="relative z-10 mb-8 px-4 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-widest border"
-          style={{
-            backgroundColor: `${enemy.themeColor}15`,
-            borderColor: `${enemy.themeColor}40`,
-            color: enemy.themeColor,
-          }}
+          className="px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-white/10 text-white/90 border border-white/15"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          {t("battle.preBattle.stageTrial", {
-            stage: enemy.stage ?? 1,
-            focus: t(`battle.focusTypes.${enemy.typingFocus}` as Parameters<typeof t>[0]) || enemy.typingFocus,
-          })}
+          {t("battle.preBattle.stageBadge", { stage: enemy.stage ?? 1 })}
+          {stage ? ` · ${stage.name}` : ""}
         </motion.div>
-      )}
+
+        {isBoss && (
+          <motion.div
+            className="px-3 py-1 rounded-full text-xs font-mono font-black uppercase tracking-widest bg-red-500/20 text-red-400 border border-red-500/40 flex items-center gap-1"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <Skull size={13} />
+            <span>{t("battle.preBattle.bossStage")}</span>
+          </motion.div>
+        )}
+
+        {enemy.typingFocus && (
+          <motion.div
+            className="px-4 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-widest border"
+            style={{
+              backgroundColor: `${enemy.themeColor}15`,
+              borderColor: `${enemy.themeColor}40`,
+              color: enemy.themeColor,
+            }}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            {t(`battle.focusTypes.${enemy.typingFocus}` as Parameters<typeof t>[0]) || enemy.typingFocus}
+          </motion.div>
+        )}
+      </div>
 
       {/* VS Layout */}
       <motion.div
@@ -138,10 +182,10 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
         transition={{ delay: 0.6, duration: 0.5 }}
       >
         <StatChip label={t("common.level").toUpperCase()} value={enemy.level} color={enemy.themeColor} />
-        <StatChip label={t("animeWorld.recommendedSpeed").toUpperCase()} value={`${enemy.recommendedWpm} WPM`} color={enemy.themeColor} />
+        <StatChip label={t("battle.preBattle.recommendedClear").toUpperCase()} value={`${enemy.recommendedWpm} WPM`} color={enemy.themeColor} />
         <StatChip label={t("animeWorld.targetAcc").toUpperCase()} value={`${enemy.recommendedAccuracy}%`} color={enemy.themeColor} />
         {masteryWpm ? (
-          <StatChip label={`${t("animeWorld.masteryTarget")} (3★)`.toUpperCase()} value={`${masteryWpm} WPM`} color="#f59e0b" />
+          <StatChip label={`${t("battle.preBattle.mastery3Star")}`.toUpperCase()} value={`${masteryWpm} WPM`} color="#f59e0b" />
         ) : (
           <StatChip label={t("animeWorld.combatFocus").toUpperCase()} value={enemy.difficulty} color={enemy.themeColor} />
         )}
@@ -267,7 +311,7 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
           background: `linear-gradient(135deg, ${enemy.themeColor}, ${enemy.accentColor})`,
           boxShadow: `0 0 30px ${enemy.themeColor}66`,
         }}
-        onClick={onFight}
+        onClick={handleStartBattle}
         whileHover={{ scale: 1.06 }}
         whileTap={{ scale: 0.97 }}
         initial={{ y: 20, opacity: 0 }}
@@ -277,6 +321,26 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
         {t("battle.preBattle.startFight").toUpperCase()}
         <ChevronRight size={22} />
       </motion.button>
+
+      <motion.p
+        className="relative z-10 mt-3 text-xs font-mono text-white/40 tracking-wider"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.1 }}
+      >
+        {t("battle.preBattle.pressEnterToFight")}
+      </motion.p>
+
+      {/* Boss Intro Cinematic Modal */}
+      <BossIntroModal
+        enemy={enemy}
+        isOpen={showBossIntro}
+        onComplete={() => {
+          setShowBossIntro(false)
+          onFight()
+        }}
+        isRematch={isCleared}
+      />
     </div>
   )
 }

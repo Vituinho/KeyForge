@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useParams } from "next/navigation"
 import { usePlayer } from "@/hooks/usePlayer"
 import { useI18n } from "@/lib/i18n/i18nContext"
@@ -21,6 +21,7 @@ import {
   ArrowRight,
   Star,
   AlertCircle,
+  BookOpen,
 } from "lucide-react"
 import {
   getWorldById,
@@ -28,10 +29,12 @@ import {
   ANIME_WORLD_ORDER,
 } from "@/data/worlds"
 import { AnimeWorldId, WorldStage } from "@/types/world"
+import { WorldIntroModal } from "@/components/campaign/WorldIntroModal"
+import { captureWorldEntryBaseline } from "@/lib/progression/baselineService"
 
 export default function AnimeWorldDynamicMapPage() {
   const { t } = useI18n()
-  const { player } = usePlayer()
+  const { player, updatePlayer } = usePlayer()
   const params = useParams()
 
   const rawWorldId = params?.worldId
@@ -40,6 +43,39 @@ export default function AnimeWorldDynamicMapPage() {
   ) as AnimeWorldId
 
   const world = getWorldById(worldId)
+  const [showWorldIntro, setShowWorldIntro] = useState(() => {
+    if (!world) return false
+    return !player.worldIntroSeen?.[world.id]
+  })
+
+  // Capture baseline once on entering this unlocked world
+  useEffect(() => {
+    if (!world || !isWorldUnlocked(world.id, player)) return
+
+    if (!player.worldBaselines?.[world.id]) {
+      const baseline = captureWorldEntryBaseline(player, world.id)
+      updatePlayer((prev) => ({
+        ...prev,
+        worldBaselines: {
+          ...prev.worldBaselines,
+          [world.id]: baseline,
+        },
+      }))
+    }
+  }, [world, player, updatePlayer])
+
+  const handleCloseWorldIntro = useCallback(() => {
+    setShowWorldIntro(false)
+    if (world && !player.worldIntroSeen?.[world.id]) {
+      updatePlayer((prev) => ({
+        ...prev,
+        worldIntroSeen: {
+          ...prev.worldIntroSeen,
+          [world.id]: true,
+        },
+      }))
+    }
+  }, [world, player.worldIntroSeen, updatePlayer])
 
   // Progression calculation
   const progress = world ? player.campaignProgress?.[world.id] : undefined
@@ -202,6 +238,15 @@ export default function AnimeWorldDynamicMapPage() {
                 <Activity size={10} />
                 <span>{t(world.focusKey as Parameters<typeof t>[0])}</span>
               </span>
+
+              <button
+                type="button"
+                onClick={() => setShowWorldIntro(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/10 hover:bg-white/15 text-white/80 border border-white/15 transition-colors"
+              >
+                <BookOpen size={11} />
+                <span>{t("animeWorld.worldIntro.openLore")}</span>
+              </button>
             </div>
 
             <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
@@ -667,6 +712,13 @@ export default function AnimeWorldDynamicMapPage() {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* World Intro Cinematic Modal */}
+      <WorldIntroModal
+        world={world}
+        isOpen={showWorldIntro}
+        onClose={handleCloseWorldIntro}
+      />
     </div>
   )
 }
