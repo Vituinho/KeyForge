@@ -5,7 +5,9 @@ export interface HistoricalTrend {
   hasEnoughData: boolean
   battleCount: number
   earlyAverageWpm: number | null
+  earlyAvgWpm?: number | null
   recentAverageWpm: number | null
+  recentAvgWpm?: number | null
   wpmImprovement: number | null
   earlyAverageAccuracy: number | null
   recentAverageAccuracy: number | null
@@ -38,8 +40,8 @@ function stdDev(nums: number[]): number {
  */
 function calculateConsistency(battles: BattleHistoryEntry[]): number {
   if (battles.length <= 1) return 75
-  const wpmStd = stdDev(battles.map((b) => b.battleWpm))
-  const accStd = stdDev(battles.map((b) => b.battleAccuracy))
+  const wpmStd = stdDev(battles.map((b) => b.battleWpm ?? b.wpm ?? 0))
+  const accStd = stdDev(battles.map((b) => b.battleAccuracy ?? b.accuracy ?? 0))
   return Math.max(10, Math.min(100, Math.round(100 - (wpmStd * 2.2 + accStd * 3.0))))
 }
 
@@ -56,7 +58,9 @@ export function analyzeImprovementTrend(
       hasEnoughData: false,
       battleCount: history?.length ?? 0,
       earlyAverageWpm: null,
+      earlyAvgWpm: null,
       recentAverageWpm: null,
+      recentAvgWpm: null,
       wpmImprovement: null,
       earlyAverageAccuracy: null,
       recentAverageAccuracy: null,
@@ -73,25 +77,34 @@ export function analyzeImprovementTrend(
   const sample = history.slice(0, 30)
   const count = sample.length
 
-  // Divide into early and recent groups (split half or first/last 5)
+  // Sort chronologically (oldest to newest) using timestamp if available
+  const getTime = (b: BattleHistoryEntry) => {
+    if (!b.timestamp) return 0
+    return typeof b.timestamp === "number" ? b.timestamp : new Date(b.timestamp).getTime()
+  }
+  const hasTimestamps = sample.some((b) => b.timestamp !== undefined)
+  const sorted = hasTimestamps
+    ? [...sample].sort((a, b) => getTime(a) - getTime(b))
+    : [...sample].reverse() // default assumption when no timestamps: newest-first -> reverse to oldest-first
+
+  // Divide into early and recent groups
   const half = Math.floor(count / 2)
-  // Since history is usually stored newest-first:
-  const recentGroup = sample.slice(0, half)
-  const earlyGroup = sample.slice(half)
+  const earlyGroup = sorted.slice(0, half)
+  const recentGroup = sorted.slice(count - half)
 
   const earlyWpm = Math.round(
-    earlyGroup.reduce((s, b) => s + b.battleWpm, 0) / earlyGroup.length
+    earlyGroup.reduce((s, b) => s + (b.battleWpm ?? b.wpm ?? 0), 0) / earlyGroup.length
   )
   const recentWpm = Math.round(
-    recentGroup.reduce((s, b) => s + b.battleWpm, 0) / recentGroup.length
+    recentGroup.reduce((s, b) => s + (b.battleWpm ?? b.wpm ?? 0), 0) / recentGroup.length
   )
   const wpmImprovement = recentWpm - earlyWpm
 
   const earlyAcc = Math.round(
-    earlyGroup.reduce((s, b) => s + b.battleAccuracy, 0) / earlyGroup.length
+    earlyGroup.reduce((s, b) => s + (b.battleAccuracy ?? b.accuracy ?? 0), 0) / earlyGroup.length
   )
   const recentAcc = Math.round(
-    recentGroup.reduce((s, b) => s + b.battleAccuracy, 0) / recentGroup.length
+    recentGroup.reduce((s, b) => s + (b.battleAccuracy ?? b.accuracy ?? 0), 0) / recentGroup.length
   )
   const accuracyImprovement = recentAcc - earlyAcc
 
@@ -100,8 +113,8 @@ export function analyzeImprovementTrend(
   const consistencyImprovement = recentConsistency - earlyConsistency
 
   // Finger & Key diagnostics
-  const earlyErrors = earlyGroup.reduce((s, b) => s + b.totalErrors, 0)
-  const recentErrors = recentGroup.reduce((s, b) => s + b.totalErrors, 0)
+  const earlyErrors = earlyGroup.reduce((s, b) => s + (b.totalErrors ?? 0), 0)
+  const recentErrors = recentGroup.reduce((s, b) => s + (b.totalErrors ?? 0), 0)
 
   let mostImprovedFinger: string | null = null
   let mostImprovedKey: string | null = null
@@ -116,7 +129,9 @@ export function analyzeImprovementTrend(
     hasEnoughData: true,
     battleCount: count,
     earlyAverageWpm: earlyWpm,
+    earlyAvgWpm: earlyWpm,
     recentAverageWpm: recentWpm,
+    recentAvgWpm: recentWpm,
     wpmImprovement,
     earlyAverageAccuracy: earlyAcc,
     recentAverageAccuracy: recentAcc,
@@ -128,6 +143,8 @@ export function analyzeImprovementTrend(
     mostImprovedFinger,
   }
 }
+
+export const analyzeHistoricalImprovement = analyzeImprovementTrend
 
 /**
  * Retrieves verified personal bests from player profile without fabricating milestones.

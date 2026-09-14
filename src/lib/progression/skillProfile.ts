@@ -69,21 +69,23 @@ export function calculateSpeedScore(
   recentBattles: BattleHistoryEntry[]
 ): SkillAttributeScore {
   if (recentBattles.length < SKILL_WEIGHTS.MIN_BATTLES_FOR_PROFILE && profile.stats.battlesPlayed < 2) {
+    const reason = "Minimum 3 battles required to evaluate speed rating."
     return {
       score: 0,
       rating: "insufficient_data",
       confidence: "insufficient_data",
-      breakdown: "Minimum 3 battles required to evaluate speed rating.",
+      breakdown: reason,
+      explainableReason: reason,
       sampleCount: recentBattles.length,
     }
   }
 
   const recentAvg =
     recentBattles.length > 0
-      ? recentBattles.reduce((s, b) => s + b.battleWpm, 0) / recentBattles.length
-      : profile.stats.averageWpm
+      ? recentBattles.reduce((s, b) => s + (b.battleWpm ?? b.wpm ?? 0), 0) / recentBattles.length
+      : profile.stats.averageWpm || profile.stats.avgWpm || 0
 
-  const lifetimeAvg = profile.stats.averageWpm || recentAvg
+  const lifetimeAvg = profile.stats.averageWpm || profile.stats.avgWpm || recentAvg
   const blendedWpm =
     recentAvg * SKILL_WEIGHTS.SPEED.RECENT_WEIGHT +
     lifetimeAvg * SKILL_WEIGHTS.SPEED.LIFETIME_WEIGHT
@@ -95,11 +97,13 @@ export function calculateSpeedScore(
     100
 
   const score = clamp(normalized)
+  const breakdown = `Derived from blended WPM of ${Math.round(blendedWpm)} (Recent: ${Math.round(recentAvg)}, Lifetime: ${Math.round(lifetimeAvg)}).`
   return {
     score,
     rating: resolveRating(score),
     confidence: recentBattles.length >= 5 ? "high" : "moderate",
-    breakdown: `Derived from blended WPM of ${Math.round(blendedWpm)} (Recent: ${Math.round(recentAvg)}, Lifetime: ${Math.round(lifetimeAvg)}).`,
+    breakdown,
+    explainableReason: breakdown,
     sampleCount: recentBattles.length,
   }
 }
@@ -113,21 +117,23 @@ export function calculateAccuracyScore(
   recentBattles: BattleHistoryEntry[]
 ): SkillAttributeScore {
   if (recentBattles.length < SKILL_WEIGHTS.MIN_BATTLES_FOR_PROFILE && profile.stats.battlesPlayed < 2) {
+    const reason = "Minimum 3 battles required to evaluate accuracy rating."
     return {
       score: 0,
       rating: "insufficient_data",
       confidence: "insufficient_data",
-      breakdown: "Minimum 3 battles required to evaluate accuracy rating.",
+      breakdown: reason,
+      explainableReason: reason,
       sampleCount: recentBattles.length,
     }
   }
 
   const recentAvg =
     recentBattles.length > 0
-      ? recentBattles.reduce((s, b) => s + b.battleAccuracy, 0) / recentBattles.length
-      : profile.stats.averageAccuracy
+      ? recentBattles.reduce((s, b) => s + (b.battleAccuracy ?? b.accuracy ?? 0), 0) / recentBattles.length
+      : profile.stats.averageAccuracy || profile.stats.avgAccuracy || 100
 
-  const lifetimeAvg = profile.stats.averageAccuracy || recentAvg
+  const lifetimeAvg = profile.stats.averageAccuracy || profile.stats.avgAccuracy || recentAvg
   const blendedAcc =
     recentAvg * SKILL_WEIGHTS.ACCURACY.RECENT_WEIGHT +
     lifetimeAvg * SKILL_WEIGHTS.ACCURACY.LIFETIME_WEIGHT
@@ -139,11 +145,13 @@ export function calculateAccuracyScore(
     100
 
   const score = clamp(normalized)
+  const breakdown = `Blended accuracy of ${blendedAcc.toFixed(1)}% across ${recentBattles.length} battles.`
   return {
     score,
     rating: resolveRating(score),
     confidence: recentBattles.length >= 5 ? "high" : "moderate",
-    breakdown: `Blended accuracy of ${blendedAcc.toFixed(1)}% across ${recentBattles.length} battles.`,
+    breakdown,
+    explainableReason: breakdown,
     sampleCount: recentBattles.length,
   }
 }
@@ -156,17 +164,19 @@ export function calculateConsistencyScore(
   recentBattles: BattleHistoryEntry[]
 ): SkillAttributeScore {
   if (recentBattles.length < SKILL_WEIGHTS.MIN_BATTLES_FOR_PROFILE) {
+    const reason = "Minimum 3 battles required to evaluate cadence consistency."
     return {
       score: 0,
       rating: "insufficient_data",
       confidence: "insufficient_data",
-      breakdown: "Minimum 3 battles required to evaluate cadence consistency.",
+      breakdown: reason,
+      explainableReason: reason,
       sampleCount: recentBattles.length,
     }
   }
 
-  const wpms = recentBattles.map((b) => b.battleWpm)
-  const accs = recentBattles.map((b) => b.battleAccuracy)
+  const wpms = recentBattles.map((b) => b.battleWpm ?? b.wpm ?? 0)
+  const accs = recentBattles.map((b) => b.battleAccuracy ?? b.accuracy ?? 0)
 
   const meanWpm = wpms.reduce((a, b) => a + b, 0) / wpms.length
   const meanAcc = accs.reduce((a, b) => a + b, 0) / accs.length
@@ -179,11 +189,13 @@ export function calculateConsistencyScore(
     accStd * SKILL_WEIGHTS.CONSISTENCY.ACCURACY_PENALTY_FACTOR
 
   const score = clamp(100 - variancePenalty)
+  const breakdown = `Variance penalty of ${Math.round(variancePenalty)} (WPM std-dev: ${wpmStd.toFixed(1)}, Acc std-dev: ${accStd.toFixed(1)}).`
   return {
     score,
     rating: resolveRating(score),
     confidence: recentBattles.length >= 5 ? "high" : "moderate",
-    breakdown: `Variance penalty of ${Math.round(variancePenalty)} (WPM std-dev: ${wpmStd.toFixed(1)}, Acc std-dev: ${accStd.toFixed(1)}).`,
+    breakdown,
+    explainableReason: breakdown,
     sampleCount: recentBattles.length,
   }
 }
@@ -202,11 +214,13 @@ export function calculateTechniqueScore(
   const battlesPlayed = profile.stats.battlesPlayed
 
   if (battlesPlayed < 2) {
+    const reason = "Minimum 2 battles required for ergonomic technique assessment."
     return {
       score: 0,
       rating: "insufficient_data",
       confidence: "insufficient_data",
-      breakdown: "Minimum 2 battles required for ergonomic technique assessment.",
+      breakdown: reason,
+      explainableReason: reason,
       sampleCount: battlesPlayed,
     }
   }
@@ -223,8 +237,8 @@ export function calculateTechniqueScore(
     if (homeRowAnchors.includes(k)) {
       anchorErrors += errCount
     }
-    const finger = getFingerForKey(k, layout)
-    if (finger?.includes("Pinky") || finger?.includes("Ring")) {
+    const fingerInfo = getFingerForKey(k, layout)
+    if (fingerInfo?.finger?.includes("Pinky") || fingerInfo?.finger?.includes("Ring")) {
       pinkyRingErrors += errCount
     }
   }
@@ -250,11 +264,13 @@ export function calculateTechniqueScore(
     academyBonus
 
   const score = clamp(rawScore)
+  const breakdown = `Home-row anchor discipline: ${Math.round(anchorDiscipline)}%, weak-key dispersion: ${Math.round(dispersionScore)}%, Academy bonus: +${academyBonus}.`
   return {
     score,
     rating: resolveRating(score),
     confidence: battlesPlayed >= 5 ? "high" : "moderate",
-    breakdown: `Home-row anchor discipline: ${Math.round(anchorDiscipline)}%, weak-key dispersion: ${Math.round(dispersionScore)}%, Academy bonus: +${academyBonus}.`,
+    breakdown,
+    explainableReason: breakdown,
     sampleCount: battlesPlayed,
   }
 }
@@ -268,32 +284,38 @@ export function calculateEnduranceScore(
   recentBattles: BattleHistoryEntry[]
 ): SkillAttributeScore {
   const longBattles = recentBattles.filter(
-    (b) => b.durationSeconds >= SKILL_WEIGHTS.ENDURANCE.MIN_BATTLE_DURATION_SEC
+    (b) => (b.durationSeconds ?? b.elapsedTime ?? 0) >= SKILL_WEIGHTS.ENDURANCE.MIN_BATTLE_DURATION_SEC
   )
 
   if (longBattles.length < 2) {
+    const reason = "Requires at least 2 long-form battles (>= 35 seconds) to evaluate endurance."
     return {
       score: 0,
       rating: "insufficient_data",
       confidence: "insufficient_data",
-      breakdown: "Requires at least 2 long-form battles (>= 35 seconds) to evaluate endurance.",
+      breakdown: reason,
+      explainableReason: reason,
       sampleCount: longBattles.length,
     }
   }
 
   // Check victory rate and WPM maintenance in long battles
-  const avgWpmLong = longBattles.reduce((s, b) => s + b.battleWpm, 0) / longBattles.length
-  const avgAccLong = longBattles.reduce((s, b) => s + b.battleAccuracy, 0) / longBattles.length
+  const avgWpmLong =
+    longBattles.reduce((s, b) => s + (b.battleWpm ?? b.wpm ?? 0), 0) / longBattles.length
+  const avgAccLong =
+    longBattles.reduce((s, b) => s + (b.battleAccuracy ?? b.accuracy ?? 0), 0) / longBattles.length
   const wins = longBattles.filter((b) => b.victory).length
   const winRate = wins / longBattles.length
 
   // High endurance = maintaining high accuracy and win rate in battles taking 40–120s
   const score = clamp(avgAccLong * 0.6 + winRate * 30 + Math.min(10, avgWpmLong / 8))
+  const breakdown = `Evaluated across ${longBattles.length} battles exceeding 35s. Sustained accuracy: ${avgAccLong.toFixed(1)}%, win-rate: ${Math.round(winRate * 100)}%.`
   return {
     score,
     rating: resolveRating(score),
     confidence: longBattles.length >= 4 ? "high" : "moderate",
-    breakdown: `Evaluated across ${longBattles.length} battles exceeding 35s. Sustained accuracy: ${avgAccLong.toFixed(1)}%, win-rate: ${Math.round(winRate * 100)}%.`,
+    breakdown,
+    explainableReason: breakdown,
     sampleCount: longBattles.length,
   }
 }
@@ -303,7 +325,7 @@ export function calculateEnduranceScore(
  */
 export function evaluateSkillProfile(
   profile: PlayerProfile,
-  recentBattles: BattleHistoryEntry[],
+  recentBattles: BattleHistoryEntry[] = [],
   locale: string = "pt-BR"
 ): SkillProfile2 {
   const speed = calculateSpeedScore(profile, recentBattles)
@@ -318,16 +340,25 @@ export function evaluateSkillProfile(
     accuracy.confidence !== "insufficient_data"
 
   if (!hasSufficientData) {
+    const reason = "Requires at least 3 battles to compute overall power rating."
     return {
       speed,
       accuracy,
       consistency,
       technique,
       endurance,
-      overall: 0,
+      overall: {
+        score: 0,
+        rating: "insufficient_data",
+        confidence: "insufficient_data",
+        breakdown: reason,
+        explainableReason: reason,
+        sampleCount: recentBattles.length,
+      },
       overallRating: "insufficient_data",
       evaluatedAt: new Date().toISOString(),
       hasSufficientData: false,
+      confidence: "insufficient_data",
     }
   }
 
@@ -356,8 +387,10 @@ export function evaluateSkillProfile(
     totalWeight += SKILL_WEIGHTS.OVERALL.ENDURANCE_WEIGHT
   }
 
-  const overall = totalWeight > 0 ? clamp(totalScore / totalWeight) : 0
-  const overallRating = resolveRating(overall)
+  const overallScore = totalWeight > 0 ? clamp(totalScore / totalWeight) : 0
+  const overallRating = resolveRating(overallScore)
+  const conf = recentBattles.length >= 5 ? "high" : "moderate"
+  const overallBreakdown = `Composite power rating across all calibrated typing disciplines.`
 
   return {
     speed,
@@ -365,9 +398,19 @@ export function evaluateSkillProfile(
     consistency,
     technique,
     endurance,
-    overall,
+    overall: {
+      score: overallScore,
+      rating: overallRating,
+      confidence: conf,
+      breakdown: overallBreakdown,
+      explainableReason: overallBreakdown,
+      sampleCount: recentBattles.length,
+    },
     overallRating,
     evaluatedAt: new Date().toISOString(),
     hasSufficientData: true,
+    confidence: conf,
   }
 }
+
+export const computeSkillProfile = evaluateSkillProfile

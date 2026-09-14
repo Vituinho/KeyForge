@@ -48,10 +48,12 @@ export function hasCalibratedBaseline(
  * Retrieves the stored world entry baseline for a specific anime world.
  */
 export function getWorldEntryBaseline(
-  worldId: string,
-  profile: PlayerProfile
+  arg1: PlayerProfile | string,
+  arg2?: PlayerProfile | string
 ): WorldEntryBaseline | undefined {
-  return profile.worldBaselines?.[worldId]
+  const profile = typeof arg1 === "object" ? arg1 : (arg2 as PlayerProfile)
+  const worldId = typeof arg1 === "string" ? arg1 : (arg2 as string)
+  return profile?.worldBaselines?.[worldId]
 }
 
 /**
@@ -66,10 +68,13 @@ export function getWorldEntryBaseline(
  *    single-battle flukes or outliers from skewing the player's true baseline.
  */
 export function captureWorldEntryBaseline(
-  worldId: string,
-  profile: PlayerProfile,
+  arg1: PlayerProfile | string,
+  arg2: PlayerProfile | string,
   history: BattleHistoryEntry[] = []
 ): WorldEntryBaseline {
+  const profile = typeof arg1 === "object" ? arg1 : (arg2 as PlayerProfile)
+  const worldId = typeof arg1 === "string" ? arg1 : (arg2 as string)
+
   // 1. Invariant: Immutability / Idempotence
   const existing = profile.worldBaselines?.[worldId]
   if (existing) {
@@ -83,7 +88,9 @@ export function captureWorldEntryBaseline(
       worldId,
       capturedAt: new Date().toISOString(),
       wpm: 0,
+      entryAvgWpm: 0,
       accuracy: 0,
+      entryAvgAccuracy: 0,
       consistency: 0,
       keyErrors: {},
       sampleSize: 0,
@@ -95,7 +102,6 @@ export function captureWorldEntryBaseline(
 
   // 3. Invariant: Rolling average over recent reliable battles (up to last 10)
   if (history && history.length > 0) {
-    // History is chronological or latest-first; take up to 10 recent battles
     const recent = history.slice(0, 10)
     const sampleSize = recent.length
 
@@ -114,7 +120,9 @@ export function captureWorldEntryBaseline(
       worldId,
       capturedAt: new Date().toISOString(),
       wpm: avgWpm,
+      entryAvgWpm: avgWpm,
       accuracy: avgAccuracy,
+      entryAvgAccuracy: avgAccuracy,
       consistency,
       keyErrors: { ...(profile.keyErrors ?? {}) },
       sampleSize,
@@ -128,12 +136,16 @@ export function captureWorldEntryBaseline(
   if (profile.stats && profile.stats.battlesPlayed > 0) {
     const sampleSize = Math.min(10, profile.stats.battlesPlayed)
     const confidence = sampleSize >= 3 ? "moderate" : "low"
+    const wpm = profile.stats.averageWpm || profile.stats.avgWpm || 0
+    const accuracy = profile.stats.averageAccuracy || profile.stats.avgAccuracy || 100
 
     return {
       worldId,
       capturedAt: new Date().toISOString(),
-      wpm: profile.stats.averageWpm,
-      accuracy: profile.stats.averageAccuracy,
+      wpm,
+      entryAvgWpm: wpm,
+      accuracy,
+      entryAvgAccuracy: accuracy,
       consistency: 70,
       keyErrors: { ...(profile.keyErrors ?? {}) },
       sampleSize,
@@ -148,7 +160,9 @@ export function captureWorldEntryBaseline(
     worldId,
     capturedAt: new Date().toISOString(),
     wpm: 0,
+    entryAvgWpm: 0,
     accuracy: 100,
+    entryAvgAccuracy: 100,
     consistency: 75,
     keyErrors: {},
     sampleSize: 0,
@@ -160,13 +174,18 @@ export function captureWorldEntryBaseline(
 
 export interface ImprovementComparison {
   isCalibrated: boolean
+  confidence: "high" | "moderate" | "low" | "uncalibrated"
+  baselineUnavailable?: boolean
+  baselineWpm: number | null
   startingWpm: number | null
   currentWpm: number
   wpmDelta: number | null
   wpmPercent: number | null
+  baselineAccuracy: number | null
   startingAccuracy: number | null
   currentAccuracy: number
   accuracyDelta: number | null
+  baselineConsistency: number | null
   startingConsistency: number | null
   currentConsistency: number
   consistencyDelta: number | null
@@ -174,46 +193,105 @@ export interface ImprovementComparison {
 
 /**
  * Calculates fair, like-for-like improvement between baseline average and current average.
+ * Supports both (profile, worldId, history) and (baseline, currentMetrics).
  * If baseline is uncalibrated, returns null deltas to strictly prevent fake metrics.
  */
 export function calculateImprovement(
-  baseline: WorldEntryBaseline | null | undefined,
-  currentMetrics: { wpm: number; accuracy: number; consistency?: number }
+  arg1: PlayerProfile | WorldEntryBaseline | null | undefined,
+  arg2: string | { wpm: number; accuracy: number; consistency?: number },
+  history: BattleHistoryEntry[] = []
 ): ImprovementComparison {
+  let baseline: WorldEntryBaseline | null | undefined
+  let currentMetrics: { wpm: number; accuracy: number; consistency?: number }
+
+  if (typeof arg2 === "string") {
+    // Signature: (profile: PlayerProfile, worldId: string, history?: BattleHistoryEntry[])
+    const profile = arg1 as PlayerProfile
+    const worldId = arg2
+    baseline = profile.worldBaselines?.[worldId]
+
+    // Check if legacy completed world without baseline
+    if (!baseline && profile.campaignProgress?.[worldId]?.completed) {
+      baseline = {
+        worldId,
+        capturedAt: new Date().toISOString(),
+        wpm: 0,
+        accuracy: 0,
+        consistency: 0,
+        keyErrors: {},
+        sampleSize: 0,
+        source: "recent_battles",
+        confidence: "uncalibrated",
+        baselineUnavailable: true,
+      }
+    }
+
+    const currentWpm =
+      history.length > 0
+        ? Math.round(history.slice(0, 5).reduce((s, b) => s + b.battleWpm, 0) / Math.min(5, history.length))
+        : profile.stats.averageWpm || profile.stats.avgWpm || profile.bestWpm || 0
+
+    const currentAccuracy =
+      history.length > 0
+        ? Math.round(history.slice(0, 5).reduce((s, b) => s + b.battleAccuracy, 0) / Math.min(5, history.length))
+        : profile.stats.averageAccuracy || profile.stats.avgAccuracy || profile.bestAccuracy || 100
+
+    currentMetrics = {
+      wpm: currentWpm,
+      accuracy: currentAccuracy,
+      consistency: 75,
+    }
+  } else {
+    // Signature: (baseline, currentMetrics)
+    baseline = arg1 as WorldEntryBaseline | null | undefined
+    currentMetrics = arg2
+  }
+
   const isCalibrated = hasCalibratedBaseline(baseline)
 
-  if (!isCalibrated || !baseline) {
+  if (!isCalibrated || !baseline || baseline.baselineUnavailable) {
     return {
       isCalibrated: false,
+      confidence: "uncalibrated",
+      baselineUnavailable: true,
+      baselineWpm: null,
       startingWpm: null,
       currentWpm: currentMetrics.wpm,
       wpmDelta: null,
       wpmPercent: null,
+      baselineAccuracy: null,
       startingAccuracy: null,
       currentAccuracy: currentMetrics.accuracy,
       accuracyDelta: null,
+      baselineConsistency: null,
       startingConsistency: null,
       currentConsistency: currentMetrics.consistency ?? 75,
       consistencyDelta: null,
     }
   }
 
-  const wpmDelta = currentMetrics.wpm - baseline.wpm
-  const wpmPercent =
-    baseline.wpm > 0 ? Math.round((wpmDelta / baseline.wpm) * 100) : 0
-  const accuracyDelta = currentMetrics.accuracy - baseline.accuracy
+  const baseWpm = baseline.wpm || baseline.entryAvgWpm || 0
+  const baseAcc = baseline.accuracy || baseline.entryAvgAccuracy || 0
+  const wpmDelta = currentMetrics.wpm - baseWpm
+  const wpmPercent = baseWpm > 0 ? Math.round((wpmDelta / baseWpm) * 100) : 0
+  const accuracyDelta = currentMetrics.accuracy - baseAcc
   const currentConsistency = currentMetrics.consistency ?? 75
   const consistencyDelta = currentConsistency - baseline.consistency
 
   return {
     isCalibrated: true,
-    startingWpm: baseline.wpm,
+    confidence: baseline.confidence,
+    baselineUnavailable: false,
+    baselineWpm: baseWpm,
+    startingWpm: baseWpm,
     currentWpm: currentMetrics.wpm,
     wpmDelta,
     wpmPercent,
-    startingAccuracy: baseline.accuracy,
+    baselineAccuracy: baseAcc,
+    startingAccuracy: baseAcc,
     currentAccuracy: currentMetrics.accuracy,
     accuracyDelta,
+    baselineConsistency: baseline.consistency,
     startingConsistency: baseline.consistency,
     currentConsistency,
     consistencyDelta,

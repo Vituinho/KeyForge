@@ -65,13 +65,17 @@ export interface BattleHistoryEntry {
   themeColor: string
   victory: boolean
   battleWpm: number
+  wpm?: number
   battleAccuracy: number
+  accuracy?: number
   bestCombo: number
+  combo?: number
   totalErrors: number
   damageDealt: number
   damageTaken: number
   xpEarned: number
   durationSeconds: number
-  timestamp: string // ISO string
+  elapsedTime?: number
+  timestamp: string | number // ISO string or epoch ms
 }
 

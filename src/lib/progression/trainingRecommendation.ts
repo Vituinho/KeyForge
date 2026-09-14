@@ -20,7 +20,7 @@ export function getRecommendedTraining(
   for (const [key, count] of Object.entries(keyErrors)) {
     if (count <= 0) continue
     const k = key.toLowerCase()
-    const finger = getFingerForKey(k, layout) ?? "unknown"
+    const finger = getFingerForKey(k, layout)?.finger ?? "unknown"
 
     if (!fingerErrorCounts[finger]) {
       fingerErrorCounts[finger] = { totalErrors: 0, keys: [] }
@@ -45,7 +45,11 @@ export function getRecommendedTraining(
   // 2. Prioritize by finger weakness if severe (>= 5 errors)
   if (worstFinger && maxFingerErrors >= 5) {
     const data = fingerErrorCounts[worstFinger]
-    const targetKeys = data.keys.slice(0, 4)
+    const sortedFingerKeys = [...data.keys].sort(
+      (a, b) => (keyErrors[b] ?? 0) - (keyErrors[a] ?? 0)
+    )
+    const targetKeys = sortedFingerKeys.slice(0, 4)
+    const primaryKey = targetKeys[0]
 
     return {
       id: `finger_weakness_${worstFinger}`,
@@ -53,7 +57,9 @@ export function getRecommendedTraining(
       titleKey: "trainingRecommendation.fingerWeaknessTitle",
       descKey: "trainingRecommendation.fingerWeaknessDesc",
       targetKeys,
+      targetKey: primaryKey,
       targetFinger: worstFinger,
+      finger: worstFinger,
       severity: maxFingerErrors >= 10 ? "high" : "medium",
       actionUrl: `/training?mode=weak-keys&keys=${targetKeys.join(",")}`,
       reason: `Chronic error concentration (${maxFingerErrors} mistakes) identified on ${worstFinger}.`,
@@ -67,12 +73,18 @@ export function getRecommendedTraining(
 
   if (sortedKeys.length >= 2) {
     const topKeys = sortedKeys.slice(0, 3).map(([k]) => k)
+    const primaryKey = topKeys[0]
+    const finger = getFingerForKey(primaryKey, layout)?.finger ?? undefined
+
     return {
       id: "weak_keys_target",
       type: "keys",
       titleKey: "trainingRecommendation.weakKeysTitle",
       descKey: "trainingRecommendation.weakKeysDesc",
       targetKeys: topKeys,
+      targetKey: primaryKey,
+      targetFinger: finger,
+      finger,
       severity: "medium",
       actionUrl: `/training?mode=weak-keys&keys=${topKeys.join(",")}`,
       reason: `Repeated mistypes on ${topKeys.map((k) => k.toUpperCase()).join(", ")}.`,
@@ -129,3 +141,5 @@ export function getRecommendedTraining(
     reason: "Consistent general warm-up to sharpen cadence and reflex.",
   }
 }
+
+export const getRecommendedTrainingTarget = getRecommendedTraining

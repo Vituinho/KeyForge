@@ -28,13 +28,14 @@ export function PersonalBestBanner({ milestone }: PersonalBestBannerProps) {
   }
 
   const getMessage = () => {
+    const val = milestone.newValue ?? milestone.value ?? 0
     switch (milestone.type) {
       case "wpm":
-        return t("battle.feedback.newWpmRecord", { val: milestone.newValue })
+        return t("battle.feedback.newWpmRecord", { val })
       case "accuracy":
-        return t("battle.feedback.newAccRecord", { val: milestone.newValue })
+        return t("battle.feedback.newAccRecord", { val })
       case "combo":
-        return t("battle.feedback.comboMilestone", { combo: milestone.newValue })
+        return t("battle.feedback.comboMilestone", { combo: val })
       default:
         return t("battle.feedback.newPersonalBest")
     }

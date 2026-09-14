@@ -18,7 +18,7 @@ import { BattleResult } from "./BattleResult"
 import { TypingKeyboard } from "@/components/keyboard/TypingKeyboard"
 import { useI18n } from "@/lib/i18n/i18nContext"
 import { usePlayer } from "@/hooks/usePlayer"
-import { formatMechanicEffect } from "@/lib/battle/formatMechanics"
+import { formatMechanicEffect, formatPhaseName } from "@/lib/battle/formatMechanics"
 import { evaluatePersonalBests } from "@/lib/progression/personalBestEngine"
 import { PersonalBestMilestone, CombatFeedbackEvent } from "@/types/progression"
 import { PersonalBestBanner } from "./PersonalBestBanner"
@@ -152,18 +152,23 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
         setTimeout(() => setActiveMilestone(null), 3500)
 
         updatePlayer((prev) => {
-          let next = { ...prev }
+          const next = { ...prev }
+          const stats = { ...next.stats }
           for (const m of milestones) {
-            if (m.type === "wpm" && m.newValue > next.bestWpm) {
-              next = { ...next, bestWpm: m.newValue }
+            if (m.type === "wpm" && m.newValue > (next.bestWpm ?? stats.bestWpm ?? 0)) {
+              next.bestWpm = m.newValue
+              stats.bestWpm = m.newValue
             }
-            if (m.type === "accuracy" && m.newValue > next.bestAccuracy) {
-              next = { ...next, bestAccuracy: m.newValue }
+            if (m.type === "accuracy" && m.newValue > (next.bestAccuracy ?? stats.averageAccuracy ?? 0)) {
+              next.bestAccuracy = m.newValue
+              stats.averageAccuracy = m.newValue
             }
-            if (m.type === "combo" && m.newValue > (next.bestCombo ?? 0)) {
-              next = { ...next, bestCombo: m.newValue }
+            if (m.type === "combo" && m.newValue > (next.bestCombo ?? stats.bestCombo ?? 0)) {
+              next.bestCombo = m.newValue
+              stats.bestCombo = m.newValue
             }
           }
+          next.stats = stats
           return next
         })
       } else {
@@ -179,7 +184,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
               type: "perfect_sentence",
               title: t("battle.feedback.perfectSentence"),
               durationMs: 1400,
-              createdAt: now,
+              timestamp: now,
             })
             setTimeout(() => setCombatFeedback(null), 1400)
           } else if (roundStats.currentWpm >= enemy.recommendedWpm + 15) {
@@ -191,7 +196,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
               title: t("battle.feedback.speedSurge"),
               subtitle: `${roundStats.currentWpm} WPM`,
               durationMs: 1400,
-              createdAt: now,
+              timestamp: now,
             })
             setTimeout(() => setCombatFeedback(null), 1400)
           } else if (roundStats.combo >= 20 && roundStats.combo % 10 === 0) {
@@ -202,7 +207,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
               type: "combo_milestone",
               title: t("battle.feedback.comboMilestone", { combo: roundStats.combo }),
               durationMs: 1400,
-              createdAt: now,
+              timestamp: now,
             })
             setTimeout(() => setCombatFeedback(null), 1400)
           }
@@ -344,7 +349,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
 
         {/* Phase Transition Banner Overlay */}
         <BossPhaseBanner
-          bannerText={battleState.phaseTransitionBanner}
+          bannerText={battleState.phaseTransitionBanner ?? null}
           themeColor={enemy.themeColor}
         />
 

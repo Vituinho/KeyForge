@@ -27,7 +27,7 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
     : undefined
   const isCleared = Boolean(savedScore)
   const starsEarned = savedScore?.stars ?? (isCleared ? 1 : 0)
-  const isBoss = Boolean(enemy.isWorldBoss || enemy.stage === 8 || stage?.isBoss)
+  const isBoss = Boolean(enemy.isBoss || enemy.stage === 8 || stage?.isBoss)
 
   const [showBossIntro, setShowBossIntro] = useState(false)
 

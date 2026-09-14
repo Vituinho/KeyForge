@@ -22,8 +22,10 @@ export interface PlayerStats {
   totalErrors: number
 
   averageWpm: number
+  avgWpm?: number
   bestWpm: number
   averageAccuracy: number
+  avgAccuracy?: number
   bestCombo: number
 
   enemiesDefeated: number
@@ -84,6 +86,9 @@ export interface PlayerProfile {
   achievements?: string[]
   title?: string
   titles?: string[]
+  bestWpm?: number
+  bestAccuracy?: number
+  bestCombo?: number
   worldBaselines?: Record<string, WorldEntryBaseline>
   worldIntroSeen?: Record<string, boolean>
   onboardingCompleted?: boolean
@@ -187,6 +192,9 @@ export function createDefaultPlayerProfile(username = "Player"): PlayerProfile {
     totalStagesCleared: 0,
     keyErrors: {},
     achievements: [],
+    bestWpm: 0,
+    bestAccuracy: 100,
+    bestCombo: 0,
     worldBaselines: {},
     worldIntroSeen: {},
     onboardingCompleted: false,

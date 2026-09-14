@@ -191,7 +191,7 @@ export default function GameDashboardPage() {
       )}
 
       {/* Tactical Training Recommendation */}
-      {trainingTarget ? (
+      {trainingTarget && trainingTarget.targetKey ? (
         <motion.div
           className="relative z-10 w-full max-w-2xl mb-6 p-3.5 rounded-2xl border border-violet-500/30 bg-gradient-to-r from-violet-500/10 via-purple-500/5 to-transparent backdrop-blur-md flex items-center justify-between gap-3 text-xs"
           initial={{ opacity: 0 }}
@@ -217,7 +217,7 @@ export default function GameDashboardPage() {
             </div>
           </div>
           <Link
-            href={`/training?mode=weak-keys&keys=${trainingTarget.targetKey}`}
+            href={trainingTarget.actionUrl || `/training?mode=weak-keys&keys=${trainingTarget.targetKey}`}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-violet-500/20 hover:bg-violet-500/30 text-violet-300 border border-violet-500/40 font-mono font-bold text-xs uppercase tracking-wider transition-colors shrink-0"
           >
             <span>{t("progression.recommendations.trainNow")}</span>

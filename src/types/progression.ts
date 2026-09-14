@@ -17,6 +17,7 @@ export interface SkillAttributeScore {
   rating: SkillRating
   confidence: "high" | "moderate" | "low" | "insufficient_data"
   breakdown: string
+  explainableReason: string
   sampleCount: number
 }
 
@@ -26,10 +27,11 @@ export interface SkillProfile2 {
   consistency: SkillAttributeScore
   technique: SkillAttributeScore
   endurance: SkillAttributeScore
-  overall: number // 0–100 composite
+  overall: SkillAttributeScore
   overallRating: SkillRating
   evaluatedAt: string
   hasSufficientData: boolean
+  confidence: "high" | "moderate" | "low" | "insufficient_data"
 }
 
 export interface WorldEntryBaseline {
@@ -43,6 +45,8 @@ export interface WorldEntryBaseline {
   source: "recent_battles" | "aggregated_profile" | "initial_session"
   confidence: "high" | "moderate" | "low" | "uncalibrated"
   baselineUnavailable?: boolean
+  entryAvgWpm?: number
+  entryAvgAccuracy?: number
 }
 
 export interface WorldCompletionRecap {
@@ -76,6 +80,7 @@ export interface WorldCompletionRecap {
 export interface PersonalBestMilestone {
   type: "wpm" | "accuracy" | "combo"
   value: number
+  newValue: number
   previousValue: number
   timestamp: number
   messageKey: string
@@ -95,7 +100,9 @@ export interface CombatFeedbackEvent {
     | "perfect_word" // Priority 6
   priority: CombatFeedbackPriority
   title: string
+  subtitle?: string
   detail?: string
+  durationMs?: number
   timestamp: number
   badgeColor?: string
 }
@@ -112,7 +119,9 @@ export interface RecommendedTrainingTarget {
   titleKey: string
   descKey: string
   targetKeys?: string[]
+  targetKey?: string
   targetFinger?: string
+  finger?: string
   severity: "high" | "medium" | "low"
   actionUrl: string
   reason: string

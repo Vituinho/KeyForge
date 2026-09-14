@@ -43,7 +43,7 @@ function formatDuration(totalSeconds: number): string {
   return `${hours}h ${remainingMinutes}m`
 }
 
-function formatDate(iso: string, locale: string, fallback = "Recent"): string {
+function formatDate(iso: string | number, locale: string, fallback = "Recent"): string {
   try {
     const d = new Date(iso)
     return d.toLocaleDateString(locale === "pt-BR" ? "pt-BR" : "en-US", {
