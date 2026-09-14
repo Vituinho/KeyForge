@@ -6,8 +6,9 @@ import {
 } from "@/types/player"
 
 export const STORAGE_KEY_V1 = "keyforge_player_v1"
-export const STORAGE_KEY = "keyforge_player_v2"
-export const CURRENT_SAVE_VERSION = 2
+export const STORAGE_KEY_V2 = "keyforge_player_v2"
+export const STORAGE_KEY = "keyforge_player_v3"
+export const CURRENT_SAVE_VERSION = 3
 export const PLAYER_UPDATE_EVENT = "keyforge:player-updated"
 
 export interface PlayerSaveData {
@@ -40,7 +41,7 @@ function isValidProfileShape(obj: unknown): obj is Partial<PlayerProfile> {
  * Load the local player profile.
  * - Safely handles SSR.
  * - Auto-creates default profile on first visit.
- * - Safely migrates v1 save to v2 without data loss.
+ * - Safely migrates v1 and v2 saves to v3 without data loss.
  * - Gracefully recovers if localStorage data is corrupted, empty, or incomplete.
  */
 export function loadPlayerProfile(): PlayerProfile {
@@ -49,49 +50,109 @@ export function loadPlayerProfile(): PlayerProfile {
   }
 
   try {
-    // 1. Try loading v2 save
-    const rawV2 = localStorage.getItem(STORAGE_KEY)
-    if (rawV2) {
-      const parsedV2 = JSON.parse(rawV2) as Partial<PlayerSaveData>
+    // 1. Try loading v3 save
+    const rawV3 = localStorage.getItem(STORAGE_KEY)
+    if (rawV3) {
+      const parsedV3 = JSON.parse(rawV3) as Partial<PlayerSaveData>
 
       if (
-        parsedV2 &&
-        typeof parsedV2 === "object" &&
-        parsedV2.player &&
-        isValidProfileShape(parsedV2.player)
+        parsedV3 &&
+        typeof parsedV3 === "object" &&
+        parsedV3.player &&
+        isValidProfileShape(parsedV3.player)
       ) {
         const defaultProfile = createDefaultPlayerProfile()
         const merged: PlayerProfile = {
           ...defaultProfile,
-          ...parsedV2.player,
+          ...parsedV3.player,
           attributes: {
             ...defaultProfile.attributes,
-            ...(parsedV2.player.attributes ?? {}),
+            ...(parsedV3.player.attributes ?? {}),
           },
           stats: {
             ...defaultProfile.stats,
-            ...(parsedV2.player.stats ?? {}),
+            ...(parsedV3.player.stats ?? {}),
           },
           multiplayerStats: {
             ...createDefaultMultiplayerStats(),
-            ...(parsedV2.player.multiplayerStats ?? {}),
+            ...(parsedV3.player.multiplayerStats ?? {}),
           },
           campaignProgress: {
             ...defaultProfile.campaignProgress,
-            ...(parsedV2.player.campaignProgress ?? {}),
+            ...(parsedV3.player.campaignProgress ?? {}),
           },
           keyErrors: {
-            ...(parsedV2.player.keyErrors ?? {}),
+            ...(parsedV3.player.keyErrors ?? {}),
           },
-          achievements: parsedV2.player.achievements ?? defaultProfile.achievements ?? [],
+          achievements: parsedV3.player.achievements ?? defaultProfile.achievements ?? [],
+          worldBaselines: parsedV3.player.worldBaselines ?? {},
+          worldIntroSeen: parsedV3.player.worldIntroSeen ?? {},
+          onboardingCompleted: parsedV3.player.onboardingCompleted ?? false,
+          skillProfile: parsedV3.player.skillProfile,
         }
         return syncCampaignSummary(merged)
       }
 
-      console.warn("[KeyForge Storage] Corrupted v2 save data detected. Attempting recovery...")
+      console.warn("[KeyForge Storage] Corrupted v3 save data detected. Attempting recovery...")
     }
 
-    // 2. Migration: Check for legacy v1 save data
+    // 2. Migration: Check for v2 save data
+    const rawV2 = localStorage.getItem(STORAGE_KEY_V2)
+    if (rawV2) {
+      try {
+        const parsedV2 = JSON.parse(rawV2) as Partial<{ version: number; player: PlayerProfile }>
+        if (
+          parsedV2 &&
+          typeof parsedV2 === "object" &&
+          parsedV2.player &&
+          isValidProfileShape(parsedV2.player)
+        ) {
+          console.info("[KeyForge Storage] Migrating save data from v2 to v3...")
+          const defaultProfile = createDefaultPlayerProfile(parsedV2.player.username)
+
+          const hasPlayed =
+            (parsedV2.player.stats?.battlesPlayed ?? 0) > 0 ||
+            (parsedV2.player.level ?? 1) > 1
+
+          const migratedV2: PlayerProfile = syncCampaignSummary({
+            ...defaultProfile,
+            ...parsedV2.player,
+            attributes: {
+              ...defaultProfile.attributes,
+              ...(parsedV2.player.attributes ?? {}),
+            },
+            stats: {
+              ...defaultProfile.stats,
+              ...(parsedV2.player.stats ?? {}),
+            },
+            multiplayerStats: {
+              ...createDefaultMultiplayerStats(),
+              ...(parsedV2.player.multiplayerStats ?? {}),
+            },
+            campaignProgress: {
+              ...defaultProfile.campaignProgress,
+              ...(parsedV2.player.campaignProgress ?? {}),
+            },
+            keyErrors: {
+              ...(parsedV2.player.keyErrors ?? {}),
+            },
+            achievements: parsedV2.player.achievements ?? defaultProfile.achievements ?? [],
+            worldBaselines: parsedV2.player.worldBaselines ?? {},
+            worldIntroSeen: parsedV2.player.worldIntroSeen ?? {},
+            // Existing players skip first-time onboarding
+            onboardingCompleted: parsedV2.player.onboardingCompleted ?? hasPlayed,
+            updatedAt: new Date().toISOString(),
+          })
+
+          savePlayerProfile(migratedV2)
+          return migratedV2
+        }
+      } catch (mig2Error) {
+        console.warn("[KeyForge Storage] Could not parse v2 save during migration:", mig2Error)
+      }
+    }
+
+    // 3. Migration: Check for legacy v1 save data
     const rawV1 = localStorage.getItem(STORAGE_KEY_V1)
     if (rawV1) {
       try {
@@ -103,7 +164,7 @@ export function loadPlayerProfile(): PlayerProfile {
           parsedV1.player &&
           isValidProfileShape(parsedV1.player)
         ) {
-          console.info("[KeyForge Storage] Migrating save data from v1 to v2...")
+          console.info("[KeyForge Storage] Migrating save data from v1 to v3...")
           const defaultProfile = createDefaultPlayerProfile(parsedV1.player.username)
 
           const migratedProfile: PlayerProfile = syncCampaignSummary({
@@ -120,6 +181,9 @@ export function loadPlayerProfile(): PlayerProfile {
             academyProgress: parsedV1.player.academyProgress ?? {},
             campaignProgress: defaultProfile.campaignProgress,
             achievements: parsedV1.player.achievements ?? [],
+            worldBaselines: {},
+            worldIntroSeen: {},
+            onboardingCompleted: true,
             updatedAt: new Date().toISOString(),
           })
 
@@ -131,7 +195,7 @@ export function loadPlayerProfile(): PlayerProfile {
       }
     }
 
-    // 3. New player: create safe default v2 profile
+    // 4. New player: create safe default v3 profile
     const defaultProfile = syncCampaignSummary(createDefaultPlayerProfile())
     savePlayerProfile(defaultProfile)
     return defaultProfile
@@ -144,7 +208,7 @@ export function loadPlayerProfile(): PlayerProfile {
 }
 
 /**
- * Save player profile to localStorage under v2 key.
+ * Save player profile to localStorage under v3 key.
  * Dispatches a custom window event for reactive UI updates across components.
  */
 export function savePlayerProfile(profile: PlayerProfile): boolean {
@@ -177,11 +241,13 @@ export function savePlayerProfile(profile: PlayerProfile): boolean {
 
 /**
  * Resets local player progress back to default.
- * Cleans both v1 and v2 keys.
+ * Cleans v1, v2 and v3 keys.
  */
 export function resetPlayerProfile(): PlayerProfile {
   if (isBrowser()) {
     localStorage.removeItem(STORAGE_KEY_V1)
+    localStorage.removeItem(STORAGE_KEY_V2)
+    localStorage.removeItem(STORAGE_KEY)
   }
   const fresh = createDefaultPlayerProfile()
   savePlayerProfile(fresh)

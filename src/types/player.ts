@@ -1,4 +1,5 @@
 import { MultiplayerStats } from "./multiplayer"
+import { WorldEntryBaseline, SkillProfile2 } from "./progression"
 
 export type PlayerRank = "E" | "D" | "C" | "B" | "A" | "S" | "SS" | "SSS"
 
@@ -83,6 +84,10 @@ export interface PlayerProfile {
   achievements?: string[]
   title?: string
   titles?: string[]
+  worldBaselines?: Record<string, WorldEntryBaseline>
+  worldIntroSeen?: Record<string, boolean>
+  onboardingCompleted?: boolean
+  skillProfile?: SkillProfile2
 
   createdAt: string
   updatedAt: string
@@ -182,6 +187,9 @@ export function createDefaultPlayerProfile(username = "Player"): PlayerProfile {
     totalStagesCleared: 0,
     keyErrors: {},
     achievements: [],
+    worldBaselines: {},
+    worldIntroSeen: {},
+    onboardingCompleted: false,
     createdAt: now,
     updatedAt: now,
   }
