@@ -24,6 +24,7 @@ import { PersonalBestMilestone, CombatFeedbackEvent } from "@/types/progression"
 import { PersonalBestBanner } from "./PersonalBestBanner"
 import { CombatFeedbackToast } from "./CombatFeedbackToast"
 import { BossPhaseBanner } from "@/components/campaign/BossPhaseBanner"
+import { soundManager } from "@/lib/audio/soundManager"
 
 interface BattleArenaProps {
   enemy: Enemy
@@ -147,6 +148,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
       if (milestones.length > 0) {
         const topMilestone = milestones[0]
         setActiveMilestone(topMilestone)
+        soundManager.playPersonalBest()
         setTimeout(() => setActiveMilestone(null), 3500)
 
         updatePlayer((prev) => {
@@ -165,6 +167,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
           return next
         })
       } else {
+        soundManager.playSentenceComplete()
         // Prioritized Combat Feedback (1.5s cooldown guard)
         const now = Date.now()
         if (now - lastFeedbackTimeRef.current >= 1500) {
