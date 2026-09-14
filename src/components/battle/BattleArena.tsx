@@ -17,7 +17,13 @@ import { DamageIndicator } from "./DamageIndicator"
 import { BattleResult } from "./BattleResult"
 import { TypingKeyboard } from "@/components/keyboard/TypingKeyboard"
 import { useI18n } from "@/lib/i18n/i18nContext"
-import { formatMechanicEffect, formatPhaseName } from "@/lib/battle/formatMechanics"
+import { usePlayer } from "@/hooks/usePlayer"
+import { formatMechanicEffect } from "@/lib/battle/formatMechanics"
+import { evaluatePersonalBests } from "@/lib/progression/personalBestEngine"
+import { PersonalBestMilestone, CombatFeedbackEvent } from "@/types/progression"
+import { PersonalBestBanner } from "./PersonalBestBanner"
+import { CombatFeedbackToast } from "./CombatFeedbackToast"
+import { BossPhaseBanner } from "@/components/campaign/BossPhaseBanner"
 
 interface BattleArenaProps {
   enemy: Enemy
@@ -27,10 +33,14 @@ interface BattleArenaProps {
 
 export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
   const { t, locale } = useI18n()
+  const { player, updatePlayer } = usePlayer()
   const [enemyUnderAttack, setEnemyUnderAttack] = useState(false)
   const [playerUnderAttack, setPlayerUnderAttack] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [showTouchGuide, setShowTouchGuide] = useState(true)
+  const [activeMilestone, setActiveMilestone] = useState<PersonalBestMilestone | null>(null)
+  const [combatFeedback, setCombatFeedback] = useState<CombatFeedbackEvent | null>(null)
+  const lastFeedbackTimeRef = useRef<number>(0)
 
   // Track latest typing stats snapshot from engine
   const latestStatsRef = useRef<TypingStats | null>(null)
@@ -126,6 +136,76 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
       const { isEnemyDefeated } = applyRoundDamage(roundStats)
       setEnemyUnderAttack(true)
 
+      // Evaluate real Personal Bests
+      const milestones = evaluatePersonalBests(
+        player,
+        roundStats,
+        enemy.stage ? `stage_${enemy.stage}` : enemy.id,
+        enemy.world
+      )
+
+      if (milestones.length > 0) {
+        const topMilestone = milestones[0]
+        setActiveMilestone(topMilestone)
+        setTimeout(() => setActiveMilestone(null), 3500)
+
+        updatePlayer((prev) => {
+          let next = { ...prev }
+          for (const m of milestones) {
+            if (m.type === "wpm" && m.newValue > next.bestWpm) {
+              next = { ...next, bestWpm: m.newValue }
+            }
+            if (m.type === "accuracy" && m.newValue > next.bestAccuracy) {
+              next = { ...next, bestAccuracy: m.newValue }
+            }
+            if (m.type === "combo" && m.newValue > (next.bestCombo ?? 0)) {
+              next = { ...next, bestCombo: m.newValue }
+            }
+          }
+          return next
+        })
+      } else {
+        // Prioritized Combat Feedback (1.5s cooldown guard)
+        const now = Date.now()
+        if (now - lastFeedbackTimeRef.current >= 1500) {
+          if (roundStats.currentErrors === 0 && roundStats.currentAccuracy === 100) {
+            lastFeedbackTimeRef.current = now
+            setCombatFeedback({
+              id: `fb-${now}`,
+              priority: 3,
+              type: "perfect_sentence",
+              title: t("battle.feedback.perfectSentence"),
+              durationMs: 1400,
+              createdAt: now,
+            })
+            setTimeout(() => setCombatFeedback(null), 1400)
+          } else if (roundStats.currentWpm >= enemy.recommendedWpm + 15) {
+            lastFeedbackTimeRef.current = now
+            setCombatFeedback({
+              id: `fb-${now}`,
+              priority: 5,
+              type: "speed_surge",
+              title: t("battle.feedback.speedSurge"),
+              subtitle: `${roundStats.currentWpm} WPM`,
+              durationMs: 1400,
+              createdAt: now,
+            })
+            setTimeout(() => setCombatFeedback(null), 1400)
+          } else if (roundStats.combo >= 20 && roundStats.combo % 10 === 0) {
+            lastFeedbackTimeRef.current = now
+            setCombatFeedback({
+              id: `fb-${now}`,
+              priority: 4,
+              type: "combo_milestone",
+              title: t("battle.feedback.comboMilestone", { combo: roundStats.combo }),
+              durationMs: 1400,
+              createdAt: now,
+            })
+            setTimeout(() => setCombatFeedback(null), 1400)
+          }
+        }
+      }
+
       // Animation duration: 600ms
       setTimeout(() => {
         setEnemyUnderAttack(false)
@@ -144,7 +224,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
         setIsTransitioning(false)
       }, 600)
     },
-    [advanceToNextSentence, applyRoundDamage]
+    [advanceToNextSentence, applyRoundDamage, enemy, player, t, updatePlayer]
   )
 
   // Typing engine instance
@@ -255,25 +335,15 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
           />
         </div>
 
+        {/* Personal Best Banner & Combat Feedback Toast */}
+        <PersonalBestBanner milestone={activeMilestone} />
+        <CombatFeedbackToast event={combatFeedback} />
+
         {/* Phase Transition Banner Overlay */}
-        <AnimatePresence>
-          {battleState.phaseTransitionBanner && (
-            <motion.div
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 px-8 py-5 rounded-3xl bg-black/95 border-2 border-red-500 text-center shadow-[0_0_60px_rgba(239,68,68,0.8)] backdrop-blur-md pointer-events-none"
-              initial={{ scale: 0.6, opacity: 0 }}
-              animate={{ scale: 1.05, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.35, ease: "backOut" }}
-            >
-              <span className="text-xs font-mono font-bold tracking-widest text-red-400 uppercase block mb-1">
-                {t("battle.hud.bossShift")}
-              </span>
-              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-wider">
-                {formatPhaseName(battleState.phaseTransitionBanner.replace(/!$/, ""), t).toUpperCase()}!
-              </h2>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <BossPhaseBanner
+          bannerText={battleState.phaseTransitionBanner}
+          themeColor={enemy.themeColor}
+        />
 
         {/* Typing area & damage indicators */}
         <div className="flex-1 flex flex-col justify-center gap-4 relative">
