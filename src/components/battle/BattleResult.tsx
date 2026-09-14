@@ -32,6 +32,8 @@ import { useI18n } from "@/lib/i18n/i18nContext"
 import { getCrateById } from "@/data/crates"
 import { getWorldById } from "@/data/worlds"
 import { getFingerForKey, FINGER_PALETTE, resolveDefaultLayout } from "@/lib/keyboard/fingerMap"
+import { usePlayer } from "@/hooks/usePlayer"
+import { WorldCompletionModal } from "@/components/campaign/WorldCompletionModal"
 
 function formatCrateReason(
   reason: string,
@@ -63,6 +65,7 @@ export function BattleResult({
   onRematch,
 }: BattleResultProps) {
   const { t, locale } = useI18n()
+  const { player } = usePlayer()
   const { finalStats } = result
 
   // Process rewards strictly once upon initial mount
@@ -71,6 +74,9 @@ export function BattleResult({
   )
   const [showRankUpModal, setShowRankUpModal] = useState(
     () => rewardSummary.didRankUp
+  )
+  const [showWorldCompletionModal, setShowWorldCompletionModal] = useState(
+    () => Boolean(victory && rewardSummary?.campaignCompleted && enemy.world)
   )
 
   const defeatAdvice: DefeatAdvice = useMemo(
@@ -659,6 +665,16 @@ export function BattleResult({
           prevRank={rewardSummary.prevRank}
           newRank={rewardSummary.newRank}
           onClose={() => setShowRankUpModal(false)}
+        />
+      )}
+
+      {/* World Completion Celebration Modal */}
+      {enemy.world && getWorldById(enemy.world) && (
+        <WorldCompletionModal
+          world={getWorldById(enemy.world)!}
+          isOpen={showWorldCompletionModal}
+          onClose={() => setShowWorldCompletionModal(false)}
+          player={player}
         />
       )}
     </div>
