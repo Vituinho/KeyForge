@@ -18,8 +18,8 @@ export const JUJUTSU_STAGES: WorldStage[] = [
     characterTitle: "Vessel of the Curse",
     typingFocus: "precision",
     difficulty: 30,
-    recommendedWpm: 40,
-    recommendedAccuracy: 92,
+    recommendedWpm: 35,
+    recommendedAccuracy: 93,
     enemyConfig: getRequiredEnemy("yuji"),
     mechanicKey: "animeWorld.mechanicDetails.yuji.name",
     mechanicSummaryKey: "animeWorld.mechanicDetails.yuji.desc",
@@ -35,8 +35,8 @@ export const JUJUTSU_STAGES: WorldStage[] = [
     isBoss: false,
     masteryObjectives: [
       { id: "yuji_star_1", labelKey: "animeWorld.mastery.completeStage" },
-      { id: "yuji_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 94 },
-      { id: "yuji_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 48 },
+      { id: "yuji_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 95 },
+      { id: "yuji_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 45 },
     ],
   },
   {
@@ -47,8 +47,8 @@ export const JUJUTSU_STAGES: WorldStage[] = [
     characterTitle: "Straw Doll Sorcerer",
     typingFocus: "precision",
     difficulty: 40,
-    recommendedWpm: 45,
-    recommendedAccuracy: 93,
+    recommendedWpm: 38,
+    recommendedAccuracy: 94,
     enemyConfig: getRequiredEnemy("nobara"),
     mechanicKey: "animeWorld.mechanicDetails.nobara.name",
     mechanicSummaryKey: "animeWorld.mechanicDetails.nobara.desc",
@@ -65,7 +65,7 @@ export const JUJUTSU_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "nobara_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "nobara_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 95 },
-      { id: "nobara_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 52 },
+      { id: "nobara_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 48 },
     ],
   },
   {
@@ -76,7 +76,7 @@ export const JUJUTSU_STAGES: WorldStage[] = [
     characterTitle: "Shadow Technique Inheritor",
     typingFocus: "precision",
     difficulty: 50,
-    recommendedWpm: 50,
+    recommendedWpm: 40,
     recommendedAccuracy: 94,
     enemyConfig: getRequiredEnemy("megumi"),
     mechanicKey: "animeWorld.mechanicDetails.megumi.name",
@@ -94,7 +94,7 @@ export const JUJUTSU_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "megumi_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "megumi_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 96 },
-      { id: "megumi_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 58 },
+      { id: "megumi_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 50 },
     ],
   },
   {
@@ -105,7 +105,7 @@ export const JUJUTSU_STAGES: WorldStage[] = [
     characterTitle: "Grade 1 Brawler",
     typingFocus: "precision",
     difficulty: 60,
-    recommendedWpm: 56,
+    recommendedWpm: 42,
     recommendedAccuracy: 95,
     enemyConfig: getRequiredEnemy("todo"),
     mechanicKey: "animeWorld.mechanicDetails.todo.name",
@@ -123,7 +123,7 @@ export const JUJUTSU_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "todo_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "todo_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 96 },
-      { id: "todo_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 64 },
+      { id: "todo_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 52 },
     ],
   },
   {
@@ -134,7 +134,7 @@ export const JUJUTSU_STAGES: WorldStage[] = [
     characterTitle: "Ratio Sorcerer",
     typingFocus: "precision",
     difficulty: 70,
-    recommendedWpm: 62,
+    recommendedWpm: 45,
     recommendedAccuracy: 95,
     enemyConfig: getRequiredEnemy("nanami"),
     mechanicKey: "animeWorld.mechanicDetails.nanami.name",
@@ -152,7 +152,7 @@ export const JUJUTSU_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "nanami_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "nanami_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 97 },
-      { id: "nanami_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 70 },
+      { id: "nanami_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 55 },
     ],
   },
   {
@@ -163,7 +163,7 @@ export const JUJUTSU_STAGES: WorldStage[] = [
     characterTitle: "Sorcerer Killer",
     typingFocus: "precision",
     difficulty: 80,
-    recommendedWpm: 70,
+    recommendedWpm: 48,
     recommendedAccuracy: 96,
     enemyConfig: getRequiredEnemy("toji"),
     mechanicKey: "animeWorld.mechanicDetails.toji.name",
@@ -181,7 +181,7 @@ export const JUJUTSU_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "toji_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "toji_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 97 },
-      { id: "toji_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 78 },
+      { id: "toji_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 58 },
     ],
   },
   {
@@ -192,8 +192,8 @@ export const JUJUTSU_STAGES: WorldStage[] = [
     characterTitle: "King of Curses",
     typingFocus: "precision",
     difficulty: 90,
-    recommendedWpm: 78,
-    recommendedAccuracy: 97,
+    recommendedWpm: 50,
+    recommendedAccuracy: 96,
     enemyConfig: getRequiredEnemy("sukuna"),
     mechanicKey: "animeWorld.mechanicDetails.sukuna.name",
     mechanicSummaryKey: "animeWorld.mechanicDetails.sukuna.desc",
@@ -210,7 +210,7 @@ export const JUJUTSU_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "sukuna_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "sukuna_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 98 },
-      { id: "sukuna_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 85 },
+      { id: "sukuna_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 62 },
     ],
   },
   {
@@ -221,8 +221,8 @@ export const JUJUTSU_STAGES: WorldStage[] = [
     characterTitle: "The Honored One",
     typingFocus: "precision",
     difficulty: 98,
-    recommendedWpm: 88,
-    recommendedAccuracy: 98,
+    recommendedWpm: 55,
+    recommendedAccuracy: 97,
     enemyConfig: getRequiredEnemy("gojo"),
     mechanicKey: "animeWorld.mechanicDetails.gojo.name",
     mechanicSummaryKey: "animeWorld.mechanicDetails.gojo.desc",
@@ -239,8 +239,8 @@ export const JUJUTSU_STAGES: WorldStage[] = [
     isBoss: true,
     masteryObjectives: [
       { id: "gojo_star_1", labelKey: "animeWorld.mastery.completeStage" },
-      { id: "gojo_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 98 },
-      { id: "gojo_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 92 },
+      { id: "gojo_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 99 },
+      { id: "gojo_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 68 },
     ],
   },
 ]

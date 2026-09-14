@@ -18,7 +18,7 @@ export const HUNTER_STAGES: WorldStage[] = [
     characterTitle: "Double Lair Sentry",
     typingFocus: "weak_keys",
     difficulty: 45,
-    recommendedWpm: 50,
+    recommendedWpm: 55,
     recommendedAccuracy: 93,
     enemyConfig: getRequiredEnemy("dungeon_guardian"),
     mechanicKey: "animeWorld.mechanicDetails.dungeon_guardian.name",
@@ -36,7 +36,7 @@ export const HUNTER_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "guardian_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "guardian_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 95 },
-      { id: "guardian_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 56 },
+      { id: "guardian_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 65 },
     ],
   },
   {
@@ -48,7 +48,7 @@ export const HUNTER_STAGES: WorldStage[] = [
     typingFocus: "weak_keys",
     difficulty: 55,
     recommendedWpm: 58,
-    recommendedAccuracy: 94,
+    recommendedAccuracy: 93,
     enemyConfig: getRequiredEnemy("cerberus"),
     mechanicKey: "animeWorld.mechanicDetails.cerberus.name",
     mechanicSummaryKey: "animeWorld.mechanicDetails.cerberus.desc",
@@ -64,8 +64,8 @@ export const HUNTER_STAGES: WorldStage[] = [
     isBoss: false,
     masteryObjectives: [
       { id: "cerberus_star_1", labelKey: "animeWorld.mastery.completeStage" },
-      { id: "cerberus_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 96 },
-      { id: "cerberus_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 64 },
+      { id: "cerberus_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 95 },
+      { id: "cerberus_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 68 },
     ],
   },
   {
@@ -76,7 +76,7 @@ export const HUNTER_STAGES: WorldStage[] = [
     characterTitle: "Knight Commander of the Throne",
     typingFocus: "weak_keys",
     difficulty: 65,
-    recommendedWpm: 66,
+    recommendedWpm: 60,
     recommendedAccuracy: 94,
     enemyConfig: getRequiredEnemy("igris"),
     mechanicKey: "animeWorld.mechanicDetails.igris.name",
@@ -105,7 +105,7 @@ export const HUNTER_STAGES: WorldStage[] = [
     characterTitle: "The Indomitable Shadow Tank",
     typingFocus: "weak_keys",
     difficulty: 72,
-    recommendedWpm: 72,
+    recommendedWpm: 63,
     recommendedAccuracy: 94,
     enemyConfig: getRequiredEnemy("iron"),
     mechanicKey: "animeWorld.mechanicDetails.iron.name",
@@ -123,7 +123,7 @@ export const HUNTER_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "iron_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "iron_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 96 },
-      { id: "iron_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 78 },
+      { id: "iron_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 75 },
     ],
   },
   {
@@ -134,8 +134,8 @@ export const HUNTER_STAGES: WorldStage[] = [
     characterTitle: "High Orc Grand Shaman",
     typingFocus: "weak_keys",
     difficulty: 80,
-    recommendedWpm: 78,
-    recommendedAccuracy: 95,
+    recommendedWpm: 66,
+    recommendedAccuracy: 94,
     enemyConfig: getRequiredEnemy("tusk"),
     mechanicKey: "animeWorld.mechanicDetails.tusk.name",
     mechanicSummaryKey: "animeWorld.mechanicDetails.tusk.desc",
@@ -151,8 +151,8 @@ export const HUNTER_STAGES: WorldStage[] = [
     isBoss: false,
     masteryObjectives: [
       { id: "tusk_star_1", labelKey: "animeWorld.mastery.completeStage" },
-      { id: "tusk_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 97 },
-      { id: "tusk_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 84 },
+      { id: "tusk_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 96 },
+      { id: "tusk_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 78 },
     ],
   },
   {
@@ -163,7 +163,7 @@ export const HUNTER_STAGES: WorldStage[] = [
     characterTitle: "The Ant King of Jeju",
     typingFocus: "weak_keys",
     difficulty: 88,
-    recommendedWpm: 84,
+    recommendedWpm: 69,
     recommendedAccuracy: 95,
     enemyConfig: getRequiredEnemy("beru"),
     mechanicKey: "animeWorld.mechanicDetails.beru.name",
@@ -181,7 +181,7 @@ export const HUNTER_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "beru_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "beru_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 97 },
-      { id: "beru_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 92 },
+      { id: "beru_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 82 },
     ],
   },
   {
@@ -192,8 +192,8 @@ export const HUNTER_STAGES: WorldStage[] = [
     characterTitle: "Grand Marshal of the Shadows",
     typingFocus: "weak_keys",
     difficulty: 94,
-    recommendedWpm: 90,
-    recommendedAccuracy: 96,
+    recommendedWpm: 72,
+    recommendedAccuracy: 95,
     enemyConfig: getRequiredEnemy("bellion"),
     mechanicKey: "animeWorld.mechanicDetails.bellion.name",
     mechanicSummaryKey: "animeWorld.mechanicDetails.bellion.desc",
@@ -210,7 +210,7 @@ export const HUNTER_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "bellion_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "bellion_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 97 },
-      { id: "bellion_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 98 },
+      { id: "bellion_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 86 },
     ],
   },
   {
@@ -221,8 +221,8 @@ export const HUNTER_STAGES: WorldStage[] = [
     characterTitle: "The Shadow Monarch",
     typingFocus: "weak_keys",
     difficulty: 100,
-    recommendedWpm: 96,
-    recommendedAccuracy: 96,
+    recommendedWpm: 75,
+    recommendedAccuracy: 95,
     enemyConfig: getRequiredEnemy("jinwoo"),
     mechanicKey: "animeWorld.mechanicDetails.jinwoo.name",
     mechanicSummaryKey: "animeWorld.mechanicDetails.jinwoo.desc",
@@ -240,7 +240,7 @@ export const HUNTER_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "jinwoo_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "jinwoo_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 98 },
-      { id: "jinwoo_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 102 },
+      { id: "jinwoo_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 90 },
     ],
   },
 ]

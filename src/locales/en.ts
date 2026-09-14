@@ -640,6 +640,8 @@ export const en = {
     progressionPath: "Progression Path (Stages 1–8)",
     stageBriefing: "Stage 0{stage} Briefing",
     targetSpeed: "Target Speed",
+    recommendedSpeed: "Recommended Speed",
+    masteryTarget: "Mastery Target",
     targetAcc: "Target Accuracy",
     combatFocus: "Combat Focus",
     enemyHp: "Enemy HP",

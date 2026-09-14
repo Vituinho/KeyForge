@@ -642,6 +642,8 @@ export const ptBR: TranslationSchema = {
     progressionPath: "Trilha de Progressão (Estágios 1–8)",
     stageBriefing: "Briefing do Estágio 0{stage}",
     targetSpeed: "Velocidade Alvo",
+    recommendedSpeed: "Velocidade Recomendada",
+    masteryTarget: "Alvo de Maestria",
     targetAcc: "Precisão Alvo",
     combatFocus: "Foco de Combate",
     enemyHp: "HP do Inimigo",

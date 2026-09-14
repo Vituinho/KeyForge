@@ -470,11 +470,16 @@ export default function AnimeWorldDynamicMapPage() {
                   <div className="p-3 rounded-xl bg-black/50 border border-white/10">
                     <span className="text-[10px] uppercase tracking-wider text-white/40 block mb-1 flex items-center gap-1">
                       <Zap size={12} className="text-yellow-400" />
-                      {t("animeWorld.targetSpeed")}
+                      {t("animeWorld.recommendedSpeed")}
                     </span>
                     <span className="text-lg font-black text-white font-mono">
                       {selectedStage.recommendedWpm} WPM
                     </span>
+                    {selectedStage.masteryObjectives?.find((o) => o.minWpm !== undefined)?.minWpm && (
+                      <span className="text-[10px] font-mono text-amber-400/90 block mt-0.5">
+                        {t("animeWorld.masteryTarget")}: {selectedStage.masteryObjectives.find((o) => o.minWpm !== undefined)!.minWpm} WPM
+                      </span>
+                    )}
                   </div>
 
                   <div className="p-3 rounded-xl bg-black/50 border border-white/10">

@@ -19,6 +19,7 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
 
   const stageMatch = getStageByEnemyId(enemy.id)
   const stage = stageMatch?.stage
+  const masteryWpm = stage?.masteryObjectives?.find((o) => o.minWpm !== undefined)?.minWpm
   const savedScore = enemy.world
     ? player.campaignProgress?.[enemy.world]?.bestScores?.[enemy.id]
     : undefined
@@ -137,9 +138,13 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
         transition={{ delay: 0.6, duration: 0.5 }}
       >
         <StatChip label={t("common.level").toUpperCase()} value={enemy.level} color={enemy.themeColor} />
-        <StatChip label={t("animeWorld.targetSpeed").toUpperCase()} value={`${enemy.recommendedWpm}+`} color={enemy.themeColor} />
+        <StatChip label={t("animeWorld.recommendedSpeed").toUpperCase()} value={`${enemy.recommendedWpm} WPM`} color={enemy.themeColor} />
         <StatChip label={t("animeWorld.targetAcc").toUpperCase()} value={`${enemy.recommendedAccuracy}%`} color={enemy.themeColor} />
-        <StatChip label={t("animeWorld.combatFocus").toUpperCase()} value={enemy.difficulty} color={enemy.themeColor} />
+        {masteryWpm ? (
+          <StatChip label={`${t("animeWorld.masteryTarget")} (3★)`.toUpperCase()} value={`${masteryWpm} WPM`} color="#f59e0b" />
+        ) : (
+          <StatChip label={t("animeWorld.combatFocus").toUpperCase()} value={enemy.difficulty} color={enemy.themeColor} />
+        )}
       </motion.div>
 
       {/* Personal Best & Telemetry Info */}

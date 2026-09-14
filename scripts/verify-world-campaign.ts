@@ -191,9 +191,11 @@ assert(unmasteredSummary.status === "completed", "Status is 'completed' and not 
 const masteredScores: Record<string, { bestWpm: number; bestAccuracy: number; bestCombo: number; completedAt: string; stars?: number }> = {}
 const narutoStages = WORLD_REGISTRY.naruto.stages
 narutoStages.forEach((s) => {
+  const targetAcc = s.masteryObjectives?.[1]?.minAccuracy ?? s.recommendedAccuracy
+  const targetWpm = s.masteryObjectives?.[2]?.minWpm ?? s.recommendedWpm
   masteredScores[s.id] = {
-    bestWpm: s.recommendedWpm + 20,
-    bestAccuracy: s.recommendedAccuracy + 2,
+    bestWpm: targetWpm + 10,
+    bestAccuracy: Math.min(100, targetAcc + 2),
     bestCombo: 50,
     completedAt: new Date().toISOString(),
     stars: 3,

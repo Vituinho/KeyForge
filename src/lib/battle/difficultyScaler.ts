@@ -49,7 +49,7 @@ export function scaleEnemyForBattle(
       recommendedWpm: mirroredWpm,
       recommendedAccuracy: mirroredAcc,
       maxHp: scaledHp,
-      attackInterval: Math.max(3000, Math.round(baseEnemy.attackInterval * 0.95)),
+      attackInterval: Math.max(2200, Math.round(baseEnemy.attackInterval * 0.95)),
     }
   }
 

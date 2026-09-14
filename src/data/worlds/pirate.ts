@@ -18,7 +18,7 @@ export const PIRATE_STAGES: WorldStage[] = [
     characterTitle: "Sniper King of the Straw Hats",
     typingFocus: "consistency",
     difficulty: 40,
-    recommendedWpm: 48,
+    recommendedWpm: 50,
     recommendedAccuracy: 92,
     enemyConfig: getRequiredEnemy("usopp"),
     mechanicKey: "animeWorld.mechanicDetails.usopp.name",
@@ -36,7 +36,7 @@ export const PIRATE_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "usopp_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "usopp_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 94 },
-      { id: "usopp_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 54 },
+      { id: "usopp_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 60 },
     ],
   },
   {
@@ -47,8 +47,8 @@ export const PIRATE_STAGES: WorldStage[] = [
     characterTitle: "Black Leg Cook",
     typingFocus: "consistency",
     difficulty: 50,
-    recommendedWpm: 56,
-    recommendedAccuracy: 93,
+    recommendedWpm: 52,
+    recommendedAccuracy: 92,
     enemyConfig: getRequiredEnemy("sanji"),
     mechanicKey: "animeWorld.mechanicDetails.sanji.name",
     mechanicSummaryKey: "animeWorld.mechanicDetails.sanji.desc",
@@ -76,7 +76,7 @@ export const PIRATE_STAGES: WorldStage[] = [
     characterTitle: "King of Hell Swordsman",
     typingFocus: "consistency",
     difficulty: 60,
-    recommendedWpm: 64,
+    recommendedWpm: 54,
     recommendedAccuracy: 93,
     enemyConfig: getRequiredEnemy("zoro"),
     mechanicKey: "animeWorld.mechanicDetails.zoro.name",
@@ -105,8 +105,8 @@ export const PIRATE_STAGES: WorldStage[] = [
     characterTitle: "Surgeon of Death",
     typingFocus: "consistency",
     difficulty: 70,
-    recommendedWpm: 70,
-    recommendedAccuracy: 94,
+    recommendedWpm: 57,
+    recommendedAccuracy: 93,
     enemyConfig: getRequiredEnemy("law"),
     mechanicKey: "animeWorld.mechanicDetails.law.name",
     mechanicSummaryKey: "animeWorld.mechanicDetails.law.desc",
@@ -123,7 +123,7 @@ export const PIRATE_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "law_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "law_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 96 },
-      { id: "law_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 76 },
+      { id: "law_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 68 },
     ],
   },
   {
@@ -134,7 +134,7 @@ export const PIRATE_STAGES: WorldStage[] = [
     characterTitle: "Heavenly Yaksha",
     typingFocus: "consistency",
     difficulty: 80,
-    recommendedWpm: 76,
+    recommendedWpm: 60,
     recommendedAccuracy: 94,
     enemyConfig: getRequiredEnemy("doflamingo"),
     mechanicKey: "animeWorld.mechanicDetails.doflamingo.name",
@@ -152,7 +152,7 @@ export const PIRATE_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "doflamingo_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "doflamingo_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 96 },
-      { id: "doflamingo_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 82 },
+      { id: "doflamingo_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 72 },
     ],
   },
   {
@@ -163,8 +163,8 @@ export const PIRATE_STAGES: WorldStage[] = [
     characterTitle: "Sweet Commander",
     typingFocus: "consistency",
     difficulty: 88,
-    recommendedWpm: 82,
-    recommendedAccuracy: 95,
+    recommendedWpm: 63,
+    recommendedAccuracy: 94,
     enemyConfig: getRequiredEnemy("katakuri"),
     mechanicKey: "animeWorld.mechanicDetails.katakuri.name",
     mechanicSummaryKey: "animeWorld.mechanicDetails.katakuri.desc",
@@ -181,7 +181,7 @@ export const PIRATE_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "katakuri_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "katakuri_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 97 },
-      { id: "katakuri_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 90 },
+      { id: "katakuri_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 75 },
     ],
   },
   {
@@ -192,7 +192,7 @@ export const PIRATE_STAGES: WorldStage[] = [
     characterTitle: "King of the Beasts",
     typingFocus: "consistency",
     difficulty: 94,
-    recommendedWpm: 88,
+    recommendedWpm: 66,
     recommendedAccuracy: 95,
     enemyConfig: getRequiredEnemy("kaido"),
     mechanicKey: "animeWorld.mechanicDetails.kaido.name",
@@ -210,7 +210,7 @@ export const PIRATE_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "kaido_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "kaido_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 97 },
-      { id: "kaido_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 96 },
+      { id: "kaido_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 80 },
     ],
   },
   {
@@ -221,7 +221,7 @@ export const PIRATE_STAGES: WorldStage[] = [
     characterTitle: "Gear 5 Sun God Nika",
     typingFocus: "consistency",
     difficulty: 100,
-    recommendedWpm: 94,
+    recommendedWpm: 70,
     recommendedAccuracy: 95,
     enemyConfig: getRequiredEnemy("luffy"),
     mechanicKey: "animeWorld.mechanicDetails.luffy.name",
@@ -240,7 +240,7 @@ export const PIRATE_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "luffy_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "luffy_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 97 },
-      { id: "luffy_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 100 },
+      { id: "luffy_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 85 },
     ],
   },
 ]

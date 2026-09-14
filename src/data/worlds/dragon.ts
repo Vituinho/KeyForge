@@ -19,7 +19,7 @@ export const DRAGON_STAGES: WorldStage[] = [
     typingFocus: "speed",
     difficulty: 35,
     recommendedWpm: 45,
-    recommendedAccuracy: 90,
+    recommendedAccuracy: 91,
     enemyConfig: getRequiredEnemy("krillin"),
     mechanicKey: "animeWorld.mechanicDetails.krillin.name",
     mechanicSummaryKey: "animeWorld.mechanicDetails.krillin.desc",
@@ -35,8 +35,8 @@ export const DRAGON_STAGES: WorldStage[] = [
     isBoss: false,
     masteryObjectives: [
       { id: "krillin_star_1", labelKey: "animeWorld.mastery.completeStage" },
-      { id: "krillin_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 92 },
-      { id: "krillin_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 50 },
+      { id: "krillin_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 93 },
+      { id: "krillin_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 55 },
     ],
   },
   {
@@ -47,8 +47,8 @@ export const DRAGON_STAGES: WorldStage[] = [
     characterTitle: "Namekian Tactician",
     typingFocus: "speed",
     difficulty: 45,
-    recommendedWpm: 55,
-    recommendedAccuracy: 91,
+    recommendedWpm: 48,
+    recommendedAccuracy: 92,
     enemyConfig: getRequiredEnemy("piccolo"),
     mechanicKey: "animeWorld.mechanicDetails.piccolo.name",
     mechanicSummaryKey: "animeWorld.mechanicDetails.piccolo.desc",
@@ -64,8 +64,8 @@ export const DRAGON_STAGES: WorldStage[] = [
     isBoss: false,
     masteryObjectives: [
       { id: "piccolo_star_1", labelKey: "animeWorld.mastery.completeStage" },
-      { id: "piccolo_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 93 },
-      { id: "piccolo_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 62 },
+      { id: "piccolo_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 94 },
+      { id: "piccolo_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 58 },
     ],
   },
   {
@@ -76,7 +76,7 @@ export const DRAGON_STAGES: WorldStage[] = [
     characterTitle: "Prince of all Saiyans",
     typingFocus: "speed",
     difficulty: 55,
-    recommendedWpm: 65,
+    recommendedWpm: 50,
     recommendedAccuracy: 92,
     enemyConfig: getRequiredEnemy("vegeta"),
     mechanicKey: "animeWorld.mechanicDetails.vegeta.name",
@@ -93,8 +93,8 @@ export const DRAGON_STAGES: WorldStage[] = [
     isBoss: false,
     masteryObjectives: [
       { id: "vegeta_star_1", labelKey: "animeWorld.mastery.completeStage" },
-      { id: "vegeta_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 94 },
-      { id: "vegeta_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 72 },
+      { id: "vegeta_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 95 },
+      { id: "vegeta_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 62 },
     ],
   },
   {
@@ -105,8 +105,8 @@ export const DRAGON_STAGES: WorldStage[] = [
     characterTitle: "Galactic Emperor",
     typingFocus: "speed",
     difficulty: 65,
-    recommendedWpm: 72,
-    recommendedAccuracy: 92,
+    recommendedWpm: 53,
+    recommendedAccuracy: 93,
     enemyConfig: getRequiredEnemy("frieza"),
     mechanicKey: "animeWorld.mechanicDetails.frieza.name",
     mechanicSummaryKey: "animeWorld.mechanicDetails.frieza.desc",
@@ -122,8 +122,8 @@ export const DRAGON_STAGES: WorldStage[] = [
     isBoss: false,
     masteryObjectives: [
       { id: "frieza_star_1", labelKey: "animeWorld.mastery.completeStage" },
-      { id: "frieza_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 94 },
-      { id: "frieza_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 80 },
+      { id: "frieza_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 95 },
+      { id: "frieza_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 65 },
     ],
   },
   {
@@ -134,7 +134,7 @@ export const DRAGON_STAGES: WorldStage[] = [
     characterTitle: "Perfect Bio-Android",
     typingFocus: "speed",
     difficulty: 75,
-    recommendedWpm: 80,
+    recommendedWpm: 55,
     recommendedAccuracy: 93,
     enemyConfig: getRequiredEnemy("cell"),
     mechanicKey: "animeWorld.mechanicDetails.cell.name",
@@ -152,7 +152,7 @@ export const DRAGON_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "cell_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "cell_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 95 },
-      { id: "cell_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 88 },
+      { id: "cell_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 68 },
     ],
   },
   {
@@ -163,8 +163,8 @@ export const DRAGON_STAGES: WorldStage[] = [
     characterTitle: "Super Saiyan 2 Prodigy",
     typingFocus: "speed",
     difficulty: 85,
-    recommendedWpm: 86,
-    recommendedAccuracy: 93,
+    recommendedWpm: 58,
+    recommendedAccuracy: 94,
     enemyConfig: getRequiredEnemy("gohan"),
     mechanicKey: "animeWorld.mechanicDetails.gohan.name",
     mechanicSummaryKey: "animeWorld.mechanicDetails.gohan.desc",
@@ -180,8 +180,8 @@ export const DRAGON_STAGES: WorldStage[] = [
     isBoss: false,
     masteryObjectives: [
       { id: "gohan_star_1", labelKey: "animeWorld.mastery.completeStage" },
-      { id: "gohan_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 95 },
-      { id: "gohan_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 94 },
+      { id: "gohan_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 96 },
+      { id: "gohan_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 72 },
     ],
   },
   {
@@ -192,7 +192,7 @@ export const DRAGON_STAGES: WorldStage[] = [
     characterTitle: "Legendary Super Saiyan",
     typingFocus: "speed",
     difficulty: 92,
-    recommendedWpm: 92,
+    recommendedWpm: 62,
     recommendedAccuracy: 94,
     enemyConfig: getRequiredEnemy("broly"),
     mechanicKey: "animeWorld.mechanicDetails.broly.name",
@@ -210,7 +210,7 @@ export const DRAGON_STAGES: WorldStage[] = [
     masteryObjectives: [
       { id: "broly_star_1", labelKey: "animeWorld.mastery.completeStage" },
       { id: "broly_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 96 },
-      { id: "broly_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 100 },
+      { id: "broly_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 78 },
     ],
   },
   {
@@ -221,7 +221,7 @@ export const DRAGON_STAGES: WorldStage[] = [
     characterTitle: "Autonomous Ultra Instinct",
     typingFocus: "speed",
     difficulty: 100,
-    recommendedWpm: 98,
+    recommendedWpm: 65,
     recommendedAccuracy: 94,
     enemyConfig: getRequiredEnemy("goku"),
     mechanicKey: "animeWorld.mechanicDetails.goku.name",
@@ -239,8 +239,8 @@ export const DRAGON_STAGES: WorldStage[] = [
     isBoss: true,
     masteryObjectives: [
       { id: "goku_star_1", labelKey: "animeWorld.mastery.completeStage" },
-      { id: "goku_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 96 },
-      { id: "goku_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 105 },
+      { id: "goku_star_2", labelKey: "animeWorld.mastery.minAccuracy", minAccuracy: 97 },
+      { id: "goku_star_3", labelKey: "animeWorld.mastery.minWpm", minWpm: 85 },
     ],
   },
 ]
