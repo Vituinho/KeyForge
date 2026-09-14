@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { usePlayer } from "@/hooks/usePlayer"
 import { useBattleHistory } from "@/hooks/useBattleHistory"
 import { RANK_METADATA } from "@/lib/progression/calculateRank"
@@ -23,12 +24,14 @@ import {
   XCircle,
   Globe,
   Star,
+  Info,
 } from "lucide-react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
 import { getAllWorlds, getWorldProgress } from "@/data/worlds"
 import { useI18n } from "@/lib/i18n/i18nContext"
+import { computeSkillProfile } from "@/lib/progression/skillProfile"
 
 function formatDuration(totalSeconds: number): string {
   if (totalSeconds < 60) return `${totalSeconds}s`
@@ -62,6 +65,8 @@ export default function StatisticsPage() {
   const rankMeta = RANK_METADATA[player.rank]
   const xpNeeded = getXpRequiredForLevel(player.level)
   const xpProgress = Math.min(100, Math.round((player.xp / xpNeeded) * 100))
+
+  const skillProfile = useMemo(() => computeSkillProfile(player, history), [player, history])
 
   const winRate =
     player.stats.battlesPlayed > 0
@@ -358,9 +363,14 @@ export default function StatisticsPage() {
                         {world.focus.toUpperCase()}
                       </span>
                     </div>
-                    <span className="text-xs text-white/40 font-mono">
-                      {progress.stagesClearedCount} / {progress.totalStages} Stages · {progress.masteryStarsCount} Stars
-                    </span>
+                    <div className="flex items-center gap-2 text-xs text-white/40 font-mono">
+                      <span>{progress.stagesClearedCount} / {progress.totalStages} Stages · {progress.masteryStarsCount} Stars</span>
+                      {player.worldBaselines?.[world.id] && (
+                        <span className="text-emerald-400 font-bold">
+                          · Entry: {player.worldBaselines[world.id].entryAvgWpm} WPM
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -408,35 +418,48 @@ export default function StatisticsPage() {
           </p>
         </div>
 
+        {skillProfile.confidence === "insufficient_data" && (
+          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs">
+            <Info size={16} className="shrink-0" />
+            <span>{t("progression.skillProfile.insufficientData")}</span>
+          </div>
+        )}
+
         <div className="space-y-4">
           <AttributeRow
-            label={t("profile.attributes.speed")}
-            description={t("statistics.speedBenchmark")}
-            value={player.attributes.speed}
+            label={t("progression.skillProfile.speed")}
+            description={skillProfile.speed.explainableReason}
+            value={skillProfile.speed.score}
             color="#f97316"
           />
           <AttributeRow
-            label={t("profile.attributes.accuracy")}
-            description={t("statistics.accuracyBenchmark")}
-            value={player.attributes.accuracy}
+            label={t("progression.skillProfile.accuracy")}
+            description={skillProfile.accuracy.explainableReason}
+            value={skillProfile.accuracy.score}
             color="#22c55e"
           />
           <AttributeRow
-            label={t("profile.attributes.technique")}
-            description={t("statistics.techniqueBenchmark")}
-            value={player.attributes.technique}
-            color="#06b6d4"
-          />
-          <AttributeRow
-            label={t("profile.attributes.combo")}
-            description={t("statistics.comboBenchmark")}
-            value={player.attributes.combo}
+            label={t("progression.skillProfile.consistency")}
+            description={skillProfile.consistency.explainableReason}
+            value={skillProfile.consistency.score}
             color="#ec4899"
           />
           <AttributeRow
+            label={t("progression.skillProfile.technique")}
+            description={skillProfile.technique.explainableReason}
+            value={skillProfile.technique.score}
+            color="#06b6d4"
+          />
+          <AttributeRow
+            label={t("progression.skillProfile.endurance")}
+            description={skillProfile.endurance.explainableReason}
+            value={skillProfile.endurance.score}
+            color="#8b5cf6"
+          />
+          <AttributeRow
             label={t("statistics.overallPowerRating")}
-            description={t("statistics.overallBenchmark")}
-            value={player.attributes.overall}
+            description={skillProfile.overall.explainableReason}
+            value={skillProfile.overall.score}
             color="#eab308"
           />
         </div>

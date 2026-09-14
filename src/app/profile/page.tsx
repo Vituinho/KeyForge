@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { usePlayer } from "@/hooks/usePlayer"
 import { RANK_METADATA } from "@/lib/progression/calculateRank"
 import { getXpRequiredForLevel } from "@/lib/progression/calculateLevel"
@@ -21,7 +21,11 @@ import {
   ChevronRight,
   Lock,
   Star,
+  BookOpen,
+  Info,
 } from "lucide-react"
+import { computeSkillProfile } from "@/lib/progression/skillProfile"
+import { OnboardingModal } from "@/components/onboarding/OnboardingModal"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
@@ -51,7 +55,9 @@ export default function ProfilePage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [showResetModal, setShowResetModal] = useState(false)
   const [resetSuccess, setResetSuccess] = useState(false)
+  const [showOnboardingModal, setShowOnboardingModal] = useState(false)
 
+  const skillProfile = useMemo(() => computeSkillProfile(player), [player])
   const rankMeta = RANK_METADATA[player.rank]
   const xpNeeded = getXpRequiredForLevel(player.level)
   const xpProgress = Math.min(100, Math.round((player.xp / xpNeeded) * 100))
@@ -325,13 +331,13 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Attributes & Skill Ratings */}
+      {/* Attributes & Skill Ratings 2.0 */}
       <div className="p-6 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md space-y-5">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-black text-white flex items-center gap-2">
               <Shield className="text-amber-400" size={18} />
-              <span>{t("profile.combatAttributesTitle")}</span>
+              <span>{t("progression.skillProfile.title")}</span>
             </h2>
             <p className="text-xs text-white/40 mt-0.5">
               {t("profile.combatAttributesSub")}
@@ -342,35 +348,54 @@ export default function ProfilePage() {
               {t("profile.overallRating")}
             </span>
             <span className="text-2xl font-black text-amber-400 font-mono">
-              {player.attributes.overall} / 100
+              {skillProfile.overall.score} / 100
             </span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {skillProfile.confidence === "insufficient_data" && (
+          <div className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs">
+            <Info size={16} className="shrink-0" />
+            <span>{t("progression.skillProfile.insufficientData")}</span>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <AttributeCard
-            title={t("profile.attributes.speed")}
-            score={player.attributes.speed}
-            desc={t("profile.attributes.speedDesc")}
+            title={t("progression.skillProfile.speed")}
+            score={skillProfile.speed.score}
+            desc={skillProfile.speed.explainableReason}
             color="#f97316"
           />
           <AttributeCard
-            title={t("profile.attributes.accuracy")}
-            score={player.attributes.accuracy}
-            desc={t("profile.attributes.accuracyDesc")}
+            title={t("progression.skillProfile.accuracy")}
+            score={skillProfile.accuracy.score}
+            desc={skillProfile.accuracy.explainableReason}
             color="#22c55e"
           />
           <AttributeCard
-            title={t("profile.attributes.technique")}
-            score={player.attributes.technique}
-            desc={t("profile.attributes.techniqueDesc")}
+            title={t("progression.skillProfile.consistency")}
+            score={skillProfile.consistency.score}
+            desc={skillProfile.consistency.explainableReason}
+            color="#ec4899"
+          />
+          <AttributeCard
+            title={t("progression.skillProfile.technique")}
+            score={skillProfile.technique.score}
+            desc={skillProfile.technique.explainableReason}
             color="#06b6d4"
+          />
+          <AttributeCard
+            title={t("progression.skillProfile.endurance")}
+            score={skillProfile.endurance.score}
+            desc={skillProfile.endurance.explainableReason}
+            color="#8b5cf6"
           />
           <AttributeCard
             title={t("profile.attributes.combo")}
             score={player.attributes.combo}
             desc={t("profile.attributes.comboDesc")}
-            color="#ec4899"
+            color="#eab308"
           />
         </div>
       </div>
@@ -496,6 +521,15 @@ export default function ProfilePage() {
                     {progress.masteryStarsCount} Stars
                   </span>
                 </div>
+
+                {player.worldBaselines?.[world.id] && (
+                  <div className="pt-1.5 mt-1.5 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-white/40">
+                    <span>Entry: {player.worldBaselines[world.id].entryAvgWpm} WPM</span>
+                    {progress.bestWpm > 0 && (
+                      <span className="text-emerald-400 font-bold">Best: {progress.bestWpm} WPM</span>
+                    )}
+                  </div>
+                )}
               </Link>
             )
           })}
@@ -598,6 +632,28 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      {/* Onboarding & Tutorial Replay */}
+      <div className="p-6 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h3 className="text-sm font-black text-white flex items-center gap-2">
+            <BookOpen size={16} className="text-orange-400" />
+            <span>{t("onboarding.replayTutorial")}</span>
+          </h3>
+          <p className="text-xs text-white/40 mt-1 max-w-md">
+            {t("onboarding.step1Desc")}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowOnboardingModal(true)}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-bold text-xs transition-colors shrink-0 font-mono"
+        >
+          <Sparkles size={14} className="text-orange-400" />
+          <span>{t("onboarding.replayTutorial")}</span>
+        </button>
+      </div>
+
       {/* Danger Zone: Progress Reset */}
       <div className="p-6 rounded-3xl border border-red-500/20 bg-red-500/5 backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
@@ -619,6 +675,12 @@ export default function ProfilePage() {
           <span>{t("profile.resetBtn")}</span>
         </button>
       </div>
+
+      {/* Onboarding Modal */}
+      <OnboardingModal
+        isOpen={showOnboardingModal}
+        onClose={() => setShowOnboardingModal(false)}
+      />
 
       {/* Account Info Footer */}
       <div className="p-5 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-between flex-wrap gap-4 text-xs text-white/40">

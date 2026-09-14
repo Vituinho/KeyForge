@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useState, useMemo, useCallback } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Swords, Globe, Dumbbell, BookOpen, BarChart2, Zap, Sparkles, ChevronRight, Target } from "lucide-react"
@@ -10,13 +10,27 @@ import { usePlayer } from "@/hooks/usePlayer"
 import { getRecommendedNextStage } from "@/data/worlds"
 import { getTopWeakKeys } from "@/lib/worlds/hunterAdaptiveEngine"
 import { useI18n } from "@/lib/i18n/i18nContext"
+import { getRecommendedTrainingTarget } from "@/lib/progression/trainingRecommendation"
+import { OnboardingModal } from "@/components/onboarding/OnboardingModal"
 
 export default function GameDashboardPage() {
   const { t } = useI18n()
-  const { player } = usePlayer()
+  const { player, updatePlayer } = usePlayer()
+  const [showOnboarding, setShowOnboarding] = useState(() => !player.onboardingCompleted)
 
   const nextRecommendation = useMemo(() => getRecommendedNextStage(player), [player])
   const topWeakKeys = useMemo(() => getTopWeakKeys(player.keyErrors ?? {}, 3), [player])
+  const trainingTarget = useMemo(
+    () => getRecommendedTrainingTarget(player, nextRecommendation?.world.id),
+    [player, nextRecommendation?.world.id]
+  )
+
+  const handleCloseOnboarding = useCallback(() => {
+    setShowOnboarding(false)
+    if (!player.onboardingCompleted) {
+      updatePlayer((prev) => ({ ...prev, onboardingCompleted: true }))
+    }
+  }, [player.onboardingCompleted, updatePlayer])
 
   const navItems: DashboardNavItem[] = [
     {
@@ -176,8 +190,41 @@ export default function GameDashboardPage() {
         </motion.div>
       )}
 
-      {/* Weak-Key Training Recommendation */}
-      {topWeakKeys.length > 0 && (
+      {/* Tactical Training Recommendation */}
+      {trainingTarget ? (
+        <motion.div
+          className="relative z-10 w-full max-w-2xl mb-6 p-3.5 rounded-2xl border border-violet-500/30 bg-gradient-to-r from-violet-500/10 via-purple-500/5 to-transparent backdrop-blur-md flex items-center justify-between gap-3 text-xs"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.45 }}
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-violet-500/20 border border-violet-500/40 flex items-center justify-center text-violet-300 font-mono font-black text-sm shrink-0">
+              {trainingTarget.targetKey.toUpperCase()}
+            </div>
+            <div>
+              <span className="text-[10px] font-mono font-bold text-violet-400 uppercase tracking-wider block">
+                {t("progression.recommendations.title")}
+              </span>
+              <p className="text-white/80 text-xs">
+                {t("progression.recommendations.targetKey", { key: trainingTarget.targetKey.toUpperCase() })}
+                {trainingTarget.finger && (
+                  <span className="text-white/40 ml-2 font-mono">
+                    ({t("progression.recommendations.targetFinger", { finger: trainingTarget.finger })})
+                  </span>
+                )}
+              </p>
+            </div>
+          </div>
+          <Link
+            href={`/training?mode=weak-keys&keys=${trainingTarget.targetKey}`}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-violet-500/20 hover:bg-violet-500/30 text-violet-300 border border-violet-500/40 font-mono font-bold text-xs uppercase tracking-wider transition-colors shrink-0"
+          >
+            <span>{t("progression.recommendations.trainNow")}</span>
+            <ChevronRight size={14} />
+          </Link>
+        </motion.div>
+      ) : topWeakKeys.length > 0 ? (
         <motion.div
           className="relative z-10 w-full max-w-2xl mb-6 p-3 rounded-xl border border-violet-500/20 bg-violet-500/5 backdrop-blur-md flex items-center justify-between gap-3 text-xs"
           initial={{ opacity: 0 }}
@@ -201,7 +248,7 @@ export default function GameDashboardPage() {
             <ChevronRight size={12} />
           </Link>
         </motion.div>
-      )}
+      ) : null}
 
       {/* Navigation */}
       <motion.div
@@ -224,6 +271,12 @@ export default function GameDashboardPage() {
       >
         {t("dashboard.quickWidget.version")}
       </motion.p>
+
+      {/* Onboarding Modal */}
+      <OnboardingModal
+        isOpen={showOnboarding}
+        onClose={handleCloseOnboarding}
+      />
     </main>
   )
 }
