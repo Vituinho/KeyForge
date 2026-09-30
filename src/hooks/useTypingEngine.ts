@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { CharData, CharState, KeyError, KeyStat, TypingStats } from "@/types/typing"
 import { calculateWpm, calculateRawWpm } from "@/lib/typing/calculateWpm"
 import { calculateAccuracy } from "@/lib/typing/calculateAccuracy"
+import { isTypingCharacterCorrect } from "@/lib/typing/typingAttempt"
 
 interface UseTypingEngineProps {
   text: string
@@ -341,7 +342,7 @@ export function useTypingEngine({
 
       const expectedChar = chars[idx].char
       // Robust Unicode normalization comparison for PT-BR accents (á, à, ã, â, é, ê, í, ó, ô, õ, ú, ç)
-      const isCorrect = key.normalize("NFC") === expectedChar.normalize("NFC")
+      const isCorrect = isTypingCharacterCorrect(expectedChar, key)
 
       // Increment total attempts
       totalAttemptsRef.current++

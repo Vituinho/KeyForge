@@ -20,6 +20,9 @@ import {
 import { useAuth } from "@/lib/auth/authContext"
 import { usePlayer } from "@/hooks/usePlayer"
 import { useI18n } from "@/lib/i18n/i18nContext"
+import { applyArenaTypingKey, createArenaTypingState, nextArenaWord } from "@/lib/multiplayer/arenaTyping"
+import { calculateAccuracy } from "@/lib/typing/calculateAccuracy"
+import { isTypingCharacterCorrect } from "@/lib/typing/typingAttempt"
 import { TypingKeyboard } from "@/components/keyboard/TypingKeyboard"
 import { MultiplayerMatchRow, MultiplayerMatchResultRow } from "@/types/database"
 import {
@@ -71,25 +74,24 @@ export function MultiplayerArena({
 
   // Local typing state
   const myWordIndex = isP1 ? currentMatch.player_1_word_index : currentMatch.player_2_word_index
-  const [typedInput, setTypedInput] = useState("")
+  const [typing, setTyping] = useState(createArenaTypingState)
+  const typingRef = useRef(typing)
   const [lastPressedKey, setLastPressedKey] = useState<string | null>(null)
   const [lastErrorKey, setLastErrorKey] = useState<string | null>(null)
   const [isRecoilActive, setIsRecoilActive] = useState(false)
 
   // Local telemetry & combo tracking
-  const [correctChars, setCorrectChars] = useState(0)
-  const [totalChars, setTotalChars] = useState(0)
-  const [localCombo, setLocalCombo] = useState(0)
-  const [maxCombo, setMaxCombo] = useState(0)
-  const [perfectWords, setPerfectWords] = useState(0)
+  const { correctChars, totalChars, combo: localCombo, maxCombo, perfectWords, weakKeys: weakKeyStats } = typing
   const [lastWordPerfect, setLastWordPerfect] = useState(false)
   const [comboBreak, setComboBreak] = useState(false)
   const [screenShake, setScreenShake] = useState(false)
   const [activeAttackBeam, setActiveAttackBeam] = useState<"p1_to_p2" | "p2_to_p1" | null>(null)
-  const wordHadMistakeRef = useRef(false)
-  const [weakKeyStats, setWeakKeyStats] = useState<{ key: string; count: number }[]>([])
   const [showDetailedAnalysis, setShowDetailedAnalysis] = useState(false)
-  const [startTime, setStartTime] = useState<number | null>(null)
+
+  useEffect(() => {
+    typingRef.current = nextArenaWord(typingRef.current)
+    setTyping(typingRef.current)
+  }, [myWordIndex])
 
   // Damage float animations
   const [floatingDamages, setFloatingDamages] = useState<FloatingDamage[]>([])
@@ -407,7 +409,7 @@ export function MultiplayerArena({
   // Calculate live WPM and accuracy
   const elapsedMinutes = Math.max(0.05, elapsedSeconds / 60)
   const liveWpm = Math.round(correctChars / 5 / elapsedMinutes) || 0
-  const liveAccuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100
+  const liveAccuracy = calculateAccuracy(correctChars, totalChars)
 
   // Authoritative multiplayer progression rewards computed on match finish
   const rewardSummary = useMemo(() => {
@@ -422,73 +424,51 @@ export function MultiplayerArena({
   }, [isFinished, currentMatch, currentUserId, liveWpm, liveAccuracy, maxCombo])
 
   // Handle typing input
-  const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (currentMatch.status !== "playing" || isRecoilActive) return
+  const handleTypingKey = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.ctrlKey || e.metaKey || e.altKey || e.nativeEvent.isComposing) return
+    const key = e.key
+    if (key !== "Backspace" && Array.from(key).length !== 1) return
+    e.preventDefault()
+    if (currentMatch.status !== "playing") return
 
-    if (!startTime) {
-      setStartTime(Date.now())
-    }
-
-    const value = e.target.value
     const currentWord = words[myWordIndex] || ""
-    setTypedInput(value)
+    const previous = typingRef.current
+    const next = applyArenaTypingKey(previous, currentWord, key)
+    if (next === previous) return
+    typingRef.current = next
+    setTyping(next)
+    setLastPressedKey(key)
 
-    if (value.length > 0) {
-      const lastChar = value[value.length - 1]
-      setLastPressedKey(lastChar)
-
-      // Character check
-      const expectedChar = currentWord[value.length - 1]
-      if (lastChar === expectedChar) {
-        setCorrectChars((prev) => prev + 1)
-        setTotalChars((prev) => prev + 1)
+    if (key !== "Backspace") {
+      const expectedChar = Array.from(currentWord)[previous.typed.length]
+      if (isTypingCharacterCorrect(expectedChar, key)) {
         setLastErrorKey(null)
       } else {
-        setTotalChars((prev) => prev + 1)
-        setLastErrorKey(lastChar)
-        wordHadMistakeRef.current = true
-        const lowChar = lastChar.toLowerCase()
-        setWeakKeyStats((prev) => {
-          const idx = prev.findIndex((k) => k.key === lowChar)
-          if (idx >= 0) {
-            const next = [...prev]
-            next[idx] = { key: lowChar, count: next[idx].count + 1 }
-            return next
-          }
-          return [...prev, { key: lowChar, count: 1 }]
-        })
+        setLastErrorKey(expectedChar)
 
-        if (localCombo > 0) {
+        if (previous.combo > 0) {
           setComboBreak(true)
           setTimeout(() => setComboBreak(false), 800)
         }
-        setLocalCombo(0)
 
-        // Typo recoil lockout (300ms)
+        // Recoil is visual only: following character attempts must still be accepted.
         setIsRecoilActive(true)
         setTimeout(() => setIsRecoilActive(false), 300)
-        return
       }
     }
 
-    // Word completed successfully
-    if (value === currentWord || (value.trim() === currentWord && value.endsWith(" "))) {
-      const isPerfect = !wordHadMistakeRef.current
-      wordHadMistakeRef.current = false
+    // Completion depends on attempted positions, including incorrect characters.
+    if (next.completed) {
+      const isPerfect = !next.wordHadMistake
 
       if (isPerfect) {
-        setPerfectWords((prev) => prev + 1)
         setLastWordPerfect(true)
         setTimeout(() => setLastWordPerfect(false), 1000)
       }
 
-      const newCombo = localCombo + 1
-      setLocalCombo(newCombo)
-      if (newCombo > maxCombo) {
-        setMaxCombo(newCombo)
-      }
-
-      setTypedInput("")
+      const newCombo = next.combo
+      const completionWpm = Math.round(next.correctChars / 5 / elapsedMinutes) || 0
+      const completionAccuracy = calculateAccuracy(next.correctChars, next.totalChars)
       setLastErrorKey(null)
 
       // Submit authoritative word completion to server/service
@@ -499,8 +479,8 @@ export function MultiplayerArena({
           eventId,
           wordIndex: myWordIndex,
           wordText: currentWord,
-          wpm: liveWpm,
-          accuracy: liveAccuracy,
+          wpm: completionWpm,
+          accuracy: completionAccuracy,
           combo: newCombo,
           playerId: currentUserId,
         })
@@ -527,8 +507,8 @@ export function MultiplayerArena({
         broadcastRef.current?.broadcastTelemetry({
           playerId: currentUserId,
           wordIndex: myWordIndex + 1,
-          wpm: liveWpm,
-          accuracy: liveAccuracy,
+          wpm: completionWpm,
+          accuracy: completionAccuracy,
           combo: newCombo,
           attackEnergy: isP1 ? updated.player_1_attack_energy : updated.player_2_attack_energy,
           hp: isP1 ? updated.player_1_hp : updated.player_2_hp,
@@ -541,6 +521,8 @@ export function MultiplayerArena({
         setCurrentMatch(updated)
       } catch (err) {
         console.warn("[Arena] Submit word failed:", err)
+        typingRef.current = nextArenaWord(typingRef.current)
+        setTyping(typingRef.current)
       }
     }
   }
@@ -569,7 +551,7 @@ export function MultiplayerArena({
   // Active word details
   const currentWord = words[myWordIndex] || ""
   const nextWords = words.slice(myWordIndex + 1, myWordIndex + 4)
-  const expectedKey = currentWord[typedInput.length] || null
+  const expectedKey = Array.from(currentWord)[typing.typed.length] || null
 
   return (
     <motion.div
@@ -848,7 +830,7 @@ export function MultiplayerArena({
 
         {/* Word Display Stream */}
         <div className="w-full max-w-xl p-5 sm:p-8 rounded-3xl bg-neutral-950/80 border border-white/15 backdrop-blur-xl shadow-2xl text-center relative overflow-hidden">
-          {/* Typo Recoil Lockout Glow */}
+          {/* Typo Recoil Glow */}
           {isRecoilActive && (
             <motion.div
               initial={{ opacity: 0.8 }}
@@ -889,12 +871,12 @@ export function MultiplayerArena({
             </span>
 
             <div className="text-3xl sm:text-5xl font-black font-mono tracking-wider flex justify-center items-center gap-0.5 sm:gap-1 flex-wrap break-all">
-              {currentWord.split("").map((char, idx) => {
-                const typedChar = typedInput[idx]
+              {Array.from(currentWord).map((char, idx) => {
+                const typedChar = typing.typed[idx]
                 let colorClass = "text-white/30"
                 if (typedChar !== undefined) {
-                  colorClass = typedChar === char ? "text-emerald-400" : "text-rose-500 underline"
-                } else if (idx === typedInput.length) {
+                  colorClass = isTypingCharacterCorrect(char, typedChar) ? "text-emerald-400" : "text-rose-500 underline"
+                } else if (idx === typing.typed.length) {
                   colorClass = "text-orange-400 underline animate-pulse"
                 }
 
@@ -921,8 +903,9 @@ export function MultiplayerArena({
           <input
             ref={inputRef}
             type="text"
-            value={typedInput}
-            onChange={handleInputChange}
+            value={typing.typed.join("")}
+            readOnly
+            onKeyDown={handleTypingKey}
             disabled={isFinished}
             autoFocus
             className="opacity-0 absolute inset-0 w-full h-full cursor-default"

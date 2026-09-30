@@ -1,0 +1,4 @@
+/** Compare one attempt at the current expected position, as useTypingEngine does. */
+export function isTypingCharacterCorrect(expected: string, typed: string): boolean {
+  return typed.normalize("NFC") === expected.normalize("NFC")
+}
