@@ -8,6 +8,7 @@ import { FingerColorsMode, HandGuideMode, KeyboardLayoutType } from "@/types/key
 
 export interface VirtualKeyboardProps {
   activeKey?: string | null
+  pressedKey?: string | null
   lastErrorKey?: string | null
   highlightFinger?: boolean
   showHomeRowAnchors?: boolean
@@ -18,8 +19,9 @@ export interface VirtualKeyboardProps {
   layout?: KeyboardLayoutType
 }
 
-export function VirtualKeyboard({
+export const VirtualKeyboard = React.memo(function VirtualKeyboard({
   activeKey = null,
+  pressedKey = null,
   lastErrorKey = null,
   highlightFinger = true,
   showHomeRowAnchors = true,
@@ -35,6 +37,7 @@ export function VirtualKeyboard({
   return (
     <TypingKeyboard
       expectedKey={activeKey}
+      pressedKey={pressedKey}
       lastErrorKey={lastErrorKey}
       highlightFinger={highlightFinger}
       fingerColors={fingerColors}
@@ -46,4 +49,4 @@ export function VirtualKeyboard({
       layout={layout}
     />
   )
-}
+})

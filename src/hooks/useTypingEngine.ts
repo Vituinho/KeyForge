@@ -1,16 +1,19 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { CharData, CharState, KeyError, KeyStat, TypingStats } from "@/types/typing"
 import { calculateWpm, calculateRawWpm } from "@/lib/typing/calculateWpm"
 import { calculateAccuracy } from "@/lib/typing/calculateAccuracy"
-import { isTypingCharacterCorrect } from "@/lib/typing/typingAttempt"
+import { isTypingCharacterCorrect, TypingAttempt } from "@/lib/typing/typingAttempt"
 
 interface UseTypingEngineProps {
   text: string
   textId?: string
   enabled?: boolean
   onComplete?: (stats: TypingStats) => void
+  onAttempt?: (attempt: TypingAttempt) => void
+  /** Academy can sample metrics while character and keyboard feedback remain immediate. */
+  statsUpdateIntervalMs?: number
 }
 
 interface UseTypingEngineReturn {
@@ -124,9 +127,17 @@ export function useTypingEngine({
   textId,
   enabled = true,
   onComplete,
+  onAttempt,
+  statsUpdateIntervalMs = 0,
 }: UseTypingEngineProps): UseTypingEngineReturn {
   const [chars, setChars] = useState<CharData[]>(() => buildChars(text))
+  const charsRef = useRef(chars)
   const [stats, setStats] = useState<TypingStats>(buildInitialStats)
+  const callbacksRef = useRef({ onComplete, onAttempt })
+  useLayoutEffect(() => {
+    callbacksRef.current = { onComplete, onAttempt }
+  }, [onComplete, onAttempt])
+  const lastStatsUpdateRef = useRef(0)
 
   // Keyboard reaction telemetry state
   const [pressedKey, setPressedKey] = useState<string | null>(null)
@@ -243,8 +254,15 @@ export function useTypingEngine({
     timerRef.current = setInterval(() => {
       if (!roundStartTimeRef.current || isCompletedRef.current) return
       setStats(compileStatsSnapshot())
-    }, 200)
-  }, [compileStatsSnapshot])
+    }, statsUpdateIntervalMs || 200)
+  }, [compileStatsSnapshot, statsUpdateIntervalMs])
+
+  const publishStats = useCallback(() => {
+    const now = Date.now()
+    if (statsUpdateIntervalMs && now - lastStatsUpdateRef.current < statsUpdateIntervalMs) return
+    lastStatsUpdateRef.current = now
+    setStats(compileStatsSnapshot())
+  }, [compileStatsSnapshot, statsUpdateIntervalMs])
 
   // Update per-key statistics
   const recordKeyStat = useCallback(
@@ -273,7 +291,7 @@ export function useTypingEngine({
     if (idx <= 0) return
 
     const prevIdx = idx - 1
-    const newChars = [...chars]
+    const newChars = [...charsRef.current]
 
     // If un-typing a correct char, decrement current round correct count
     if (newChars[prevIdx].state === "correct") {
@@ -291,9 +309,10 @@ export function useTypingEngine({
     currentIndexRef.current = prevIdx
     lastKeyTimeRef.current = Date.now()
 
+    charsRef.current = newChars
     setChars(newChars)
-    setStats(compileStatsSnapshot())
-  }, [chars, enabled, compileStatsSnapshot])
+    publishStats()
+  }, [enabled, publishStats])
 
   // Process standard keypress
   const handleKeyPress = useCallback(
@@ -338,6 +357,7 @@ export function useTypingEngine({
       }
 
       const idx = currentIndexRef.current
+      const chars = charsRef.current
       if (idx >= chars.length) return
 
       const expectedChar = chars[idx].char
@@ -347,6 +367,7 @@ export function useTypingEngine({
       // Increment total attempts
       totalAttemptsRef.current++
       recordKeyStat(expectedChar, isCorrect, responseTime)
+      callbacksRef.current.onAttempt?.({ expected: expectedChar, typed: key, correct: isCorrect, responseTime, timestamp: now })
 
       if (isCorrect) {
         setLastErrorKey(null)
@@ -399,17 +420,17 @@ export function useTypingEngine({
       currentIndexRef.current = nextIdx
 
       const isCompleted = nextIdx >= chars.length
+      charsRef.current = newChars
       setChars(newChars)
 
       if (isCompleted) {
         isCompletedRef.current = true
         stopTimer()
 
+        const snapshot = compileStatsSnapshot(true)
         if (roundStartTimeRef.current) {
           accumulatedTimeRef.current += Math.max(0, (now - roundStartTimeRef.current) / 1000)
         }
-
-        const snapshot = compileStatsSnapshot(true)
         if (snapshot.currentWpm > bestWpmRef.current) {
           bestWpmRef.current = snapshot.currentWpm
         }
@@ -421,17 +442,16 @@ export function useTypingEngine({
         }
 
         setStats(finalStats)
-        onComplete?.(finalStats)
+        callbacksRef.current.onComplete?.(finalStats)
       } else {
-        setStats(compileStatsSnapshot())
+        publishStats()
       }
     },
     [
-      chars,
       compileStatsSnapshot,
       enabled,
       handleBackspace,
-      onComplete,
+      publishStats,
       recordKeyStat,
       startTimer,
       stopTimer,
@@ -510,7 +530,9 @@ export function useTypingEngine({
 
       const targetText = newText ?? textRef.current
       textRef.current = targetText
-      setChars(buildChars(targetText))
+      charsRef.current = buildChars(targetText)
+      setChars(charsRef.current)
+      lastStatsUpdateRef.current = 0
       setStats(compileStatsSnapshot())
     },
     [compileStatsSnapshot, stopTimer]

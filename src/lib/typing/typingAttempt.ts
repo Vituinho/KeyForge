@@ -2,3 +2,11 @@
 export function isTypingCharacterCorrect(expected: string, typed: string): boolean {
   return typed.normalize("NFC") === expected.normalize("NFC")
 }
+
+export interface TypingAttempt {
+  expected: string
+  typed: string
+  correct: boolean
+  responseTime: number
+  timestamp: number
+}

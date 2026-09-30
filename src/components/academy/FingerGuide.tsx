@@ -2,10 +2,12 @@
 
 import { FINGER_COLORS } from "@/data/keyboardLayout"
 import { useI18n } from "@/lib/i18n/i18nContext"
+import { memo } from "react"
+import type { KeyboardLayoutId } from "@/lib/keyboard/fingerMap"
 
-export function FingerGuide() {
+export const FingerGuide = memo(function FingerGuide({ layout }: { layout?: KeyboardLayoutId }) {
   const { t, locale } = useI18n()
-  const isEn = locale === "en"
+  const isEn = layout ? layout === "ANSI" : locale === "en"
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm">
@@ -104,7 +106,7 @@ export function FingerGuide() {
       </div>
     </div>
   )
-}
+})
 
 function FingerRow({
   label,

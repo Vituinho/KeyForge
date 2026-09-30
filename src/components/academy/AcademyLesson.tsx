@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { motion } from "framer-motion"
 import { TypingStats } from "@/types/typing"
 import { useTypingEngine } from "@/hooks/useTypingEngine"
@@ -171,49 +171,40 @@ function HomeRowLesson({ onBack }: { onBack: () => void }) {
   const [exercises] = useState(() => getHomeRowExercises(locale))
   const [exerciseIndex, setExerciseIndex] = useState(0)
   const [isCompleted, setIsCompleted] = useState(false)
-  const [isTransitioning, setIsTransitioning] = useState(false)
+  const exerciseIndexRef = useRef(0)
+  const nextRoundRef = useRef<((text: string, textId?: string) => void) | null>(null)
   const [finalStats, setFinalStats] = useState<TypingStats | null>(null)
 
   const currentExercise = exercises[exerciseIndex] ?? exercises[0]
 
   const handleCompleteRound = useCallback(
     (roundStats: TypingStats) => {
-      setIsTransitioning(true)
-
-      setTimeout(() => {
-        if (exerciseIndex + 1 < exercises.length) {
-          setExerciseIndex((prev) => prev + 1)
-          setIsTransitioning(false)
-        } else {
-          setFinalStats(roundStats)
-          setIsCompleted(true)
-          setIsTransitioning(false)
-        }
-      }, 400)
+      const nextIndex = exerciseIndexRef.current + 1
+      if (nextIndex < exercises.length) {
+        exerciseIndexRef.current = nextIndex
+        nextRoundRef.current?.(exercises[nextIndex], `academy-homerow-${nextIndex}`)
+        setExerciseIndex(nextIndex)
+      } else {
+        setFinalStats(roundStats)
+        setIsCompleted(true)
+      }
     },
-    [exerciseIndex, exercises.length]
+    [exercises]
   )
 
   // Reusing the exact same useTypingEngine
-  const { chars, stats, inputRef, reset, focus } = useTypingEngine({
+  const { chars, stats, inputRef, reset, nextRound, focus, expectedKey, pressedKey, lastErrorKey } = useTypingEngine({
     text: currentExercise,
     textId: `academy-homerow-${exerciseIndex}`,
-    enabled: !isCompleted && !isTransitioning,
+    enabled: !isCompleted,
+    statsUpdateIntervalMs: 100,
     onComplete: handleCompleteRound,
   })
 
-  // Synchronize next exercise text
-  const prevExerciseRef = useRef(currentExercise)
-  useEffect(() => {
-    if (currentExercise !== prevExerciseRef.current) {
-      prevExerciseRef.current = currentExercise
-      reset(currentExercise, true)
-      const tId = setTimeout(() => focus(), 50)
-      return () => clearTimeout(tId)
-    }
-  }, [currentExercise, reset, focus])
+  useLayoutEffect(() => { nextRoundRef.current = nextRound }, [nextRound])
+  useEffect(() => { focus() }, [focus])
 
-  const activeChar = chars[stats.currentIndex]?.char ?? null
+  const activeChar = expectedKey
   const normalizedLayout: KeyboardLayoutId = isEn ? "ANSI" : "ABNT2"
   const activeFingerInfo = getFingerForKey(activeChar, normalizedLayout)
   const lang = isEn ? "en" : "pt-BR"
@@ -221,8 +212,8 @@ function HomeRowLesson({ onBack }: { onBack: () => void }) {
 
   const handleRetry = () => {
     setExerciseIndex(0)
+    exerciseIndexRef.current = 0
     setIsCompleted(false)
-    setIsTransitioning(false)
     reset(exercises[0], false)
   }
 
@@ -361,6 +352,8 @@ function HomeRowLesson({ onBack }: { onBack: () => void }) {
           {/* Virtual Keyboard with real-time active key guidance, fingerColors full and handGuide full */}
           <VirtualKeyboard
             activeKey={activeChar}
+            pressedKey={pressedKey}
+            lastErrorKey={lastErrorKey}
             highlightFinger={true}
             showHandsGuide={true}
             fingerColors="full"
