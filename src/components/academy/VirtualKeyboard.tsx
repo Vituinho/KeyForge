@@ -16,6 +16,8 @@ export interface VirtualKeyboardProps {
   fingerColors?: FingerColorsMode
   handGuideMode?: HandGuideMode
   className?: string
+  size?: "sm" | "md" | "lg"
+  showFingerLegend?: boolean
   layout?: KeyboardLayoutType
 }
 
@@ -29,6 +31,8 @@ export const VirtualKeyboard = React.memo(function VirtualKeyboard({
   fingerColors = "full",
   handGuideMode = "full",
   className = "",
+  size = "md",
+  showFingerLegend = highlightFinger,
   layout: propLayout,
 }: VirtualKeyboardProps) {
   const { locale } = useI18n()
@@ -44,7 +48,8 @@ export const VirtualKeyboard = React.memo(function VirtualKeyboard({
       showHandsGuide={showHandsGuide}
       handGuideMode={handGuideMode}
       showHomeRowAnchors={showHomeRowAnchors}
-      showFingerLegend={highlightFinger}
+      showFingerLegend={showFingerLegend}
+      size={size}
       className={className}
       layout={layout}
     />
