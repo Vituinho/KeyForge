@@ -558,7 +558,8 @@ function BattleResultView({
                           <span style={{ color: fingerConfig.hex }}>{fingerName}</span>
                         </div>
                         <span className="text-[10px] text-white/40 capitalize">
-                          {fingerInfo?.hand} hand {fingerInfo?.isHomeRow ? "· Home Row" : ""}
+                          {fingerInfo?.hand === "left" ? t("academy.fingerGuide.leftHand") : fingerInfo?.hand === "right" ? t("academy.fingerGuide.rightHand") : fingerName}
+                          {fingerInfo?.isHomeRow ? ` · ${t("academyMastery.homeRow")}` : ""}
                         </span>
                       </div>
                     )}

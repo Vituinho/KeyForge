@@ -30,13 +30,16 @@ const LETTER_EXERCISES: Record<string, string[]> = {
   m: ["mmm mmm mmm", "mad mad mad", "man man man", "aim aim aim", "month month month", "mammoth mammoth mammoth"],
 }
 
-const DEFAULT_EXERCISES = [
-  "the the the the",
-  "and and and and",
-  "for for for for",
-  "are are are are",
-  "but but but but",
-]
+// Layout-specific letters, accents and symbols must practice the actual missed key.
+function focusedFallback(key: string): string[] {
+  return [
+    `${key.repeat(3)} ${key.repeat(3)} ${key.repeat(3)}`,
+    `${key} ${key.repeat(2)} ${key.repeat(3)}`,
+    `${key}a a${key} ${key}a a${key}`,
+    `${key}s s${key} ${key}s s${key}`,
+    `${key}f f${key} ${key}j j${key}`,
+  ]
+}
 
 /**
  * Generate training exercises for a single list of weak keys.
@@ -48,7 +51,7 @@ export function generateTrainingExercises(
 ): TrainingExercise[] {
   return weakKeys.map((wk) => {
     const key = wk.key.toLowerCase()
-    const exercises = LETTER_EXERCISES[key] ?? DEFAULT_EXERCISES
+    const exercises = LETTER_EXERCISES[key] ?? focusedFallback(key)
     return {
       targetKey: wk.key,
       exercises: exercises.slice(0, exercisesPerKey),
