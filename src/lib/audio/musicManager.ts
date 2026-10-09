@@ -57,8 +57,8 @@ export class MusicManager {
   private listen() {
     if (!this.settingsCleanup) this.settingsCleanup = subscribeAudioSettings(() => {
       for (const voice of this.voices) this.volume(voice)
-      if (getAudioSettings().enabled) this.resume()
-      else for (const voice of this.voices) voice.audio.pause()
+      if (!getAudioSettings().enabled) for (const voice of this.voices) voice.audio.pause()
+      else if (!this.paused && this.current?.audio.paused) void this.tryPlay(this.current, 650)
     })
     if (!this.interactionCleanup && typeof window !== "undefined") {
       const recover = (event: Event) => {

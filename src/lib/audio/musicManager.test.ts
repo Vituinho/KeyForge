@@ -8,9 +8,9 @@ import { normalizeAudioSettings, saveAudioSettings } from "./audioSettings"
 const track = (id: string): BattleMusicTrack => ({ enemyId: id, name: id, file: `/audio/bgm/${id}.mp3`, style: "Test", available: true, source: "Original test fixture", license: "CC0", commercialUse: true, attribution: null })
 class FakeAudio {
   volume = 0; loop = false; preload = ""; onerror: (() => void) | null = null
-  plays = 0; pauses = 0; loads = 0; removed = false; blocked = false; unsupported = false
-  async play() { this.plays++; if (this.blocked) throw Object.assign(new Error("Autoplay"), { name: "NotAllowedError" }); if (this.unsupported) throw Object.assign(new Error("Unsupported"), { name: "NotSupportedError" }) }
-  pause() { this.pauses++ }
+  plays = 0; pauses = 0; loads = 0; removed = false; blocked = false; unsupported = false; paused = true
+  async play() { this.plays++; if (this.blocked) throw Object.assign(new Error("Autoplay"), { name: "NotAllowedError" }); if (this.unsupported) throw Object.assign(new Error("Unsupported"), { name: "NotSupportedError" }); this.paused = false }
+  pause() { this.pauses++; this.paused = true }
   removeAttribute() { this.removed = true }
   load() { this.loads++ }
 }
@@ -87,6 +87,18 @@ test("volume changes apply without creating or restarting tracks", async () => {
   manager.play(track("r")); await settle(); advance(650)
   manager.setVolume(.5)
   assert.equal(audios[0].volume, .35); assert.equal(audios.length, 1)
+  assert.equal(audios[0].plays, 1)
+  manager.cleanup()
+})
+
+test("changing settings does not resume a track paused for page visibility", async () => {
+  const { manager, audios } = harness()
+  manager.play(track("r")); await settle()
+  manager.pause(); manager.setVolume(.4)
+  assert.equal(audios[0].plays, 1)
+  assert.equal(audios[0].paused, true)
+  manager.resume(); await settle()
+  assert.equal(audios[0].plays, 2)
   manager.cleanup()
 })
 test("leaving during a pending play cannot restart a released audio element", async () => {
