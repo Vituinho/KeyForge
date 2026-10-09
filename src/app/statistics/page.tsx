@@ -361,14 +361,14 @@ export default function StatisticsPage() {
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-bold text-white">{world.series}</span>
                       <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-white/50 border border-white/10 font-mono">
-                        {world.focus.toUpperCase()}
+                        {t(world.focusKey).toUpperCase()}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-white/40 font-mono">
-                      <span>{progress.stagesClearedCount} / {progress.totalStages} Stages · {progress.masteryStarsCount} Stars</span>
+                      <span>{t("common.stage")} {progress.stagesClearedCount} / {progress.totalStages} · {t("animeWorld.masteryStarsLabel")}: {progress.masteryStarsCount}</span>
                       {player.worldBaselines?.[world.id] && (
                         <span className="text-emerald-400 font-bold">
-                          · Entry: {player.worldBaselines[world.id].entryAvgWpm} WPM
+                          · {t("animeWorld.completion.entryBaseline")}: {player.worldBaselines[world.id].entryAvgWpm} WPM
                         </span>
                       )}
                     </div>

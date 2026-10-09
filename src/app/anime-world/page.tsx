@@ -120,7 +120,7 @@ export default function AnimeWorldHubPage() {
               <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2">
                 <span>{recommended.stage.name}</span>
                 <span className="text-purple-400 text-sm font-mono font-normal">
-                  (Stage {recommended.stage.stageNumber})
+                  ({t("common.stage")} {recommended.stage.stageNumber})
                 </span>
               </h2>
               <div className="flex items-center gap-4 text-xs text-white/70 flex-wrap pt-1 font-mono">

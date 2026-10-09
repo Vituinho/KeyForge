@@ -515,10 +515,10 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="flex items-center justify-between text-[10px] font-mono text-white/50">
-                  <span>{progress.stagesClearedCount} / {progress.totalStages} Stages</span>
+                  <span>{t("common.stage")} {progress.stagesClearedCount} / {progress.totalStages}</span>
                   <span className="flex items-center gap-1 text-yellow-400/80">
                     <Star size={10} className="fill-yellow-400 text-yellow-400" />
-                    {progress.masteryStarsCount} Stars
+                    {t("animeWorld.masteryStarsLabel")}: {progress.masteryStarsCount}
                   </span>
                 </div>
 

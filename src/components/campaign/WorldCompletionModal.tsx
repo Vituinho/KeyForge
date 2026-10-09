@@ -101,7 +101,7 @@ export function WorldCompletionModal({
                 {t("animeWorld.completion.baselineVsFinal")}
               </span>
               <span className="text-[10px] font-mono text-white/40 uppercase">
-                {world.stages.length} / {world.stages.length} Stages
+                {t("common.stage")} {world.stages.length} / {world.stages.length}
               </span>
             </div>
 
