@@ -523,12 +523,12 @@ export const en = {
         metricLabel: "Shinobi Mastery",
       },
       default: {
-        title: "Shinobi Fundamentals",
+        title: "Typing Fundamentals",
         analysis:
-          "Naruto's aggressive clone barrage tests your fundamental typing speed and composure under pressure.",
+          "Use this battle's recorded speed and accuracy to guide practice. Compare them with the opponent's targets before a rematch.",
         tacticalTip:
           "Keep your fingers anchored on the home row (ASDF JKL;) and read 2 to 3 words ahead while typing.",
-        recommendedDrillTitle: "Shinobi Fundamentals",
+        recommendedDrillTitle: "Typing Fundamentals",
         recommendedLinkText: "Practice Fundamentals",
         metricLabel: "Basic Cadence",
       },

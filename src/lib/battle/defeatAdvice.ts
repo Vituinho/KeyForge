@@ -223,16 +223,16 @@ export function getDefeatAdvice(
     default: {
       const pass = stats.battleWpm >= 30 && stats.battleAccuracy >= 80
       return {
-        title: t ? t("battleResult.defeatAdvice.default.title") : "Shinobi Fundamentals",
+        title: t ? t("battleResult.defeatAdvice.default.title") : "Typing Fundamentals",
         analysis: t
           ? t("battleResult.defeatAdvice.default.analysis")
-          : "Naruto's aggressive clone barrage tests your fundamental typing speed and composure under pressure.",
+          : "Use this battle's recorded speed and accuracy to guide practice. Compare them with the opponent's targets before a rematch.",
         tacticalTip: t
           ? t("battleResult.defeatAdvice.default.tacticalTip")
           : "Keep your fingers anchored on the home row (ASDF JKL;) and read 2 to 3 words ahead while typing.",
         recommendedDrillTitle: t
           ? t("battleResult.defeatAdvice.default.recommendedDrillTitle")
-          : "Shinobi Fundamentals",
+          : "Typing Fundamentals",
         recommendedLink: "/training?mode=free-practice",
         recommendedLinkText: t
           ? t("battleResult.defeatAdvice.default.recommendedLinkText")

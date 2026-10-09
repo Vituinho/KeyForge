@@ -525,12 +525,12 @@ export const ptBR: TranslationSchema = {
         metricLabel: "Maestria Shinobi",
       },
       default: {
-        title: "Fundamentos Shinobi",
+        title: "Fundamentos da Digitação",
         analysis:
-          "A saraivada agressiva de clones do Naruto testa sua velocidade fundamental e compostura sob pressão.",
+          "Use a velocidade e a precisão registradas nesta batalha para orientar seu treino. Compare-as com as metas do adversário antes da revanche.",
         tacticalTip:
-          "Mantenha os dedos ancorados na linha inicial (ASDF JKL;) e leia 2 a 3 palavras à frente enquanto digita.",
-        recommendedDrillTitle: "Fundamentos Shinobi",
+          "Mantenha os dedos ancorados na linha inicial (ASDF JKLÇ) e leia 2 a 3 palavras à frente enquanto digita.",
+        recommendedDrillTitle: "Fundamentos da Digitação",
         recommendedLinkText: "Praticar Fundamentos",
         metricLabel: "Cadência Básica",
       },
