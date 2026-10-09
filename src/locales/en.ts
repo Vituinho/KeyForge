@@ -302,6 +302,13 @@ export const en = {
       miss: "MISS",
     },
     focusTypes: {
+      accuracy: "Accuracy",
+      consistency: "Consistency",
+      weak_keys: "Weak keys",
+      touch_typing: "Touch typing",
+      mastery: "Mastery",
+      focus: "Focus",
+      all: "Complete technique",
       balanced: "Balanced",
       precision: "Precision",
       speed: "Speed",

@@ -304,6 +304,13 @@ export const ptBR: TranslationSchema = {
       miss: "ERROU",
     },
     focusTypes: {
+      accuracy: "Precisão",
+      consistency: "Consistência",
+      weak_keys: "Teclas fracas",
+      touch_typing: "Digitação com todos os dedos",
+      mastery: "Domínio",
+      focus: "Foco",
+      all: "Técnica completa",
       balanced: "Equilíbrio",
       precision: "Precisão",
       speed: "Velocidade",
