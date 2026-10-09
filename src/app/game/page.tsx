@@ -274,7 +274,7 @@ export default function GameDashboardPage() {
 
       {/* Onboarding Modal */}
       <OnboardingModal
-        isOpen={showOnboarding}
+        isOpen={showOnboarding && !player.onboardingCompleted}
         onClose={handleCloseOnboarding}
       />
     </main>
