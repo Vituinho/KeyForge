@@ -9,6 +9,7 @@ import Link from "next/link"
 import { useI18n } from "@/lib/i18n/i18nContext"
 import { getStageByEnemyId } from "@/data/worlds"
 import { BossIntroModal } from "@/components/campaign/BossIntroModal"
+import { localizedCharacterDescription } from "@/lib/i18n/characterDescription"
 
 interface PreBattleProps {
   enemy: Enemy
@@ -17,6 +18,7 @@ interface PreBattleProps {
 
 export function PreBattle({ enemy, onFight }: PreBattleProps) {
   const { t } = useI18n()
+  const description = localizedCharacterDescription(enemy.id, t)
   const { player } = usePlayer()
 
   const stageMatch = getStageByEnemyId(enemy.id)
@@ -291,7 +293,7 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
       )}
 
       {/* Description quote */}
-      {enemy.description && (
+      {description && (
         <motion.p
           className="relative z-10 mt-4 max-w-md text-center text-white/40 text-sm italic px-4"
           initial={{ opacity: 0 }}
@@ -299,8 +301,7 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
           transition={{ delay: 0.9 }}
         >
           &ldquo;
-          {t(`battle.characterDescriptions.${enemy.id.replace("-", "_")}` as Parameters<typeof t>[0]) ||
-            enemy.description}
+          {description}
           &rdquo;
         </motion.p>
       )}

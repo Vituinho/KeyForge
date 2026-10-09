@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Enemy } from "@/types/character"
 import { useI18n } from "@/lib/i18n/i18nContext"
 import { Skull, Zap, ChevronRight } from "lucide-react"
+import { localizedCharacterDescription } from "@/lib/i18n/characterDescription"
 
 interface BossIntroModalProps {
   enemy: Enemy
@@ -21,6 +22,7 @@ export function BossIntroModal({
   isRematch = false,
 }: BossIntroModalProps) {
   const { t } = useI18n()
+  const description = localizedCharacterDescription(enemy.id, t)
   const dialogRef = useDialogFocus(isOpen, onComplete)
 
   const handleProceed = useCallback(() => {
@@ -126,9 +128,9 @@ export function BossIntroModal({
             </p>
 
             {/* Boss thematic quote */}
-            {enemy.description && (
+            {description && (
               <p className="text-xs sm:text-sm text-white/70 italic px-4 mb-6 leading-relaxed">
-                &ldquo;{t(`battle.characterDescriptions.${enemy.id.replace("-", "_")}`)}&rdquo;
+                &ldquo;{description}&rdquo;
               </p>
             )}
 
