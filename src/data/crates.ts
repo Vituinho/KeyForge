@@ -50,7 +50,7 @@ export const ALL_CRATES: CrateDetails[] = [
     borderColor: "border-emerald-500",
     bgGlow: "rgba(16,185,129,0.2)",
     costShards: 250,
-    guaranteedMinRarity: "uncommon",
+    guaranteedMinRarity: "common",
     dropWeights: [
       { rarity: "common", weight: 45 },
       { rarity: "uncommon", weight: 35 },
