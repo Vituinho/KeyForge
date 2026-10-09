@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useCompletedReward } from "@/hooks/useCompletedReward"
+import { useCallback, useState } from "react"
 import { motion } from "framer-motion"
 import { TypingStats } from "@/types/typing"
 import { Dumbbell, RotateCcw, Swords, Home, Target, Zap, Flame, Clock, TrendingUp, Sparkles, ArrowUpCircle } from "lucide-react"
@@ -21,18 +22,25 @@ interface TrainingResultProps {
   onRetry: () => void
 }
 
-export function TrainingResult({
+export function TrainingResult(props: TrainingResultProps) {
+  const { t } = useI18n()
+  const apply = useCallback(() => processTrainingRewards(props.stats, props.targetKeys), [props.stats, props.targetKeys])
+  const summary = useCompletedReward(props.stats, apply)
+  if (!summary) return <p role="status" className="p-8 text-center text-sm text-white/60">{t("release.saving")}</p>
+  return <TrainingResultView {...props} rewardSummary={summary} />
+}
+
+function TrainingResultView({
   stats,
   targetKeys,
   baselineAccuracies = {},
   onRetry,
-}: TrainingResultProps) {
+  rewardSummary,
+}: TrainingResultProps & { rewardSummary: ActivityRewardSummary }) {
   const { t, locale } = useI18n()
   const normalizedLayout: KeyboardLayoutId = locale === "en" ? "ANSI" : "ABNT2"
   const lang = locale === "en" ? "en" : "pt-BR"
-  const [rewardSummary] = useState<ActivityRewardSummary>(() =>
-    processTrainingRewards(stats, targetKeys)
-  )
+
   const [showRankUpModal, setShowRankUpModal] = useState(
     () => rewardSummary.didRankUp
   )

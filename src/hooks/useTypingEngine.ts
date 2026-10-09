@@ -24,6 +24,7 @@ interface UseTypingEngineReturn {
   resetAll: (newText?: string) => void
   nextRound: (newText: string, newTextId?: string) => void
   focus: () => void
+  getStats: () => TypingStats
 
   // Real-time keyboard reaction telemetry
   expectedKey: string | null
@@ -580,6 +581,7 @@ export function useTypingEngine({
     resetAll,
     nextRound,
     focus,
+    getStats: compileStatsSnapshot,
     expectedKey,
     pressedKey,
     lastErrorKey,

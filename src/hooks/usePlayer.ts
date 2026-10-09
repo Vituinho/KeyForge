@@ -22,14 +22,16 @@ function subscribe(callback: () => void) {
 }
 
 // Memoized cache for getSnapshot to maintain referential stability
+const serverProfile = createDefaultPlayerProfile()
 let cachedProfile: PlayerProfile | null = null
 let cachedRaw: string | null = null
 
 function getSnapshot(): PlayerProfile {
   if (typeof window === "undefined") {
-    return createDefaultPlayerProfile()
+    return serverProfile
   }
-  const raw = localStorage.getItem(STORAGE_KEY)
+  let raw: string | null = null
+  try { raw = localStorage.getItem(STORAGE_KEY) } catch { /* Use a stable memory snapshot. */ }
   if (raw !== cachedRaw || !cachedProfile) {
     cachedRaw = raw
     cachedProfile = loadPlayerProfile()
@@ -37,8 +39,8 @@ function getSnapshot(): PlayerProfile {
   return cachedProfile
 }
 
-function getServerSnapshot(): PlayerProfile {
-  return createDefaultPlayerProfile()
+export function getServerSnapshot(): PlayerProfile {
+  return serverProfile
 }
 
 export function usePlayer() {

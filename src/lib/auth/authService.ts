@@ -170,22 +170,7 @@ export async function loginWithCredentials(
     return authenticatedUser
   }
 
-  // Offline / local development fallback
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  const usernameFromEmail = credentials.email.split("@")[0] || "Shinobi"
-  const timestamp = new Date().toISOString()
-  const authenticatedUser: AuthUser = {
-    id: `user_${Date.now()}`,
-    username: usernameFromEmail,
-    email: credentials.email,
-    isGuest: false,
-    createdAt: timestamp,
-    lastLoginAt: timestamp,
-  }
-
-  saveStoredUser(authenticatedUser)
-  return authenticatedUser
+  throw new Error("AUTH_UNAVAILABLE")
 }
 
 /**
@@ -228,6 +213,8 @@ export async function registerWithCredentials(
       throw new Error("Registration failed: no user returned")
     }
 
+    if (!data.session) throw new Error("EMAIL_CONFIRMATION_REQUIRED")
+
     const timestamp = new Date().toISOString()
     const newUser: AuthUser = {
       id: data.user.id,
@@ -242,19 +229,5 @@ export async function registerWithCredentials(
     return newUser
   }
 
-  // Offline / local development fallback
-  await new Promise((resolve) => setTimeout(resolve, 500))
-
-  const timestamp = new Date().toISOString()
-  const newUser: AuthUser = {
-    id: `user_${Date.now()}`,
-    username: trimmedUser,
-    email: credentials.email.trim(),
-    isGuest: false,
-    createdAt: timestamp,
-    lastLoginAt: timestamp,
-  }
-
-  saveStoredUser(newUser)
-  return newUser
+  throw new Error("AUTH_UNAVAILABLE")
 }

@@ -1,5 +1,6 @@
 "use client"
 
+import { useCompletedReward } from "@/hooks/useCompletedReward"
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { motion } from "framer-motion"
 import { TypingStats } from "@/types/typing"
@@ -378,17 +379,24 @@ function HomeRowLesson({ onBack }: { onBack: () => void }) {
   )
 }
 
-function HomeRowLessonResult({
+function HomeRowLessonResult({ stats, onRetry }: { stats: TypingStats; onRetry: () => void }) {
+  const { t } = useI18n()
+  const apply = useCallback(() => processAcademyLessonRewards("home-row", stats), [stats])
+  const summary = useCompletedReward(stats, apply)
+  if (!summary) return <p role="status" className="p-6 text-white/60">{t("release.saving")}</p>
+  return <HomeRowLessonResultView stats={stats} onRetry={onRetry} rewardSummary={summary} />
+}
+
+function HomeRowLessonResultView({
   stats,
   onRetry,
+  rewardSummary,
 }: {
   stats: TypingStats
   onRetry: () => void
+  rewardSummary: ActivityRewardSummary
 }) {
   const { t } = useI18n()
-  const [rewardSummary] = useState<ActivityRewardSummary>(() =>
-    processAcademyLessonRewards("home-row", stats)
-  )
   const [showRankUpModal, setShowRankUpModal] = useState(
     () => rewardSummary.didRankUp
   )

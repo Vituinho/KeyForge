@@ -1,5 +1,6 @@
 "use client"
 
+import { safeReturnPath } from "@/lib/auth/safeReturnPath"
 import { useState, type FormEvent } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -93,10 +94,12 @@ export default function RegisterPage() {
       }))
 
       setStatusNotice(t("auth.registrationSuccess"))
-      setTimeout(() => {
-        router.push("/game")
-      }, 800)
+      router.push(safeReturnPath(new URLSearchParams(window.location.search).get("returnUrl")))
     } catch (err: unknown) {
+      if (err instanceof Error && (err.message === "AUTH_UNAVAILABLE" || err.message === "EMAIL_CONFIRMATION_REQUIRED")) {
+        setErrorMsg(t(err.message === "AUTH_UNAVAILABLE" ? "release.authUnavailable" : "release.confirmEmail"))
+        return
+      }
       if (err instanceof Error) {
         if (err.message === "USERNAME_TAKEN") {
           setErrorMsg(t("auth.usernameTaken"))

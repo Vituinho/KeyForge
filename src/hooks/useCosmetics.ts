@@ -93,14 +93,19 @@ function subscribeSettings(callback: () => void) {
 }
 
 // Cache snapshots for referential stability
+const serverCosmetics = createDefaultCosmeticsState()
+let openingCrate = false // Shared across hook instances; only one inventory transaction at a time.
+function readStorage(key: string): string | null {
+  try { return localStorage.getItem(key) } catch { return null }
+}
 let cachedCosmetics: PlayerCosmeticsState | null = null
 let cachedCosmeticsRaw: string | null = null
 
 function getCosmeticsSnapshot(): PlayerCosmeticsState {
   if (typeof window === "undefined") {
-    return createDefaultCosmeticsState()
+    return serverCosmetics
   }
-  const raw = localStorage.getItem(COSMETICS_STORAGE_KEY)
+  const raw = readStorage(COSMETICS_STORAGE_KEY)
   if (raw !== cachedCosmeticsRaw || !cachedCosmetics) {
     cachedCosmeticsRaw = raw
     cachedCosmetics = loadCosmeticsState()
@@ -115,7 +120,7 @@ function getSettingsSnapshot(): KeyboardAccessibilitySettings {
   if (typeof window === "undefined") {
     return DEFAULT_KEYBOARD_ACCESSIBILITY
   }
-  const raw = localStorage.getItem(KEYBOARD_SETTINGS_STORAGE_KEY)
+  const raw = readStorage(KEYBOARD_SETTINGS_STORAGE_KEY)
   if (raw !== cachedSettingsRaw || !cachedSettings) {
     cachedSettingsRaw = raw
     cachedSettings = loadKeyboardAccessibilitySettings()
@@ -123,8 +128,8 @@ function getSettingsSnapshot(): KeyboardAccessibilitySettings {
   return cachedSettings
 }
 
-function getServerCosmeticsSnapshot(): PlayerCosmeticsState {
-  return createDefaultCosmeticsState()
+export function getServerCosmeticsSnapshot(): PlayerCosmeticsState {
+  return serverCosmetics
 }
 
 function getServerSettingsSnapshot(): KeyboardAccessibilitySettings {
@@ -342,9 +347,12 @@ export function useCosmetics() {
     [userId]
   )
 
-  // Open Crate (Server-Authoritative with Local Fallback)
+  // Authenticated rewards require the server. Offline rolls are guest-only.
   const openCrate = useCallback(
     async (crateId: string): Promise<CosmeticUnlockResult | null> => {
+      if (openingCrate) return null
+      openingCrate = true
+      try {
       const current = loadCosmeticsState()
       const existing = current.crates[crateId] ?? 0
       if (existing <= 0) return null
@@ -379,9 +387,10 @@ export function useCosmetics() {
           notifyCosmeticsSubscribers()
           return cloudResult
         }
+        return null
       }
 
-      // Guest or offline/fallback roll
+      // Guest inventory is local and has no competitive authority.
       const drop = rollCrateDrop(crateId, current.unlockedSkinIds)
 
       const nextQuantity = existing - 1
@@ -419,6 +428,9 @@ export function useCosmetics() {
       }
 
       return drop
+      } finally {
+        openingCrate = false
+      }
     },
     [userId]
   )

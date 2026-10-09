@@ -1,8 +1,7 @@
 "use client"
 
 import { CharData } from "@/types/typing"
-import { motion } from "framer-motion"
-import { useEffect, useRef } from "react"
+import { memo, useEffect, useRef } from "react"
 import { useI18n } from "@/lib/i18n/i18nContext"
 
 interface TypingAreaProps {
@@ -31,8 +30,7 @@ export function TypingArea({ chars, inputRef, onFocus, themeColor = "#f97316" }:
 
   // Auto-focus on mount
   useEffect(() => {
-    const timer = setTimeout(() => inputRef.current?.focus(), 100)
-    return () => clearTimeout(timer)
+    inputRef.current?.focus({ preventScroll: true })
   }, [inputRef])
 
   const currentIdx = chars.findIndex((c) => c.state === "current")
@@ -52,11 +50,12 @@ export function TypingArea({ chars, inputRef, onFocus, themeColor = "#f97316" }:
         tabIndex={0}
       />
 
-      <p className="text-xl leading-relaxed font-mono tracking-wide select-none">
+      <p className="text-xl sm:text-2xl leading-relaxed font-mono tracking-wide select-none">
         {chars.map((charData, i) => (
           <CharSpan
             key={i}
-            charData={charData}
+            char={charData.char}
+            state={charData.state}
             isCurrent={i === currentIdx}
             themeColor={themeColor}
           />
@@ -65,38 +64,34 @@ export function TypingArea({ chars, inputRef, onFocus, themeColor = "#f97316" }:
 
       {/* Click-to-focus overlay hint */}
       {currentIdx === 0 && chars.every((c) => c.state === "current" || c.state === "untyped") && (
-        <motion.p
+        <p
           className="text-center text-white/30 text-sm mt-4"
-          animate={{ opacity: [0.3, 0.8, 0.3] }}
-          transition={{ duration: 2, repeat: Infinity }}
         >
           {t("battle.typingArea.clickToFocus")}
-        </motion.p>
+        </p>
       )}
     </div>
   )
 }
 
-function CharSpan({
-  charData,
+const CharSpan = memo(function CharSpan({
+  char, state,
   isCurrent,
   themeColor,
 }: {
-  charData: CharData
+  char: string; state: CharData["state"]
   isCurrent: boolean
   themeColor: string
 }) {
   return (
-    <span className={`relative ${STATE_CLASSES[charData.state]}`}>
+    <span className={`relative ${STATE_CLASSES[state]}`}>
       {isCurrent && (
-        <motion.span
+        <span
           className="absolute -left-0.5 top-0 bottom-0 w-0.5 rounded-full"
           style={{ backgroundColor: themeColor }}
-          animate={{ opacity: [1, 0, 1] }}
-          transition={{ duration: 0.8, repeat: Infinity }}
         />
       )}
-      {charData.char === " " && charData.state === "incorrect" ? "·" : charData.char}
+      {char === " " && state === "incorrect" ? "·" : char}
     </span>
   )
-}
+})

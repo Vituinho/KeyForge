@@ -1,4 +1,5 @@
 export const en = {
+  release: { onboardingCombat: "Typing combat", onboardingPrecision: "Accuracy first", "practiceHistory": "Free practice & speed tests", "practiceEmpty": "Finish a free practice or a speed test to see your real performance here.", "practiceDate": "Date", "notFound": "This route is outside the arena.", "notFoundDescription": "The page does not exist. Return to your dashboard or start from the homepage.", "error": "We could not load this screen.", "errorDescription": "Try again. Your saved progress has not been reset.", "retry": "Try again", "saving": "Saving completed activity…", "practiceSaved": "Saved locally for this player and keyboard layout. This practice benchmark does not award combat XP.", "presenceUnknown": "Connecting to presence…", "matchEstimate": "Matchmaking estimate", "practice": {"duration": "Duration", "freeHint": "Practice at your pace. Finish whenever you want.", "timedHint": "The timer starts with your first character.", "finish": "Finish practice", "drill1": "Small steps build a steady rhythm and a stronger skill.", "drill2": "Keep your hands relaxed and let accuracy guide your speed.", "drill3": "Every honest attempt helps you learn what to practice next."}, "pvp": "PvP", "skip": "Skip to content", "navigation": "Main navigation", "signOut": "Sign out", "worldsTitle": "Seven worlds. A stronger typist.", "worldsDescription": "Progress through 56 encounters, each with its own typing focus and combat mechanics. Clear worlds to unlock the next challenge.", "worldStages": "{count} stages", "hero": {"tag": "Practice with purpose. Play with skill.", "title": "Forge your speed.", "accent": "Master every key.", "description": "Improve your typing through battles, focused training and real progression. Let Academy find your next challenge, or face the campaign and live PvP.", "guest": "Start as a guest. Your practice and progress stay on this device.", "adaptive": "Adaptive Academy", "battles": "Campaign + live PvP", "preview": "Try the typing engine", "live": "Interactive practice", "drill": "Train your aim. Build your rhythm.", "keyboardHint": "Use a physical keyboard. A typo counts once; keep typing.", "try": "Try it", "complete": "Drill complete. Ready for your next challenge?"}, "audio": {"settings": "Battle audio", "masterVolume": "Master", "musicVolume": "Music", "sfxVolume": "Sound effects", "mute": "Mute all audio", "unmute": "Enable audio", "availability": "Music plays when a licensed encounter track is available."}, authUnavailable: "Online accounts are unavailable. You can still play as a guest.", confirmEmail: "Check your email to confirm your account, then sign in.", close: "Close", crateError: "The crate could not be opened. Your inventory was preserved. Check your connection and try again." },
   common: {
     playNow: "Play Now",
     startPlaying: "Start Playing",
@@ -142,7 +143,7 @@ export const en = {
         "Skill-based tier system evaluating speed, accuracy, technique, and combo consistency instead of mere grind.",
       statsTitle: "Deep Statistics",
       statsDesc:
-        "Detailed match logs, historical WPM trends, accuracy charts, and key latency telemetry to track your mastery.",
+        "Battle and practice history, speed records, accuracy and key telemetry to track your progress.",
       adviceTitle: "Personalized Tactical Advice",
       adviceDesc:
         "Contextual coaching upon defeat analyzing opponent mechanics (speed gates, precision checks, cadence) to guide improvement.",
@@ -155,7 +156,7 @@ export const en = {
         "Unlike generic typing websites that give you random texts, KeyForge monitors the accuracy and response latency of every single key you press. When you finish a battle, it detects your mechanical bottlenecks and creates custom muscle memory drills to eliminate them.",
       btn: "Explore Training Mode",
       weakTitle: "Your Weaknesses Detected",
-      postTelemetry: "Post-Battle Telemetry",
+      postTelemetry: "Illustrative example",
       drillTitle: "Generated Personalized Drill",
       drillSub: "Focusing on Left Pinky extension and Index reach:",
       mockFingerA: "Left Pinky",
@@ -167,16 +168,16 @@ export const en = {
       title: "TOUCH TYPING ACADEMY",
       subtitle: "Learn to type using all ten fingers instead of relying only on your index fingers.",
       description:
-        "Hunting and pecking with two fingers puts an artificial ceiling of 40-50 WPM on your potential. Our Academy provides structured lessons starting from the foundational home row to full symbol mastery, building permanent muscle memory.",
+        "Train any key with guided fingers, immediate feedback and exercises adapted to your performance. Track mastery and follow recommended sessions on ANSI or ABNT2 keyboards.",
       check1: "Step-by-step finger mapping curriculum",
-      check2: "Instant visual feedback on incorrect finger usage",
+      check2: "Immediate key feedback and a visual finger guide",
       check3: "Earn Academy XP and unlock rank advancement bonuses",
       btn: "Enter The Academy",
       homeRow: "Home Row Foundations",
       lessonPreview: "Lesson 01 Preview",
-      restTip: "Rest position for maximum speed, accuracy, and zero hand strain.",
+      restTip: "Home-row reference for comfortable finger placement.",
       freeTrack: "Free Touch Typing Track",
-      interactiveLessons: "8 Interactive Lessons",
+      interactiveLessons: "Adaptive Key Mastery",
       pinky: "Pinky",
       ring: "Ring",
       middle: "Middle",
@@ -1171,7 +1172,7 @@ export const en = {
   },
   auth: {
     loginTitle: "Welcome Back, Shinobi",
-    loginSub: "Sign in to sync your profile and access online leaderboards.",
+    loginSub: "Sign in to sync your progress and join real-time duels.",
     registerTitle: "Join the Ninja Academy",
     registerSub: "Create your KeyForge account to start your typing legend.",
     emailLabel: "Email Address",
@@ -1200,7 +1201,7 @@ export const en = {
     passwordTooShort: "Password must be at least 8 characters",
     multiplayerGuardBadge: "ACCOUNT REQUIRED",
     multiplayerGuardTitle: "Shinobi Multiplayer Arena",
-    multiplayerGuardDesc: "The Multiplayer Arena requires a registered Shinobi account to save your ranking, ELO, and victories.",
+    multiplayerGuardDesc: "Online duels require a registered account and an active connection. You can practice and play the campaign as a guest.",
     multiplayerGuardCreateAccount: "Create Account",
     multiplayerGuardLogin: "Sign In",
     multiplayerGuardReturnToDojo: "Back to Dojo",

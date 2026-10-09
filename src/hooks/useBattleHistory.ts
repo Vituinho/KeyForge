@@ -22,8 +22,9 @@ let cachedHistory: BattleHistoryEntry[] = []
 let cachedRaw: string | null = null
 
 function getSnapshot(): BattleHistoryEntry[] {
-  if (typeof window === "undefined") return []
-  const raw = localStorage.getItem(BATTLE_HISTORY_STORAGE_KEY)
+  if (typeof window === "undefined") return SERVER_SNAPSHOT
+  let raw: string | null = null
+  try { raw = localStorage.getItem(BATTLE_HISTORY_STORAGE_KEY) } catch { return cachedHistory }
   if (raw !== cachedRaw) {
     cachedRaw = raw
     cachedHistory = loadBattleHistory()

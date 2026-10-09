@@ -56,7 +56,7 @@ export function useBattle({
 
   const initialHp = getPhaseHp(1)
 
-  const [battleState, setBattleState] = useState<BattleState>({
+  const [battleState, setBattleState] = useState<BattleState>(() => ({
     phase: autoStart ? "fighting" : "pre-battle",
     enemyHp: initialHp,
     playerHp: playerMaxHp,
@@ -65,17 +65,28 @@ export function useBattle({
     currentTextIndex: 0,
     roundHistory: [],
     damageEvents: [],
-    battleStartTime: null,
+    battleStartTime: autoStart ? Date.now() : null,
     battleEndTime: null,
     currentPhase: 1,
     totalPhases,
     phaseName: initialPhaseName,
     phaseTransitionBanner: null,
     activeMechanicEffects: [],
-  })
+  }))
 
   const enemyAttackTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const battleStateRef = useRef(battleState)
+  const endCallbackRef = useRef(onBattleEnd)
+  const endNotifiedRef = useRef(false)
+
+  useEffect(() => {
+    endCallbackRef.current = onBattleEnd
+    if (battleState.phase === "fighting") endNotifiedRef.current = false
+    if ((battleState.phase === "victory" || battleState.phase === "defeat") && !endNotifiedRef.current) {
+      endNotifiedRef.current = true
+      endCallbackRef.current?.(battleState.phase === "victory")
+    }
+  }, [battleState, onBattleEnd])
 
   // Keep battleStateRef synced via effect to avoid reading uncommitted state in timers
   useEffect(() => {
@@ -127,7 +138,6 @@ export function useBattle({
           battleEndTime: now,
           damageEvents: [...prev.damageEvents, damageEvent],
         }))
-        onBattleEnd?.(false)
       } else {
         setBattleState((prev) => ({
           ...prev,
@@ -136,7 +146,7 @@ export function useBattle({
         }))
       }
     }, enemy.attackInterval)
-  }, [enemy.attack, enemy.attackInterval, onBattleEnd, stopEnemyAttack])
+  }, [enemy.attack, enemy.attackInterval, stopEnemyAttack])
 
   // Explicit start
   const startBattle = useCallback(() => {
@@ -264,7 +274,6 @@ export function useBattle({
           damageEvents: [...prev.damageEvents, playerDamageEvent, ...extraDamageEvents],
           activeMechanicEffects: mechanicEval.activeEffects,
         }))
-        onBattleEnd?.(false)
         return {
           damageResult: { ...baseResult, damage: finalDamage },
           isEnemyDefeated: false,
@@ -318,7 +327,6 @@ export function useBattle({
             damageEvents: [...prev.damageEvents, playerDamageEvent, ...extraDamageEvents],
             activeMechanicEffects: mechanicEval.activeEffects,
           }))
-          onBattleEnd?.(true)
           return {
             damageResult: { ...baseResult, damage: finalDamage },
             isEnemyDefeated: true,
@@ -341,7 +349,7 @@ export function useBattle({
         }
       }
     },
-    [enemy, getPhaseHp, multiPhaseMech?.phaseNames, onBattleEnd, stopEnemyAttack, texts]
+    [enemy, getPhaseHp, multiPhaseMech?.phaseNames, stopEnemyAttack, texts]
   )
 
   /**

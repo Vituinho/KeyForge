@@ -1,5 +1,6 @@
 "use client"
 
+import { safeReturnPath } from "@/lib/auth/safeReturnPath"
 import { useState, type FormEvent, Suspense } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -26,8 +27,7 @@ function LoginForm() {
   const { login } = useAuth()
 
   const rawReturnUrl = searchParams.get("returnUrl") || searchParams.get("next") || "/game"
-  const returnUrl =
-    rawReturnUrl.startsWith("/") && !rawReturnUrl.startsWith("//") ? rawReturnUrl : "/game"
+  const returnUrl = safeReturnPath(rawReturnUrl)
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -57,10 +57,12 @@ function LoginForm() {
     try {
       await login({ email: trimmedEmail, password })
       setStatusNotice(t("auth.loginSuccess"))
-      setTimeout(() => {
-        router.push(returnUrl)
-      }, 800)
+      router.push(returnUrl)
     } catch (err: unknown) {
+      if (err instanceof Error && (err.message === "AUTH_UNAVAILABLE" || err.message === "EMAIL_CONFIRMATION_REQUIRED")) {
+        setErrorMsg(t(err.message === "AUTH_UNAVAILABLE" ? "release.authUnavailable" : "release.confirmEmail"))
+        return
+      }
       if (err instanceof Error && err.message === "INVALID_CREDENTIALS") {
         setErrorMsg(t("auth.invalidCredentials"))
       } else {

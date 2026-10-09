@@ -1,6 +1,7 @@
 "use client"
  
-import { useState, useMemo } from "react"
+import { useCompletedReward } from "@/hooks/useCompletedReward"
+import { useCallback, useState, useMemo } from "react"
 import { motion } from "framer-motion"
 import { BattleResult as BattleResultType } from "@/types/battle"
 import { WeakKey, TrainingExercise } from "@/types/typing"
@@ -56,22 +57,29 @@ interface BattleResultProps {
   onRematch: () => void
 }
 
-export function BattleResult({
+export function BattleResult(props: BattleResultProps) {
+  const { t } = useI18n()
+  const apply = useCallback(() => processBattleRewards(props.result, props.enemy), [props.result, props.enemy])
+  const summary = useCompletedReward(props.result, apply)
+  if (!summary) return <p role="status" className="p-8 text-center text-sm text-white/60">{t("release.saving")}</p>
+  return <BattleResultView {...props} rewardSummary={summary} />
+}
+
+function BattleResultView({
   victory,
   enemy,
   result,
   weakKeys,
   exercises,
   onRematch,
-}: BattleResultProps) {
+  rewardSummary,
+}: BattleResultProps & { rewardSummary: BattleRewardSummary }) {
   const { t, locale } = useI18n()
   const { player } = usePlayer()
   const { finalStats } = result
 
   // Process rewards strictly once upon initial mount
-  const [rewardSummary] = useState<BattleRewardSummary>(() =>
-    processBattleRewards(result, enemy)
-  )
+
   const [showRankUpModal, setShowRankUpModal] = useState(
     () => rewardSummary.didRankUp
   )

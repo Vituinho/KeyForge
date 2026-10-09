@@ -1,6 +1,7 @@
 import { TranslationSchema } from "./en"
 
 export const ptBR: TranslationSchema = {
+  release: { onboardingCombat: "Combate por digitação", onboardingPrecision: "Precisão primeiro", "practiceHistory": "Treino livre e testes de velocidade", "practiceEmpty": "Conclua um treino livre ou teste de velocidade para ver seu desempenho real aqui.", "practiceDate": "Data", "notFound": "Esta rota está fora da arena.", "notFoundDescription": "A página não existe. Volte ao painel ou comece pela página inicial.", "error": "Não foi possível carregar esta tela.", "errorDescription": "Tente novamente. Seu progresso salvo não foi reiniciado.", "retry": "Tentar novamente", "saving": "Salvando atividade concluída…", "practiceSaved": "Salvo neste dispositivo por jogador e layout. Este treino de desempenho não concede XP de combate.", "presenceUnknown": "Conectando à presença…", "matchEstimate": "Estimativa de pareamento", "practice": {"duration": "Duração", "freeHint": "Treine no seu ritmo. Termine quando quiser.", "timedHint": "O tempo começa no primeiro caractere digitado.", "finish": "Concluir treino", "drill1": "Pequenos passos criam um ritmo firme e mais habilidade.", "drill2": "Mantenha as mãos relaxadas e deixe a precisão guiar sua velocidade.", "drill3": "Cada tentativa ajuda a descobrir o que você precisa praticar."}, "pvp": "PvP", "skip": "Pular para o conteúdo", "navigation": "Navegação principal", "signOut": "Sair", "worldsTitle": "Sete mundos. Mais domínio do teclado.", "worldsDescription": "Avance por 56 confrontos, cada um com seu foco de digitação e suas mecânicas. Conclua mundos para liberar o próximo desafio.", "worldStages": "{count} fases", "hero": {"tag": "Treine com propósito. Jogue com habilidade.", "title": "Forje sua velocidade.", "accent": "Domine cada tecla.", "description": "Melhore sua digitação com batalhas, treino focado e progressão real. Deixe a Academia encontrar seu próximo desafio ou enfrente a campanha e o PvP ao vivo.", "guest": "Comece como visitante. Seu treino e progresso ficam neste dispositivo.", "adaptive": "Academia adaptativa", "battles": "Campanha + PvP ao vivo", "preview": "Experimente a digitação", "live": "Treino interativo", "drill": "Treine sua mira. Encontre seu ritmo.", "keyboardHint": "Use um teclado físico. Um erro conta uma vez; continue digitando.", "try": "Experimentar", "complete": "Exercício concluído. Pronto para o próximo desafio?"}, "audio": {"settings": "Áudio da batalha", "masterVolume": "Geral", "musicVolume": "Música", "sfxVolume": "Efeitos sonoros", "mute": "Silenciar todo o áudio", "unmute": "Ativar áudio", "availability": "A música toca quando há uma faixa licenciada para o confronto."}, authUnavailable: "As contas online estão indisponíveis. Você ainda pode jogar como visitante.", confirmEmail: "Confirme sua conta pelo e-mail recebido e depois entre.", close: "Fechar", crateError: "Não foi possível abrir o baú. Seu inventário foi preservado. Confira sua conexão e tente novamente." },
   common: {
     playNow: "Jogar Agora",
     startPlaying: "Começar a Jogar",
@@ -144,7 +145,7 @@ export const ptBR: TranslationSchema = {
         "Sistema baseado puramente em habilidade avaliando velocidade, precisão, técnica e consistência de combos.",
       statsTitle: "Estatísticas Detalhadas",
       statsDesc:
-        "Histórico completo de partidas, gráficos de evolução de PPM, precisão ao longo do tempo e telemetria de latência.",
+        "Histórico de batalhas e treinos, recordes de velocidade, precisão e telemetria por tecla para acompanhar sua evolução.",
       adviceTitle: "Conselho Tático Personalizado",
       adviceDesc:
         "Coaching contextual após derrotas analisando as mecânicas do oponente (limiares de velocidade, ritmo e precisão).",
@@ -157,7 +158,7 @@ export const ptBR: TranslationSchema = {
         "Ao contrário de sites genéricos de digitação que apenas fornecem textos aleatórios, o KeyForge monitora a precisão e tempo de resposta de cada tecla. Ao final da batalha, o jogo diagnostica gargalos e cria exercícios de memória muscular para eliminá-los.",
       btn: "Explorar Modo Treino",
       weakTitle: "Fraquezas Detectadas",
-      postTelemetry: "Telemetria Pós-Batalha",
+      postTelemetry: "Exemplo ilustrativo",
       drillTitle: "Exercício Personalizado Gerado",
       drillSub: "Focando na extensão do Mindinho Esquerdo e alcance do Indicador:",
       mockFingerA: "Mindinho Esq.",
@@ -169,16 +170,16 @@ export const ptBR: TranslationSchema = {
       title: "ACADEMIA DE TOUCH TYPING",
       subtitle: "Aprenda a digitar utilizando todos os dez dedos em vez de depender apenas dos indicadores.",
       description:
-        "Catar milho com dois dedos impõe um teto artificial de 40 a 50 PPM no seu potencial. Nossa Academia oferece aulas estruturadas partindo da linha inicial (home row) até o domínio completo de pontuação e símbolos.",
+        "Treine qualquer tecla com orientação dos dedos, feedback imediato e exercícios adaptados ao seu desempenho. Acompanhe o domínio e siga sessões recomendadas nos teclados ABNT2 ou ANSI.",
       check1: "Mapeamento dedo a dedo passo a passo",
-      check2: "Feedback visual instantâneo para dedo incorreto",
+      check2: "Feedback imediato por tecla e guia visual dos dedos",
       check3: "Ganhe XP de Academia e impulsione seu ranque",
       btn: "Entrar na Academia",
       homeRow: "Fundamentos da Linha Base",
       lessonPreview: "Prévia da Lição 01",
-      restTip: "Posição de descanso para máxima velocidade, precisão e zero tensão nas mãos.",
+      restTip: "Referência da linha base para posicionar os dedos com conforto.",
       freeTrack: "Trilha de Digitação Gratuita",
-      interactiveLessons: "8 Lições Interativas",
+      interactiveLessons: "Domínio adaptativo por tecla",
       pinky: "Mindinho",
       ring: "Anelar",
       middle: "Médio",
@@ -1173,7 +1174,7 @@ export const ptBR: TranslationSchema = {
   },
   auth: {
     loginTitle: "Bem-vindo de Volta, Shinobi",
-    loginSub: "Entre para sincronizar seu perfil e acessar placares online.",
+    loginSub: "Entre para sincronizar seu progresso e participar de duelos em tempo real.",
     registerTitle: "Entre na Academia Ninja",
     registerSub: "Crie sua conta no KeyForge para iniciar sua lenda na digitação.",
     emailLabel: "Endereço de E-mail",
@@ -1202,7 +1203,7 @@ export const ptBR: TranslationSchema = {
     passwordTooShort: "A senha deve ter no mínimo 8 caracteres",
     multiplayerGuardBadge: "CONTA NECESSÁRIA",
     multiplayerGuardTitle: "Arena Shinobi Multiplayer",
-    multiplayerGuardDesc: "A Multiplayer Arena exige uma conta Shinobi registrada para salvar seu ranking, ELO e vitórias.",
+    multiplayerGuardDesc: "Duelos online exigem uma conta registrada e conexão ativa. Você pode treinar e jogar a campanha como visitante.",
     multiplayerGuardCreateAccount: "Criar Conta",
     multiplayerGuardLogin: "Entrar",
     multiplayerGuardReturnToDojo: "Voltar ao Dojo",

@@ -1,14 +1,13 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
 import { TypingStats } from "@/types/typing"
 import { useTypingEngine } from "@/hooks/useTypingEngine"
 import { TypingArea } from "@/components/battle/TypingArea"
 import { BattleHud } from "@/components/battle/BattleHud"
 import { generateWeakKeysSession } from "@/lib/typing/generateTraining"
 import { TrainingResult } from "./TrainingResult"
-import { Dumbbell, ArrowRight } from "lucide-react"
+import { Dumbbell } from "lucide-react"
 import { TypingKeyboard } from "@/components/keyboard/TypingKeyboard"
 import { useI18n } from "@/lib/i18n/i18nContext"
 import {
@@ -36,28 +35,22 @@ export function WeakKeyTraining({
   )
   const [exerciseIndex, setExerciseIndex] = useState(0)
   const [isCompleted, setIsCompleted] = useState(false)
-  const [isTransitioning, setIsTransitioning] = useState(false)
+  const nextRoundRef = useRef<((text: string) => void) | null>(null)
 
   const [finalStats, setFinalStats] = useState<TypingStats | null>(null)
   const currentExercise = exercises[exerciseIndex] ?? exercises[0]
 
   const handleExerciseComplete = useCallback(
     (roundStats: TypingStats) => {
-      setIsTransitioning(true)
-
-      setTimeout(() => {
-        if (exerciseIndex + 1 < exercises.length) {
-          setExerciseIndex((prev) => prev + 1)
-          setIsTransitioning(false)
-        } else {
-          // Completed all exercises
-          setFinalStats(roundStats)
-          setIsCompleted(true)
-          setIsTransitioning(false)
-        }
-      }, 400)
+      if (exerciseIndex + 1 < exercises.length) {
+        nextRoundRef.current?.(exercises[exerciseIndex + 1])
+        setExerciseIndex((prev) => prev + 1)
+      } else {
+        setFinalStats(roundStats)
+        setIsCompleted(true)
+      }
     },
-    [exerciseIndex, exercises.length]
+    [exerciseIndex, exercises]
   )
 
   // Reusing the exact same useTypingEngine as Battle
@@ -66,6 +59,7 @@ export function WeakKeyTraining({
     stats,
     inputRef,
     reset,
+    nextRound,
     focus,
     expectedKey,
     pressedKey,
@@ -73,32 +67,24 @@ export function WeakKeyTraining({
   } = useTypingEngine({
     text: currentExercise,
     textId: `drill-${exerciseIndex}`,
-    enabled: !isCompleted && !isTransitioning,
+    enabled: !isCompleted,
+    statsUpdateIntervalMs: 100,
     onComplete: handleExerciseComplete,
   })
 
-  // Synchronize next exercise text into engine while keeping cumulative stats
-  const prevExerciseRef = useRef(currentExercise)
-  useEffect(() => {
-    if (currentExercise !== prevExerciseRef.current) {
-      prevExerciseRef.current = currentExercise
-      reset(currentExercise, true) // keep cumulative session data
-      const t = setTimeout(() => focus(), 50)
-      return () => clearTimeout(t)
-    }
-  }, [currentExercise, reset, focus])
+  useEffect(() => { nextRoundRef.current = nextRound }, [nextRound])
 
   const handleRetry = useCallback(() => {
     if (onRestart) {
       onRestart()
     } else {
-      setExercises(generateWeakKeysSession(targetKeys))
+      const nextExercises = generateWeakKeysSession(targetKeys)
+      setExercises(nextExercises)
       setExerciseIndex(0)
       setIsCompleted(false)
-      setIsTransitioning(false)
-      reset(exercises[0], false)
+      reset(nextExercises[0], false)
     }
-  }, [exercises, onRestart, reset, targetKeys])
+  }, [onRestart, reset, targetKeys])
 
   if (isCompleted && finalStats) {
     return (
@@ -176,29 +162,14 @@ export function WeakKeyTraining({
 
       {/* Typing area reusing the exact same component & engine */}
       <div className="relative">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentExercise}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25 }}
-          >
+        <div className="min-h-32">
             <TypingArea
               chars={chars}
               inputRef={inputRef}
               onFocus={focus}
               themeColor="#f97316"
             />
-          </motion.div>
-        </AnimatePresence>
-
-        {isTransitioning && (
-          <div className="text-center text-xs text-orange-400 mt-2 font-bold animate-pulse flex items-center justify-center gap-1">
-            <span>{t("training.weakKeys.nextDrill")}</span>
-            <ArrowRight size={12} />
-          </div>
-        )}
+        </div>
       </div>
 
       {/* Active Finger Guidance HUD */}
