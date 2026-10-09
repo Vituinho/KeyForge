@@ -8,54 +8,17 @@
  * - Non-blocking: audio execution never delays or intercepts typing keystrokes.
  */
 
-export interface AudioSettings {
-  enabled: boolean
-  masterVolume: number // 0.0 to 1.0
-  sfxVolume: number // 0.0 to 1.0
-}
-
-const STORAGE_KEY = "keyforge_audio_settings"
-
-const DEFAULT_SETTINGS: AudioSettings = {
-  enabled: true,
-  masterVolume: 0.7,
-  sfxVolume: 0.8,
-}
+import { getAudioSettings, saveAudioSettings, type AudioSettings } from "./audioSettings"
+export type { AudioSettings } from "./audioSettings"
 
 class SoundManager {
   private ctx: AudioContext | null = null
-  private settings: AudioSettings = { ...DEFAULT_SETTINGS }
-  private initialized = false
-
-  constructor() {
-    if (typeof window !== "undefined") {
-      this.loadSettings()
-    }
-  }
-
-  private loadSettings(): void {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      if (raw) {
-        this.settings = { ...DEFAULT_SETTINGS, ...JSON.parse(raw) }
-      }
-    } catch {
-      this.settings = { ...DEFAULT_SETTINGS }
-    }
-  }
-
-  public saveSettings(newSettings: Partial<AudioSettings>): void {
-    this.settings = { ...this.settings, ...newSettings }
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.settings))
-    } catch {
-      // Storage unavailable
-    }
-  }
-
-  public getSettings(): AudioSettings {
-    return { ...this.settings }
-  }
+  private resuming = false
+  private get settings() { return getAudioSettings() }
+  public saveSettings(settings: Partial<AudioSettings>) { saveAudioSettings(settings) }
+  public getSettings(): AudioSettings { return getAudioSettings() }
+  public suspend(): void { this.ctx?.suspend().catch(() => {}) }
+  public cleanup(): void { this.ctx?.close().catch(() => {}); this.ctx = null }
 
   public toggleMute(): boolean {
     const nextState = !this.settings.enabled
@@ -72,23 +35,25 @@ class SoundManager {
         (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
 
       if (AudioCtxClass) {
-        this.ctx = new AudioCtxClass()
+        try { this.ctx = new AudioCtxClass() } catch { return null }
       }
     }
 
     // Resume if suspended by browser autoplay policy
-    if (this.ctx && this.ctx.state === "suspended") {
+    if (this.ctx && this.ctx.state === "suspended" && !this.resuming) {
+      this.resuming = true
       this.ctx.resume().catch(() => {
         // Autoplay policy prevented immediate resume
-      })
+      }).finally(() => { this.resuming = false })
     }
 
     return this.ctx
   }
 
   private getGain(): GainNode | null {
+    if (!this.settings.enabled || this.settings.masterVolume * this.settings.sfxVolume <= 0) return null
     const ctx = this.getContext()
-    if (!ctx || !this.settings.enabled) return null
+    if (!ctx) return null
 
     const effectiveVolume = this.settings.masterVolume * this.settings.sfxVolume
     if (effectiveVolume <= 0) return null
@@ -99,122 +64,28 @@ class SoundManager {
     return gain
   }
 
-  /**
-   * Subtle soft click on correct keystroke
-   */
-  public playKeystroke(variation = 0): void {
-    const gain = this.getGain()
-    const ctx = this.ctx
+  private chord(notes: number[], type: OscillatorType, amplitude: number, spacing: number, duration: number) {
+    const gain = this.getGain(), ctx = this.ctx
     if (!gain || !ctx) return
-
-    const osc = ctx.createOscillator()
-    osc.type = "sine"
-    // Frequency between 600Hz and 800Hz
-    const baseFreq = 700 + (variation % 10) * 15
-    osc.frequency.setValueAtTime(baseFreq, ctx.currentTime)
-
-    gain.gain.setValueAtTime(0.12 * this.settings.sfxVolume, ctx.currentTime)
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.025)
-
-    osc.connect(gain)
-    osc.start(ctx.currentTime)
-    osc.stop(ctx.currentTime + 0.025)
-  }
-
-  /**
-   * Low soft buzz on typo
-   */
-  public playTypo(): void {
-    const gain = this.getGain()
-    const ctx = this.ctx
-    if (!gain || !ctx) return
-
-    const osc = ctx.createOscillator()
-    osc.type = "sawtooth"
-    osc.frequency.setValueAtTime(140, ctx.currentTime)
-
-    gain.gain.setValueAtTime(0.15 * this.settings.sfxVolume, ctx.currentTime)
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07)
-
-    osc.connect(gain)
-    osc.start(ctx.currentTime)
-    osc.stop(ctx.currentTime + 0.07)
-  }
-
-  /**
-   * Ascending gentle dual chime on completed sentence
-   */
-  public playSentenceComplete(): void {
-    const gain = this.getGain()
-    const ctx = this.ctx
-    if (!gain || !ctx) return
-
-    const notes = [523.25, 659.25] // C5, E5
-    notes.forEach((freq, idx) => {
-      const osc = ctx.createOscillator()
-      osc.type = "triangle"
-      osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.06)
-
-      const noteGain = ctx.createGain()
-      noteGain.gain.setValueAtTime(0.18 * this.settings.sfxVolume, ctx.currentTime + idx * 0.06)
-      noteGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.06 + 0.12)
-
-      osc.connect(noteGain)
-      noteGain.connect(ctx.destination)
-      osc.start(ctx.currentTime + idx * 0.06)
-      osc.stop(ctx.currentTime + idx * 0.06 + 0.12)
+    let remaining = notes.length
+    notes.forEach((frequency, index) => {
+      const osc = ctx.createOscillator(), envelope = ctx.createGain()
+      const start = ctx.currentTime + index * spacing
+      osc.type = type
+      osc.frequency.setValueAtTime(frequency, start)
+      envelope.gain.setValueAtTime(amplitude, start)
+      envelope.gain.exponentialRampToValueAtTime(0.001, start + duration)
+      osc.connect(envelope)
+      envelope.connect(gain)
+      osc.onended = () => { osc.disconnect(); envelope.disconnect(); if (--remaining === 0) gain.disconnect() }
+      osc.start(start)
+      osc.stop(start + duration)
     })
   }
-
-  /**
-   * Shimmering golden chime on Personal Best milestone
-   */
-  public playPersonalBest(): void {
-    const gain = this.getGain()
-    const ctx = this.ctx
-    if (!gain || !ctx) return
-
-    const chord = [880, 1108.73, 1318.51, 1760] // A Major arpeggio
-    chord.forEach((freq, idx) => {
-      const osc = ctx.createOscillator()
-      osc.type = "sine"
-      osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.07)
-
-      const noteGain = ctx.createGain()
-      noteGain.gain.setValueAtTime(0.2 * this.settings.sfxVolume, ctx.currentTime + idx * 0.07)
-      noteGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.07 + 0.25)
-
-      osc.connect(noteGain)
-      noteGain.connect(ctx.destination)
-      osc.start(ctx.currentTime + idx * 0.07)
-      osc.stop(ctx.currentTime + idx * 0.07 + 0.25)
-    })
-  }
-
-  /**
-   * Deep cinematic resonance chord on Boss Phase Shift
-   */
-  public playBossPhaseShift(): void {
-    const gain = this.getGain()
-    const ctx = this.ctx
-    if (!gain || !ctx) return
-
-    const notes = [164.81, 220.0, 329.63] // E3, A3, E4 power chord
-    notes.forEach((freq) => {
-      const osc = ctx.createOscillator()
-      osc.type = "sawtooth"
-      osc.frequency.setValueAtTime(freq, ctx.currentTime)
-
-      const noteGain = ctx.createGain()
-      noteGain.gain.setValueAtTime(0.18 * this.settings.sfxVolume, ctx.currentTime)
-      noteGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5)
-
-      osc.connect(noteGain)
-      noteGain.connect(ctx.destination)
-      osc.start(ctx.currentTime)
-      osc.stop(ctx.currentTime + 0.5)
-    })
-  }
+  public playKeystroke(variation = 0): void { this.chord([700 + (variation % 10) * 15], "sine", 0.12, 0, 0.025) }
+  public playTypo(): void { this.chord([140], "sawtooth", 0.15, 0, 0.07) }
+  public playSentenceComplete(): void { this.chord([523.25, 659.25], "triangle", 0.18, 0.06, 0.12) }
+  public playPersonalBest(): void { this.chord([880, 1108.73, 1318.51, 1760], "sine", 0.2, 0.07, 0.25) }
+  public playBossPhaseShift(): void { this.chord([164.81, 220, 329.63], "sawtooth", 0.18, 0, 0.5) }
 }
-
 export const soundManager = new SoundManager()

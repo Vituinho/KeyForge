@@ -1,7 +1,7 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { memo, useCallback, useEffect, useRef, useState } from "react"
+import { motion } from "framer-motion"
 import { Enemy } from "@/types/character"
 import { TypingStats } from "@/types/typing"
 import { BattleResult as BattleResultType } from "@/types/battle"
@@ -25,6 +25,13 @@ import { PersonalBestBanner } from "./PersonalBestBanner"
 import { CombatFeedbackToast } from "./CombatFeedbackToast"
 import { BossPhaseBanner } from "@/components/campaign/BossPhaseBanner"
 import { soundManager } from "@/lib/audio/soundManager"
+import { useBattleMusic } from "@/hooks/useBattleMusic"
+import { BattleAudioControls } from "./BattleAudioControls"
+import Link from "next/link"
+
+const StableEnemyCard = memo(EnemyCard)
+const StablePlayerCard = memo(PlayerCard)
+const SampledBattleHud = memo(BattleHud)
 
 interface BattleArenaProps {
   enemy: Enemy
@@ -37,8 +44,8 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
   const { player, updatePlayer } = usePlayer()
   const [enemyUnderAttack, setEnemyUnderAttack] = useState(false)
   const [playerUnderAttack, setPlayerUnderAttack] = useState(false)
-  const [isTransitioning, setIsTransitioning] = useState(false)
-  const [showTouchGuide, setShowTouchGuide] = useState(true)
+  const nextRoundRef = useRef<((text: string) => void) | null>(null)
+  const [showTouchGuide, setShowTouchGuide] = useState(false)
   const [activeMilestone, setActiveMilestone] = useState<PersonalBestMilestone | null>(null)
   const [combatFeedback, setCombatFeedback] = useState<CombatFeedbackEvent | null>(null)
   const lastFeedbackTimeRef = useRef<number>(0)
@@ -113,6 +120,12 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
     },
   })
 
+  const previousPhase = useRef(1)
+  useEffect(() => {
+    if (battleState.currentPhase > previousPhase.current) soundManager.playBossPhaseShift()
+    previousPhase.current = battleState.currentPhase
+  }, [battleState.currentPhase])
+
   // Detect incoming enemy attacks to flash player card
   const prevEnemyDamageCountRef = useRef(0)
   useEffect(() => {
@@ -130,12 +143,13 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
     (roundStats: TypingStats) => {
       latestStatsRef.current = roundStats
 
-      // Step 1: Lock input immediately
-      setIsTransitioning(true)
-
       // Step 2 & 3 & 4 & 5 & 6: Calculate & apply round damage, emit animations
       const { isEnemyDefeated } = applyRoundDamage(roundStats)
       setEnemyUnderAttack(true)
+      if (!isEnemyDefeated) {
+        nextRoundRef.current?.(texts[(battleState.currentTextIndex + 1) % texts.length])
+        advanceToNextSentence()
+      }
 
       // Evaluate real Personal Bests
       const milestones = evaluatePersonalBests(
@@ -214,25 +228,10 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
         }
       }
 
-      // Animation duration: 600ms
-      setTimeout(() => {
-        setEnemyUnderAttack(false)
-
-        // Step 7: Check victory
-        if (isEnemyDefeated) {
-          // Battle finished — victory phase takes over
-          setIsTransitioning(false)
-          return
-        }
-
-        // Step 8 & 9: Advance sentence & reset round state while preserving cumulative battle stats
-        advanceToNextSentence()
-
-        // Step 10: Unlock input
-        setIsTransitioning(false)
-      }, 600)
+      // Combat feedback runs independently from sentence/input progression.
+      setTimeout(() => setEnemyUnderAttack(false), 600)
     },
-    [advanceToNextSentence, applyRoundDamage, enemy, player, t, updatePlayer]
+    [advanceToNextSentence, applyRoundDamage, battleState.currentTextIndex, texts, enemy, player, t, updatePlayer]
   )
 
   // Typing engine instance
@@ -240,37 +239,37 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
     chars,
     stats,
     inputRef,
-    reset,
+    nextRound,
     focus,
     expectedKey,
     pressedKey,
     lastErrorKey,
   } = useTypingEngine({
     text: currentText,
-    enabled: phase === "fighting" && !isTransitioning,
+    enabled: phase === "fighting",
+    statsUpdateIntervalMs: 100,
     onComplete: handleRoundComplete,
+    onAttempt: attempt => {
+      if (attempt.correct) soundManager.playKeystroke()
+      else soundManager.playTypo()
+    },
   })
+
+  useBattleMusic(enemy.id, phase === "victory" || phase === "defeat")
 
   // Keep latestStatsRef fresh on any typing update
   useEffect(() => {
     latestStatsRef.current = stats
   }, [stats])
 
-  // Sync engine when currentText changes
-  const prevTextRef = useRef(currentText)
   useEffect(() => {
-    if (currentText !== prevTextRef.current) {
-      prevTextRef.current = currentText
-      reset(currentText, true) // Keep cumulative battle stats!
-      const t = setTimeout(() => focus(), 50)
-      return () => clearTimeout(t)
-    }
-  }, [currentText, reset, focus])
+    nextRoundRef.current = nextRound
+  }, [nextRound])
 
   // Render battle result if battle has completed
   if (battleResultData !== null && (phase === "victory" || phase === "defeat")) {
     return (
-      <BattleResult
+      <div><div className="flex justify-between items-center max-w-4xl mx-auto px-4 pt-3"><Link href="/game" className="kf-nav-link">KEYFORGE</Link><BattleAudioControls /></div><BattleResult
         victory={battleResultData.victory}
         enemy={enemy}
         result={battleResultData}
@@ -283,7 +282,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
             window.location.reload()
           }
         }}
-      />
+      /></div>
     )
   }
 
@@ -298,9 +297,10 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
       />
 
       <div className="relative z-10 flex flex-col min-h-screen sm:h-screen justify-between max-w-4xl mx-auto w-full px-4 py-4 sm:py-6 gap-4">
+        <header className="flex items-center justify-between gap-3"><Link href={enemy.world ? `/anime-world/${enemy.world}` : "/game"} className="text-xs font-semibold text-white/55 hover:text-white">← {t("battle.preBattle.exitBattle")}</Link><BattleAudioControls /></header>
         {/* Top row: Enemy card + HUD + Player card */}
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <EnemyCard
+        <div className="grid grid-cols-2 sm:grid-cols-[auto_1fr_auto] items-start gap-3">
+          <StableEnemyCard
             enemy={enemy}
             currentHp={battleState.enemyHp}
             maxHp={battleState.maxEnemyHp}
@@ -319,9 +319,9 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
           />
 
           {/* Center HUD */}
-          <div className="flex-1 flex flex-col items-center justify-center gap-2 pt-2">
+          <div className="order-last sm:order-none col-span-2 sm:col-span-1 flex flex-col items-center justify-center gap-2 pt-2">
             {phase === "fighting" && (
-              <BattleHud
+              <SampledBattleHud
                 wpm={stats.currentWpm}
                 accuracy={stats.currentAccuracy}
                 combo={stats.combo}
@@ -336,7 +336,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
             )}
           </div>
 
-          <PlayerCard
+          <StablePlayerCard
             currentHp={battleState.playerHp}
             maxHp={battleState.maxPlayerHp}
             isUnderAttack={playerUnderAttack}
@@ -373,22 +373,14 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
             </div>
           )}
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentText}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-            >
+            <div className="min-h-32">
               <TypingArea
                 chars={chars}
                 inputRef={inputRef}
                 onFocus={focus}
                 themeColor={enemy.themeColor}
               />
-            </motion.div>
-          </AnimatePresence>
+            </div>
 
           {/* Gameplay Visual Keyboard & Touch Typing Guide below TypingArea */}
           {phase === "fighting" && (
@@ -435,7 +427,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
               <span>
                 {t("battle.hud.round", { current: battleState.roundHistory.length + 1, total: texts.length })}
               </span>
-              {isTransitioning && (
+              {enemyUnderAttack && (
                 <span className="text-orange-400 font-bold animate-pulse">
                   · {t("battle.hud.strikeInProgress")}
                 </span>
