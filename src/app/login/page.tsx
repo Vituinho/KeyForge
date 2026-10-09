@@ -98,27 +98,30 @@ function LoginForm() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Error Message */}
             {errorMsg && (
-              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold text-center">
+              <div role="alert" className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold text-center">
                 {errorMsg}
               </div>
             )}
 
             {/* Status Notice */}
             {statusNotice && (
-              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold text-center">
+              <div role="status" className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold text-center">
                 {statusNotice}
               </div>
             )}
 
             {/* Email Input */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-white/70 block">
+              <label htmlFor="login-email" className="text-xs font-bold text-white/70 block">
                 {t("auth.emailLabel")}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                 <input
                   type="email"
+                  id="login-email"
+                  name="email"
+                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="shinobi@keyforge.dev"
@@ -130,17 +133,17 @@ function LoginForm() {
             {/* Password Input */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-white/70">
+                <label htmlFor="login-password" className="text-xs font-bold text-white/70">
                   {t("auth.passwordLabel")}
                 </label>
-                <span className="text-[11px] text-orange-400/80 hover:text-orange-300 transition-colors cursor-pointer">
-                  {t("auth.forgotPassword")}
-                </span>
               </div>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                 <input
                   type={showPassword ? "text" : "password"}
+                  id="login-password"
+                  name="password"
+                  autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
@@ -182,7 +185,7 @@ function LoginForm() {
               {t("auth.guestNotice")}
             </p>
             <Link
-              href={returnUrl}
+              href={returnUrl.startsWith("/multiplayer") ? "/game" : returnUrl}
               className="w-full py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white font-bold text-xs transition-all flex items-center justify-center gap-2"
             >
               <Gamepad2 size={16} className="text-orange-400" />

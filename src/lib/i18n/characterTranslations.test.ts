@@ -10,6 +10,7 @@ test("every character and world-stage typing focus has PT-BR and EN labels", () 
   const focuses = new Set([...CHARACTERS.map(character => character.typingFocus),
     ...getAllWorlds().flatMap(world => world.stages.map(stage => stage.typingFocus))])
   for (const focus of focuses) for (const dictionary of [en, ptBR]) {
+    assert.ok(focus, "A configured character/stage is missing its typing focus")
     assert.ok(Object.hasOwn(dictionary.battle.focusTypes, focus), `Missing focus label: ${focus}`)
   }
 })

@@ -178,27 +178,30 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Error Message */}
             {errorMsg && (
-              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold text-center">
+              <div role="alert" className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-bold text-center">
                 {errorMsg}
               </div>
             )}
 
             {/* Status Notice */}
             {statusNotice && (
-              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold text-center">
+              <div role="status" className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold text-center">
                 {statusNotice}
               </div>
             )}
 
             {/* Username Input */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-white/70 block">
+              <label htmlFor="register-username" className="text-xs font-bold text-white/70 block">
                 {t("auth.usernameLabel")}
               </label>
               <div className="relative">
                 <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                 <input
                   type="text"
+                  id="register-username"
+                  name="username"
+                  autoComplete="username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Minato_Namikaze"
@@ -210,13 +213,16 @@ export default function RegisterPage() {
 
             {/* Email Input */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-white/70 block">
+              <label htmlFor="register-email" className="text-xs font-bold text-white/70 block">
                 {t("auth.emailLabel")}
               </label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                 <input
                   type="email"
+                  id="register-email"
+                  name="email"
+                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="shinobi@keyforge.dev"
@@ -227,13 +233,16 @@ export default function RegisterPage() {
 
             {/* Password Input */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-white/70 block">
+              <label htmlFor="register-password" className="text-xs font-bold text-white/70 block">
                 {t("auth.passwordLabel")}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                 <input
                   type={showPassword ? "text" : "password"}
+                  id="register-password"
+                  name="password"
+                  autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
@@ -252,13 +261,16 @@ export default function RegisterPage() {
 
             {/* Confirm Password Input */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-white/70 block">
+              <label htmlFor="register-confirmPassword" className="text-xs font-bold text-white/70 block">
                 {t("auth.confirmPasswordLabel")}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                 <input
                   type={showConfirmPassword ? "text" : "password"}
+                  id="register-confirmPassword"
+                  name="confirmPassword"
+                  autoComplete="new-password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"

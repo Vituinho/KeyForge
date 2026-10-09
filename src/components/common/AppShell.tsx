@@ -13,7 +13,7 @@ const Navigation = memo(function Navigation() {
   const pathname = usePathname()
   const { user, logout } = useAuth()
   const { t } = useI18n()
-  if (["/", "/battle", "/multiplayer/arena", "/multiplayer/demo"].includes(pathname)) return null
+  if (["/", "/login", "/register", "/battle", "/multiplayer/arena", "/multiplayer/demo"].includes(pathname)) return null
   const links = [
     ["/game", "common.dashboard"], ["/academy", "nav.academy"], ["/training", "nav.training"],
     ["/anime-world", "nav.animeWorlds"], ["/multiplayer", "release.pvp"],
