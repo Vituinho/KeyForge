@@ -54,7 +54,7 @@ export function PlayerQuickWidget() {
             <span>
               {player.worldsCompleted && player.worldsCompleted > 0
                 ? `${player.worldsCompleted}/7 ${t("animeWorld.clearedBadge")}`
-                : `${player.totalStagesCleared ?? 0}/56 Stages`}
+                : `${t("common.stage")} ${player.totalStagesCleared ?? 0}/56`}
             </span>
             <span>·</span>
             <span>

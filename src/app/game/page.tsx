@@ -175,7 +175,7 @@ export default function GameDashboardPage() {
                 {nextRecommendation.stage.name}
               </h3>
               <p className="text-[11px] text-white/50 font-mono">
-                {nextRecommendation.stage.typingFocus} · {nextRecommendation.stage.recommendedWpm}+ WPM · {nextRecommendation.stage.recommendedAccuracy}% ACC
+                {t(`battle.focusTypes.${nextRecommendation.stage.typingFocus}`)} · {nextRecommendation.stage.recommendedWpm}+ WPM · {nextRecommendation.stage.recommendedAccuracy}% {t("common.accuracy")}
               </p>
             </div>
           </div>
