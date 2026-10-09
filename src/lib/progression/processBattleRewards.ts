@@ -45,6 +45,10 @@ export interface BattleRewardSummary {
   awardedCrates?: AwardedCrateReward[]
 }
 
+export function hasClearedEveryStage(completed: readonly number[], required: readonly number[]): boolean {
+  return required.length > 0 && required.every(stage => completed.includes(stage))
+}
+
 /**
  * Processes battle rewards and commits progression updates to local storage.
  * Strictly idempotent per call.
@@ -174,11 +178,11 @@ export function processBattleRewards(
       totalWorldStars += score.stars ?? 1
     }
 
-    // Check boss defeat & campaign completion
-    const isBossCleared = enemy.isBoss === true || stageNum >= (worldConfig?.stages.length ?? 8)
-    const isWorldCompleted = existingWorldProgress.completed || isBossCleared
+    // Defeating a boss directly does not mean the intervening stages were cleared.
+    const requiredStages = worldConfig?.stages.map(stage => stage.stageNumber) ?? [1, 2, 3, 4, 5, 6, 7, 8]
+    const isWorldCompleted = existingWorldProgress.completed || hasClearedEveryStage(newCompletedStages, requiredStages)
 
-    if (isBossCleared) {
+    if (isWorldCompleted) {
       campaignCompleted = true
       const completionAchievement = `${worldKey}_world_completed`
       if (!updatedAchievements.includes(completionAchievement)) {
