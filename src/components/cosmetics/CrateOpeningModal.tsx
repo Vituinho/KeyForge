@@ -46,6 +46,11 @@ export function CrateOpeningModal({
   const dialogRef = useDialogFocus(isOpen, onClose, !isOpening)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
+  useEffect(() => {
+    const dialog = dialogRef.current
+    // Charging removes the focused button; keep keyboard focus inside the dialog.
+    if (isOpen && dialog && !dialog.contains(document.activeElement)) dialog.focus({ preventScroll: true })
+  }, [phase, isOpen, dialogRef])
 
   const handleStartOpen = async () => {
     if (remainingCount <= 0 || isOpening) return
@@ -161,7 +166,7 @@ export function CrateOpeningModal({
             <div className="p-3 rounded-2xl bg-white/5 border border-white/10 max-w-sm mx-auto text-left space-y-1.5">
               <div className="flex items-center justify-between text-[11px] font-mono text-white/50 border-b border-white/5 pb-1">
                 <span>{t("lockerModule.openingModal.probabilities")}</span>
-                <span>{(crate.guaranteedMinRarity ?? "common").toUpperCase()} +</span>
+                <span>{RARITY_DETAILS[crate.guaranteedMinRarity ?? "common"].name[locale === "pt-BR" ? "pt-BR" : "en"]} +</span>
               </div>
               <div className="flex flex-wrap gap-2 text-[10px] font-mono">
                 {crate.dropWeights
@@ -296,7 +301,7 @@ export function CrateOpeningModal({
 
               <div className="space-y-1">
                 <h3 className="text-xl font-black text-white">{result.skin.name}</h3>
-                <p className="text-xs text-white/50">{result.skin.description}</p>
+                <p className="text-xs text-white/50">{t(`skinDescriptions.${result.skin.id}`)}</p>
               </div>
 
               {/* Duplicate Shards Notice */}
