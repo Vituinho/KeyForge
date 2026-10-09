@@ -364,31 +364,31 @@ export default function ProfilePage() {
           <AttributeCard
             title={t("progression.skillProfile.speed")}
             score={skillProfile.speed.score}
-            desc={skillProfile.speed.explainableReason}
+            desc={skillProfile.speed.confidence === "insufficient_data" ? t("progression.skillProfile.moreData") : t("progression.skillProfile.speedDescription")}
             color="#f97316"
           />
           <AttributeCard
             title={t("progression.skillProfile.accuracy")}
             score={skillProfile.accuracy.score}
-            desc={skillProfile.accuracy.explainableReason}
+            desc={skillProfile.accuracy.confidence === "insufficient_data" ? t("progression.skillProfile.moreData") : t("progression.skillProfile.accuracyDescription")}
             color="#22c55e"
           />
           <AttributeCard
             title={t("progression.skillProfile.consistency")}
             score={skillProfile.consistency.score}
-            desc={skillProfile.consistency.explainableReason}
+            desc={skillProfile.consistency.confidence === "insufficient_data" ? t("progression.skillProfile.moreData") : t("progression.skillProfile.consistencyDescription")}
             color="#ec4899"
           />
           <AttributeCard
             title={t("progression.skillProfile.technique")}
             score={skillProfile.technique.score}
-            desc={skillProfile.technique.explainableReason}
+            desc={skillProfile.technique.confidence === "insufficient_data" ? t("progression.skillProfile.moreData") : t("progression.skillProfile.techniqueDescription")}
             color="#06b6d4"
           />
           <AttributeCard
             title={t("progression.skillProfile.endurance")}
             score={skillProfile.endurance.score}
-            desc={skillProfile.endurance.explainableReason}
+            desc={skillProfile.endurance.confidence === "insufficient_data" ? t("progression.skillProfile.moreData") : t("progression.skillProfile.enduranceDescription")}
             color="#8b5cf6"
           />
           <AttributeCard
@@ -526,7 +526,7 @@ export default function ProfilePage() {
                   <div className="pt-1.5 mt-1.5 border-t border-white/5 flex items-center justify-between text-[10px] font-mono text-white/40">
                     <span>Entry: {player.worldBaselines[world.id].entryAvgWpm} WPM</span>
                     {progress.bestWpm > 0 && (
-                      <span className="text-emerald-400 font-bold">Best: {progress.bestWpm} WPM</span>
+                      <span className="text-emerald-400 font-bold">{t("statistics.bestWpm")}: {progress.bestWpm} WPM</span>
                     )}
                   </div>
                 )}

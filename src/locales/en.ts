@@ -358,6 +358,10 @@ export const en = {
     },
   },
   battleResult: {
+    accurateVictory: "Controlled accuracy",
+    fastVictory: "Speed target achieved",
+    focusedVictory: "Battle won",
+    victoryAnalysis: "You defeated {name} with {wpm} WPM and {accuracy}% accuracy. Use the recorded errors to choose your next practice target.",
     victory: "VICTORY",
     victorySub: "You defeated {name}!",
     defeat: "DEFEAT",
@@ -512,7 +516,7 @@ export const en = {
       drill: "Drill",
       nextDrill: "Next drill loading",
       instruction1: "Type the sequence above with focus on precision and rhythm.",
-      instruction2: "Backspace is enabled — correct mistakes deliberately to build muscle memory.",
+      instruction2: "Keep typing after a mistake. Backspace is optional and does not erase earlier errors.",
       fingerGuide: "Designated Finger Guide",
     },
     result: {
@@ -1550,6 +1554,13 @@ export const en = {
   },
   progression: {
     skillProfile: {
+      moreData: "More battle data is needed to assess this metric.",
+      speedDescription: "Recent and lifetime typing speed.",
+      accuracyDescription: "Recent and lifetime typing accuracy.",
+      consistencyDescription: "Variation in battle speed and accuracy.",
+      techniqueDescription: "Home-row practice and weak-key discipline.",
+      enduranceDescription: "Sustained accuracy and results in battles longer than 35 seconds.",
+      overallDescription: "Weighted combination of the measured skill attributes.",
       title: "Shinobi Skill Profile 2.0",
       speed: "Speed",
       accuracy: "Accuracy",

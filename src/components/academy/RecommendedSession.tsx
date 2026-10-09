@@ -33,7 +33,7 @@ export const LearningSessionRecap = memo(function LearningSessionRecap({ recap }
   const gains = Object.entries(recap.masteryGains).sort(([, a], [, b]) => b - a).slice(0, 6)
   return <section role="status" aria-label={t("academyPath.recap")} className="rounded-xl border border-emerald-400/30 bg-emerald-400/5 px-4 py-3 space-y-2">
     <h2 className="font-bold text-sm text-emerald-300">{t("academyPath.recap")}</h2>
-    <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs font-mono text-white/70"><span>{t("academyPath.completed", { count: recap.targetsCompleted })}</span><span>{attempts} {t("academyMastery.attempts")}</span><span>{t("academyMastery.accuracy")}: {(attempts ? correct / attempts * 100 : 100).toFixed(1)}%</span><span>{t("academyMastery.speed")}: {speed.toFixed(1)} WPM</span><span>{t("academyMastery.score")}: {trainingScore(recap.samples)}</span></div>
+    <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs font-mono text-white/70"><span>{t("academyPath.completed", { count: recap.targetsCompleted })}</span><span>{attempts} {t("academyMastery.attempts")}</span><span>{attempts - correct} {t("common.errors")}</span><span>{t("academyMastery.accuracy")}: {(attempts ? correct / attempts * 100 : 100).toFixed(1)}%</span><span>{t("academyMastery.speed")}: {speed.toFixed(1)} WPM</span><span>{t("academyMastery.score")}: {trainingScore(recap.samples)}</span></div>
     <p className="text-[10px] text-white/45">{t("academyPath.activeTime", { minutes: (seconds / 60).toFixed(1) })}{gains.length > 0 && ` · ${t("academyMastery.mastery")}: ${gains.map(([key, gain]) => `${key.toUpperCase()} +${gain}`).join(" · ")}`}</p>
   </section>
 })

@@ -360,6 +360,10 @@ export const ptBR: TranslationSchema = {
     },
   },
   battleResult: {
+    accurateVictory: "Precisão controlada",
+    fastVictory: "Meta de velocidade alcançada",
+    focusedVictory: "Batalha vencida",
+    victoryAnalysis: "Você derrotou {name} com {wpm} WPM e {accuracy}% de precisão. Use os erros registrados para escolher seu próximo alvo de treino.",
     victory: "VITÓRIA",
     victorySub: "Você derrotou {name}!",
     defeat: "DERROTA",
@@ -514,7 +518,7 @@ export const ptBR: TranslationSchema = {
       drill: "Exercício",
       nextDrill: "Carregando próximo exercício",
       instruction1: "Digite a sequência acima com foco em precisão e ritmo.",
-      instruction2: "Backspace habilitado — corrija os erros deliberadamente para criar memória muscular.",
+      instruction2: "Continue digitando após um erro. Backspace é opcional e não apaga os erros anteriores.",
       fingerGuide: "Guia de Dedos Designados",
     },
     result: {
@@ -1552,6 +1556,13 @@ export const ptBR: TranslationSchema = {
   },
   progression: {
     skillProfile: {
+      moreData: "Precisamos de mais dados de batalha para avaliar esta métrica.",
+      speedDescription: "Velocidade de digitação recente e acumulada.",
+      accuracyDescription: "Precisão de digitação recente e acumulada.",
+      consistencyDescription: "Variação de velocidade e precisão nas batalhas.",
+      techniqueDescription: "Prática da linha base e disciplina nas teclas fracas.",
+      enduranceDescription: "Precisão sustentada e resultados em batalhas acima de 35 segundos.",
+      overallDescription: "Combinação ponderada dos atributos de habilidade medidos.",
       title: "Perfil de Habilidade Shinobi 2.0",
       speed: "Velocidade",
       accuracy: "Precisão",

@@ -430,10 +430,10 @@ function BattleResultView({
                   </span>
                   <h3 className="text-sm font-black text-white">
                     {finalStats.battleAccuracy >= 98
-                      ? "Flawless Keystroke Execution"
+                      ? t("battleResult.accurateVictory")
                       : finalStats.battleWpm >= enemy.recommendedWpm
-                        ? "Superior Velocity Overdrive"
-                        : "Strategic Focus Mastery"}
+                        ? t("battleResult.fastVictory")
+                        : t("battleResult.focusedVictory")}
                   </h3>
                 </div>
               </div>
@@ -445,7 +445,7 @@ function BattleResultView({
               </div>
             </div>
             <p className="text-xs text-white/70 leading-relaxed">
-              Your sustained {finalStats.battleWpm} WPM and {finalStats.battleAccuracy}% accuracy successfully neutralized {enemy.name}&apos;s trial. Maintaining consistent typing momentum without pausing overcame the incoming combat pressure.
+              {t("battleResult.victoryAnalysis", { wpm: finalStats.battleWpm, accuracy: finalStats.battleAccuracy, name: enemy.name })}
             </p>
           </motion.div>
         )}
@@ -627,7 +627,7 @@ function BattleResultView({
               href={`/battle?enemy=${nextStage.enemyId}`}
               className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-black font-black text-sm transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)]"
             >
-              <span>{t("animeWorld.nextRecommended").toUpperCase()} (Stage {nextStage.stageNumber})</span>
+              <span>{t("animeWorld.nextRecommended").toUpperCase()} ({t("common.stage")} {nextStage.stageNumber})</span>
               <ChevronRight size={16} />
             </Link>
           )}

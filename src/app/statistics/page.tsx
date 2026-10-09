@@ -1,5 +1,6 @@
 "use client"
 
+import { PracticeHistory } from "@/components/training/PracticeHistory"
 import { useMemo } from "react"
 import { usePlayer } from "@/hooks/usePlayer"
 import { useBattleHistory } from "@/hooks/useBattleHistory"
@@ -241,7 +242,7 @@ export default function StatisticsPage() {
           />
           <StatCard
             label={t("statistics.avgAccuracy")}
-            value={`${player.stats.averageAccuracy}%`}
+            value={player.stats.totalCharactersTyped ? `${(player.stats.totalCorrectCharacters / player.stats.totalCharactersTyped * 100).toFixed(1)}%` : "—"}
             icon={<Target size={14} />}
             color={
               player.stats.averageAccuracy >= 95
@@ -377,7 +378,7 @@ export default function StatisticsPage() {
                 <div className="flex items-center gap-3">
                   {progress.bestWpm > 0 && (
                     <span className="text-xs font-mono text-white/70">
-                      Best: <strong className="text-amber-400">{progress.bestWpm}</strong> WPM
+                      {t("statistics.bestWpm")}: <strong className="text-amber-400">{progress.bestWpm}</strong> WPM
                     </span>
                   )}
                   {progress.mastered ? (
@@ -428,37 +429,37 @@ export default function StatisticsPage() {
         <div className="space-y-4">
           <AttributeRow
             label={t("progression.skillProfile.speed")}
-            description={skillProfile.speed.explainableReason}
+            description={skillProfile.speed.confidence === "insufficient_data" ? t("progression.skillProfile.moreData") : t("progression.skillProfile.speedDescription")}
             value={skillProfile.speed.score}
             color="#f97316"
           />
           <AttributeRow
             label={t("progression.skillProfile.accuracy")}
-            description={skillProfile.accuracy.explainableReason}
+            description={skillProfile.accuracy.confidence === "insufficient_data" ? t("progression.skillProfile.moreData") : t("progression.skillProfile.accuracyDescription")}
             value={skillProfile.accuracy.score}
             color="#22c55e"
           />
           <AttributeRow
             label={t("progression.skillProfile.consistency")}
-            description={skillProfile.consistency.explainableReason}
+            description={skillProfile.consistency.confidence === "insufficient_data" ? t("progression.skillProfile.moreData") : t("progression.skillProfile.consistencyDescription")}
             value={skillProfile.consistency.score}
             color="#ec4899"
           />
           <AttributeRow
             label={t("progression.skillProfile.technique")}
-            description={skillProfile.technique.explainableReason}
+            description={skillProfile.technique.confidence === "insufficient_data" ? t("progression.skillProfile.moreData") : t("progression.skillProfile.techniqueDescription")}
             value={skillProfile.technique.score}
             color="#06b6d4"
           />
           <AttributeRow
             label={t("progression.skillProfile.endurance")}
-            description={skillProfile.endurance.explainableReason}
+            description={skillProfile.endurance.confidence === "insufficient_data" ? t("progression.skillProfile.moreData") : t("progression.skillProfile.enduranceDescription")}
             value={skillProfile.endurance.score}
             color="#8b5cf6"
           />
           <AttributeRow
             label={t("statistics.overallPowerRating")}
-            description={skillProfile.overall.explainableReason}
+            description={skillProfile.overall.confidence === "insufficient_data" ? t("progression.skillProfile.moreData") : t("progression.skillProfile.overallDescription")}
             value={skillProfile.overall.score}
             color="#eab308"
           />
@@ -515,6 +516,7 @@ export default function StatisticsPage() {
         </div>
       </div>
 
+      <PracticeHistory />
       {/* Battle History Section */}
       <div className="p-6 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md space-y-5">
         <div className="flex items-center justify-between flex-wrap gap-2">
