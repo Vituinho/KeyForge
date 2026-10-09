@@ -243,7 +243,7 @@ export default function KeyboardLockerPage() {
                   {RARITY_DETAILS[selectedSkin.rarity].name[locale === "pt-BR" ? "pt-BR" : "en"]}
                 </span>
                 <span className="text-xs text-white/40 font-mono capitalize">
-                  {selectedSkin.collection} · {selectedSkin.theme}
+                  {t(`lockerModule.collections.${selectedSkin.collection}`)} · {selectedSkin.theme}
                 </span>
               </div>
 
@@ -252,7 +252,7 @@ export default function KeyboardLockerPage() {
               </h2>
 
               <p className="text-sm text-white/60 leading-relaxed">
-                {selectedSkin.description}
+                {t(`skinDescriptions.${selectedSkin.id}`)}
               </p>
 
               {/* Action Buttons */}
