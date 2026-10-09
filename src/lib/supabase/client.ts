@@ -32,12 +32,5 @@ export function getSupabaseClient(): SupabaseClient | null {
   return clientInstance
 }
 
-export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-      },
-    })
-  : null
+// Reuse the same auth/session instance for direct imports and service calls.
+export const supabase = getSupabaseClient()
