@@ -34,7 +34,8 @@ function simulateCombat(
   enemyId: string,
   wpm: number,
   accuracy: number,
-  errorRatePerSentence: number = 0.3
+  errorRatePerSentence: number = 0.3,
+  seed: number = 1
 ): SimResult {
   const enemy = getCharacterById(enemyId)
   if (!enemy) throw new Error(`Enemy ${enemyId} not found`)
@@ -60,11 +61,20 @@ function simulateCombat(
   let sentences = 0
   let combo = 0
   const roundHistory: RoundResult[] = []
+  // Independent, reproducible error streams; gameplay remains unchanged.
+  let randomState = seed >>> 0
+  const random = () => {
+    // Mulberry32 mixes consecutive seeds before producing their first draw.
+    let value = randomState += 0x6d2b79f5
+    value = Math.imul(value ^ value >>> 15, value | 1)
+    value ^= value + Math.imul(value ^ value >>> 7, value | 61)
+    return ((value ^ value >>> 14) >>> 0) / 4294967296
+  }
 
   while (currentPhase <= totalPhases && playerHp > 0 && totalTime < 360) {
     sentences++
     // Probabilistic error simulation based on errorRate
-    const hasError = Math.random() < errorRatePerSentence ? 1 : 0
+    const hasError = random() < errorRatePerSentence ? 1 : 0
     if (hasError === 0) {
       combo += Math.round(wordsPerSentence)
     } else {
@@ -170,8 +180,9 @@ console.log("=======================================================\n")
 // -------------------------------------------------------------
 console.log("--- 1. Pain Priority Rebalance Simulation ---")
 
-// Run multiple deterministic runs to average
-function runAveragedSim(enemyId: string, wpm: number, acc: number, errRate: number, runs: number = 10): SimResult {
+// A fixed 100-seed sample avoids random ten-run averages crossing timing gates.
+// Reuse the same seed set for each persona so their comparison is reproducible.
+function runAveragedSim(enemyId: string, wpm: number, acc: number, errRate: number, runs: number = 100): SimResult {
   let totalDur = 0
   let totalSent = 0
   let totalWords = 0
@@ -180,7 +191,7 @@ function runAveragedSim(enemyId: string, wpm: number, acc: number, errRate: numb
   let wins = 0
 
   for (let i = 0; i < runs; i++) {
-    const res = simulateCombat(enemyId, wpm, acc, errRate)
+    const res = simulateCombat(enemyId, wpm, acc, errRate, i + 1)
     if (res.victory) wins++
     totalDur += res.durationSec
     totalSent += res.sentences
