@@ -21,7 +21,7 @@ export const BattleAudioControls = memo(function BattleAudioControls() {
           {(["masterVolume", "musicVolume", "sfxVolume"] as const).map(key => (
             <label key={key} className="block text-xs space-y-1">
               <span className="flex justify-between"><span>{t(`release.audio.${key}`)}</span><span>{Math.round(settings[key] * 100)}%</span></span>
-              <input type="range" min="0" max="1" step="0.01" value={settings[key]} className="w-full accent-orange-400"
+              <input type="range" aria-label={t(`release.audio.${key}`)} aria-valuetext={`${Math.round(settings[key] * 100)}%`} min="0" max="1" step="0.01" value={settings[key]} className="w-full accent-orange-400"
                 onChange={event => saveAudioSettings({ [key]: Number(event.target.value) })} />
             </label>
           ))}

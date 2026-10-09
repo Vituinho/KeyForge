@@ -1,5 +1,6 @@
 "use client"
 
+import { useDialogFocus } from "@/hooks/useDialogFocus"
 import { motion, AnimatePresence } from "framer-motion"
 import { AnimeWorld } from "@/types/world"
 import { PlayerProfile } from "@/types/player"
@@ -23,6 +24,7 @@ export function WorldCompletionModal({
   player,
 }: WorldCompletionModalProps) {
   const { t } = useI18n()
+  const dialogRef = useDialogFocus(isOpen, onClose)
 
   if (!isOpen) return null
 
@@ -37,6 +39,8 @@ export function WorldCompletionModal({
   return (
     <AnimatePresence>
       <div
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl overflow-y-auto"

@@ -1,5 +1,6 @@
 "use client"
 
+import { useDialogFocus } from "@/hooks/useDialogFocus"
 import { useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Enemy } from "@/types/character"
@@ -20,6 +21,7 @@ export function BossIntroModal({
   isRematch = false,
 }: BossIntroModalProps) {
   const { t } = useI18n()
+  const dialogRef = useDialogFocus(isOpen, onComplete)
 
   const handleProceed = useCallback(() => {
     onComplete()
@@ -55,6 +57,8 @@ export function BossIntroModal({
     <AnimatePresence>
       {isOpen && (
         <div
+          ref={dialogRef}
+          tabIndex={-1}
           role="dialog"
           aria-modal="true"
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-2xl"

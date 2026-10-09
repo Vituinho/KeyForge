@@ -1,5 +1,6 @@
 "use client"
 
+import { useDialogFocus } from "@/hooks/useDialogFocus"
 import { useState, useEffect, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useI18n } from "@/lib/i18n/i18nContext"
@@ -12,26 +13,27 @@ interface OnboardingModalProps {
 
 export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
   const { t } = useI18n()
+  const dialogRef = useDialogFocus(isOpen, onClose)
   const [step, setStep] = useState(0)
 
   const steps = [
     {
       icon: <Swords size={36} className="text-orange-400" />,
-      tag: "CORE COMBAT",
+      tag: t("release.onboardingCombat"),
       title: t("onboarding.step1Title"),
       desc: t("onboarding.step1Desc"),
       color: "#f97316",
     },
     {
       icon: <Target size={36} className="text-emerald-400" />,
-      tag: "KEY PRINCIPLE",
+      tag: t("release.onboardingPrecision"),
       title: t("onboarding.step2Title"),
       desc: t("onboarding.step2Desc"),
       color: "#10b981",
     },
     {
       icon: <Globe size={36} className="text-violet-400" />,
-      tag: "CAMPAIGN",
+      tag: t("nav.animeWorlds"),
       title: t("onboarding.step3Title"),
       desc: t("onboarding.step3Desc"),
       color: "#8b5cf6",
@@ -74,6 +76,8 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
   return (
     <AnimatePresence>
       <div
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl"

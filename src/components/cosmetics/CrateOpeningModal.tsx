@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useState } from "react"
+import { useDialogFocus } from "@/hooks/useDialogFocus"
+import React, { useEffect, useRef, useState } from "react"
 import { motion } from "framer-motion"
 import {
   Check,
@@ -41,19 +42,31 @@ export function CrateOpeningModal({
   const [phase, setPhase] = useState<OpeningPhase>("ready")
   const [result, setResult] = useState<CosmeticUnlockResult | null>(null)
   const [isOpening, setIsOpening] = useState(false)
+  const [error, setError] = useState(false)
+  const dialogRef = useDialogFocus(isOpen, onClose, !isOpening)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
 
   const handleStartOpen = async () => {
     if (remainingCount <= 0 || isOpening) return
 
     setIsOpening(true)
+    setError(false)
     setPhase("charging")
 
     // Dramatic vibration and chakra charge duration
-    setTimeout(async () => {
-      const drop = await openCrate(crateId)
-      setResult(drop)
-      setPhase("revealed")
-      setIsOpening(false)
+    timerRef.current = setTimeout(async () => {
+      try {
+        const drop = await openCrate(crateId)
+        setResult(drop)
+        setPhase(drop ? "revealed" : "ready")
+        setError(!drop)
+      } catch {
+        setError(true)
+        setPhase("ready")
+      } finally {
+        setIsOpening(false)
+      }
     }, 1800)
   }
 
@@ -78,7 +91,12 @@ export function CrateOpeningModal({
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="w-full max-w-lg p-6 rounded-3xl bg-neutral-950 border border-white/15 shadow-2xl relative overflow-hidden flex flex-col items-center text-center space-y-6"
+        ref={dialogRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t(`lockerModule.crates.${crate.id}.name`)}
+        className="w-full max-w-lg max-h-[90dvh] overflow-y-auto p-6 rounded-2xl bg-neutral-950 border border-white/15 shadow-2xl relative flex flex-col items-center text-center space-y-6"
       >
         {/* Ambient Glow Aura */}
         <div
@@ -91,11 +109,14 @@ export function CrateOpeningModal({
           <button
             type="button"
             onClick={onClose}
+            aria-label={t("release.close")}
             className="absolute top-4 right-4 p-2 rounded-xl text-white/40 hover:text-white hover:bg-white/10 transition-colors z-20"
           >
             <X size={18} />
           </button>
         )}
+
+        {error && <p role="alert" className="text-sm text-red-300">{t("release.crateError")}</p>}
 
         {/* Guest Mode Indicator */}
         {isGuest && (

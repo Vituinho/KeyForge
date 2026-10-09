@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useSyncExternalStore, useCallback } from "react"
+import React, { createContext, useContext, useSyncExternalStore, useCallback, useEffect } from "react"
 import { Locale, I18nContextType } from "@/types/i18n"
 import { en } from "@/locales/en"
 import { ptBR } from "@/locales/pt-BR"
@@ -12,6 +12,7 @@ const dictionaries: Record<Locale, Record<string, unknown>> = {
   "pt-BR": ptBR as unknown as Record<string, unknown>,
 }
 
+let fallbackLocale: Locale | null = null
 const listeners = new Set<() => void>()
 
 function notifyListeners() {
@@ -52,7 +53,7 @@ function getSnapshot(): Locale {
   } catch {
     // Ignore access errors
   }
-  return "en"
+  return fallbackLocale ?? "en"
 }
 
 function getServerSnapshot(): Locale {
@@ -84,13 +85,16 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   const locale = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 
   const setLocale = useCallback((newLocale: Locale) => {
+    fallbackLocale = newLocale
     try {
       localStorage.setItem(STORAGE_KEY, newLocale)
-      notifyListeners()
     } catch {
       // Ignore storage errors
     }
+    notifyListeners()
   }, [])
+
+  useEffect(() => { document.documentElement.lang = locale }, [locale])
 
   const t = useCallback(
     (key: string, params?: Record<string, string | number>): string => {

@@ -1,5 +1,6 @@
 "use client"
 
+import { useDialogFocus } from "@/hooks/useDialogFocus"
 import { useEffect, useState, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { AnimeWorld } from "@/types/world"
@@ -20,6 +21,7 @@ export function WorldIntroModal({
   onClose,
 }: WorldIntroModalProps) {
   const { t } = useI18n()
+  const dialogRef = useDialogFocus(isOpen, onClose)
   const [timeLeft, setTimeLeft] = useState(INTRO_DURATION_SEC)
 
   const handleSkip = useCallback(() => {
@@ -63,7 +65,9 @@ export function WorldIntroModal({
     <AnimatePresence>
       {isOpen && (
         <div
-          role="dialog"
+          ref={dialogRef}
+        tabIndex={-1}
+        role="dialog"
           aria-modal="true"
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-xl"
         >

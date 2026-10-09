@@ -42,6 +42,7 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
   // Listen to Enter key to start fight smoothly
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.target as HTMLElement | null)?.closest("button, a, input, textarea, select, summary, [contenteditable=true]")) return
       if (e.key === "Enter" && !showBossIntro) {
         e.preventDefault()
         handleStartBattle()
