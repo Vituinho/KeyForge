@@ -21,7 +21,7 @@ export function LandingFooter() {
         </div>
 
         {/* Links */}
-        <div className="flex items-center gap-6 font-mono">
+        <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-3 font-mono">
           <Link href="/game" className="hover:text-white transition-colors">
             {t("nav.gameDashboard")}
           </Link>

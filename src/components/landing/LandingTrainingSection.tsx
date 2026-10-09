@@ -65,7 +65,7 @@ export function LandingTrainingSection() {
                   {t("landing.training.weakTitle")}
                 </h3>
               </div>
-              <span className="text-[10px] font-mono text-white/40 uppercase">{t("landing.training.postTelemetry")}</span>
+              <span className="text-xs font-mono text-white/60">{t("landing.training.postTelemetry")}</span>
             </div>
 
             <div className="grid grid-cols-3 gap-3">

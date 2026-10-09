@@ -1,4 +1,6 @@
-"use client"
+import type { Metadata } from "next"
+import { siteUrl } from "@/lib/siteUrl"
+export const metadata: Metadata = { alternates: siteUrl() ? { canonical: "/" } : undefined }
 
 import { LandingHeader } from "@/components/landing/LandingHeader"
 import { LandingHero } from "@/components/landing/LandingHero"
@@ -12,7 +14,7 @@ import { LandingFooter } from "@/components/landing/LandingFooter"
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-black text-white relative selection:bg-orange-500 selection:text-black overflow-x-hidden">
+    <main className="kf-landing min-h-screen bg-[#0c0d10] text-white relative selection:bg-orange-500 selection:text-black overflow-x-hidden">
       {/* Background grid */}
       <div
         className="fixed inset-0 opacity-[0.03] pointer-events-none"

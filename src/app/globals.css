@@ -1,8 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0f;
+  --background: #0c0d10;
   --foreground: #f0f0f5;
+  --surface: #14161b;
+  --accent: #fb923c;
+  --border: #ffffff18;
 }
 
 * {
@@ -14,6 +17,25 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
+
+html { scroll-padding-top: 5rem; }
+button, summary, a, input { -webkit-tap-highlight-color: transparent; }
+button:disabled { cursor: not-allowed; }
+.kf-app-header { position: relative; z-index: 40; background: #101115; border-bottom: 1px solid var(--border); }
+.kf-nav-link { padding: .6rem .7rem; border-radius: .5rem; color: #a5a7b1; font-size: .75rem; font-weight: 600; transition: color .15s, background .15s; }
+.kf-nav-link:hover { color: white; background: #ffffff09; }
+.kf-nav-link[aria-current="page"] { color: #fdba74; background: #fb923c14; }
+.kf-skip { position: absolute; left: 1rem; top: .5rem; padding: .7rem 1rem; background: #fdba74; color: #111; z-index: 100; transform: translateY(-160%); border-radius: .5rem; }
+.kf-skip:focus { transform: translateY(0); }
+.kf-button { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 44px; padding: .8rem 1.3rem; border-radius: .65rem; font-size: .875rem; font-weight: 700; border: 1px solid var(--border); background: #ffffff05; color: #f4f4f5; transition: background .15s, border-color .15s; }
+.kf-button:hover { background: #ffffff0e; border-color: #ffffff35; }
+.kf-button-primary { background: #fb923c; color: #14100b; border-color: #fb923c; }
+.kf-button-primary:hover { background: #fdba74; border-color: #fdba74; }
+.kf-panel { border: 1px solid var(--border); background: var(--surface); border-radius: .85rem; }
+.kf-eyebrow { color: #fdba74; font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.kf-landing section { padding-top: 4rem; padding-bottom: 4rem; }
+.kf-landing section:first-of-type { padding-top: 8rem; padding-bottom: 5rem; }
+@media (min-width: 1024px) { .kf-landing section:first-of-type { padding-top: 10rem; padding-bottom: 7rem; } }
 
 /* Scrollbar */
 ::-webkit-scrollbar {

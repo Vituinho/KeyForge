@@ -6,7 +6,7 @@ import { BookOpen, CheckCircle2, ArrowRight } from "lucide-react"
 import { useI18n } from "@/lib/i18n/i18nContext"
 
 export function LandingAcademySection() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
 
   const leftHandKeys = [
     { key: "A", finger: t("landing.academy.pinky") },
@@ -19,7 +19,7 @@ export function LandingAcademySection() {
     { key: "J", finger: t("landing.academy.index") },
     { key: "K", finger: t("landing.academy.middle") },
     { key: "L", finger: t("landing.academy.ring") },
-    { key: "Ç", finger: t("landing.academy.pinky") },
+    { key: locale === "en" ? ";" : "Ç", finger: t("landing.academy.pinky") },
   ]
 
   return (

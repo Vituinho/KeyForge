@@ -20,14 +20,14 @@ export function LandingHeader() {
   ]
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-black/75 backdrop-blur-md border-b border-white/10 transition-all">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#101115]/95 backdrop-blur-md border-b border-white/10 transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-400 flex items-center justify-center text-black font-black shadow-[0_0_15px_rgba(249,115,22,0.4)] group-hover:scale-105 transition-transform">
+          <div className="w-9 h-9 rounded-xl bg-orange-400 flex items-center justify-center text-black font-black shadow-sm group-hover:scale-105 transition-transform">
             <Swords size={20} />
           </div>
-          <span className="text-xl font-black tracking-wider bg-gradient-to-r from-orange-400 via-orange-300 to-yellow-200 bg-clip-text text-transparent">
+          <span className="text-xl font-black tracking-wider text-orange-300">
             KEYFORGE
           </span>
         </Link>
@@ -46,7 +46,7 @@ export function LandingHeader() {
         </nav>
 
         {/* Right Action buttons */}
-        <div className="hidden sm:flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-3">
           <LanguageSwitcher />
 
           <Link
@@ -65,7 +65,7 @@ export function LandingHeader() {
 
           <Link
             href="/game"
-            className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-black font-black text-xs uppercase tracking-wider transition-all shadow-[0_0_20px_rgba(249,115,22,0.4)]"
+            className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-orange-400 hover:bg-orange-300 text-black font-black text-xs uppercase tracking-wider transition-all shadow-sm"
           >
             <span>{t("common.playNow").toUpperCase()}</span>
             <ArrowRight size={14} />
@@ -77,6 +77,8 @@ export function LandingHeader() {
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="lg:hidden p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-colors"
           aria-label={t("nav.toggleMenu")}
+          aria-expanded={mobileMenuOpen}
+          aria-controls="landing-mobile-nav"
         >
           {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
@@ -86,7 +88,8 @@ export function LandingHeader() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            className="lg:hidden border-b border-white/10 bg-neutral-950/95 px-6 py-6 space-y-4 backdrop-blur-xl"
+            id="landing-mobile-nav"
+            className="lg:hidden max-h-[80dvh] overflow-y-auto border-b border-white/10 bg-neutral-950/95 px-6 py-6 space-y-4 backdrop-blur-xl"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
@@ -108,7 +111,7 @@ export function LandingHeader() {
               <Link
                 href="/game"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-black font-black text-sm uppercase tracking-wider shadow-[0_0_20px_rgba(249,115,22,0.4)]"
+                className="flex items-center justify-center gap-2 py-3 rounded-xl bg-orange-400 text-black font-black text-sm uppercase tracking-wider shadow-sm"
               >
                 <span>{t("common.playNow").toUpperCase()}</span>
                 <ArrowRight size={16} />
