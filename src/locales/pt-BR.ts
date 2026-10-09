@@ -1566,6 +1566,18 @@ export const ptBR: TranslationSchema = {
       trainNow: "Treinar Agora",
     },
   },
+  academyPath: {
+    recommendedSession: "Sessão recomendada", start: "Iniciar sessão", duration: "Cerca de {minutes} min",
+    lowAccuracy: "baixa precisão", recurringErrors: "erros recorrentes", slowResponse: "resposta lenta",
+    decliningPerformance: "queda no desempenho recente", smallSample: "formar uma amostra confiável", lowMastery: "desenvolver domínio",
+    slowTransition: "transição lenta", transitionErrors: "erros na transição", fingerWeakness: "dificuldade comum no dedo",
+    balancedReview: "equilibrar teclas fracas e fortes", mixed: "Revisão mista",
+    healthy: "Saudável", reviewSoon: "Revisar em breve", reviewRecommended: "Revisão recomendada",
+    reviewHint: "A revisão considera tentativas ou falta de validação recente. O tempo sozinho nunca reduz o domínio.",
+    evidence: "{attempts} tentativas · {accuracy}% de precisão · {response} ms de resposta",
+    continuous: "Continue digitando; o próximo alvo está pronto.", sessionProgress: "Exercício {current} / {total}",
+    recap: "Sessão concluída", completed: "{count} alvos concluídos", activeTime: "{minutes} min de digitação ativa",
+  },
   academyMastery: {
     title: "Domínio das teclas", brand: "KeyForge Academy", subtitle: "Forje precisão, uma tecla por vez.",
     back: "Voltar ao jogo", layout: "Layout do teclado", loading: "Carregando domínio das teclas…",

@@ -4,6 +4,7 @@ import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useStat
 import Link from "next/link"
 import { ArrowLeft, ArrowRight, BookOpen, Crosshair, Keyboard, Sparkles } from "lucide-react"
 import { useAuth } from "@/lib/auth/authContext"
+import { getStoredUser } from "@/lib/auth/authService"
 import { useI18n } from "@/lib/i18n/i18nContext"
 import { useTypingEngine } from "@/hooks/useTypingEngine"
 import { processAcademyLessonRewards } from "@/lib/progression/processActivityRewards"
@@ -22,6 +23,12 @@ import type { TypingAttempt } from "@/lib/typing/typingAttempt"
 import type { CharData, TypingStats } from "@/types/typing"
 import { VirtualKeyboard } from "./VirtualKeyboard"
 import { FingerGuide } from "./FingerGuide"
+import { RecommendedSession, LearningSessionRecap } from "./RecommendedSession"
+import {
+  advanceLearningSession, generateLearningSession, keyReviewState, loadLearningTelemetry,
+  recordLearningTelemetry, refreshLearningPath, saveLearningTelemetry, sessionSample, summarizeLearningSession,
+  type LearningSession, type PathAttempt, type ReviewState, type SessionRecap,
+} from "@/lib/academy/adaptiveLearning"
 
 const STATUS_STYLE: Record<KeyStatus, string> = {
   untrained: "border-white/10 bg-white/[0.03] text-white/45",
@@ -50,10 +57,17 @@ function signed(value: number | null, unit = "") {
 export function KeyMasteryAcademy({ onOpenModule }: { onOpenModule: (id: string) => void }) {
   const { locale, t } = useI18n()
   const { user } = useAuth()
+  const playerSnapshot = useMemo(() => {
+    // Resolve the placeholder guest before training, so the first reward cannot change storage ownership.
+    // Cache the fallback too: unavailable browser storage must still yield a stable snapshot.
+    let guestId: string | undefined
+    return () => user?.id === "guest_initial" ? (guestId ??= getStoredUser().id) : user?.id ?? "guest"
+  }, [user?.id])
+  const playerId = useSyncExternalStore(subscribeHydration, playerSnapshot, () => "guest_initial")
   const [layoutOverride, setLayoutOverride] = useState<KeyboardLayoutId | null>(null)
   const ready = useSyncExternalStore(subscribeHydration, clientReady, serverReady)
   const layout = layoutOverride ?? (locale === "en" ? "ANSI" : "ABNT2")
-  const storageKey = masteryStorageKey(user?.id ?? "guest", layout)
+  const storageKey = masteryStorageKey(playerId, layout)
   return <main className="min-h-screen max-w-7xl mx-auto px-3 sm:px-5 py-3 space-y-3">
     <nav className="flex flex-wrap items-center justify-between gap-3">
       <Link href="/game" className="flex items-center gap-2 text-xs text-white/55 hover:text-white"><ArrowLeft size={14} />{t(copy("back"))}</Link>
@@ -72,6 +86,13 @@ function MasteryWorkspace({ storageKey, layout, onOpenModule }: { storageKey: st
   const { t } = useI18n()
   const [progress, setProgress] = useState(() => loadMasteryProgress(storageKey))
   const progressRef = useRef(progress)
+  const [telemetry, setTelemetry] = useState(() => recordLearningTelemetry(loadLearningTelemetry(storageKey), [], progress, layout))
+  const telemetryRef = useRef(telemetry)
+  const [path, setPath] = useState(() => refreshLearningPath(null, progress, telemetry, layout))
+  const [automatic, setAutomatic] = useState<LearningSession | null>(null)
+  const automaticBeforeRef = useRef(progress)
+  const [recap, setRecap] = useState<SessionRecap | null>(null)
+  const preparedSession = useMemo(() => generateLearningSession(path.targets, path.progress, layout), [path, layout])
   const [practice, setPractice] = useState(() => loadAcademyPractice(storageKey))
   const practiceRef = useRef(practice)
   const [session, setSession] = useState<PracticeSample[]>([])
@@ -80,11 +101,14 @@ function MasteryWorkspace({ storageKey, layout, onOpenModule }: { storageKey: st
   const [focused, setFocused] = useState(false)
   const [masteryGain, setMasteryGain] = useState({ key: "", amount: 0 })
   const keys = useMemo(() => learnableKeys(layout), [layout])
-  const commit = useCallback((attempts: TypingAttempt[], targetKey: string, stage: number, lessonCompleted: boolean) => {
+  const commit = useCallback((attempts: PathAttempt[], targetKey: string, stage: number, lessonCompleted: boolean) => {
     const previousMastery = progressRef.current.keys[targetKey]?.mastery ?? 0
     const next = recordMasteryPractice(progressRef.current, attempts, layout, { targetKey, stage, lessonCompleted })
     progressRef.current = next
     setProgress(next)
+    const nextTelemetry = recordLearningTelemetry(telemetryRef.current, attempts, next, layout)
+    telemetryRef.current = nextTelemetry
+    setTelemetry(nextTelemetry)
     setMasteryGain({ key: targetKey, amount: Math.max(0, (next.keys[targetKey]?.mastery ?? 0) - previousMastery) })
     const nextPractice = recordAcademyPractice(practiceRef.current, attempts, targetKey, stage)
     practiceRef.current = nextPractice
@@ -94,17 +118,30 @@ function MasteryWorkspace({ storageKey, layout, onOpenModule }: { storageKey: st
       setSession(sessionRef.current)
     }
     // Secondary persistence never sits between the final character and the next drill.
-    defer(() => { saveMasteryProgress(storageKey, progressRef.current); saveAcademyPractice(storageKey, practiceRef.current) })
+    defer(() => {
+      saveMasteryProgress(storageKey, progressRef.current); saveAcademyPractice(storageKey, practiceRef.current)
+      saveLearningTelemetry(storageKey, telemetryRef.current)
+      setPath((previous) => refreshLearningPath(previous, progressRef.current, telemetryRef.current, layout))
+    })
     return next.keys[targetKey] ?? emptyKeyMastery()
   }, [layout, storageKey])
   useEffect(() => {
-    const flush = () => { saveMasteryProgress(storageKey, progressRef.current); saveAcademyPractice(storageKey, practiceRef.current) }
+    const flush = () => { saveMasteryProgress(storageKey, progressRef.current); saveAcademyPractice(storageKey, practiceRef.current); saveLearningTelemetry(storageKey, telemetryRef.current) }
     window.addEventListener("pagehide", flush)
     return () => { window.removeEventListener("pagehide", flush); flush() }
   }, [storageKey])
-  const selectKey = useCallback((key: string) => { setSelectedKey(key); setFocused(true) }, [])
-  const overview = useCallback(() => setFocused(false), [])
+  const selectKey = useCallback((key: string) => { setAutomatic(null); setRecap(null); setSelectedKey(key); setFocused(true) }, [])
+  const overview = useCallback(() => { setAutomatic(null); setFocused(false) }, [])
+  const startSession = useCallback(() => {
+    automaticBeforeRef.current = progressRef.current
+    setRecap(null); setAutomatic(preparedSession); setSelectedKey(preparedSession.drills[0].target.keys[0]); setFocused(true)
+  }, [preparedSession])
+  const finishSession = useCallback((samples: PracticeSample[], targetsCompleted: number) => {
+    setRecap(summarizeLearningSession(samples, targetsCompleted, automaticBeforeRef.current, progressRef.current))
+    setAutomatic(null); setFocused(false)
+  }, [])
   const moveKey = useCallback((direction: number) => {
+    setAutomatic(null)
     setSelectedKey((key) => keys[(keys.indexOf(key) + direction + keys.length) % keys.length])
   }, [keys])
   useEffect(() => {
@@ -125,7 +162,7 @@ function MasteryWorkspace({ storageKey, layout, onOpenModule }: { storageKey: st
   const responseTime = records.reduce((sum, record) => sum + record.responseTimeTotal, 0)
   const mastery = records.reduce((sum, record) => sum + record.mastery, 0) / keys.length
   const today = progress.days[localPracticeDate()] ?? { attempts: 0, lessons: 0 }
-  const recommended = recommendKey(progress, layout)
+  const recommended = path.targets[0]?.keys[0] ?? recommendKey(progress, layout)
   const trend = performanceTrend(practice.history)
   const current = progress.keys[selectedKey] ?? emptyKeyMastery()
   return <>
@@ -137,19 +174,23 @@ function MasteryWorkspace({ storageKey, layout, onOpenModule }: { storageKey: st
       <DailyPractice seconds={practice.days[localPracticeDate()] ?? 0} lessons={today.lessons} />
     </section>
     {focused ? <div className="grid lg:grid-cols-[minmax(0,1fr)_300px] gap-4 items-start">
-      <KeyPractice key={selectedKey} targetKey={selectedKey} layout={layout} initialRecord={current} onRecord={commit} onBack={overview} onMove={moveKey} />
+      <KeyPractice key={automatic ? "automatic" : selectedKey} targetKey={selectedKey} layout={layout} initialRecord={current} onRecord={commit} onBack={overview} onMove={moveKey} plan={automatic} onTarget={setSelectedKey} onFinished={finishSession} />
       <aside className="space-y-3 min-w-0">
-        <CurrentKeyPanel targetKey={selectedKey} record={current} layout={layout} gain={masteryGain.key === selectedKey ? masteryGain.amount : 0} />
-        <details className="rounded-xl border border-white/10"><summary className="cursor-pointer px-3 py-2 text-xs text-white/60">{t(copy("keyMap"))} · {selectedKey.toUpperCase()}</summary><KeyMap progress={progress} layout={layout} recommended={recommended} selected={selectedKey} onSelect={selectKey} compact /></details>
+        <CurrentKeyPanel targetKey={selectedKey} record={current} layout={layout} gain={masteryGain.key === selectedKey ? masteryGain.amount : 0} review={keyReviewState(current, telemetry.strongKeys.includes(selectedKey))} />
+        <details className="rounded-xl border border-white/10"><summary className="cursor-pointer px-3 py-2 text-xs text-white/60">{t(copy("keyMap"))} · {selectedKey.toUpperCase()}</summary><KeyMap progress={progress} layout={layout} recommended={recommended} selected={selectedKey} onSelect={selectKey} strongKeys={telemetry.strongKeys} compact /></details>
       </aside>
     </div> : <>
+      {recap && <LearningSessionRecap recap={recap} />}
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div><h1 className="text-2xl font-black uppercase tracking-tight">{t(copy("title"))}</h1><p className="text-xs text-white/45 mt-1">{t(copy("subtitle"))}</p></div>
         <button onClick={() => selectKey(recommended)} className="flex items-center gap-2 text-xs font-mono rounded-lg border border-emerald-400/30 bg-emerald-400/10 px-3 py-2 text-emerald-300 hover:bg-emerald-400/20"><Crosshair size={14} />{t(copy("recommended"))}: <strong>{recommended.toUpperCase()}</strong><ArrowRight size={14} /></button>
       </header>
       <div className="grid lg:grid-cols-[minmax(0,1fr)_300px] gap-4 items-start">
-        <KeyMap progress={progress} layout={layout} recommended={recommended} selected={selectedKey} onSelect={selectKey} />
-        <CurrentKeyPanel targetKey={selectedKey} record={current} layout={layout} gain={0} onTrain={() => selectKey(selectedKey)} />
+        <KeyMap progress={progress} layout={layout} recommended={recommended} selected={selectedKey} onSelect={selectKey} strongKeys={telemetry.strongKeys} />
+        <aside className="space-y-3 min-w-0">
+          <RecommendedSession targets={path.targets} estimatedSeconds={preparedSession.estimatedSeconds} onStart={startSession} />
+          <CurrentKeyPanel targetKey={selectedKey} record={current} layout={layout} gain={0} onTrain={() => selectKey(selectedKey)} review={keyReviewState(current, telemetry.strongKeys.includes(selectedKey))} />
+        </aside>
       </div>
       <footer className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-white/45">
         <button onClick={() => onOpenModule("intro")} className="flex gap-2 items-center hover:text-white"><BookOpen size={14} />{t(copy("guide"))}</button>
@@ -174,8 +215,8 @@ const DailyPractice = memo(function DailyPractice({ seconds, lessons }: { second
   </div>
 })
 
-const KeyMap = memo(function KeyMap({ progress, layout, recommended, selected, onSelect, compact = false }: {
-  progress: MasteryProgress; layout: KeyboardLayoutId; recommended: string; selected: string; onSelect: (key: string) => void; compact?: boolean
+const KeyMap = memo(function KeyMap({ progress, layout, recommended, selected, onSelect, strongKeys, compact = false }: {
+  progress: MasteryProgress; layout: KeyboardLayoutId; recommended: string; selected: string; onSelect: (key: string) => void; strongKeys: string[]; compact?: boolean
 }) {
   const { t } = useI18n()
   const keys = useMemo(() => learnableKeys(layout), [layout])
@@ -185,12 +226,14 @@ const KeyMap = memo(function KeyMap({ progress, layout, recommended, selected, o
   const keyButton = (key: string) => {
     const record = progress.keys[key] ?? emptyKeyMastery()
     const finger = getPracticeFinger(key, layout)
-    const tooltip = `${t(copy("mastery"))}: ${record.mastery}% · ${t(copy("accuracy"))}: ${record.accuracy.toFixed(1)}% · ${t(copy("attempts"))}: ${record.attempts} · ${t(copy("response"))}: ${Math.round(record.averageResponseTime)} ms`
+    const review = keyReviewState(record, strongKeys.includes(key))
+    const tooltip = `${t(copy("mastery"))}: ${record.mastery}% · ${t(copy("accuracy"))}: ${record.accuracy.toFixed(1)}% · ${t(copy("attempts"))}: ${record.attempts} · ${t(copy("response"))}: ${Math.round(record.averageResponseTime)} ms${review ? ` · ${t(`academyPath.${review}`)}` : ""}`
     return <button key={key} type="button" aria-pressed={selected === key} data-mastery-key={key}
       aria-label={`${key.toUpperCase()}: ${t(copy(record.status))}, ${record.mastery}%. ${key === recommended ? t(copy("recommended")) + ". " : ""}${t(copy("train"))}`}
       onClick={() => onSelect(key)} title={tooltip} aria-describedby={`key-detail-${key.codePointAt(0)}`}
       className={`group relative min-w-0 rounded-md border font-mono focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-400 hover:border-white/50 ${compact ? "h-9" : "h-11 sm:h-14"} ${STATUS_STYLE[record.status]} ${selected === key ? "ring-1 ring-white/70" : ""}`}>
       {key === recommended && <Crosshair aria-hidden size={compact ? 8 : 10} className="absolute right-0.5 top-0.5 text-emerald-300" />}
+      {review && review !== "healthy" && <span aria-hidden className={`absolute top-1 left-1 h-1.5 w-1.5 rounded-full ${review === "reviewSoon" ? "bg-amber-300" : "bg-rose-300"}`} />}
       <span className={`block font-bold ${compact ? "text-xs" : "text-base sm:text-lg"}`}>{key.toUpperCase()}</span>
       <span className="block text-[8px] sm:text-[9px] leading-none tabular-nums">{record.mastery}%</span>
       <span className="absolute bottom-0.5 left-1 right-1 h-0.5 bg-white/10 rounded-full"><span className="block h-full rounded-full" style={{ width: `${record.mastery}%`, background: finger ? FINGER_PALETTE[finger.finger].hex : "#34d399" }} /></span>
@@ -208,8 +251,8 @@ const KeyMap = memo(function KeyMap({ progress, layout, recommended, selected, o
   </section>
 })
 
-const CurrentKeyPanel = memo(function CurrentKeyPanel({ targetKey, record, layout, gain, onTrain }: {
-  targetKey: string; record: KeyMastery; layout: KeyboardLayoutId; gain: number; onTrain?: () => void
+const CurrentKeyPanel = memo(function CurrentKeyPanel({ targetKey, record, layout, gain, onTrain, review }: {
+  targetKey: string; record: KeyMastery; layout: KeyboardLayoutId; gain: number; onTrain?: () => void; review?: ReviewState | null
 }) {
   const { t, locale } = useI18n()
   const finger = getPracticeFinger(targetKey, layout)
@@ -231,6 +274,7 @@ const CurrentKeyPanel = memo(function CurrentKeyPanel({ targetKey, record, layou
     <div><div className="flex items-center justify-between text-xs font-mono mb-1.5"><span className="text-white/55">{t(copy("mastery"))}</span><span className="text-emerald-300 tabular-nums motion-safe:transition-colors">{record.mastery}% <span className="inline-block w-7 text-[10px]">{gain > 0 ? `+${gain}` : ""}</span></span></div>
       <div role="progressbar" aria-label={t(copy("mastery"))} aria-valuenow={record.mastery} aria-valuemin={0} aria-valuemax={100} className="h-2 bg-white/10 rounded-full overflow-hidden"><div className="h-full bg-emerald-400 rounded-full motion-safe:transition-[width] motion-safe:duration-300" style={{ width: `${record.mastery}%` }} /></div></div>
     <dl className="space-y-1.5 text-xs">{entries.map(([label, value]) => <div key={label} className="flex justify-between gap-3"><dt className="text-white/45">{label}</dt><dd className="font-mono text-right text-white/85 tabular-nums">{value}</dd></div>)}</dl>
+    {review && <p title={t("academyPath.reviewHint")} className={`text-[10px] ${review === "healthy" ? "text-emerald-300" : review === "reviewSoon" ? "text-amber-300" : "text-rose-300"}`}>{t(`academyPath.${review}`)}</p>}
     {trend.rate === "uncertain" && <p className="text-[10px] text-white/35">{t(copy("insufficient"))}</p>}
     <div className="border-t border-white/10 pt-2"><p className="text-[9px] text-white/40 uppercase font-mono mb-2">{t(copy("recent"))}</p>
       <div className="flex gap-1.5 h-9 items-end">{record.recentPerformance.length ? record.recentPerformance.map((sample, index) => <div key={index} title={`${sample.accuracy.toFixed(1)}% · ${sample.speed.toFixed(1)} WPM`} className="flex-1 bg-emerald-400/50 rounded-t-sm min-h-px" style={{ height: `${sample.accuracy}%` }} />) : <p className="text-[10px] text-white/35">{t(copy("noHistory"))}</p>}</div>
@@ -239,50 +283,78 @@ const CurrentKeyPanel = memo(function CurrentKeyPanel({ targetKey, record, layou
   </section>
 })
 
-function KeyPractice({ targetKey, layout, initialRecord, onRecord, onBack, onMove }: {
+function KeyPractice({ targetKey, layout, initialRecord, onRecord, onBack, onMove, plan, onTarget, onFinished }: {
   targetKey: string; layout: KeyboardLayoutId; initialRecord: KeyMastery; onBack: () => void; onMove: (direction: number) => void
-  onRecord: (attempts: TypingAttempt[], key: string, stage: number, completed: boolean) => KeyMastery
+  onRecord: (attempts: PathAttempt[], key: string, stage: number, completed: boolean) => KeyMastery
+  plan: LearningSession | null; onTarget: (key: string) => void; onFinished: (samples: PracticeSample[], completed: number) => void
 }) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
+  const [entryKey] = useState(targetKey)
   const exercises = useMemo(() => generateKeyExercises(targetKey, layout), [targetKey, layout])
   const [stage, setStage] = useState(() => initialRecord.status === "mastered" ? 5 : Math.min(5, Math.floor(initialRecord.mastery / 18)))
   const stageRef = useRef(stage)
   const [drills, setDrills] = useState(0)
   const drillsRef = useRef(0)
-  const attemptsRef = useRef<TypingAttempt[]>([])
+  const [planIndex, setPlanIndex] = useState(0)
+  const planIndexRef = useRef(0)
+  const planSamplesRef = useRef<PracticeSample[]>([])
+  const attemptsRef = useRef<PathAttempt[]>([])
+  const transitionBreakRef = useRef(false)
   const lastAttemptRef = useRef(0)
   const [announcement, setAnnouncement] = useState("")
   useLayoutEffect(() => { window.scrollTo({ top: 0 }) }, [])
-  const collectAttempt = useCallback((attempt: TypingAttempt) => { attemptsRef.current.push(attempt); lastAttemptRef.current = attempt.timestamp }, [])
+  const collectAttempt = useCallback((attempt: TypingAttempt) => {
+    attemptsRef.current.push({ ...attempt, transitionBreak: transitionBreakRef.current })
+    transitionBreakRef.current = false
+    lastAttemptRef.current = attempt.timestamp
+  }, [])
   const complete = useCallback((stats: TypingStats) => {
     drillsRef.current += 1
     const lessonCompleted = drillsRef.current % 6 === 0
-    const nextRecord = onRecord(attemptsRef.current, targetKey, stageRef.current, lessonCompleted)
+    const drill = plan?.drills[planIndexRef.current]
+    const recordedKey = drill?.target.keys[0] ?? targetKey
+    const nextRecord = onRecord(attemptsRef.current, recordedKey, drill?.stage ?? stageRef.current, lessonCompleted)
+    if (drill) planSamplesRef.current.push(sessionSample(attemptsRef.current, drill))
     attemptsRef.current = []
     const nextStage = nextPracticeStage(stageRef.current, nextRecord)
     stageRef.current = nextStage
     setStage(nextStage)
     setDrills(drillsRef.current)
     if (lessonCompleted) defer(() => {
-      const reward = processAcademyLessonRewards(`key-mastery-${layout}-${targetKey}`, stats)
+      const reward = processAcademyLessonRewards(`key-mastery-${layout}-${recordedKey}`, stats)
       setAnnouncement(`+${reward.xpGained} XP${reward.didLevelUp ? ` · ${t(copy("levelReward"), { level: reward.newLevel })}` : ""}${reward.didRankUp ? ` · ${reward.newRank}` : ""}`)
     })
+    if (plan) {
+      const advanced = advanceLearningSession(plan, planIndexRef.current)
+      planIndexRef.current = advanced.nextIndex
+      if (advanced.completed) {
+        onFinished(planSamplesRef.current, advanced.targetsCompleted)
+        return null
+      }
+      setPlanIndex(advanced.nextIndex)
+      onTarget(advanced.next!.target.keys[0])
+      return { text: advanced.next!.text, id: `academy-path-${advanced.nextIndex}`, fresh: lessonCompleted }
+    }
     return { text: exercises[nextStage].text, id: `academy-key-${targetKey}-${drillsRef.current}`, fresh: lessonCompleted }
-  }, [exercises, layout, onRecord, targetKey, t])
+  }, [exercises, layout, onRecord, targetKey, t, plan, onFinished, onTarget])
   useEffect(() => () => {
     if (attemptsRef.current.length) {
-      onRecord(attemptsRef.current, targetKey, stageRef.current, false)
+      const drill = plan?.drills[planIndexRef.current]
+      onRecord(attemptsRef.current, drill?.target.keys[0] ?? entryKey, drill?.stage ?? stageRef.current, false)
       attemptsRef.current = []
     }
-  }, [onRecord, targetKey])
+  // The automatic plan owns its changing target; only an actual unmount flushes partial attempts.
+  }, [onRecord, plan, entryKey])
   const leave = useCallback(() => {
-    if (attemptsRef.current.length) onRecord(attemptsRef.current, targetKey, stageRef.current, false)
+    const drill = plan?.drills[planIndexRef.current]
+    if (attemptsRef.current.length) onRecord(attemptsRef.current, drill?.target.keys[0] ?? targetKey, drill?.stage ?? stageRef.current, false)
     attemptsRef.current = []
     onBack()
-  }, [onBack, onRecord, targetKey])
+  }, [onBack, onRecord, targetKey, plan])
   useEffect(() => {
     const navigate = (event: KeyboardEvent) => {
       if (event.ctrlKey || event.metaKey || event.altKey || event.isComposing) return
+      if (event.key === "Backspace" && !isEditableTarget(event.target)) transitionBreakRef.current = true
       const action = academyNavigation(event.key, isEditableTarget(event.target), Date.now() - lastAttemptRef.current < 1500)
       if (!action) return
       event.preventDefault()
@@ -292,12 +364,18 @@ function KeyPractice({ targetKey, layout, initialRecord, onRecord, onBack, onMov
     window.addEventListener("keydown", navigate)
     return () => window.removeEventListener("keydown", navigate)
   }, [leave, onMove])
+  const currentDrill = plan?.drills[planIndex]
+  const displayedStage = currentDrill?.stage ?? stage
+  const targetLabel = currentDrill?.target.kind === "mixed" ? t("academyPath.mixed")
+    : currentDrill?.target.kind === "finger" && currentDrill.target.finger ? FINGER_PALETTE[currentDrill.target.finger].name[locale]
+    : currentDrill?.target.keys.map((key) => key.toUpperCase()).join("→") ?? targetKey.toUpperCase()
   return <div className="min-w-0 space-y-3">
     <header className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-2">
-      <div className="flex items-center gap-3"><span className="w-12 h-12 rounded-lg border border-emerald-400/30 bg-emerald-950/30 text-3xl font-black font-mono text-emerald-300 grid place-items-center">{targetKey.toUpperCase()}</span><div><h1 className="font-bold text-lg">{t(copy(LEARNING_STAGES[stage]))}</h1><p className="text-[10px] text-white/45">{t(copy("drillCount"), { count: drills })} · {layout}</p></div></div>
+      <div className="flex items-center gap-3"><span className={`${currentDrill ? "min-w-12 px-2 text-2xl" : "w-12 text-3xl"} h-12 rounded-lg border border-emerald-400/30 bg-emerald-950/30 font-black font-mono text-emerald-300 grid place-items-center`}>{currentDrill ? currentDrill.target.keys.slice(0, 2).map((key) => key.toUpperCase()).join("→") : targetKey.toUpperCase()}</span><div><h1 className="font-bold text-lg">{currentDrill ? targetLabel : t(copy(LEARNING_STAGES[stage]))}</h1><p className="text-[10px] text-white/45">{plan ? t("academyPath.sessionProgress", { current: planIndex + 1, total: plan.drills.length }) : t(copy("drillCount"), { count: drills })} · {displayedStage >= 0 && currentDrill ? `${t(copy(LEARNING_STAGES[displayedStage]))} · ` : ""}{layout}</p></div></div>
       <div className="flex items-center gap-1"><button onClick={() => onMove(-1)} aria-label={t(copy("previousKey"))} className="p-2 rounded hover:bg-white/10"><ArrowLeft size={16} /></button><button onClick={() => onMove(1)} aria-label={t(copy("nextKey"))} className="p-2 rounded hover:bg-white/10"><ArrowRight size={16} /></button><button onClick={leave} className="px-2 py-1 text-xs text-white/50 hover:text-white">{t(copy("overview"))}</button></div>
     </header>
-    <DrillRunner text={exercises[stage].text} textId={`academy-key-${targetKey}-${drills}`} layout={layout} onAttempt={collectAttempt} onComplete={complete} />
+    {currentDrill && <p className="text-xs text-white/45">{t(`academyPath.${currentDrill.target.reason}`)} · {t("academyPath.continuous")}</p>}
+    <DrillRunner text={currentDrill?.text ?? exercises[stage].text} textId={plan ? `academy-path-${planIndex}` : `academy-key-${targetKey}-${drills}`} layout={layout} onAttempt={collectAttempt} onComplete={complete} />
     <footer className="flex flex-wrap gap-x-4 gap-y-2 items-center"><details className="text-xs text-white/50"><summary className="cursor-pointer">{t(copy("fingerGuide"))}</summary><div className="pt-2"><FingerGuide layout={layout} /></div></details><p className="text-[10px] text-white/35">{t(copy("shortcuts"))}</p><RewardNotice message={announcement} /></footer>
   </div>
 }
@@ -305,11 +383,12 @@ function KeyPractice({ targetKey, layout, initialRecord, onRecord, onBack, onMov
 /** Only this subtree reacts to individual keys; dashboard, history and panels do not. */
 const DrillRunner = memo(function DrillRunner({ text, textId, layout, onAttempt, onComplete }: {
   text: string; textId: string; layout: KeyboardLayoutId; onAttempt: (attempt: TypingAttempt) => void
-  onComplete: (stats: TypingStats) => { text: string; id: string; fresh: boolean }
+  onComplete: (stats: TypingStats) => { text: string; id: string; fresh: boolean } | null
 }) {
   const { t } = useI18n()
   const complete = (stats: TypingStats): void => {
     const next = onComplete(stats)
+    if (!next) return
     if (next.fresh) resetAll(next.text)
     else nextRound(next.text, next.id)
   }

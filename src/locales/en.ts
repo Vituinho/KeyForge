@@ -1564,6 +1564,18 @@ export const en = {
       trainNow: "Train Now",
     },
   },
+  academyPath: {
+    recommendedSession: "Recommended Session", start: "Start Session", duration: "About {minutes} min",
+    lowAccuracy: "low accuracy", recurringErrors: "recurring errors", slowResponse: "slow response",
+    decliningPerformance: "recent performance declined", smallSample: "build a reliable sample", lowMastery: "develop mastery",
+    slowTransition: "slow transition", transitionErrors: "transition errors", fingerWeakness: "shared finger weakness",
+    balancedReview: "balance weak and strong keys", mixed: "Mixed review",
+    healthy: "Healthy", reviewSoon: "Review soon", reviewRecommended: "Review recommended",
+    reviewHint: "Review reflects typing evidence or missing recent validation. Time alone never reduces mastery.",
+    evidence: "{attempts} attempts · {accuracy}% accuracy · {response} ms response",
+    continuous: "Keep typing; the next target is ready.", sessionProgress: "Drill {current} / {total}",
+    recap: "Session complete", completed: "{count} targets completed", activeTime: "{minutes} min of active typing",
+  },
   academyMastery: {
     title: "Key Mastery", brand: "KeyForge Academy", subtitle: "Forge precision, one key at a time.",
     back: "Back to game", layout: "Keyboard layout", loading: "Loading key mastery…",
