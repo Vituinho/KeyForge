@@ -12,7 +12,10 @@
     "test:campaign": "tsx scripts/verify-world-campaign.ts",
     "test:balance": "tsx scripts/test-balance-profiles.ts",
     "test:progression": "tsx scripts/verify-progression-polish.ts",
-    "i18n:audit": "tsx scripts/audit-i18n.ts"
+    "i18n:audit": "tsx scripts/audit-i18n.ts",
+    "test": "tsx scripts/verify-release.ts --unit",
+    "verify:release": "tsx scripts/verify-release.ts",
+    "audit:audio": "tsx scripts/audit-audio.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.115.0",
