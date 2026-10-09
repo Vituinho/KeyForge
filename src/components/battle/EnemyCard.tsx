@@ -31,13 +31,13 @@ export function EnemyCard({ enemy, currentHp, maxHp, isUnderAttack, phaseInfo }:
 
   return (
     <motion.div
-      className="relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-4 w-72"
+      className="relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-3 sm:p-4 w-full min-w-0 sm:w-56"
       animate={isUnderAttack ? { x: [0, -8, 8, -4, 4, 0] } : { x: 0 }}
       transition={{ duration: 0.4 }}
     >
       {/* Type badge */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-1 mb-3">
+        <div className="flex flex-wrap items-center gap-1.5">
           <span
             className="text-xs font-bold px-2 py-0.5 rounded-full uppercase tracking-widest"
             style={{
@@ -64,7 +64,7 @@ export function EnemyCard({ enemy, currentHp, maxHp, isUnderAttack, phaseInfo }:
 
       {/* Name */}
       <h2
-        className="text-xl font-black uppercase tracking-wider mb-0.5"
+        className="text-base sm:text-xl font-black uppercase tracking-wider mb-0.5 break-words"
         style={{ color: enemy.themeColor }}
       >
         {enemy.name}

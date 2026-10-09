@@ -23,16 +23,16 @@ export function PlayerCard({ currentHp, maxHp, isUnderAttack }: PlayerCardProps)
 
   return (
     <motion.div
-      className="relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-4 w-64"
+      className="relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-3 sm:p-4 w-full min-w-0 sm:w-48"
       animate={isUnderAttack ? { x: [0, 10, -10, 5, -5, 0] } : { x: 0 }}
       transition={{ duration: 0.4 }}
     >
       <div className="flex items-center gap-2 mb-3">
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-sm font-bold">
+        <div className="w-8 h-8 shrink-0 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center text-sm font-bold">
           P
         </div>
         <div>
-          <p className="text-sm font-bold text-white">{t("battle.playerCard.player").toUpperCase()}</p>
+          <p className="text-xs sm:text-sm font-bold text-white">{t("battle.playerCard.player").toUpperCase()}</p>
           <p className="text-xs text-white/40">{t("battle.playerCard.challenger")}</p>
         </div>
       </div>
