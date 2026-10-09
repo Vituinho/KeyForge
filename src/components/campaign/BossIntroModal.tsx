@@ -128,7 +128,7 @@ export function BossIntroModal({
             {/* Boss thematic quote */}
             {enemy.description && (
               <p className="text-xs sm:text-sm text-white/70 italic px-4 mb-6 leading-relaxed">
-                &ldquo;{enemy.description}&rdquo;
+                &ldquo;{t(`battle.characterDescriptions.${enemy.id.replace("-", "_")}`)}&rdquo;
               </p>
             )}
 

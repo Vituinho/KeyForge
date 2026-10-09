@@ -278,7 +278,7 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
                 color: enemy.themeColor,
               }}
             >
-              {stage.typingFocus.toUpperCase()}
+              {t(`battle.focusTypes.${stage.typingFocus}`).toUpperCase()}
             </span>
             <span className="text-xs font-black text-white">{stage.name}</span>
           </div>
