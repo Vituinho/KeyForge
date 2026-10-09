@@ -1,4 +1,5 @@
 import { getSupabaseClient } from "@/lib/supabase/client"
+import { campaignFromCloud, campaignToCloud } from "./cloudCampaign"
 import { PlayerProfile, createDefaultPlayerProfile, PlayerRank } from "@/types/player"
 import { ProfileRow, PlayerStatsRow, CampaignProgressRow } from "@/types/database"
 import { BattleHistoryEntry } from "@/types/battle"
@@ -39,23 +40,20 @@ export async function fetchCloudPlayerProfile(userId: string): Promise<PlayerPro
 
     const s = statsRow as PlayerStatsRow | null
 
-    // 3. Fetch Campaign Progress (Naruto)
+    // Fetch the campaign summaries for all worlds.
     const { data: campaignRow, error: campaignErr } = await supabase
       .from("campaign_progress")
       .select("*")
       .eq("user_id", userId)
-      .eq("world_id", "naruto")
-      .maybeSingle()
 
     if (campaignErr) {
       console.warn("[CloudStorage] Campaign fetch error:", campaignErr)
     }
 
-    const c = campaignRow as CampaignProgressRow | null
+    const campaignRows = (campaignRow ?? []) as CampaignProgressRow[]
 
     // Assemble PlayerProfile
     const base = createDefaultPlayerProfile(p.username)
-    const completedStagesList = c?.completed_stages ?? []
 
     const cloudProfile: PlayerProfile = {
       ...base,
@@ -90,15 +88,7 @@ export async function fetchCloudPlayerProfile(userId: string): Promise<PlayerPro
         trainingSessions: s?.training_sessions ?? base.stats.trainingSessions,
         academyLessonsCompleted: s?.academy_lessons_completed ?? base.stats.academyLessonsCompleted,
       },
-      campaignProgress: {
-        ...base.campaignProgress,
-        naruto: {
-          ...base.campaignProgress.naruto,
-          currentStage: c?.current_stage ?? 1,
-          completedStages: completedStagesList,
-          completed: c?.completed ?? false,
-        },
-      },
+      campaignProgress: campaignFromCloud(base.campaignProgress, campaignRows),
       createdAt: p.created_at ?? base.createdAt,
       updatedAt: p.updated_at ?? new Date().toISOString(),
     }
@@ -168,29 +158,11 @@ export async function saveCloudPlayerProfile(userId: string, profile: PlayerProf
       console.warn("[CloudStorage] Stats upsert error:", statsErr)
     }
 
-    // 3. Upsert Campaign Progress (Naruto)
-    const naruto = profile.campaignProgress?.naruto
-    if (naruto) {
-      const { error: campErr } = await supabase
-        .from("campaign_progress")
-        .upsert(
-          {
-            user_id: userId,
-            world_id: "naruto",
-            current_stage: naruto.currentStage,
-            completed_stages: naruto.completedStages ?? [],
-            completed: naruto.completed,
-            updated_at: now,
-          },
-          { onConflict: "user_id,world_id" }
-        )
+    const campaignRows = campaignToCloud(userId, profile.campaignProgress, now)
+    const { error: campErr } = await supabase.from("campaign_progress").upsert(campaignRows, { onConflict: "user_id,world_id" })
+    if (campErr) console.warn("[CloudStorage] Campaign upsert error:", campErr)
+    return !profileErr && !statsErr && !campErr
 
-      if (campErr) {
-        console.warn("[CloudStorage] Campaign upsert error:", campErr)
-      }
-    }
-
-    return true
   } catch (error) {
     console.error("[CloudStorage] Unexpected error syncing to cloud:", error)
     return false
