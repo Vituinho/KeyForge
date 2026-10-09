@@ -10,7 +10,6 @@ import {
   ArrowLeft,
   Zap,
   Users,
-  Trophy,
   Copy,
   Check,
   Radio,
@@ -83,7 +82,7 @@ function MultiplayerContent() {
     lastActiveAt: new Date().toISOString(),
   }
 
-  // Initial ELO rating based on rank / level
+  // A local matchmaking estimate, not a ranked ladder rating
   const eloRating = 1200 + (player.level - 1) * 25 + Math.round(player.stats.bestWpm * 1.5)
 
   const handleStartQuickMatch = async () => {
@@ -314,7 +313,7 @@ function MultiplayerContent() {
                 <span>Lv. {player.level}</span>
                 <span>•</span>
                 <span className="text-amber-400/90 font-bold">
-                  {t("multiplayerHub.eloRating")}: {eloRating}
+                  {t("release.matchEstimate")}: {eloRating}
                 </span>
               </div>
             </div>
@@ -338,7 +337,7 @@ function MultiplayerContent() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <span>{t("multiplayerHub.shinobisOnline", { count: onlineCount })}</span>
+              <span>{onlineCount === null ? t("release.presenceUnknown") : t("multiplayerHub.shinobisOnline", { count: onlineCount })}</span>
             </div>
           </div>
         </motion.div>
@@ -527,7 +526,8 @@ function MultiplayerContent() {
                   onChange={(e) => setRoomCodeInput(e.target.value.toUpperCase())}
                   placeholder={t("multiplayerHub.enterRoomPlaceholder")}
                   maxLength={10}
-                  className="flex-1 py-2 px-3 rounded-xl bg-white/5 border border-white/10 text-xs font-mono text-white placeholder:text-white/20 focus:outline-none focus:border-blue-500 transition-colors uppercase"
+                  aria-label={t("multiplayerHub.enterRoomPlaceholder")}
+                  className="min-w-0 flex-1 py-2 px-3 rounded-xl bg-white/5 border border-white/10 text-xs font-mono text-white placeholder:text-white/20 focus:outline-none focus:border-blue-500 transition-colors uppercase"
                 />
                 <button
                   type="submit"
@@ -539,42 +539,7 @@ function MultiplayerContent() {
             </div>
           </motion.div>
 
-          {/* CARD 3: RANKED SEASON */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="p-6 rounded-3xl border border-white/10 bg-white/[0.02] flex flex-col justify-between relative overflow-hidden opacity-80"
-          >
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
-                  <Trophy className="w-6 h-6 text-purple-400" />
-                </div>
-                <span className="px-2.5 py-1 rounded-full bg-purple-500/20 border border-purple-500/40 text-[10px] font-mono font-bold text-purple-300">
-                  {t("multiplayerHub.comingSoonBadge")}
-                </span>
-              </div>
-              <div className="space-y-1.5">
-                <div className="inline-flex items-center gap-1.5 text-[11px] font-mono text-purple-400 font-bold uppercase tracking-wider">
-                  <Clock size={12} />
-                  <span>{t("multiplayerHub.rankedSeasonBadge")}</span>
-                </div>
-                <h3 className="text-xl font-black text-white">
-                  {t("multiplayerHub.rankedSeasonTitle")}
-                </h3>
-                <p className="text-xs text-white/50 leading-relaxed">
-                  {t("multiplayerHub.rankedSeasonDesc")}
-                </p>
-              </div>
-            </div>
 
-            <div className="pt-6">
-              <div className="py-2.5 rounded-xl bg-white/5 border border-white/5 text-center text-xs font-mono text-white/40">
-                {t("multiplayerHub.comingSoonBadge")}
-              </div>
-            </div>
-          </motion.div>
         </div>
 
         {/* Arena Rules Section */}

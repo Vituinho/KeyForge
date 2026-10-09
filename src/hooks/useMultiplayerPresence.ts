@@ -21,7 +21,7 @@ export function useMultiplayerPresence(currentStatus: PresenceStatus = "in_lobby
   const { player } = usePlayer()
 
   const [onlineUsers, setOnlineUsers] = useState<OnlineUserPresence[]>([])
-  const [onlineCount, setOnlineCount] = useState<number>(1)
+  const [onlineCount, setOnlineCount] = useState<number | null>(null)
 
   useEffect(() => {
     const supabase = getSupabaseClient()
@@ -55,7 +55,8 @@ export function useMultiplayerPresence(currentStatus: PresenceStatus = "in_lobby
         setOnlineUsers(users)
         setOnlineCount(users.length)
       } else {
-        setOnlineCount(1)
+        setOnlineUsers([])
+        setOnlineCount(0)
       }
     }
 
@@ -97,7 +98,7 @@ export function useMultiplayerPresence(currentStatus: PresenceStatus = "in_lobby
   }, [user, isAuthenticated, player.level, player.rank, player.username, currentStatus])
 
   return {
-    onlineCount: Math.max(1, onlineCount),
+    onlineCount,
     onlineUsers,
   }
 }
