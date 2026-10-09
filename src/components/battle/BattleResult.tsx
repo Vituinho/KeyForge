@@ -508,7 +508,7 @@ function BattleResultView({
         )}
 
         {/* Weakness Analysis & Finger Mapping */}
-        {!victory && weakKeys.length > 0 && (
+        {weakKeys.length > 0 && (
           <motion.div
             className="rounded-2xl border border-red-500/20 bg-red-500/5 backdrop-blur-sm p-5"
             initial={{ opacity: 0, y: 20 }}
@@ -589,7 +589,7 @@ function BattleResultView({
         )}
 
         {/* Training Exercises */}
-        {!victory && exercises.length > 0 && (
+        {exercises.length > 0 && (
           <motion.div
             className="rounded-2xl border border-violet-500/20 bg-violet-500/5 backdrop-blur-sm p-5"
             initial={{ opacity: 0, y: 20 }}
@@ -647,7 +647,7 @@ function BattleResultView({
             <RotateCcw size={16} />
             {t("battleResult.rematchBtn").toUpperCase()}
           </button>
-          {!victory && weakKeys.length > 0 && (
+          {weakKeys.length > 0 && (
             <Link
               href={`/training?mode=weak-keys&keys=${weakKeys.map((w) => w.key).join(",")}`}
               className="flex items-center gap-2 px-6 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-black text-sm transition-all shadow-[0_0_20px_rgba(139,92,246,0.3)]"

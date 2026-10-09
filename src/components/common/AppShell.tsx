@@ -20,6 +20,7 @@ const Navigation = memo(function Navigation() {
     ["/statistics", "nav.statistics"], ["/locker", "nav.locker"],
   ]
   const navLinks = links.map(([href, label]) => <Link key={href} href={href}
+    onClick={event => event.currentTarget.closest("details")?.removeAttribute("open")}
     aria-current={pathname === href || pathname.startsWith(href + "/") ? "page" : undefined}
     className="kf-nav-link">{t(label)}</Link>)
   return <header className="kf-app-header">
@@ -31,7 +32,7 @@ const Navigation = memo(function Navigation() {
         <LanguageSwitcher />
         <details className="relative xl:hidden">
           <summary className="list-none rounded-lg p-2 border border-white/10 cursor-pointer" aria-label={t("nav.toggleMenu")}><Menu size={20} /></summary>
-          <nav aria-label={t("release.navigation")} className="absolute right-0 top-full mt-3 w-60 max-h-[75dvh] overflow-y-auto z-50 p-2 rounded-xl border border-white/15 bg-neutral-950 shadow-xl flex flex-col">{navLinks}</nav>
+          <nav aria-label={t("release.navigation")} className="absolute right-0 top-full mt-3 w-60 max-h-[75dvh] overflow-y-auto z-50 p-2 rounded-xl border border-white/15 bg-neutral-950 shadow-xl flex flex-col">{navLinks}{!user.isGuest && <button type="button" className="kf-nav-link text-left" onClick={logout}>{t("release.signOut")}</button>}</nav>
         </details>
         <Link href={user.isGuest ? "/login" : "/profile"} className="kf-nav-link max-w-32 truncate">{user.isGuest ? t("common.login") : user.username}</Link>
         {!user.isGuest && <button type="button" onClick={logout} className="hidden sm:block kf-nav-link">{t("release.signOut")}</button>}
