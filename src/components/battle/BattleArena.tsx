@@ -52,6 +52,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
 
   // Track latest typing stats snapshot from engine
   const latestStatsRef = useRef<TypingStats | null>(null)
+  const getStatsRef = useRef<(() => TypingStats) | null>(null)
 
   // Computed result state for end-of-battle screen
   const [battleResultData, setBattleResultData] = useState<BattleResultType | null>(null)
@@ -73,7 +74,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
       const endTime = battleState.battleEndTime
       const elapsed = startTime && endTime ? Math.max(0, (endTime - startTime) / 1000) : 0
 
-      const stats = latestStatsRef.current ?? {
+      const stats = getStatsRef.current?.() ?? latestStatsRef.current ?? {
         currentWpm: 0,
         currentRawWpm: 0,
         currentAccuracy: 100,
@@ -244,6 +245,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
     expectedKey,
     pressedKey,
     lastErrorKey,
+    getStats,
   } = useTypingEngine({
     text: currentText,
     enabled: phase === "fighting",
@@ -265,6 +267,8 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
   useEffect(() => {
     nextRoundRef.current = nextRound
   }, [nextRound])
+
+  useEffect(() => { getStatsRef.current = getStats }, [getStats])
 
   // Render battle result if battle has completed
   if (battleResultData !== null && (phase === "victory" || phase === "defeat")) {

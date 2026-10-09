@@ -66,3 +66,33 @@ test("battle timers survive renders; the final strike is included and typing adv
     await browser.happyDOM.close()
   }
 })
+
+test("an interrupted battle retains attempts newer than the sampled HUD metrics", async () => {
+  const browser = new Window({ url: "http://localhost:3003" })
+  Object.assign(globalThis, { window: browser, document: browser.document, HTMLElement: browser.HTMLElement, IS_REACT_ACT_ENVIRONMENT: true })
+  let engine!: ReturnType<typeof useTypingEngine>
+  function Harness({ enabled }: { enabled: boolean }) {
+    engine = useTypingEngine({ text: "computers", enabled, statsUpdateIntervalMs: 10000 })
+    return React.createElement("input", { ref: engine.inputRef, readOnly: true })
+  }
+  const host = browser.document.createElement("div")
+  browser.document.body.append(host)
+  const root = createRoot(host as unknown as HTMLElement)
+  try {
+    await act(() => root.render(React.createElement(Harness, { enabled: true })))
+    for (const key of "comouter") await act(() => {
+      host.querySelector("input")!.dispatchEvent(new browser.KeyboardEvent("keydown", { key, bubbles: true }))
+    })
+    assert.ok(engine.stats.totalTypingAttempts < 8)
+    await act(() => root.render(React.createElement(Harness, { enabled: false })))
+    const final = engine.getStats()
+    assert.equal(final.totalTypingAttempts, 8)
+    assert.equal(final.totalCorrectCharacters, 7)
+    assert.equal(final.totalErrors, 1)
+    assert.equal(final.keyStats.p.errors, 1)
+    assert.equal(final.errorLog[0].typed, "o")
+  } finally {
+    await act(() => root.unmount())
+    await browser.happyDOM.close()
+  }
+})
