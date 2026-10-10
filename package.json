@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test:security": "tsx scripts/verify-multiplayer-security.ts",
+    "test:security:db": "tsx scripts/verify-production-security.ts",
+    "test:security:http": "tsx scripts/verify-security-http.ts",
     "test:battle": "tsx scripts/simulate-pvp-battle.ts",
     "test:campaign": "tsx scripts/verify-world-campaign.ts",
     "test:balance": "tsx scripts/test-balance-profiles.ts",

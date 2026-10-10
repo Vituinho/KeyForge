@@ -2,6 +2,8 @@
 
 Status: **BLOCKED for a competitive public launch**. The frontend and local gameplay can be built and exercised. Do not treat passing simulations as verification of deployed database authority.
 
+The subsequent P0 hardening implementation and required three SQL migrations are documented in [SECURITY_HARDENING.md](./SECURITY_HARDENING.md). Follow that staging/deployment gate before using the older release-pass notes below; they describe vulnerabilities as they existed at the end of that pass. No production changes have been applied.
+
 ## Build and environment
 
 Validated toolchain: Node 24.20.0, npm, Next.js 16.3.8, React 19.2.8. Install the committed lockfile with `npm ci`.
@@ -11,6 +13,7 @@ Validated toolchain: Node 24.20.0, npm, Next.js 16.3.8, React 19.2.8. Install th
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project endpoint | Public browser configuration |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anon/publishable client key | Public; requires correct RLS and RPC grants |
 | `NEXT_PUBLIC_SITE_URL` | Canonical HTTP(S) origin for sitemap/social metadata | Public; configure before building |
+| `SUPABASE_SERVICE_ROLE_KEY` | Verified progression route's trusted database operations | Server runtime only; never browser/public |
 
 Copy `.env.example` to local configuration or configure these names on the host. No credentials are supplied in this repository. Never expose a Supabase service-role key as `NEXT_PUBLIC_*`. Missing Supabase configuration enables guest play; login/register report unavailability instead of manufacturing accounts. Missing site origin leaves the sitemap empty and Next falls back to localhost for absolute social URLs; configure the real domain before launch.
 
@@ -27,21 +30,15 @@ npm start
 
 `verify:release` runs every discovered typing/Academy/audio/auth regression test, campaign/progression/balance checks, PvP simulations, i18n, soundtrack configuration, TypeScript, ESLint and the production build. It writes per-step logs and a results JSON into a temporary directory and fails on the first failed step. The default audio audit reports absent disabled tracks without blocking a playable silent game; `--require-assets` requires every asset, licensing record and enabled mapping. That strict content gate currently fails as expected.
 
-## P0 — server authority must be completed before competitive launch
+## P0 — implementation complete locally; deployed authority still unverified
 
-The checked-in `supabase/schema.sql` permits an owner to insert/update their complete profile, statistics and campaign rows. `src/lib/storage/cloudPlayerStorage.ts` submits local XP, rank and stats. Ownership protects other users' rows; it does not prove the submitted rewards or performance.
+The subsequent security pass replaced browser-controlled online progression with server-validated challenges, shared balance reducers, an atomic receipt ledger and protected verified inventory. It also hardens PvP attempts/lifecycle/queue and separates unverified local/legacy records without deleting them. The original schema scripts remain upgrade inputs; the three ordered migrations in [SECURITY_HARDENING.md](./SECURITY_HARDENING.md) are mandatory. Never rerun the original scripts after applying them.
 
-`supabase/cosmetics_schema.sql` permits owners to insert arbitrary cosmetic IDs and insert/update crate quantities. `src/lib/storage/cloudCosmeticsStorage.ts` unions local unlocks and uses maximum local/cloud shard and crate balances. The crate-opening RPC locks its inventory row, but the inventory can still be forged through these other write paths.
-
-Required next implementation: establish a server-validated completion/award ledger, allow only editable profile/preferences from the client, restrict XP/rank/loot/campaign writes to trusted award functions, and redesign guest import so unverified local rewards cannot become competitive inventory. Preserve existing offline progress separately. Verify replay prevention, idempotency, concurrent claims and two-account isolation against a staging database before changing production. Merely denying all writes would break the existing cloud save flow, so no incomplete lockdown migration was applied.
-
-The old RPG and cosmetics browser saves use shared local slots. Academy and practice use per-player/layout keys. Test account switching and define guest-import ownership as part of the server-authority work; do not assume a guest inventory is trustworthy.
-
-Direct battle URLs also need server-validated campaign eligibility. A guest browser check exposed world rewards being granted after direct entry to Madara without clearing the preceding stages. The local reward calculation now requires every configured stage to be recorded before a new world-completion claim. Preserve existing saves, and validate prerequisites and complete stage coverage in the trusted server ledger; a client-only correction is not an anti-cheat boundary.
+`verify:release` now also runs real PostgreSQL security regressions in its own isolated loopback cluster, using installed `initdb`, `pg_ctl` and `psql` binaries (`KEYFORGE_TEST_PG_BIN` may override their directory). No production URL is used. A local passing database test does not verify Supabase Auth, PostgREST or Realtime. Actual staging privileges, malicious HTTP calls, concurrent claims, legitimate gameplay and legacy-data communication must pass before competitive launch.
 
 ## Supabase staging verification
 
-The repository contains `schema.sql`, `cosmetics_schema.sql` and `multiplayer_schema.sql`. Review their dependency/order and harden the policies above before a fresh public installation. No SQL or production configuration was applied during this release pass.
+Review the actual deployed schema and the ordered migrations/audit in the security report before installation. No SQL or production configuration was applied during this release or the subsequent hardening pass.
 
 - Configure Auth site URL, allowed redirect URLs, email confirmation/delivery and the desired provider settings for the real domain.
 - Check the deployed tables, signup trigger, crate RPC and all multiplayer RPC signatures against the checked-in files.
@@ -50,7 +47,7 @@ The repository contains `schema.sql`, `cosmetics_schema.sql` and `multiplayer_sc
 - Exercise registration, confirmation, login, session refresh, logout, cloud save conflict handling and all seven campaign world summaries.
 - Exercise quick match, private room, readiness, attempts, disconnect/reconnection, surrender, result claims and rematch. Confirm damage/rewards and rejection cases in the database, not only the browser.
 
-Rich campaign best scores, milestone claims and local baselines are not all represented in the current cloud schema; the repaired cloud adapter preserves existing local detail but synchronizes the available world summaries only. Validate the intended cross-device scope before advertising complete cloud synchronization.
+Verified campaign scores, milestone claims and baselines now live in the protected profile document; personal Academy mastery/daily practice remains local. Validate account isolation and intended cross-device behavior in staging before advertising synchronization guarantees.
 
 Password recovery is excluded from this release: the old inert "forgot password" label was removed; there is no implemented reset request/callback flow. Add and verify that flow with the real Auth redirect/email settings before advertising account recovery.
 
