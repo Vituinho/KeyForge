@@ -1,4 +1,9 @@
 BEGIN;
+CREATE FUNCTION keyforge_private.secure_random() RETURNS double precision
+LANGUAGE sql VOLATILE SET search_path=pg_catalog AS $$
+ SELECT ('x'||substr(replace(gen_random_uuid()::text,'-',''),1,12))::bit(48)::bigint / 281474976710656.0
+$$;
+REVOKE ALL ON FUNCTION keyforge_private.secure_random() FROM PUBLIC,anon,authenticated;
 -- All inventory mutations serialize on the verified account, including different crate tiers.
 DROP FUNCTION public.open_player_crate(text);
 CREATE FUNCTION public.open_verified_crate(p_crate_id text, p_request_id uuid) RETURNS jsonb
@@ -19,14 +24,14 @@ BEGIN
  UPDATE public.verified_crates SET quantity=quantity-1 WHERE user_id=u AND crate_id=p_crate_id AND quantity>0 RETURNING quantity INTO remaining;
  IF remaining IS NULL THEN RAISE EXCEPTION 'No crates available'; END IF;
  SELECT sum((w->>'weight')::numeric) INTO total FROM jsonb_array_elements(c->'dropWeights') w;
- pick:=random()*total;
+ pick:=keyforge_private.secure_random()*total;
  FOR weight IN SELECT * FROM jsonb_array_elements(c->'dropWeights') LOOP
   threshold:=threshold+(weight->>'weight')::numeric;
   IF pick<threshold THEN rarity:=weight->>'rarity'; EXIT; END IF;
  END LOOP;
  -- Same unowned-first rarity pool and salvage values as data/crates.ts.
  SELECT s.definition INTO skin FROM keyforge_private.skin_catalog s WHERE s.definition->>'rarity'=rarity
- ORDER BY EXISTS(SELECT 1 FROM public.verified_cosmetics o WHERE o.user_id=u AND o.cosmetic_id=s.id), random() LIMIT 1;
+ ORDER BY EXISTS(SELECT 1 FROM public.verified_cosmetics o WHERE o.user_id=u AND o.cosmetic_id=s.id), keyforge_private.secure_random() LIMIT 1;
  IF skin IS NULL THEN RAISE EXCEPTION 'Empty drop pool'; END IF;
  SELECT EXISTS(SELECT 1 FROM public.verified_cosmetics WHERE user_id=u AND cosmetic_id=skin->>'id') INTO dup;
  shards:=CASE WHEN dup THEN (skin->>'shardsValue')::integer ELSE 0 END;
@@ -82,7 +87,7 @@ END $$;
 -- The version comparison forces a concurrent winner to reload and recompute; nothing is lost.
 CREATE FUNCTION public.commit_verified_reward(p_user uuid, p_source text, p_version bigint, p_profile jsonb, p_receipt jsonb, p_crates jsonb, p_shards integer DEFAULT 0) RETURNS jsonb
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$
-DECLARE v bigint; r jsonb; item record; m public.multiplayer_matches; session_id uuid;
+DECLARE v bigint; r jsonb; item record; m public.multiplayer_matches; session_id uuid; challenge jsonb;
 BEGIN
  SELECT version INTO STRICT v FROM public.verified_players WHERE user_id=p_user FOR UPDATE;
  SELECT receipt INTO r FROM keyforge_private.reward_ledger WHERE user_id=p_user AND source=p_source;
@@ -91,14 +96,31 @@ BEGIN
  IF p_profile->>'id' IS DISTINCT FROM p_user::text OR p_shards<0 THEN RAISE EXCEPTION 'Invalid reward'; END IF;
  IF p_source LIKE 'battle:%' THEN
   session_id:=substr(p_source,8)::uuid;
-  PERFORM 1 FROM keyforge_private.battle_sessions WHERE id=session_id AND user_id=p_user AND NOT finished AND expires_at>clock_timestamp() FOR UPDATE;
+  PERFORM 1 FROM keyforge_private.battle_sessions s WHERE s.id=session_id AND s.user_id=p_user AND NOT s.finished AND s.expires_at>clock_timestamp() AND NOT (s.challenge ? 'kind') FOR UPDATE;
   IF NOT FOUND THEN RAISE EXCEPTION 'Invalid battle session'; END IF;
+  UPDATE keyforge_private.battle_sessions SET finished=true WHERE id=session_id;
+  SELECT s.challenge INTO challenge FROM keyforge_private.battle_sessions s WHERE id=session_id;
+  INSERT INTO public.battle_history(user_id,enemy_id,enemy_name,enemy_anime,victory,battle_wpm,best_wpm,battle_accuracy,best_combo,damage_dealt,damage_taken,duration_seconds,xp_earned,weak_keys,reward_source)
+  VALUES(p_user,challenge->'enemy'->>'id',challenge->'enemy'->>'name',challenge->'enemy'->>'anime',
+    (p_receipt->'result'->>'victory')::boolean,
+    (p_receipt#>>'{result,finalStats,battleWpm}')::integer,(p_receipt#>>'{result,finalStats,bestWpm}')::integer,
+    (p_receipt#>>'{result,finalStats,battleAccuracy}')::integer,(p_receipt#>>'{result,finalStats,bestCombo}')::integer,
+    (p_receipt#>>'{result,totalDamageDealt}')::integer,(p_receipt#>>'{result,totalDamageTaken}')::integer,
+    round((p_receipt#>>'{result,elapsedTime}')::numeric)::integer,(p_receipt#>>'{summary,xpResult,totalXp}')::integer,
+    ARRAY(SELECT e->>'key' FROM jsonb_array_elements(p_receipt#>'{result,weakKeys}') e),p_source);
+ ELSIF p_source LIKE 'practice:%' THEN
+  session_id:=substr(p_source,10)::uuid;
+  PERFORM 1 FROM keyforge_private.battle_sessions s WHERE s.id=session_id AND s.user_id=p_user AND NOT s.finished AND s.expires_at>clock_timestamp() AND s.challenge->>'kind' IN ('academy','home-row','training') FOR UPDATE;
+  IF NOT FOUND THEN RAISE EXCEPTION 'Invalid practice session'; END IF;
   UPDATE keyforge_private.battle_sessions SET finished=true WHERE id=session_id;
  ELSIF p_source LIKE 'pvp:%' THEN
   SELECT * INTO STRICT m FROM public.multiplayer_matches WHERE id=substr(p_source,5)::uuid FOR UPDATE;
   IF m.status<>'finished' OR m.authority_version<>1 OR NOT (m.player_1_id=p_user OR m.player_2_id IS NOT DISTINCT FROM p_user)
    OR NOT EXISTS(SELECT 1 FROM public.multiplayer_match_results WHERE match_id=m.id)
   THEN RAISE EXCEPTION 'Unverified match result'; END IF;
+  UPDATE public.multiplayer_match_results SET
+   player_1_xp_earned=CASE WHEN player_1_id=p_user THEN (p_receipt#>>'{summary,totalXp}')::integer ELSE player_1_xp_earned END,
+   player_2_xp_earned=CASE WHEN player_2_id=p_user THEN (p_receipt#>>'{summary,totalXp}')::integer ELSE player_2_xp_earned END WHERE match_id=m.id;
  ELSE RAISE EXCEPTION 'Unknown reward source'; END IF;
  UPDATE public.verified_players SET profile=p_profile,version=version+1,forge_shards=forge_shards+p_shards WHERE user_id=p_user;
  FOR item IN SELECT * FROM jsonb_each_text(p_crates) LOOP
@@ -111,6 +133,9 @@ END $$;
 
 -- Pre-hardening matches can still be inspected, but never mint verified rewards.
 ALTER TABLE public.multiplayer_matches ADD COLUMN authority_version integer NOT NULL DEFAULT 0;
+ALTER TABLE public.battle_history ADD COLUMN reward_source text;
+ALTER TABLE public.battle_history ALTER COLUMN played_at SET DEFAULT clock_timestamp();
+CREATE UNIQUE INDEX battle_history_verified_source ON public.battle_history(user_id,reward_source) WHERE reward_source IS NOT NULL;
 
 CREATE FUNCTION public.begin_verified_battle(p_user uuid, p_version bigint, p_challenge jsonb) RETURNS jsonb
 LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$
@@ -120,17 +145,29 @@ BEGIN
  IF v<>p_version THEN RAISE EXCEPTION 'Progression changed; recompute' USING ERRCODE='40001'; END IF;
  IF (SELECT count(*) FROM keyforge_private.battle_sessions WHERE user_id=p_user AND started_at>clock_timestamp()-interval '1 minute')>=10 THEN RAISE EXCEPTION 'Challenge rate limit exceeded'; END IF;
  -- Replace an abandoned challenge. Old receipts remain available for idempotent retries.
- UPDATE keyforge_private.battle_sessions SET expires_at=clock_timestamp() WHERE user_id=p_user AND NOT finished;
+ UPDATE keyforge_private.battle_sessions SET expires_at=clock_timestamp() WHERE user_id=p_user AND NOT finished AND NOT (challenge ? 'kind');
  INSERT INTO keyforge_private.battle_sessions(user_id,challenge) VALUES(p_user,p_challenge) RETURNING * INTO s;
  RETURN to_jsonb(s);
 END $$;
 CREATE FUNCTION public.read_verified_reward(p_user uuid, p_source text) RETURNS jsonb
 LANGUAGE sql SECURITY DEFINER SET search_path=pg_catalog AS $$ SELECT receipt FROM keyforge_private.reward_ledger WHERE user_id=p_user AND source=p_source $$;
+CREATE FUNCTION public.begin_verified_practice(p_user uuid,p_challenge jsonb) RETURNS jsonb
+LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$
+DECLARE s keyforge_private.battle_sessions;
+BEGIN
+ PERFORM 1 FROM public.verified_players WHERE user_id=p_user FOR UPDATE;
+ IF NOT FOUND OR p_challenge->>'kind' IS NULL OR p_challenge->>'kind' NOT IN ('academy','home-row','training') THEN RAISE EXCEPTION 'Invalid practice account'; END IF;
+ IF (SELECT count(*) FROM keyforge_private.battle_sessions WHERE user_id=p_user AND started_at>clock_timestamp()-interval '1 minute')>=20 THEN RAISE EXCEPTION 'Challenge rate limit exceeded'; END IF;
+ INSERT INTO keyforge_private.battle_sessions(user_id,challenge) VALUES(p_user,p_challenge) RETURNING * INTO s;
+ RETURN to_jsonb(s);
+END $$;
 CREATE FUNCTION public.read_verified_battle(p_user uuid, p_id uuid) RETURNS jsonb
 LANGUAGE sql SECURITY DEFINER SET search_path=pg_catalog AS $$ SELECT to_jsonb(s)||jsonb_build_object('server_elapsed_ms',extract(epoch FROM (clock_timestamp()-s.started_at))*1000) FROM keyforge_private.battle_sessions s WHERE user_id=p_user AND id=p_id $$;
 
 REVOKE EXECUTE ON FUNCTION public.commit_verified_reward(uuid,text,bigint,jsonb,jsonb,jsonb,integer),public.begin_verified_battle(uuid,bigint,jsonb),public.read_verified_reward(uuid,text),public.read_verified_battle(uuid,uuid) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.commit_verified_reward(uuid,text,bigint,jsonb,jsonb,jsonb,integer),public.begin_verified_battle(uuid,bigint,jsonb),public.read_verified_reward(uuid,text),public.read_verified_battle(uuid,uuid) TO service_role;
+REVOKE EXECUTE ON FUNCTION public.begin_verified_practice(uuid,jsonb) FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.begin_verified_practice(uuid,jsonb) TO service_role;
 REVOKE EXECUTE ON FUNCTION public.open_verified_crate(text,uuid),public.get_verified_cosmetics(),public.equip_verified_skin(text),public.purchase_verified_crate(text,uuid) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.open_verified_crate(text,uuid),public.get_verified_cosmetics(),public.equip_verified_skin(text),public.purchase_verified_crate(text,uuid) TO authenticated;
 COMMIT;

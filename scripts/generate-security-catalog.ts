@@ -85,12 +85,15 @@ BEGIN
  RETURN v;
 END $$;
 
-DO $$ DECLARE t text; p record; BEGIN
+DO $$ DECLARE t text; p record; columns text; BEGIN
  FOREACH t IN ARRAY ARRAY['profiles','player_stats','campaign_progress','battle_history','user_cosmetics','player_crates','multiplayer_matches','multiplayer_match_events','multiplayer_match_results','multiplayer_queue'] LOOP
   FOR p IN SELECT policyname FROM pg_policies WHERE schemaname='public' AND tablename=t AND cmd <> 'SELECT' LOOP
    EXECUTE format('DROP POLICY %I ON public.%I',p.policyname,t);
   END LOOP;
   EXECUTE format('REVOKE INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER ON public.%I FROM PUBLIC, anon, authenticated',t);
+  SELECT string_agg(quote_ident(attname),',') INTO columns FROM pg_attribute WHERE attrelid=('public.'||t)::regclass AND attnum>0 AND NOT attisdropped;
+  -- Table-level REVOKE does not remove old column-level grants.
+  EXECUTE format('REVOKE INSERT (%s), UPDATE (%s), REFERENCES (%s) ON public.%I FROM PUBLIC, anon, authenticated',columns,columns,columns,t);
  END LOOP;
  -- Restrict profile preferences by BOTH column grants and owner policy.
  GRANT UPDATE(username,language,keyboard_settings) ON public.profiles TO authenticated;
