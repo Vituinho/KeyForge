@@ -210,6 +210,15 @@ try {
  db.sql("CREATE FUNCTION public.audit_test_unknown() RETURNS integer LANGUAGE sql SECURITY DEFINER SET search_path=pg_catalog AS 'SELECT 1'; GRANT EXECUTE ON FUNCTION public.audit_test_unknown() TO authenticated")
  denied('',audit,'postgres')
  db.sql('DROP FUNCTION public.audit_test_unknown()')
+ db.sql("CREATE FUNCTION public.get_verified_player(integer) RETURNS integer LANGUAGE sql SECURITY DEFINER SET search_path=pg_catalog AS 'SELECT 1'; GRANT EXECUTE ON FUNCTION public.get_verified_player(integer) TO authenticated")
+ denied('',audit,'postgres')
+ db.sql('DROP FUNCTION public.get_verified_player(integer)')
+ db.sql("CREATE FUNCTION public.audit_test_invoker(target uuid) RETURNS jsonb LANGUAGE plpgsql SET search_path=pg_catalog AS $$ BEGIN PERFORM set_config('request.jwt.claim.sub',target::text,true); RETURN public.get_verified_player(); END $$; GRANT EXECUTE ON FUNCTION public.audit_test_invoker(uuid) TO authenticated")
+ denied('',audit,'postgres')
+ db.sql('DROP FUNCTION public.audit_test_invoker(uuid)')
+ db.sql('ALTER ROLE authenticated BYPASSRLS')
+ denied('',audit,'postgres')
+ db.sql('ALTER ROLE authenticated NOBYPASSRLS')
  console.log(`PASS: ${checks} real PostgreSQL security checks (roles, RLS, RPCs, legacy, crate replay, PvP telemetry/replay).`)
 } finally {db.close()}
 }

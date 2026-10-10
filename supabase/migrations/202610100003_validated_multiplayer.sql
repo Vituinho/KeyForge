@@ -1095,8 +1095,12 @@ DECLARE result jsonb; BEGIN
  RETURN result;
 END $$;
 DO $$ DECLARE f record; BEGIN
- FOR f IN SELECT p.oid::regprocedure signature FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.proname IN
- ('create_multiplayer_match','join_multiplayer_match','set_player_ready','forfeit_match','cancel_match','find_or_create_quick_match','leave_multiplayer_queue','check_multiplayer_queue','claim_disconnect_forfeit','submit_word_attempts','multiplayer_heartbeat','get_public_player','exit_queue_for_practice') LOOP
+ FOR f IN SELECT p.oid::regprocedure signature FROM pg_proc p WHERE p.oid IN
+ ('public.create_multiplayer_match(text,text,text,bigint,text,integer)'::regprocedure,'public.join_multiplayer_match(text,text)'::regprocedure,
+  'public.set_player_ready(uuid,boolean)'::regprocedure,'public.forfeit_match(uuid)'::regprocedure,'public.cancel_match(uuid)'::regprocedure,
+  'public.find_or_create_quick_match(text,text)'::regprocedure,'public.leave_multiplayer_queue()'::regprocedure,'public.check_multiplayer_queue()'::regprocedure,
+  'public.claim_disconnect_forfeit(uuid)'::regprocedure,'public.submit_word_attempts(uuid,text,integer,text[])'::regprocedure,
+  'public.multiplayer_heartbeat(uuid)'::regprocedure,'public.get_public_player(uuid)'::regprocedure,'public.exit_queue_for_practice()'::regprocedure) LOOP
   EXECUTE format('REVOKE EXECUTE ON FUNCTION %s FROM PUBLIC, anon',f.signature);
   EXECUTE format('GRANT EXECUTE ON FUNCTION %s TO authenticated',f.signature);
  END LOOP;
