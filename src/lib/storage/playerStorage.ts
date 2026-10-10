@@ -1,3 +1,4 @@
+import { scopedStorageKey } from "./progressionTrust"
 import {
   PlayerProfile,
   createDefaultPlayerProfile,
@@ -51,7 +52,7 @@ export function loadPlayerProfile(): PlayerProfile {
 
   try {
     // 1. Try loading v3 save
-    const rawV3 = localStorage.getItem(STORAGE_KEY)
+    const rawV3 = localStorage.getItem(scopedStorageKey(STORAGE_KEY))
     if (rawV3) {
       const parsedV3 = JSON.parse(rawV3) as Partial<PlayerSaveData>
 
@@ -97,7 +98,7 @@ export function loadPlayerProfile(): PlayerProfile {
     }
 
     // 2. Migration: Check for v2 save data
-    const rawV2 = localStorage.getItem(STORAGE_KEY_V2)
+    const rawV2 = localStorage.getItem(scopedStorageKey(STORAGE_KEY_V2))
     if (rawV2) {
       try {
         const parsedV2 = JSON.parse(rawV2) as Partial<{ version: number; player: PlayerProfile }>
@@ -153,7 +154,7 @@ export function loadPlayerProfile(): PlayerProfile {
     }
 
     // 3. Migration: Check for legacy v1 save data
-    const rawV1 = localStorage.getItem(STORAGE_KEY_V1)
+    const rawV1 = localStorage.getItem(scopedStorageKey(STORAGE_KEY_V1))
     if (rawV1) {
       try {
         const parsedV1 = JSON.parse(rawV1) as Partial<{ version: number; player: PlayerProfile }>
@@ -225,7 +226,7 @@ export function savePlayerProfile(profile: PlayerProfile): boolean {
       player: updatedProfile,
     }
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
+    localStorage.setItem(scopedStorageKey(STORAGE_KEY), JSON.stringify(payload))
 
     // Notify listeners in other components
     window.dispatchEvent(
@@ -247,7 +248,7 @@ export function resetPlayerProfile(): PlayerProfile {
   if (isBrowser()) {
     localStorage.removeItem(STORAGE_KEY_V1)
     localStorage.removeItem(STORAGE_KEY_V2)
-    localStorage.removeItem(STORAGE_KEY)
+    localStorage.removeItem(scopedStorageKey(STORAGE_KEY))
   }
   const fresh = createDefaultPlayerProfile()
   savePlayerProfile(fresh)

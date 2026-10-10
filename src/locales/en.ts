@@ -1,4 +1,11 @@
 export const en = {
+  security: {
+  "legacyNotice": "Legacy progress is preserved separately. Online rewards use verified server progression; local practice stays personal.",
+  "unavailable": "Verified rewards are unavailable. Your local progress has been preserved.",
+  "rejected": "The server could not validate this activity. No online rewards were granted.",
+  "retry": "Retry verification",
+  "preparing": "Preparing a verified battle…"
+},
   skinDescriptions: {
       "default_forge": "The foundational forged mechanical keyboard with molten amber accenting.",
       "clean_light": "Crisp architectural white keycaps with subtle graphite markings.",

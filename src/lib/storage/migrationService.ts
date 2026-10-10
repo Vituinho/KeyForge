@@ -1,6 +1,6 @@
 import { PlayerProfile } from "@/types/player"
 import { savePlayerProfile } from "./playerStorage"
-import { saveCloudPlayerProfile } from "./cloudPlayerStorage"
+import { preserveLegacyLocal } from "./progressionTrust"
 
 /**
  * Checks if a player profile has meaningful gameplay progression.
@@ -61,7 +61,8 @@ export async function autoMigrateLocalToCloud(
   }
 
   // Save to cloud
-  await saveCloudPlayerProfile(userId, migrated)
+  preserveLegacyLocal('keyforge_player_v3',JSON.stringify(migrated))
+  throw new Error('Unverified legacy progression cannot be imported into competitive storage')
 
   // Save to local storage
   savePlayerProfile(migrated)
@@ -88,6 +89,7 @@ export async function resolveOverwriteCloud(
     id: userId,
     updatedAt: new Date().toISOString(),
   }
-  await saveCloudPlayerProfile(userId, updated)
+  preserveLegacyLocal('keyforge_player_v3',JSON.stringify(updated))
+  throw new Error('Unverified legacy progression cannot overwrite verified storage')
   savePlayerProfile(updated)
 }

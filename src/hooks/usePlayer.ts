@@ -1,5 +1,6 @@
 "use client"
 
+import { scopedStorageKey } from "@/lib/storage/progressionTrust"
 import { useSyncExternalStore, useCallback } from "react"
 import { PlayerProfile, createDefaultPlayerProfile } from "@/types/player"
 import {
@@ -25,14 +26,16 @@ function subscribe(callback: () => void) {
 const serverProfile = createDefaultPlayerProfile()
 let cachedProfile: PlayerProfile | null = null
 let cachedRaw: string | null = null
+let cachedProfileKey = ''
 
 function getSnapshot(): PlayerProfile {
   if (typeof window === "undefined") {
     return serverProfile
   }
   let raw: string | null = null
-  try { raw = localStorage.getItem(STORAGE_KEY) } catch { /* Use a stable memory snapshot. */ }
-  if (raw !== cachedRaw || !cachedProfile) {
+  try { raw = localStorage.getItem(scopedStorageKey(STORAGE_KEY)) } catch { /* Use a stable memory snapshot. */ }
+  if (raw !== cachedRaw || !cachedProfile || cachedProfileKey !== scopedStorageKey(STORAGE_KEY)) {
+    cachedProfileKey = scopedStorageKey(STORAGE_KEY)
     cachedRaw = raw
     cachedProfile = loadPlayerProfile()
   }
