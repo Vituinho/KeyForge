@@ -60,14 +60,8 @@ export async function autoMigrateLocalToCloud(
     updatedAt: new Date().toISOString(),
   }
 
-  // Save to cloud
   preserveLegacyLocal('keyforge_player_v3',JSON.stringify(migrated))
   throw new Error('Unverified legacy progression cannot be imported into competitive storage')
-
-  // Save to local storage
-  savePlayerProfile(migrated)
-
-  return migrated
 }
 
 /**
@@ -91,5 +85,4 @@ export async function resolveOverwriteCloud(
   }
   preserveLegacyLocal('keyforge_player_v3',JSON.stringify(updated))
   throw new Error('Unverified legacy progression cannot overwrite verified storage')
-  savePlayerProfile(updated)
 }

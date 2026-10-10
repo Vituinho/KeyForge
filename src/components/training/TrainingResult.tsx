@@ -1,6 +1,6 @@
 "use client"
 
-import { useCompletedReward } from "@/hooks/useCompletedReward"
+import { usePracticeReward } from "@/hooks/usePracticeReward"
 import { useCallback, useState } from "react"
 import { motion } from "framer-motion"
 import { TypingStats } from "@/types/typing"
@@ -20,13 +20,14 @@ interface TrainingResultProps {
   targetKeys: string[]
   baselineAccuracies?: Record<string, number> // key -> prior battle accuracy (0-100)
   onRetry: () => void
+  verifiedReward?: Promise<ActivityRewardSummary> | null
 }
 
 export function TrainingResult(props: TrainingResultProps) {
   const { t } = useI18n()
   const apply = useCallback(() => processTrainingRewards(props.stats, props.targetKeys), [props.stats, props.targetKeys])
-  const summary = useCompletedReward(props.stats, apply)
-  if (!summary) return <p role="status" className="p-8 text-center text-sm text-white/60">{t("release.saving")}</p>
+  const { summary, error } = usePracticeReward(props.stats, apply, props.verifiedReward)
+  if (!summary) return <div role="status" className="p-8 text-center text-sm text-white/60"><p>{t(error ? "security.unavailable" : "release.saving")}</p>{error && <button onClick={props.onRetry} className="mt-3 underline">{t("academy.result.tryAgain")}</button>}</div>
   return <TrainingResultView {...props} rewardSummary={summary} />
 }
 

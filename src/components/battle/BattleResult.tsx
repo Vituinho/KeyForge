@@ -1,7 +1,9 @@
 "use client"
  
 import { useCompletedReward } from "@/hooks/useCompletedReward"
-import { useCallback, useState, useMemo } from "react"
+import { useCallback, useState, useMemo, useEffect } from "react"
+import { useAuth } from "@/lib/auth/authContext"
+import { finishVerifiedBattle, cacheVerifiedReward } from "@/lib/security/progressionClient"
 import { motion } from "framer-motion"
 import { BattleResult as BattleResultType } from "@/types/battle"
 import { WeakKey, TrainingExercise } from "@/types/typing"
@@ -58,6 +60,35 @@ interface BattleResultProps {
 }
 
 export function BattleResult(props: BattleResultProps) {
+  const {isGuest}=useAuth()
+  return isGuest?<LocalBattleResult {...props}/>:<VerifiedBattleResult {...props}/>
+}
+
+interface VerifiedReceipt {summary:BattleRewardSummary;result:BattleResultType}
+const pendingReceipts=new WeakMap<object,Promise<VerifiedReceipt>>()
+function VerifiedBattleResult(props:BattleResultProps) {
+ const {result}=props
+ const {t}=useI18n()
+ const [receipt,setReceipt]=useState<VerifiedReceipt|null>(null)
+ const [failed,setFailed]=useState(false)
+ const [retry,setRetry]=useState(0)
+ useEffect(()=>{
+  let active=true
+  let pending=pendingReceipts.get(result)
+  if(!pending) {
+   pending=result.verifiedSessionId ? finishVerifiedBattle<VerifiedReceipt>(result.verifiedSessionId,result.inputEvents??[]) : Promise.reject(new Error('Missing verified session'))
+   pendingReceipts.set(result,pending)
+  }
+  void pending.then(async receipt=>{
+   if(active){setReceipt(receipt);setFailed(false);await cacheVerifiedReward(receipt.summary.updatedProfile)}
+  }).catch(()=>{pendingReceipts.delete(result);if(active) setFailed(true)})
+  return()=>{active=false}
+ },[result,retry])
+ if(!receipt) return <div role="status" className="p-8 text-center text-sm text-white/60">{t(failed?'security.rejected':'release.saving')}{failed&&<button className="kf-btn ml-3" onClick={()=>{setFailed(false);setRetry(n=>n+1)}}>{t('security.retry')}</button>}</div>
+ return <BattleResultView {...props} victory={receipt.result.victory} result={receipt.result} weakKeys={receipt.result.weakKeys} rewardSummary={receipt.summary}/>
+}
+
+function LocalBattleResult(props: BattleResultProps) {
   const { t } = useI18n()
   const apply = useCallback(() => processBattleRewards(props.result, props.enemy), [props.result, props.enemy])
   const summary = useCompletedReward(props.result, apply)

@@ -33,6 +33,8 @@ import {
   subscribeToMatchBattle,
   getMatchResult,
   MatchTelemetryPayload,
+  getMatchById,
+  SubmitWordParams,
 } from "@/lib/multiplayer/matchService"
 import { subscribeToRoomChannel } from "@/lib/multiplayer/roomManager"
 import { getSkinById, RARITY_DETAILS } from "@/data/keyboardSkins"
@@ -40,7 +42,10 @@ import { AttackEnergyGauge } from "./AttackEnergyGauge"
 import { PostMatchAnalysis } from "./PostMatchAnalysis"
 import {
   processMultiplayerRewards,
+  MultiplayerRewardSummary,
 } from "@/lib/multiplayer/processMultiplayerRewards"
+import { requestProgression,cacheVerifiedReward } from "@/lib/security/progressionClient"
+import { getSupabaseClient } from "@/lib/supabase/client"
 
 interface FloatingDamage {
   id: number
@@ -76,6 +81,9 @@ export function MultiplayerArena({
   const myWordIndex = isP1 ? currentMatch.player_1_word_index : currentMatch.player_2_word_index
   const [typing, setTyping] = useState(createArenaTypingState)
   const typingRef = useRef(typing)
+  const wordAttemptsRef=useRef<string[]>([])
+  const pendingWordRef=useRef<SubmitWordParams|null>(null)
+  const [submissionFailed,setSubmissionFailed]=useState(false)
   const [lastPressedKey, setLastPressedKey] = useState<string | null>(null)
   const [lastErrorKey, setLastErrorKey] = useState<string | null>(null)
   const [isRecoilActive, setIsRecoilActive] = useState(false)
@@ -89,6 +97,7 @@ export function MultiplayerArena({
   const [showDetailedAnalysis, setShowDetailedAnalysis] = useState(false)
 
   useEffect(() => {
+    wordAttemptsRef.current=[]
     typingRef.current = nextArenaWord(typingRef.current)
     setTyping(typingRef.current)
   }, [myWordIndex])
@@ -200,6 +209,10 @@ export function MultiplayerArena({
           }))
         },
         onMatchFinished: ({ winnerId, isDraw: draw }) => {
+          if(!currentMatch.id.startsWith('match_')) {
+            void getMatchById(currentMatch.id).then(m=>{if(m) setCurrentMatch(m)})
+            return
+          }
           setCurrentMatch((prev) => ({
             ...prev,
             status: "finished",
@@ -208,6 +221,7 @@ export function MultiplayerArena({
           }))
         },
         onOpponentTelemetry: (telemetry) => {
+          if(!currentMatch.id.startsWith('match_')) return
           if (telemetry.playerId === currentUserId) return
 
           // Authoritative client protection: sanitize telemetry bounds
@@ -389,7 +403,8 @@ export function MultiplayerArena({
       () => {},
       (eventPayload) => {
         if (eventPayload.event === "MATCH_START" && eventPayload.extra?.match) {
-          setCurrentMatch(eventPayload.extra.match as MultiplayerMatchRow)
+          if(currentMatch.id.startsWith('match_')) setCurrentMatch(eventPayload.extra.match as MultiplayerMatchRow)
+          else void getMatchById(currentMatch.id).then(m=>{if(m) setCurrentMatch(m)})
         }
       }
     )
@@ -397,7 +412,7 @@ export function MultiplayerArena({
     return () => {
       unsubscribe()
     }
-  }, [currentMatch.room_code])
+  }, [currentMatch.room_code,currentMatch.id])
 
   // Focus input automatically
   useEffect(() => {
@@ -412,16 +427,27 @@ export function MultiplayerArena({
   const liveAccuracy = calculateAccuracy(correctChars, totalChars)
 
   // Authoritative multiplayer progression rewards computed on match finish
-  const rewardSummary = useMemo(() => {
-    if (!isFinished) return null
-    return processMultiplayerRewards(
-      currentMatch,
-      currentUserId,
-      liveWpm,
-      liveAccuracy,
-      maxCombo
-    )
-  }, [isFinished, currentMatch, currentUserId, liveWpm, liveAccuracy, maxCombo])
+  const [rewardSummary,setRewardSummary]=useState<MultiplayerRewardSummary|null>(null)
+  const [rewardFailed,setRewardFailed]=useState(false)
+  const [rewardRetry,setRewardRetry]=useState(0)
+  useEffect(()=>{
+    if(!isFinished) return
+    let active=true
+    const claim=async()=>{
+      const summary=currentMatch.id.startsWith('match_')
+        ? processMultiplayerRewards(currentMatch,currentUserId,liveWpm,liveAccuracy,maxCombo)
+        : (await requestProgression<{summary:MultiplayerRewardSummary|null}>({action:'pvp',matchId:currentMatch.id})).summary
+      if(active) {setRewardSummary(summary);setRewardFailed(false);if(summary&&!currentMatch.id.startsWith('match_')) await cacheVerifiedReward(summary.updatedProfile)}
+    }
+    void claim().catch(()=>{if(active) setRewardFailed(true)})
+    return()=>{active=false}
+  },[isFinished,currentMatch,currentUserId,liveWpm,liveAccuracy,maxCombo,rewardRetry])
+  useEffect(()=>{
+    if(currentMatch.id.startsWith('match_') || !['playing','countdown'].includes(currentMatch.status)) return
+    const beat=()=>{void getSupabaseClient()?.rpc('multiplayer_heartbeat',{p_match_id:currentMatch.id}).then(()=>{},()=>{})}
+    beat();const timer=setInterval(beat,5000)
+    return()=>clearInterval(timer)
+  },[currentMatch.id,currentMatch.status])
 
   // Handle typing input
   const handleTypingKey = async (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -435,6 +461,7 @@ export function MultiplayerArena({
     const previous = typingRef.current
     const next = applyArenaTypingKey(previous, currentWord, key)
     if (next === previous) return
+    wordAttemptsRef.current.push(key)
     typingRef.current = next
     setTyping(next)
     setLastPressedKey(key)
@@ -474,16 +501,20 @@ export function MultiplayerArena({
       // Submit authoritative word completion to server/service
       const eventId = `evt_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`
       try {
-        const updated = await submitWordCompletion({
+        const submission:SubmitWordParams={
           matchId: currentMatch.id,
           eventId,
           wordIndex: myWordIndex,
           wordText: currentWord,
+          attempts:wordAttemptsRef.current.slice(),
           wpm: completionWpm,
           accuracy: completionAccuracy,
           combo: newCombo,
           playerId: currentUserId,
-        })
+        }
+        pendingWordRef.current=submission
+        const updated = await submitWordCompletion(submission)
+        pendingWordRef.current=null;setSubmissionFailed(false)
 
         // Check if an attack resolved
         const oldOppHp = isP1 ? currentMatch.player_2_hp : currentMatch.player_1_hp
@@ -521,8 +552,7 @@ export function MultiplayerArena({
         setCurrentMatch(updated)
       } catch (err) {
         console.warn("[Arena] Submit word failed:", err)
-        typingRef.current = nextArenaWord(typingRef.current)
-        setTyping(typingRef.current)
+        setSubmissionFailed(true)
       }
     }
   }
@@ -559,6 +589,10 @@ export function MultiplayerArena({
       transition={{ duration: 0.35 }}
       className="relative min-h-screen bg-black text-white flex flex-col justify-between overflow-hidden selection:bg-orange-500/30 selection:text-orange-200"
     >
+      {submissionFailed&&<div role="alert" className="relative z-50 p-3 text-center text-red-300 text-sm">{t('security.unavailable')}<button className="kf-btn ml-3" onClick={()=>{
+        const submission=pendingWordRef.current
+        if(submission) void submitWordCompletion(submission).then(m=>{pendingWordRef.current=null;setSubmissionFailed(false);setCurrentMatch(m)}).catch(()=>{})
+      }}>{t('security.retry')}</button></div>}
       {/* Dynamic Background Anime Ambience */}
       <div
         className={`absolute top-0 left-1/4 w-[650px] h-[400px] transition-all duration-700 blur-[150px] pointer-events-none ${
@@ -1148,6 +1182,7 @@ export function MultiplayerArena({
               </div>
 
               {/* XP Award & Progression Banner */}
+              {rewardFailed&&<p role="alert" className="text-sm text-red-300">{t('security.unavailable')}<button className="kf-btn ml-3" onClick={()=>setRewardRetry(n=>n+1)}>{t('security.retry')}</button></p>}
               <div
                 className={`p-3.5 rounded-2xl border font-mono text-center transition-all space-y-1 ${
                   isWinner

@@ -156,19 +156,20 @@ function MultiplayerContent() {
     }
     const newRoom = createInitialRoomState(hostPlayer)
     setCreatedRoomCode(newRoom.code)
-    setActiveRoom(newRoom)
     setErrorMessage(null)
 
     try {
-      await createMatch({
+      const match=await createMatch({
         mode: "private",
         roomCode: newRoom.code,
         language: locale === "en" ? "en" : "pt-BR",
         skinId: equippedSkin.id,
         guestPlayerId: user?.id || "player_local",
       })
+      setActiveRoom({...newRoom,matchId:match.id})
     } catch (err) {
       console.warn("[PrivateRoom] Authoritative match creation notice:", err)
+      setActiveRoom(null);setErrorMessage(t('security.unavailable'))
     }
   }
 
@@ -217,30 +218,9 @@ function MultiplayerContent() {
         createInitialRoomState(rivalHost, trimmed),
         currentPlayer
       )
-      setActiveRoom(joinedRoom)
+      setActiveRoom({...joinedRoom,matchId:joinedMatch.id})
     } catch {
-      const rivalHost: MultiplayerPlayer = {
-        id: "host_rival",
-        username: "Shinobi Host",
-        level: Math.max(1, player.level),
-        rank: player.rank,
-        skinId: "default_forge",
-        ready: false,
-        isHost: true,
-        currentWpm: 0,
-        progress: 0,
-        errors: 0,
-        combo: 0,
-        currentStreak: 0,
-        health: 100,
-        isAlive: true,
-        lastActiveAt: new Date().toISOString(),
-      }
-      const joinedRoom = joinRoomState(
-        createInitialRoomState(rivalHost, trimmed),
-        currentPlayer
-      )
-      setActiveRoom(joinedRoom)
+      setErrorMessage(t('security.unavailable'))
     }
   }
 
@@ -285,7 +265,7 @@ function MultiplayerContent() {
             currentPlayer={currentPlayer}
             onLeaveRoom={() => setActiveRoom(null)}
             onStartMatch={(room) => {
-              router.push(`/multiplayer/arena?room=${room.code}`)
+              router.push(room.matchId?`/multiplayer/arena?matchId=${room.matchId}`:`/multiplayer/arena?room=${room.code}`)
             }}
           />
         ) : (

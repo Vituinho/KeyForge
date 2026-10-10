@@ -51,7 +51,7 @@ function subscribeCosmetics(callback: () => void) {
   cosmeticsListeners.add(callback)
   const handleCustom = () => callback()
   const handleStorage = (e: StorageEvent) => {
-    if (e.key === COSMETICS_STORAGE_KEY) {
+    if (e.key === scopedStorageKey(COSMETICS_STORAGE_KEY)) {
       callback()
     }
   }
@@ -161,10 +161,12 @@ export function useCosmetics() {
 
   // Cloud sync on user login or change
   useEffect(() => {
+    if(!userId) syncedUserIdRef.current=null
     if (userId && syncedUserIdRef.current !== userId) {
       syncedUserIdRef.current = userId
       syncLocalToCloud(userId, cosmetics)
         .then((merged) => {
+          if(scopedStorageKey(COSMETICS_STORAGE_KEY)!==`${COSMETICS_STORAGE_KEY}:account:${userId}`) return
           saveCosmeticsState(merged)
           notifyCosmeticsSubscribers()
         })

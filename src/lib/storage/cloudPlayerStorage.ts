@@ -15,4 +15,6 @@ export async function saveCloudPlayerProfile(userId:string,profile:PlayerProfile
  const {error}=await client.from('profiles').update({username:profile.username}).eq('id',userId)
  return !error
 }
-export async function saveCloudBattleHistory(_userId:string,_entry:BattleHistoryEntry,_weakKeys:string[]=[]):Promise<boolean>{return false}
+export async function saveCloudBattleHistory(_userId:string,_entry:BattleHistoryEntry,_weakKeys:string[]=[]):Promise<boolean>{
+ void [_userId,_entry,_weakKeys];return false
+}

@@ -1,6 +1,7 @@
 "use client"
 
-import { useCompletedReward } from "@/hooks/useCompletedReward"
+import { usePracticeReward } from "@/hooks/usePracticeReward"
+import { useVerifiedPractice } from "@/hooks/useVerifiedPractice"
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { motion } from "framer-motion"
 import { TypingStats } from "@/types/typing"
@@ -169,6 +170,8 @@ function PrincipleCard({
 function HomeRowLesson({ onBack }: { onBack: () => void }) {
   const { t, locale } = useI18n()
   const isEn = locale === "en"
+  const { isGuest, onInputEvent, round, finish, restart } = useVerifiedPractice({ kind: "home-row", layout: isEn ? "ANSI" : "ABNT2", language: locale })
+  const [verifiedReward, setVerifiedReward] = useState<Promise<ActivityRewardSummary> | null>(null)
   const [exercises] = useState(() => getHomeRowExercises(locale))
   const [exerciseIndex, setExerciseIndex] = useState(0)
   const [isCompleted, setIsCompleted] = useState(false)
@@ -180,17 +183,23 @@ function HomeRowLesson({ onBack }: { onBack: () => void }) {
 
   const handleCompleteRound = useCallback(
     (roundStats: TypingStats) => {
+      round(exercises[exerciseIndexRef.current])
       const nextIndex = exerciseIndexRef.current + 1
       if (nextIndex < exercises.length) {
         exerciseIndexRef.current = nextIndex
         nextRoundRef.current?.(exercises[nextIndex], `academy-homerow-${nextIndex}`)
         setExerciseIndex(nextIndex)
       } else {
+        if (!isGuest) {
+          const reward = finish()
+          void reward.catch(() => {})
+          setVerifiedReward(reward)
+        }
         setFinalStats(roundStats)
         setIsCompleted(true)
       }
     },
-    [exercises]
+    [exercises, round, finish, isGuest]
   )
 
   // Reusing the exact same useTypingEngine
@@ -200,6 +209,7 @@ function HomeRowLesson({ onBack }: { onBack: () => void }) {
     enabled: !isCompleted,
     statsUpdateIntervalMs: 100,
     onComplete: handleCompleteRound,
+    onInputEvent,
   })
 
   useLayoutEffect(() => { nextRoundRef.current = nextRound }, [nextRound])
@@ -212,6 +222,8 @@ function HomeRowLesson({ onBack }: { onBack: () => void }) {
   const activeFingerConfig = activeFingerInfo ? FINGER_PALETTE[activeFingerInfo.finger] : null
 
   const handleRetry = () => {
+    restart()
+    setVerifiedReward(null)
     setExerciseIndex(0)
     exerciseIndexRef.current = 0
     setIsCompleted(false)
@@ -257,7 +269,7 @@ function HomeRowLesson({ onBack }: { onBack: () => void }) {
 
       {/* Result screen if completed */}
       {isCompleted && finalStats ? (
-        <HomeRowLessonResult stats={finalStats} onRetry={handleRetry} />
+        <HomeRowLessonResult stats={finalStats} onRetry={handleRetry} verifiedReward={verifiedReward} />
       ) : (
         /* Active practice drill */
         <div className="space-y-4">
@@ -379,11 +391,11 @@ function HomeRowLesson({ onBack }: { onBack: () => void }) {
   )
 }
 
-function HomeRowLessonResult({ stats, onRetry }: { stats: TypingStats; onRetry: () => void }) {
+function HomeRowLessonResult({ stats, onRetry, verifiedReward }: { stats: TypingStats; onRetry: () => void; verifiedReward: Promise<ActivityRewardSummary> | null }) {
   const { t } = useI18n()
   const apply = useCallback(() => processAcademyLessonRewards("home-row", stats), [stats])
-  const summary = useCompletedReward(stats, apply)
-  if (!summary) return <p role="status" className="p-6 text-white/60">{t("release.saving")}</p>
+  const { summary, error } = usePracticeReward(stats, apply, verifiedReward)
+  if (!summary) return <div role="status" className="p-6 text-white/60"><p>{t(error ? "security.unavailable" : "release.saving")}</p>{error && <button onClick={onRetry} className="mt-3 underline">{t("academy.result.tryAgain")}</button>}</div>
   return <HomeRowLessonResultView stats={stats} onRetry={onRetry} rewardSummary={summary} />
 }
 

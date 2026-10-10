@@ -107,6 +107,7 @@ export async function enterMatchmakingQueue(
           p_skin_id: params.skinId,
         })
 
+        if(error) throw new Error(error.message)
         if (!error && data) {
           const res = data as {
             status: string
@@ -132,7 +133,7 @@ export async function enterMatchmakingQueue(
         }
       }
     } catch (err) {
-      console.warn("[Matchmaking] Supabase RPC failed, using local queue fallback:", err)
+      return {status:"error",error:err instanceof Error?err.message:"Matchmaking unavailable"}
     }
   }
 
@@ -222,9 +223,17 @@ export async function leaveMatchmakingQueue(userId: string): Promise<void> {
 export async function createShadowMatch(
   params: QueueEntryParams
 ): Promise<MatchmakingResult> {
+  // Atomically close searching: a human match won by the queue must not be replaced by a bot.
+  const client=getSupabaseClient()
+  if(client&&(await client.auth.getSession()).data.session) {
+    const {data,error}=await client.rpc('exit_queue_for_practice')
+    if(error) throw new Error(error.message)
+    if(data) return {status:'matched',matchId:data as string}
+  }
   const shadow = createShadowOpponent(params)
 
   const match = await createMatch({
+    localPractice: true,
     mode: "quick",
     language: params.language,
     skinId: params.skinId,

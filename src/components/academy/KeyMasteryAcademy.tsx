@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth/authContext"
 import { getStoredUser } from "@/lib/auth/authService"
 import { useI18n } from "@/lib/i18n/i18nContext"
 import { useTypingEngine } from "@/hooks/useTypingEngine"
+import { useVerifiedPractice } from "@/hooks/useVerifiedPractice"
 import { processAcademyLessonRewards } from "@/lib/progression/processActivityRewards"
 import { FINGER_PALETTE, type KeyboardLayoutId } from "@/lib/keyboard/fingerMap"
 import { generateKeyExercises, getPracticeFinger } from "@/lib/academy/keyExercises"
@@ -290,6 +291,7 @@ function KeyPractice({ targetKey, layout, initialRecord, onRecord, onBack, onMov
 }) {
   const { t, locale } = useI18n()
   const [entryKey] = useState(targetKey)
+  const { isGuest, onInputEvent, round, finish } = useVerifiedPractice({ kind: "academy", layout, language: locale })
   const exercises = useMemo(() => generateKeyExercises(targetKey, layout), [targetKey, layout])
   const [stage, setStage] = useState(() => initialRecord.status === "mastered" ? 5 : Math.min(5, Math.floor(initialRecord.mastery / 18)))
   const stageRef = useRef(stage)
@@ -312,6 +314,7 @@ function KeyPractice({ targetKey, layout, initialRecord, onRecord, onBack, onMov
     drillsRef.current += 1
     const lessonCompleted = drillsRef.current % 6 === 0
     const drill = plan?.drills[planIndexRef.current]
+    round(drill?.text ?? exercises[stageRef.current].text)
     const recordedKey = drill?.target.keys[0] ?? targetKey
     const nextRecord = onRecord(attemptsRef.current, recordedKey, drill?.stage ?? stageRef.current, lessonCompleted)
     if (drill) planSamplesRef.current.push(sessionSample(attemptsRef.current, drill))
@@ -320,10 +323,16 @@ function KeyPractice({ targetKey, layout, initialRecord, onRecord, onBack, onMov
     stageRef.current = nextStage
     setStage(nextStage)
     setDrills(drillsRef.current)
-    if (lessonCompleted) defer(() => {
-      const reward = processAcademyLessonRewards(`key-mastery-${layout}-${recordedKey}`, stats)
-      setAnnouncement(`+${reward.xpGained} XP${reward.didLevelUp ? ` · ${t(copy("levelReward"), { level: reward.newLevel })}` : ""}${reward.didRankUp ? ` · ${reward.newRank}` : ""}`)
-    })
+    if (lessonCompleted) {
+      // Seal the evidence now, before the first key of the next instant drill arrives.
+      const reward = isGuest ? null : finish(recordedKey)
+      if (reward) void reward.then(reward => defer(() => setAnnouncement(`+${reward.xpGained} XP${reward.didLevelUp ? ` · ${t(copy("levelReward"), { level: reward.newLevel })}` : ""}${reward.didRankUp ? ` · ${reward.newRank}` : ""}`)))
+        .catch(() => setAnnouncement(t("security.unavailable")))
+      else defer(() => {
+        const reward = processAcademyLessonRewards(`key-mastery-${layout}-${recordedKey}`, stats)
+        setAnnouncement(`+${reward.xpGained} XP${reward.didLevelUp ? ` · ${t(copy("levelReward"), { level: reward.newLevel })}` : ""}${reward.didRankUp ? ` · ${reward.newRank}` : ""}`)
+      })
+    }
     if (plan) {
       const advanced = advanceLearningSession(plan, planIndexRef.current)
       planIndexRef.current = advanced.nextIndex
@@ -336,7 +345,7 @@ function KeyPractice({ targetKey, layout, initialRecord, onRecord, onBack, onMov
       return { text: advanced.next!.text, id: `academy-path-${advanced.nextIndex}`, fresh: lessonCompleted }
     }
     return { text: exercises[nextStage].text, id: `academy-key-${targetKey}-${drillsRef.current}`, fresh: lessonCompleted }
-  }, [exercises, layout, onRecord, targetKey, t, plan, onFinished, onTarget])
+  }, [exercises, layout, onRecord, targetKey, t, plan, onFinished, onTarget, isGuest, round, finish])
   useEffect(() => () => {
     if (attemptsRef.current.length) {
       const drill = plan?.drills[planIndexRef.current]
@@ -375,15 +384,16 @@ function KeyPractice({ targetKey, layout, initialRecord, onRecord, onBack, onMov
       <div className="flex items-center gap-1"><button onClick={() => onMove(-1)} aria-label={t(copy("previousKey"))} className="p-2 rounded hover:bg-white/10"><ArrowLeft size={16} /></button><button onClick={() => onMove(1)} aria-label={t(copy("nextKey"))} className="p-2 rounded hover:bg-white/10"><ArrowRight size={16} /></button><button onClick={leave} className="px-2 py-1 text-xs text-white/50 hover:text-white">{t(copy("overview"))}</button></div>
     </header>
     {currentDrill && <p className="text-xs text-white/45">{t(`academyPath.${currentDrill.target.reason}`)} · {t("academyPath.continuous")}</p>}
-    <DrillRunner text={currentDrill?.text ?? exercises[stage].text} textId={plan ? `academy-path-${planIndex}` : `academy-key-${targetKey}-${drills}`} layout={layout} onAttempt={collectAttempt} onComplete={complete} />
+    <DrillRunner text={currentDrill?.text ?? exercises[stage].text} textId={plan ? `academy-path-${planIndex}` : `academy-key-${targetKey}-${drills}`} layout={layout} onAttempt={collectAttempt} onComplete={complete} onInputEvent={onInputEvent} />
     <footer className="flex flex-wrap gap-x-4 gap-y-2 items-center"><details className="text-xs text-white/50"><summary className="cursor-pointer">{t(copy("fingerGuide"))}</summary><div className="pt-2"><FingerGuide layout={layout} /></div></details><p className="text-[10px] text-white/35">{t(copy("shortcuts"))}</p><RewardNotice message={announcement} /></footer>
   </div>
 }
 
 /** Only this subtree reacts to individual keys; dashboard, history and panels do not. */
-const DrillRunner = memo(function DrillRunner({ text, textId, layout, onAttempt, onComplete }: {
+const DrillRunner = memo(function DrillRunner({ text, textId, layout, onAttempt, onComplete, onInputEvent }: {
   text: string; textId: string; layout: KeyboardLayoutId; onAttempt: (attempt: TypingAttempt) => void
   onComplete: (stats: TypingStats) => { text: string; id: string; fresh: boolean } | null
+  onInputEvent: (key: string, timestamp: number) => void
 }) {
   const { t } = useI18n()
   const complete = (stats: TypingStats): void => {
@@ -393,7 +403,7 @@ const DrillRunner = memo(function DrillRunner({ text, textId, layout, onAttempt,
     else nextRound(next.text, next.id)
   }
   const { chars, stats, inputRef, nextRound, resetAll, focus, expectedKey, pressedKey, lastErrorKey } = useTypingEngine({
-    text, textId, onComplete: complete, onAttempt, statsUpdateIntervalMs: 100,
+    text, textId, onComplete: complete, onAttempt, onInputEvent, statsUpdateIntervalMs: 100,
   })
   useLayoutEffect(() => { inputRef.current?.focus({ preventScroll: true }) }, [inputRef])
   return <div className="space-y-2">

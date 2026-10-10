@@ -37,9 +37,10 @@ interface BattleArenaProps {
   enemy: Enemy
   texts: string[]
   onRematch?: () => void
+  verifiedSessionId?: string
 }
 
-export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
+export function BattleArena({ enemy, texts, onRematch, verifiedSessionId }: BattleArenaProps) {
   const { t, locale } = useI18n()
   const { player, updatePlayer } = usePlayer()
   const [enemyUnderAttack, setEnemyUnderAttack] = useState(false)
@@ -56,6 +57,7 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
 
   // Computed result state for end-of-battle screen
   const [battleResultData, setBattleResultData] = useState<BattleResultType | null>(null)
+  const [audit] = useState(() => ({startedAt:Date.now(), events:[] as {key:string;at:number}[]}))
 
   const {
     battleState,
@@ -109,6 +111,8 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
       const exercises = generateTrainingExercises(weakKeys, 5, locale)
 
       setBattleResultData({
+        verifiedSessionId,
+        inputEvents:audit.events.slice(),
         victory,
         totalDamageDealt: battleState.roundHistory.reduce((s, r) => s + r.damage, 0),
         totalDamageTaken: battleState.maxPlayerHp - battleState.playerHp,
@@ -251,6 +255,9 @@ export function BattleArena({ enemy, texts, onRematch }: BattleArenaProps) {
     enabled: phase === "fighting",
     statsUpdateIntervalMs: 100,
     onComplete: handleRoundComplete,
+    onInputEvent: (key,timestamp) => {
+      if(verifiedSessionId && audit.events.length<20001) audit.events.push({key,at:timestamp-audit.startedAt})
+    },
     onAttempt: attempt => {
       if (attempt.correct) soundManager.playKeystroke()
       else soundManager.playTypo()

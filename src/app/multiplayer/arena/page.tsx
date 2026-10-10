@@ -10,18 +10,15 @@ import { MultiplayerMatchRow } from "@/types/database"
 import {
   getMatchById,
   getMatchByCode,
-  createMatch,
 } from "@/lib/multiplayer/matchService"
 import { useAuth } from "@/lib/auth/authContext"
-import { useCosmetics } from "@/hooks/useCosmetics"
 import { useI18n } from "@/lib/i18n/i18nContext"
 
 function ArenaPageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { user } = useAuth()
-  const { equippedSkin } = useCosmetics()
-  const { locale, t } = useI18n()
+  const { t } = useI18n()
 
   const matchIdParam = searchParams.get("matchId")
   const roomParam = searchParams.get("room")
@@ -44,28 +41,11 @@ function ArenaPageContent() {
           foundMatch = await getMatchByCode(roomParam)
         }
 
-        // If no match was found, instantiate a match for this session/room
-        if (!foundMatch) {
-          foundMatch = await createMatch({
-            mode: roomParam ? "private" : "quick",
-            roomCode: roomParam || undefined,
-            language: locale === "en" ? "en" : "pt-BR",
-            skinId: equippedSkin.id,
-            guestPlayerId: user?.id || "guest_player_1",
-          })
-          // Set to playing state
-          foundMatch = {
-            ...foundMatch,
-            status: "playing",
-            started_at: new Date().toISOString(),
-          }
-        } else if (foundMatch.status === "countdown" || foundMatch.status === "ready" || foundMatch.status === "waiting") {
-          // Transition to playing for the arena view
-          foundMatch = {
-            ...foundMatch,
-            status: "playing",
-            started_at: foundMatch.started_at || new Date().toISOString(),
-          }
+        if(!foundMatch) throw new Error(t('multiplayerArena.matchNotFound'))
+        if(!foundMatch.id.startsWith('match_')) {
+          if(![foundMatch.player_1_id,foundMatch.player_2_id].includes(user?.id??'')) throw new Error(t('security.rejected'))
+          if(foundMatch.status==='countdown'&&foundMatch.started_at&&Date.now()>=new Date(foundMatch.started_at).getTime()) foundMatch={...foundMatch,status:'playing'}
+          if(!['playing','finished','cancelled'].includes(foundMatch.status)) throw new Error(t('security.rejected'))
         }
 
         if (isMounted) {
@@ -85,7 +65,7 @@ function ArenaPageContent() {
     return () => {
       isMounted = false
     }
-  }, [matchIdParam, roomParam, locale, equippedSkin.id, user?.id])
+  }, [matchIdParam, roomParam, t, user?.id])
 
   if (loading) {
     return (
@@ -118,7 +98,7 @@ function ArenaPageContent() {
     <MultiplayerArena
       match={match}
       onExit={() => router.push("/multiplayer")}
-      onRematch={() => router.push(`/multiplayer/arena?room=${match.room_code || "REMATCH"}&t=${Date.now()}`)}
+      onRematch={() => router.push('/multiplayer')}
     />
   )
 }

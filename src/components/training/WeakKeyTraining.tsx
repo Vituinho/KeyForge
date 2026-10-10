@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { TypingStats } from "@/types/typing"
 import { useTypingEngine } from "@/hooks/useTypingEngine"
+import { useVerifiedPractice } from "@/hooks/useVerifiedPractice"
+import type { ActivityRewardSummary } from "@/lib/progression/calculateActivityRewards"
 import { TypingArea } from "@/components/battle/TypingArea"
 import { BattleHud } from "@/components/battle/BattleHud"
 import { generateWeakKeysSession } from "@/lib/typing/generateTraining"
@@ -28,6 +30,8 @@ export function WeakKeyTraining({
   onRestart,
 }: WeakKeyTrainingProps) {
   const { t, locale } = useI18n()
+  const { isGuest, onInputEvent, round, finish, restart } = useVerifiedPractice({ kind: "training", layout: locale === "en" ? "ANSI" : "ABNT2", language: locale, targetKeys })
+  const [verifiedReward, setVerifiedReward] = useState<Promise<ActivityRewardSummary> | null>(null)
 
   // Generate sequence of drill sentences for the target keys
   const [exercises, setExercises] = useState<string[]>(() =>
@@ -42,15 +46,21 @@ export function WeakKeyTraining({
 
   const handleExerciseComplete = useCallback(
     (roundStats: TypingStats) => {
+      round(exercises[exerciseIndex])
       if (exerciseIndex + 1 < exercises.length) {
         nextRoundRef.current?.(exercises[exerciseIndex + 1])
         setExerciseIndex((prev) => prev + 1)
       } else {
+        if (!isGuest) {
+          const reward = finish()
+          void reward.catch(() => {}) // The result panel handles the error when mounted.
+          setVerifiedReward(reward)
+        }
         setFinalStats(roundStats)
         setIsCompleted(true)
       }
     },
-    [exerciseIndex, exercises]
+    [exerciseIndex, exercises, round, finish, isGuest]
   )
 
   // Reusing the exact same useTypingEngine as Battle
@@ -70,6 +80,7 @@ export function WeakKeyTraining({
     enabled: !isCompleted,
     statsUpdateIntervalMs: 100,
     onComplete: handleExerciseComplete,
+    onInputEvent,
   })
 
   useEffect(() => { nextRoundRef.current = nextRound }, [nextRound])
@@ -78,13 +89,15 @@ export function WeakKeyTraining({
     if (onRestart) {
       onRestart()
     } else {
+      restart()
+      setVerifiedReward(null)
       const nextExercises = generateWeakKeysSession(targetKeys)
       setExercises(nextExercises)
       setExerciseIndex(0)
       setIsCompleted(false)
       reset(nextExercises[0], false)
     }
-  }, [onRestart, reset, targetKeys])
+  }, [onRestart, reset, targetKeys, restart])
 
   if (isCompleted && finalStats) {
     return (
@@ -93,6 +106,7 @@ export function WeakKeyTraining({
         targetKeys={targetKeys}
         baselineAccuracies={baselineAccuracies}
         onRetry={handleRetry}
+        verifiedReward={verifiedReward}
       />
     )
   }

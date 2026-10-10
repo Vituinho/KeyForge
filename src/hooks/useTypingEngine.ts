@@ -12,6 +12,8 @@ interface UseTypingEngineProps {
   enabled?: boolean
   onComplete?: (stats: TypingStats) => void
   onAttempt?: (attempt: TypingAttempt) => void
+  /** Optional audit observer; includes Backspace without changing scoring or input priority. */
+  onInputEvent?: (key: string, timestamp: number) => void
   /** Academy can sample metrics while character and keyboard feedback remain immediate. */
   statsUpdateIntervalMs?: number
 }
@@ -129,15 +131,16 @@ export function useTypingEngine({
   enabled = true,
   onComplete,
   onAttempt,
+  onInputEvent,
   statsUpdateIntervalMs = 0,
 }: UseTypingEngineProps): UseTypingEngineReturn {
   const [chars, setChars] = useState<CharData[]>(() => buildChars(text))
   const charsRef = useRef(chars)
   const [stats, setStats] = useState<TypingStats>(buildInitialStats)
-  const callbacksRef = useRef({ onComplete, onAttempt })
+  const callbacksRef = useRef({ onComplete, onAttempt, onInputEvent })
   useLayoutEffect(() => {
-    callbacksRef.current = { onComplete, onAttempt }
-  }, [onComplete, onAttempt])
+    callbacksRef.current = { onComplete, onAttempt, onInputEvent }
+  }, [onComplete, onAttempt, onInputEvent])
   const lastStatsUpdateRef = useRef(0)
 
   // Keyboard reaction telemetry state
@@ -325,6 +328,7 @@ export function useTypingEngine({
 
       // Handle Backspace
       if (key === "Backspace") {
+        callbacksRef.current.onInputEvent?.(key, Date.now())
         setPressedKey("Backspace")
         if (pressedTimerRef.current) clearTimeout(pressedTimerRef.current)
         pressedTimerRef.current = setTimeout(() => setPressedKey(null), 150)
@@ -342,6 +346,8 @@ export function useTypingEngine({
       pressedTimerRef.current = setTimeout(() => setPressedKey(null), 150)
 
       const now = Date.now()
+
+      callbacksRef.current.onInputEvent?.(key, now)
 
       // Calculate response time, avoiding distortion from pauses or round start
       let responseTime = 0

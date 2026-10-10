@@ -7,6 +7,7 @@ import { useBattle } from "./useBattle"
 import { useTypingEngine } from "./useTypingEngine"
 import { CHARACTERS } from "../data/characters"
 import type { BattleState } from "../types/battle"
+import { replayBattle, BattleInputEvent } from "../lib/security/battleValidation"
 
 test("battle timers survive renders; the final strike is included and typing advances immediately", async () => {
   const browser = new Window({ url: "http://localhost:3002" })
@@ -94,5 +95,48 @@ test("an interrupted battle retains attempts newer than the sampled HUD metrics"
   } finally {
     await act(() => root.unmount())
     await browser.happyDOM.close()
+  }
+})
+
+test("security evidence captures final keys and Backspace without gating the next drill", async () => {
+  const browser = new Window({ url: "http://localhost:3004" })
+  Object.assign(globalThis, { window: browser, document: browser.document, HTMLElement: browser.HTMLElement, IS_REACT_ACT_ENVIRONMENT: true })
+  const nativeNow = Date.now
+  let now = 1000, round = 0
+  Date.now = () => now
+  const events: BattleInputEvent[] = []
+  const texts = ["computer", "rato"]
+  let engine!: ReturnType<typeof useTypingEngine>
+  let final!: ReturnType<typeof useTypingEngine>["stats"]
+  function Harness() {
+    engine = useTypingEngine({ text: texts[round], statsUpdateIntervalMs: 100,
+      onInputEvent: (key, timestamp) => events.push({ key, at: timestamp - 1000 }),
+      onComplete: stats => {
+        assert.equal(events.at(-1)?.key, round === 0 ? "r" : "o")
+        if (round++ === 0) engine.nextRound(texts[1])
+        else final = stats
+      },
+    })
+    return React.createElement("input", { ref: engine.inputRef, readOnly: true })
+  }
+  const host = browser.document.createElement("div")
+  browser.document.body.append(host)
+  const root = createRoot(host as unknown as HTMLElement)
+  try {
+    await act(() => root.render(React.createElement(Harness)))
+    for (const key of ["c","o","m","x","Backspace",..."puter"]) await act(() => {
+      now += 200; host.querySelector("input")!.dispatchEvent(new browser.KeyboardEvent("keydown", { key, bubbles: true }))
+    })
+    assert.equal(engine.expectedKey, "r")
+    for (const key of "rato") await act(() => {
+      now += 200; host.querySelector("input")!.dispatchEvent(new browser.KeyboardEvent("keydown", { key, bubbles: true }))
+    })
+    const enemy = { ...CHARACTERS[0], maxHp: 100000, attack: 0, attackInterval: 60000, mechanics: [] }
+    const server = replayBattle({enemy,texts,language:"en"},events,now-1000+100,true).finalStats
+    for (const key of ["totalErrors","totalTypingAttempts","totalCorrectCharacters","battleAccuracy","battleWpm","bestCombo"] as const) assert.equal(server[key],final[key],key)
+    assert.equal(server.keyStats.p.errors,1)
+    assert.deepEqual(server.keyStats,final.keyStats)
+  } finally {
+    await act(() => root.unmount()); Date.now=nativeNow; await browser.happyDOM.close()
   }
 })

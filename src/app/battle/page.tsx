@@ -10,9 +10,12 @@ import { useI18n } from "@/lib/i18n/i18nContext"
 import { usePlayer } from "@/hooks/usePlayer"
 import { scaleEnemyForBattle } from "@/lib/battle/difficultyScaler"
 import { prioritizeSentencesByWeakKeys, getTopWeakKeys } from "@/lib/worlds/hunterAdaptiveEngine"
+import { useAuth } from "@/lib/auth/authContext"
+import { beginVerifiedBattle,VerifiedBattleSession } from "@/lib/security/progressionClient"
 
 function BattleContent() {
-  const { locale } = useI18n()
+  const { locale,t } = useI18n()
+  const {isGuest}=useAuth()
   const { player } = usePlayer()
   const searchParams = useSearchParams()
   const enemyId = searchParams.get("enemy") ?? "naruto"
@@ -41,25 +44,40 @@ function BattleContent() {
   const [started, setStarted] = useState(false)
   // Increment to force BattleArena remount on rematch
   const [battleKey, setBattleKey] = useState(0)
+  const [session,setSession]=useState<VerifiedBattleSession|null>(null)
+  const [preparing,setPreparing]=useState(false)
+  const [failed,setFailed]=useState(false)
+  const fight=async()=>{
+    if(preparing) return
+    setPreparing(true);setFailed(false)
+    try {
+      if(!isGuest) setSession(await beginVerifiedBattle(enemyId,locale))
+      else setSession(null)
+      setBattleKey(k=>k+1);setStarted(true)
+    } catch {setFailed(true);setStarted(false)}
+    finally {setPreparing(false)}
+  }
+
+  if(preparing) return <p role="status" className="p-8 text-center text-white/60">{t('security.preparing')}</p>
 
   if (!started) {
-    return (
+    return (<>
+      {failed&&<p role="alert" className="text-center text-red-300 p-3">{t('security.unavailable')}</p>}
       <PreBattle
         enemy={enemy}
-        onFight={() => {
-          setBattleKey((k) => k + 1)
-          setStarted(true)
-        }}
+        onFight={()=>{void fight()}}
       />
+      </>
     )
   }
 
   return (
     <BattleArena
       key={battleKey}
-      enemy={enemy}
-      texts={texts}
-      onRematch={() => setBattleKey((k) => k + 1)}
+      enemy={session?.enemy??enemy}
+      texts={session?.texts??texts}
+      verifiedSessionId={session?.id}
+      onRematch={()=>{void fight()}}
     />
   )
 }

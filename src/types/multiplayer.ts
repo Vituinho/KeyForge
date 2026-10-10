@@ -76,6 +76,7 @@ export interface MultiplayerMatch {
 }
 
 export interface RoomState {
+  matchId?: string
   code: string // e.g. "KF-9X2Y"
   status: "waiting" | "ready" | "in_match" | "closed"
   host: MultiplayerPlayer

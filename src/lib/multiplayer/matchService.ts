@@ -4,6 +4,7 @@ import { getWordsForMatch } from "@/lib/multiplayer/wordGenerator"
 import { validateWordSubmission, cleanupMatchRateLimits } from "@/lib/multiplayer/antiCheatService"
 
 export interface CreateMatchParams {
+  localPractice?: boolean
   mode: "quick" | "private"
   roomCode?: string
   language?: "pt-BR" | "en"
@@ -29,6 +30,7 @@ export interface SubmitWordParams {
   matchId: string
   eventId: string
   wordIndex: number
+  attempts?: string[]
   wordText: string
   wpm: number
   accuracy: number
@@ -126,7 +128,7 @@ export async function createMatch(
       ? `KF-${Math.random().toString(36).substring(2, 6).toUpperCase()}`
       : `QM-${Math.random().toString(36).substring(2, 6).toUpperCase()}`)
 
-  if (supabase) {
+  if (supabase && !params.localPractice) {
     try {
       const {
         data: { session },
@@ -140,13 +142,14 @@ export async function createMatch(
           p_skin_id: skinId,
           p_word_count: wordCount,
         })
+        if(error) throw new Error(error.message)
 
         if (!error && data) {
           return data as MultiplayerMatchRow
         }
       }
     } catch (err) {
-      console.warn("[MatchService] Supabase create_multiplayer_match failed, using local fallback:", err)
+      throw err
     }
   }
 
@@ -222,13 +225,14 @@ export async function joinMatch(
           p_room_code: normCode,
           p_skin_id: skinId,
         })
+        if(error) throw new Error(error.message)
 
         if (!error && data) {
           return data as MultiplayerMatchRow
         }
       }
     } catch (err) {
-      console.warn("[MatchService] Supabase join_multiplayer_match failed, checking local store:", err)
+      throw err
     }
   }
 
@@ -265,7 +269,7 @@ export async function setPlayerReady(
 ): Promise<MultiplayerMatchRow> {
   const supabase = getSupabaseClient()
 
-  if (supabase) {
+  if (supabase && !params.matchId.startsWith("match_")) {
     try {
       const {
         data: { session },
@@ -275,13 +279,14 @@ export async function setPlayerReady(
           p_match_id: params.matchId,
           p_ready: params.isReady,
         })
+        if(error) throw new Error(error.message)
 
         if (!error && data) {
           return data as MultiplayerMatchRow
         }
       }
     } catch (err) {
-      console.warn("[MatchService] Supabase set_player_ready failed, using local fallback:", err)
+      throw err
     }
   }
 
@@ -328,28 +333,23 @@ export async function submitWordCompletion(
 ): Promise<MultiplayerMatchRow> {
   const supabase = getSupabaseClient()
 
-  if (supabase) {
+  if (supabase && !params.matchId.startsWith("match_")) {
     try {
       const {
         data: { session },
       } = await supabase.auth.getSession()
       if (session?.user?.id) {
-        const { data, error } = await supabase.rpc("submit_word_completion", {
-          p_match_id: params.matchId,
-          p_event_id: params.eventId,
-          p_word_index: params.wordIndex,
-          p_word_text: params.wordText,
-          p_wpm: params.wpm,
-          p_accuracy: params.accuracy,
-          p_combo: params.combo,
+        const { data, error } = await supabase.rpc("submit_word_attempts", {
+          p_match_id: params.matchId,p_event_id:params.eventId,p_word_index:params.wordIndex,p_attempts:params.attempts??[],
         })
+        if(error) throw new Error(error.message)
 
         if (!error && data) {
           return data as MultiplayerMatchRow
         }
       }
     } catch (err) {
-      console.warn("[MatchService] Supabase submit_word_completion failed, using local fallback:", err)
+      throw err
     }
   }
 
@@ -477,7 +477,7 @@ export async function forfeitMatch(
 ): Promise<MultiplayerMatchRow> {
   const supabase = getSupabaseClient()
 
-  if (supabase) {
+  if (supabase && !params.matchId.startsWith("match_")) {
     try {
       const {
         data: { session },
@@ -486,13 +486,14 @@ export async function forfeitMatch(
         const { data, error } = await supabase.rpc("forfeit_match", {
           p_match_id: params.matchId,
         })
+        if(error) throw new Error(error.message)
 
         if (!error && data) {
           return data as MultiplayerMatchRow
         }
       }
     } catch (err) {
-      console.warn("[MatchService] Supabase forfeit_match failed, using local fallback:", err)
+      throw err
     }
   }
 
@@ -526,7 +527,7 @@ export async function claimDisconnectForfeit(
 ): Promise<MultiplayerMatchRow> {
   const supabase = getSupabaseClient()
 
-  if (supabase) {
+  if (supabase && !params.matchId.startsWith("match_")) {
     try {
       const {
         data: { session },
@@ -535,6 +536,7 @@ export async function claimDisconnectForfeit(
         const { data, error } = await supabase.rpc("claim_disconnect_forfeit", {
           p_match_id: params.matchId,
         })
+        if(error) throw new Error(error.message)
 
         if (!error && data) {
           cleanupMatchRateLimits(params.matchId)
@@ -542,7 +544,7 @@ export async function claimDisconnectForfeit(
         }
       }
     } catch (err) {
-      console.warn("[MatchService] Supabase claim_disconnect_forfeit failed, using local fallback:", err)
+      throw err
     }
   }
 
@@ -603,7 +605,7 @@ export async function cancelMatch(
 ): Promise<MultiplayerMatchRow> {
   const supabase = getSupabaseClient()
 
-  if (supabase) {
+  if (supabase && !params.matchId.startsWith("match_")) {
     try {
       const {
         data: { session },
@@ -612,13 +614,14 @@ export async function cancelMatch(
         const { data, error } = await supabase.rpc("cancel_match", {
           p_match_id: params.matchId,
         })
+        if(error) throw new Error(error.message)
 
         if (!error && data) {
           return data as MultiplayerMatchRow
         }
       }
     } catch (err) {
-      console.warn("[MatchService] Supabase cancel_match failed, using local fallback:", err)
+      throw err
     }
   }
 

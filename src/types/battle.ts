@@ -46,6 +46,8 @@ export interface BattleState {
 }
 
 export interface BattleResult {
+  verifiedSessionId?: string
+  inputEvents?: {key:string;at:number}[]
   victory: boolean
   totalDamageDealt: number
   totalDamageTaken: number

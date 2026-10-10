@@ -19,7 +19,8 @@ import {
   setPlayerReadyState,
   leaveRoomState,
 } from "@/lib/multiplayer/roomManager"
-import { setPlayerReady } from "@/lib/multiplayer/matchService"
+import { setPlayerReady,getMatchById,cancelMatch,forfeitMatch } from "@/lib/multiplayer/matchService"
+import { getSupabaseClient } from "@/lib/supabase/client"
 import { useI18n } from "@/lib/i18n/i18nContext"
 import { ConnectionStateBadge } from "./ConnectionStateBadge"
 import { getSkinById, RARITY_DETAILS } from "@/data/keyboardSkins"
@@ -41,6 +42,7 @@ export function PrivateRoomLobby({
   const [room, setRoom] = useState<RoomState>(initialRoom)
   const [copiedCode, setCopiedCode] = useState(false)
   const [countdown, setCountdown] = useState<number | null>(null)
+  const [verificationFailed,setVerificationFailed]=useState(false)
   const countdownTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const isHost = room.host.id === currentPlayer.id
@@ -90,6 +92,34 @@ export function PrivateRoomLobby({
 
   // Supabase Realtime channel subscription
   useEffect(() => {
+    if(initialRoom.matchId&&!initialRoom.matchId.startsWith('match_')) {
+      let active=true,started=false
+      const profiles=new Map<string,{id:string;username:string;level:number;rank:string}>()
+      const identity=async(id:string)=>{
+        if(!profiles.has(id)) {
+          const result=await getSupabaseClient()?.rpc('get_public_player',{p_user_id:id})
+          if(result?.error||!result?.data) throw new Error('Verified identity unavailable')
+          profiles.set(id,result.data)
+        }
+        return profiles.get(id)!
+      }
+      const refresh=async()=>{
+        const match=await getMatchById(initialRoom.matchId!)
+        if(!match) throw new Error('Match unavailable')
+        const [host,guest]=await Promise.all([identity(match.player_1_id),match.player_2_id?identity(match.player_2_id):null])
+        if(!active) return
+        const next:RoomState={...initialRoom,host:{...initialRoom.host,...host,ready:match.player_1_ready,skinId:match.player_1_skin_id},
+          guest:guest?{...currentPlayer,...guest,isHost:false,ready:match.player_2_ready,skinId:match.player_2_skin_id}:null,
+          status:match.status==='cancelled'?'closed':match.player_1_ready&&match.player_2_ready?'ready':'waiting'}
+        setRoom(next);setVerificationFailed(false)
+        if(match.status==='cancelled') {onLeaveRoom();return}
+        if(match.status==='countdown'&&match.started_at) setCountdown(Math.max(0,Math.ceil((new Date(match.started_at).getTime()-Date.now())/1000)))
+        if(!started&&(match.status==='playing'||match.status==='finished'||match.status==='countdown'&&match.started_at&&Date.now()>=new Date(match.started_at).getTime())) {started=true;onStartMatch(next)}
+      }
+      const poll=()=>{void refresh().catch(()=>{if(active) setVerificationFailed(true)})}
+      poll();const timer=setInterval(poll,1000)
+      return()=>{active=false;clearInterval(timer)}
+    }
     const { broadcastRoom, unsubscribe } = subscribeToRoomChannel(
       room.code,
       (updatedRoom) => {
@@ -148,7 +178,7 @@ export function PrivateRoomLobby({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [room.code, isHost, currentPlayer.skinId])
+  }, [room.code, isHost, currentPlayer.skinId,initialRoom.matchId])
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(room.code)
@@ -157,6 +187,12 @@ export function PrivateRoomLobby({
   }
 
   const handleToggleReady = () => {
+    if(room.matchId&&!room.matchId.startsWith('match_')) {
+      void setPlayerReady({matchId:room.matchId,isReady:!myReady}).then(m=>{
+        setVerificationFailed(false);setRoom(prev=>({...prev,host:{...prev.host,ready:m.player_1_ready},guest:prev.guest?{...prev.guest,ready:m.player_2_ready}:null}))
+      }).catch(()=>setVerificationFailed(true))
+      return
+    }
     const nextRoom = setPlayerReadyState(room, currentPlayer.id, !myReady)
     // Preserve skinId on ready toggle
     if (isHost) {
@@ -178,7 +214,7 @@ export function PrivateRoomLobby({
     unsubscribe()
 
     setPlayerReady({
-      matchId: room.code,
+      matchId: room.matchId??room.code,
       isReady: !myReady,
       playerId: currentPlayer.id,
     }).catch((err) => {
@@ -187,6 +223,7 @@ export function PrivateRoomLobby({
   }
 
   const handleStartDuel = () => {
+    if(room.matchId&&!room.matchId.startsWith('match_')) return
     if (!isHost || !bothReady) return
     const { broadcastEvent, unsubscribe } = subscribeToRoomChannel(room.code, () => {})
     broadcastEvent("MATCH_START", currentPlayer.id)
@@ -195,6 +232,10 @@ export function PrivateRoomLobby({
   }
 
   const handleExit = () => {
+    if(room.matchId&&!room.matchId.startsWith('match_')) {
+      void cancelMatch({matchId:room.matchId}).catch(()=>forfeitMatch({matchId:room.matchId!})).then(onLeaveRoom,onLeaveRoom)
+      return
+    }
     if (countdownTimerRef.current) clearInterval(countdownTimerRef.current)
     const nextRoom = leaveRoomState(room, currentPlayer.id)
     const { broadcastRoom, broadcastEvent, unsubscribe } = subscribeToRoomChannel(
@@ -209,6 +250,7 @@ export function PrivateRoomLobby({
 
   return (
     <div className="relative w-full max-w-4xl mx-auto p-6 sm:p-8 rounded-3xl border border-white/10 bg-neutral-950/80 backdrop-blur-xl shadow-2xl text-white space-y-8 overflow-hidden">
+      {verificationFailed&&<p role="alert" className="text-sm text-red-300">{t('security.unavailable')}</p>}
       {/* Anime Background Auras */}
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-orange-600/10 blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-600/10 blur-[120px] pointer-events-none" />

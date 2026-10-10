@@ -246,8 +246,8 @@ export function savePlayerProfile(profile: PlayerProfile): boolean {
  */
 export function resetPlayerProfile(): PlayerProfile {
   if (isBrowser()) {
-    localStorage.removeItem(STORAGE_KEY_V1)
-    localStorage.removeItem(STORAGE_KEY_V2)
+    localStorage.removeItem(scopedStorageKey(STORAGE_KEY_V1))
+    localStorage.removeItem(scopedStorageKey(STORAGE_KEY_V2))
     localStorage.removeItem(scopedStorageKey(STORAGE_KEY))
   }
   const fresh = createDefaultPlayerProfile()

@@ -18,7 +18,7 @@ export function MigrationSyncManager() {
    if(cancelled||!cloud) return
    const personal=loadPlayerProfile()
    preserveLegacyLocal(STORAGE_KEY,localStorage.getItem(scopedStorageKey(STORAGE_KEY)))
-   savePlayerProfile({...cloud,academyProgress:personal.academyProgress,onboardingCompleted:personal.onboardingCompleted,worldIntroSeen:personal.worldIntroSeen})
+   savePlayerProfile({...cloud,onboardingCompleted:personal.onboardingCompleted,worldIntroSeen:personal.worldIntroSeen})
    setNotice(true)
    timer=setTimeout(()=>setNotice(false),8000)
   }).catch(()=>{})

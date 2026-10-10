@@ -23,9 +23,15 @@ export async function saveAccessibilitySettingsCloud(userId:string,settings:Keyb
  return !error
 }
 // Offline compatibility helpers never mint verified inventory.
-export async function unlockCosmeticCloud(_userId:string,_cosmeticId:string):Promise<boolean>{return false}
-export async function updateCrateCloud(_userId:string,_crateId:string,_quantity:number):Promise<boolean>{return false}
-export async function updateShardsCloud(_userId:string,_newShards:number):Promise<boolean>{return false}
+export async function unlockCosmeticCloud(_userId:string,_cosmeticId:string):Promise<boolean>{
+ void [_userId,_cosmeticId];return false
+}
+export async function updateCrateCloud(_userId:string,_crateId:string,_quantity:number):Promise<boolean>{
+ void [_userId,_crateId,_quantity];return false
+}
+export async function updateShardsCloud(_userId:string,_newShards:number):Promise<boolean>{
+ void [_userId,_newShards];return false
+}
 export async function syncLocalToCloud(userId:string,local:PlayerCosmeticsState):Promise<PlayerCosmeticsState> {
  preserveLegacyLocal('keyforge_cosmetics_v1',JSON.stringify(local))
  const cloud=await fetchCloudCosmetics(userId)
