@@ -6,6 +6,7 @@
 
 "use client"
 
+import { scopedStorageKey } from "@/lib/storage/progressionTrust"
 import { useSyncExternalStore, useCallback, useEffect, useMemo, useRef } from "react"
 import {
   PlayerCosmeticsState,
@@ -33,10 +34,12 @@ import {
   updateShardsCloud,
   syncLocalToCloud,
   openCrateCloud,
+  fetchCloudCosmetics,
+  purchaseCrateCloud,
 } from "@/lib/storage/cloudCosmeticsStorage"
 import { useAuth } from "@/lib/auth/authContext"
 import { getSkinById } from "@/data/keyboardSkins"
-import { rollCrateDrop } from "@/data/crates"
+import { ALL_CRATES, rollCrateDrop } from "@/data/crates"
 
 // Cosmetics listeners
 const cosmeticsListeners = new Set<() => void>()
@@ -100,13 +103,15 @@ function readStorage(key: string): string | null {
 }
 let cachedCosmetics: PlayerCosmeticsState | null = null
 let cachedCosmeticsRaw: string | null = null
+let cachedCosmeticsKey = ''
 
 function getCosmeticsSnapshot(): PlayerCosmeticsState {
   if (typeof window === "undefined") {
     return serverCosmetics
   }
-  const raw = readStorage(COSMETICS_STORAGE_KEY)
-  if (raw !== cachedCosmeticsRaw || !cachedCosmetics) {
+  const raw = readStorage(scopedStorageKey(COSMETICS_STORAGE_KEY))
+  if (raw !== cachedCosmeticsRaw || !cachedCosmetics || cachedCosmeticsKey !== scopedStorageKey(COSMETICS_STORAGE_KEY)) {
+    cachedCosmeticsKey = scopedStorageKey(COSMETICS_STORAGE_KEY)
     cachedCosmeticsRaw = raw
     cachedCosmetics = loadCosmeticsState()
   }
@@ -191,6 +196,8 @@ export function useCosmetics() {
         return false
       }
 
+      if (userId && !await saveEquippedSkinCloud(userId, skinId)) return false
+
       const next: PlayerCosmeticsState = {
         ...current,
         equippedSkinId: skinId,
@@ -200,11 +207,7 @@ export function useCosmetics() {
       saveCosmeticsState(next)
       notifyCosmeticsSubscribers()
 
-      if (userId) {
-        saveEquippedSkinCloud(userId, skinId).catch((err) => {
-          console.warn("[useCosmetics] Failed to sync equipped skin to cloud:", err)
-        })
-      }
+
 
       return true
     },
@@ -214,6 +217,7 @@ export function useCosmetics() {
   // Unlock Skin
   const unlockSkin = useCallback(
     async (skinId: string): Promise<boolean> => {
+      if(userId) return false
       const current = loadCosmeticsState()
       if (current.unlockedSkinIds.includes(skinId)) {
         return false // already unlocked
@@ -242,6 +246,7 @@ export function useCosmetics() {
   // Add Crates
   const addCrates = useCallback(
     (crateId: string, count = 1) => {
+      if(userId) return
       const current = loadCosmeticsState()
       const existing = current.crates[crateId] ?? 0
       const nextQuantity = existing + count
@@ -270,6 +275,7 @@ export function useCosmetics() {
   // Consume a Crate
   const consumeCrate = useCallback(
     (crateId: string): boolean => {
+      if(userId) return false
       const current = loadCosmeticsState()
       const existing = current.crates[crateId] ?? 0
       if (existing <= 0) return false
@@ -305,6 +311,7 @@ export function useCosmetics() {
   // Add Forge Shards
   const addShards = useCallback(
     (amount: number) => {
+      if(userId) return
       if (amount <= 0) return
       const current = loadCosmeticsState()
       const nextShards = current.forgeShards + amount
@@ -355,36 +362,14 @@ export function useCosmetics() {
       try {
       const current = loadCosmeticsState()
       const existing = current.crates[crateId] ?? 0
-      if (existing <= 0) return null
+      if (!userId && existing <= 0) return null
 
       if (userId) {
         // Try server-authoritative RPC
         const cloudResult = await openCrateCloud(crateId)
         if (cloudResult) {
-          const nextQuantity = existing - 1
-          const updatedCrates = { ...current.crates }
-          if (nextQuantity <= 0) {
-            delete updatedCrates[crateId]
-          } else {
-            updatedCrates[crateId] = nextQuantity
-          }
-
-          const nextUnlocked = cloudResult.isDuplicate
-            ? current.unlockedSkinIds
-            : Array.from(new Set([...current.unlockedSkinIds, cloudResult.skin.id]))
-
-          const nextShards = current.forgeShards + cloudResult.shardsAwarded
-
-          const next: PlayerCosmeticsState = {
-            ...current,
-            unlockedSkinIds: nextUnlocked,
-            crates: updatedCrates,
-            forgeShards: nextShards,
-            updatedAt: new Date().toISOString(),
-          }
-
-          saveCosmeticsState(next)
-          notifyCosmeticsSubscribers()
+          const cloud=await fetchCloudCosmetics(userId)
+          if(cloud) {saveCosmeticsState(cloud);notifyCosmeticsSubscribers()}
           return cloudResult
         }
         return null
@@ -435,7 +420,28 @@ export function useCosmetics() {
     [userId]
   )
 
+  const forgeCrate=useCallback(async (crateId:string):Promise<boolean>=>{
+    if(openingCrate) return false
+    openingCrate=true
+    try {
+      const crate=ALL_CRATES.find(c=>c.id===crateId)
+      if(!crate) return false
+      if(userId) {
+        if(!await purchaseCrateCloud(crateId)) return false
+        const cloud=await fetchCloudCosmetics(userId)
+        if(cloud) saveCosmeticsState(cloud)
+      } else {
+        const current=loadCosmeticsState()
+        if(current.forgeShards<crate.costShards) return false
+        saveCosmeticsState({...current,forgeShards:current.forgeShards-crate.costShards,crates:{...current.crates,[crateId]:(current.crates[crateId]??0)+1}})
+      }
+      notifyCosmeticsSubscribers()
+      return true
+    } finally {openingCrate=false}
+  },[userId])
+
   return {
+    forgeCrate,
     cosmetics,
     settings,
     equippedSkin,

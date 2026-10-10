@@ -21,8 +21,7 @@ export default function CratesWorkshopPage() {
   const {
     crates,
     forgeShards,
-    addShards,
-    addCrates,
+    forgeCrate,
     isGuest,
   } = useCosmetics()
 
@@ -30,12 +29,11 @@ export default function CratesWorkshopPage() {
   const [forgingCrateId, setForgingCrateId] = useState<string | null>(null)
 
   // Forge a Crate using scrap Forge Shards
-  const handleForgeCrate = (crate: CrateDetails) => {
+  const handleForgeCrate = async (crate: CrateDetails) => {
     if (forgeShards < crate.costShards) return
 
     setForgingCrateId(crate.id)
-    addShards(-crate.costShards)
-    addCrates(crate.id, 1)
+    if(!await forgeCrate(crate.id)) { setForgingCrateId(null); return }
 
     setTimeout(() => {
       setForgingCrateId(null)

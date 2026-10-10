@@ -1,3 +1,4 @@
+import { scopedStorageKey } from "./progressionTrust"
 /**
  * KeyForge Cosmetics Local Storage
  * Manages local persistent cosmetics state, unlocked skins, equipped skin,
@@ -44,10 +45,10 @@ export function loadCosmeticsState(): PlayerCosmeticsState {
   }
 
   try {
-    const raw = localStorage.getItem(COSMETICS_STORAGE_KEY)
+    const raw = localStorage.getItem(scopedStorageKey(COSMETICS_STORAGE_KEY))
     if (!raw) {
       const initial = createDefaultCosmeticsState()
-      localStorage.setItem(COSMETICS_STORAGE_KEY, JSON.stringify(initial))
+      localStorage.setItem(scopedStorageKey(COSMETICS_STORAGE_KEY), JSON.stringify(initial))
       return initial
     }
 
@@ -72,7 +73,7 @@ export function loadCosmeticsState(): PlayerCosmeticsState {
     }
 
     if (missingStarters) {
-      localStorage.setItem(COSMETICS_STORAGE_KEY, JSON.stringify(validated))
+      localStorage.setItem(scopedStorageKey(COSMETICS_STORAGE_KEY), JSON.stringify(validated))
     }
 
     return validated
@@ -88,7 +89,7 @@ export function loadCosmeticsState(): PlayerCosmeticsState {
 export function saveCosmeticsState(state: PlayerCosmeticsState): void {
   if (!isBrowser()) return
   try {
-    localStorage.setItem(COSMETICS_STORAGE_KEY, JSON.stringify(state))
+    localStorage.setItem(scopedStorageKey(COSMETICS_STORAGE_KEY), JSON.stringify(state))
     notifyCosmeticsUpdate()
   } catch (err) {
     console.error("[CosmeticsStorage] Error saving local state:", err)

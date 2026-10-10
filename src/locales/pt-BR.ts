@@ -1,6 +1,13 @@
 import { TranslationSchema } from "./en"
 
 export const ptBR: TranslationSchema = {
+  security: {
+    legacyNotice: "O progresso antigo está preservado separadamente. Recompensas online usam progresso verificado pelo servidor; a prática local continua pessoal.",
+    unavailable: "Recompensas verificadas indisponíveis. Seu progresso local foi preservado.",
+    rejected: "O servidor não conseguiu validar esta atividade. Nenhuma recompensa online foi concedida.",
+    retry: "Tentar verificar novamente",
+    preparing: "Preparando uma batalha verificada…",
+  },
   skinDescriptions: {
       "default_forge": "Teclado mecânico forjado com detalhes em âmbar incandescente.",
       "clean_light": "Teclas brancas de linhas limpas com marcas sutis em grafite.",
