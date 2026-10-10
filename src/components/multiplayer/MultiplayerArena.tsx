@@ -45,7 +45,8 @@ import {
   MultiplayerRewardSummary,
 } from "@/lib/multiplayer/processMultiplayerRewards"
 import { requestProgression,cacheVerifiedReward } from "@/lib/security/progressionClient"
-import { getSupabaseClient } from "@/lib/supabase/client"
+import { SubmissionQueue } from "@/lib/multiplayer/submissionQueue"
+import { backend } from "@/lib/backend/client"
 
 interface FloatingDamage {
   id: number
@@ -78,11 +79,13 @@ export function MultiplayerArena({
   const words = useMemo(() => getMatchWords(currentMatch), [currentMatch])
 
   // Local typing state
-  const myWordIndex = isP1 ? currentMatch.player_1_word_index : currentMatch.player_2_word_index
+  const serverWordIndex = isP1 ? currentMatch.player_1_word_index : currentMatch.player_2_word_index
+  const [localWordIndex,setLocalWordIndex]=useState(serverWordIndex)
+  const myWordIndex=Math.max(localWordIndex,serverWordIndex)
+  const wordIndexRef=useRef(myWordIndex)
   const [typing, setTyping] = useState(createArenaTypingState)
   const typingRef = useRef(typing)
   const wordAttemptsRef=useRef<string[]>([])
-  const pendingWordRef=useRef<SubmitWordParams|null>(null)
   const [submissionFailed,setSubmissionFailed]=useState(false)
   const [lastPressedKey, setLastPressedKey] = useState<string | null>(null)
   const [lastErrorKey, setLastErrorKey] = useState<string | null>(null)
@@ -97,6 +100,8 @@ export function MultiplayerArena({
   const [showDetailedAnalysis, setShowDetailedAnalysis] = useState(false)
 
   useEffect(() => {
+    if(myWordIndex<=wordIndexRef.current) return
+    wordIndexRef.current=myWordIndex
     wordAttemptsRef.current=[]
     typingRef.current = nextArenaWord(typingRef.current)
     setTyping(typingRef.current)
@@ -444,20 +449,23 @@ export function MultiplayerArena({
   },[isFinished,currentMatch,currentUserId,liveWpm,liveAccuracy,maxCombo,rewardRetry])
   useEffect(()=>{
     if(currentMatch.id.startsWith('match_') || !['playing','countdown'].includes(currentMatch.status)) return
-    const beat=()=>{void getSupabaseClient()?.rpc('multiplayer_heartbeat',{p_match_id:currentMatch.id}).then(()=>{},()=>{})}
+    const beat=()=>{void backend('matches',{action:'heartbeat',matchId:currentMatch.id}).then(()=>{},()=>{})}
     beat();const timer=setInterval(beat,5000)
     return()=>clearInterval(timer)
   },[currentMatch.id,currentMatch.status])
 
+  const submissions=useMemo(()=>new SubmissionQueue<SubmitWordParams,MultiplayerMatchRow>(submitWordCompletion,updated=>{setSubmissionFailed(false);setCurrentMatch(previous=>Date.parse(updated.updated_at)>=Date.parse(previous.updated_at)?updated:previous)},()=>setSubmissionFailed(true)),[])
+  useEffect(()=>{submissions.start();return()=>submissions.stop()},[submissions])
+
   // Handle typing input
-  const handleTypingKey = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleTypingKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.ctrlKey || e.metaKey || e.altKey || e.nativeEvent.isComposing) return
     const key = e.key
     if (key !== "Backspace" && Array.from(key).length !== 1) return
     e.preventDefault()
     if (currentMatch.status !== "playing") return
 
-    const currentWord = words[myWordIndex] || ""
+    const currentWord = words[wordIndexRef.current] || ""
     const previous = typingRef.current
     const next = applyArenaTypingKey(previous, currentWord, key)
     if (next === previous) return
@@ -498,62 +506,14 @@ export function MultiplayerArena({
       const completionAccuracy = calculateAccuracy(next.correctChars, next.totalChars)
       setLastErrorKey(null)
 
-      // Submit authoritative word completion to server/service
-      const eventId = `evt_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`
-      try {
-        const submission:SubmitWordParams={
-          matchId: currentMatch.id,
-          eventId,
-          wordIndex: myWordIndex,
-          wordText: currentWord,
-          attempts:wordAttemptsRef.current.slice(),
-          wpm: completionWpm,
-          accuracy: completionAccuracy,
-          combo: newCombo,
-          playerId: currentUserId,
-        }
-        pendingWordRef.current=submission
-        const updated = await submitWordCompletion(submission)
-        pendingWordRef.current=null;setSubmissionFailed(false)
-
-        // Check if an attack resolved
-        const oldOppHp = isP1 ? currentMatch.player_2_hp : currentMatch.player_1_hp
-        const newOppHp = isP1 ? updated.player_2_hp : updated.player_1_hp
-        if (newOppHp < oldOppHp) {
-          const diff = oldOppHp - newOppHp
-          triggerDamageFloat(diff, isP1 ? "p2" : "p1", newCombo >= 10, t("multiplayerArena.comboFloatLabel", { combo: newCombo }))
-          setActiveAttackBeam(isP1 ? "p1_to_p2" : "p2_to_p1")
-          setTimeout(() => setActiveAttackBeam(null), 600)
-          broadcastRef.current?.broadcastAttack(currentUserId, diff, false)
-        }
-
-        const oldMyHp = isP1 ? currentMatch.player_1_hp : currentMatch.player_2_hp
-        const newMyHp = isP1 ? updated.player_1_hp : updated.player_2_hp
-        if (newMyHp < oldMyHp) {
-          setScreenShake(true)
-          setTimeout(() => setScreenShake(false), 400)
-        }
-
-        // Broadcast real-time telemetry to opponent
-        broadcastRef.current?.broadcastTelemetry({
-          playerId: currentUserId,
-          wordIndex: myWordIndex + 1,
-          wpm: completionWpm,
-          accuracy: completionAccuracy,
-          combo: newCombo,
-          attackEnergy: isP1 ? updated.player_1_attack_energy : updated.player_2_attack_energy,
-          hp: isP1 ? updated.player_1_hp : updated.player_2_hp,
-        })
-
-        if (updated.status === "finished") {
-          broadcastRef.current?.broadcastMatchFinished(updated.winner_id, updated.is_draw)
-        }
-
-        setCurrentMatch(updated)
-      } catch (err) {
-        console.warn("[Arena] Submit word failed:", err)
-        setSubmissionFailed(true)
-      }
+      const submission:SubmitWordParams={matchId:currentMatch.id,eventId:crypto.randomUUID(),wordIndex:wordIndexRef.current,wordText:currentWord,attempts:wordAttemptsRef.current.slice(),wpm:completionWpm,accuracy:completionAccuracy,combo:newCombo,playerId:currentUserId}
+      // Cursor feedback and the next word advance synchronously, before any network work.
+      wordIndexRef.current++
+      setLocalWordIndex(wordIndexRef.current)
+      wordAttemptsRef.current=[]
+      typingRef.current=nextArenaWord(next)
+      setTyping(typingRef.current)
+      submissions.enqueue(submission)
     }
   }
 
@@ -590,8 +550,7 @@ export function MultiplayerArena({
       className="relative min-h-screen bg-black text-white flex flex-col justify-between overflow-hidden selection:bg-orange-500/30 selection:text-orange-200"
     >
       {submissionFailed&&<div role="alert" className="relative z-50 p-3 text-center text-red-300 text-sm">{t('security.unavailable')}<button className="kf-btn ml-3" onClick={()=>{
-        const submission=pendingWordRef.current
-        if(submission) void submitWordCompletion(submission).then(m=>{pendingWordRef.current=null;setSubmissionFailed(false);setCurrentMatch(m)}).catch(()=>{})
+        submissions.retry()
       }}>{t('security.retry')}</button></div>}
       {/* Dynamic Background Anime Ambience */}
       <div

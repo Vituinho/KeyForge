@@ -1,4 +1,6 @@
-import { getSupabaseClient } from "@/lib/supabase/client"
+import { backend } from "@/lib/backend/client"
+import { subscribeRealtime } from "@/lib/backend/realtime"
+import { getStoredUser } from "@/lib/auth/authService"
 import { MultiplayerMatchRow, MultiplayerMatchResultRow } from "@/types/database"
 import { getWordsForMatch } from "@/lib/multiplayer/wordGenerator"
 import { validateWordSubmission, cleanupMatchRateLimits } from "@/lib/multiplayer/antiCheatService"
@@ -49,7 +51,7 @@ export interface CancelMatchParams {
 }
 
 /**
- * In-memory / local fallback store for matches when Supabase is offline or in Guest Mode.
+ * In-memory / local fallback store for matches when backend is offline or in Guest Mode.
  * Implements identical server-authoritative rules deterministically.
  */
 const localMatchesStore = new Map<string, MultiplayerMatchRow>()
@@ -116,7 +118,6 @@ function recordLocalMatchResult(
 export async function createMatch(
   params: CreateMatchParams
 ): Promise<MultiplayerMatchRow> {
-  const supabase = getSupabaseClient()
   const mode = params.mode
   const language = params.language || "pt-BR"
   const seed = params.seed ?? Math.floor(Math.random() * 1000000)
@@ -128,30 +129,7 @@ export async function createMatch(
       ? `KF-${Math.random().toString(36).substring(2, 6).toUpperCase()}`
       : `QM-${Math.random().toString(36).substring(2, 6).toUpperCase()}`)
 
-  if (supabase && !params.localPractice) {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      if (session?.user?.id) {
-        const { data, error } = await supabase.rpc("create_multiplayer_match", {
-          p_mode: mode,
-          p_room_code: roomCode,
-          p_language: language,
-          p_seed: seed,
-          p_skin_id: skinId,
-          p_word_count: wordCount,
-        })
-        if(error) throw new Error(error.message)
-
-        if (!error && data) {
-          return data as MultiplayerMatchRow
-        }
-      }
-    } catch (err) {
-      throw err
-    }
-  }
+  if(!params.localPractice&&!getStoredUser().isGuest) return backend('matches',{action:'create',mode:params.mode,language:params.language??'pt-BR'})
 
   // Local fallback (Guest or Offline)
   const hostId = params.guestPlayerId || "guest_player_1"
@@ -211,30 +189,9 @@ export async function createMatch(
 export async function joinMatch(
   params: JoinMatchParams
 ): Promise<MultiplayerMatchRow> {
-  const supabase = getSupabaseClient()
-  const normCode = params.roomCode.trim().toUpperCase()
-  const skinId = params.skinId || "default_forge"
-
-  if (supabase) {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      if (session?.user?.id) {
-        const { data, error } = await supabase.rpc("join_multiplayer_match", {
-          p_room_code: normCode,
-          p_skin_id: skinId,
-        })
-        if(error) throw new Error(error.message)
-
-        if (!error && data) {
-          return data as MultiplayerMatchRow
-        }
-      }
-    } catch (err) {
-      throw err
-    }
-  }
+  if(!getStoredUser().isGuest) return backend('matches',{action:'join',roomCode:params.roomCode.trim().toUpperCase()})
+  const normCode=params.roomCode.trim().toUpperCase()
+  const skinId=params.skinId??'default_forge'
 
   // Local fallback
   const existing =
@@ -267,28 +224,7 @@ export async function joinMatch(
 export async function setPlayerReady(
   params: SetReadyParams
 ): Promise<MultiplayerMatchRow> {
-  const supabase = getSupabaseClient()
-
-  if (supabase && !params.matchId.startsWith("match_")) {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      if (session?.user?.id) {
-        const { data, error } = await supabase.rpc("set_player_ready", {
-          p_match_id: params.matchId,
-          p_ready: params.isReady,
-        })
-        if(error) throw new Error(error.message)
-
-        if (!error && data) {
-          return data as MultiplayerMatchRow
-        }
-      }
-    } catch (err) {
-      throw err
-    }
-  }
+  if(!params.matchId.startsWith('match_')) return backend('matches',{action:'ready',matchId:params.matchId,isReady:params.isReady})
 
   // Local fallback
   const match =
@@ -331,27 +267,7 @@ export async function setPlayerReady(
 export async function submitWordCompletion(
   params: SubmitWordParams
 ): Promise<MultiplayerMatchRow> {
-  const supabase = getSupabaseClient()
-
-  if (supabase && !params.matchId.startsWith("match_")) {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      if (session?.user?.id) {
-        const { data, error } = await supabase.rpc("submit_word_attempts", {
-          p_match_id: params.matchId,p_event_id:params.eventId,p_word_index:params.wordIndex,p_attempts:params.attempts??[],
-        })
-        if(error) throw new Error(error.message)
-
-        if (!error && data) {
-          return data as MultiplayerMatchRow
-        }
-      }
-    } catch (err) {
-      throw err
-    }
-  }
+  if(!params.matchId.startsWith('match_')) return backend('matches',{action:'word',matchId:params.matchId,eventId:params.eventId,wordIndex:params.wordIndex,attempts:params.attempts??[]})
 
   // Local fallback
   const match = localMatchesStore.get(params.matchId)
@@ -475,27 +391,7 @@ export async function submitWordCompletion(
 export async function forfeitMatch(
   params: ForfeitMatchParams
 ): Promise<MultiplayerMatchRow> {
-  const supabase = getSupabaseClient()
-
-  if (supabase && !params.matchId.startsWith("match_")) {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      if (session?.user?.id) {
-        const { data, error } = await supabase.rpc("forfeit_match", {
-          p_match_id: params.matchId,
-        })
-        if(error) throw new Error(error.message)
-
-        if (!error && data) {
-          return data as MultiplayerMatchRow
-        }
-      }
-    } catch (err) {
-      throw err
-    }
-  }
+  if(!params.matchId.startsWith('match_')) return backend('matches',{action:'forfeit',matchId:params.matchId})
 
   const match = localMatchesStore.get(params.matchId)
   if (!match) throw new Error("Match not found")
@@ -525,28 +421,7 @@ export async function forfeitMatch(
 export async function claimDisconnectForfeit(
   params: ForfeitMatchParams
 ): Promise<MultiplayerMatchRow> {
-  const supabase = getSupabaseClient()
-
-  if (supabase && !params.matchId.startsWith("match_")) {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      if (session?.user?.id) {
-        const { data, error } = await supabase.rpc("claim_disconnect_forfeit", {
-          p_match_id: params.matchId,
-        })
-        if(error) throw new Error(error.message)
-
-        if (!error && data) {
-          cleanupMatchRateLimits(params.matchId)
-          return data as MultiplayerMatchRow
-        }
-      }
-    } catch (err) {
-      throw err
-    }
-  }
+  if(!params.matchId.startsWith('match_')) return backend('matches',{action:'disconnect',matchId:params.matchId})
 
   const match = localMatchesStore.get(params.matchId)
   if (!match) throw new Error("Match not found")
@@ -576,23 +451,7 @@ export async function claimDisconnectForfeit(
 export async function getMatchResult(
   matchId: string
 ): Promise<MultiplayerMatchResultRow | null> {
-  const supabase = getSupabaseClient()
-
-  if (supabase) {
-    try {
-      const { data, error } = await supabase
-        .from("multiplayer_match_results")
-        .select("*")
-        .eq("match_id", matchId)
-        .maybeSingle()
-
-      if (!error && data) {
-        return data as MultiplayerMatchResultRow
-      }
-    } catch (err) {
-      console.warn("[MatchService] Supabase getMatchResult failed, checking local store:", err)
-    }
-  }
+  if(!matchId.startsWith('match_')) return backend('matches/'+encodeURIComponent(matchId)+'/result')
 
   return localResultsStore.get(matchId) || null
 }
@@ -603,27 +462,7 @@ export async function getMatchResult(
 export async function cancelMatch(
   params: CancelMatchParams
 ): Promise<MultiplayerMatchRow> {
-  const supabase = getSupabaseClient()
-
-  if (supabase && !params.matchId.startsWith("match_")) {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      if (session?.user?.id) {
-        const { data, error } = await supabase.rpc("cancel_match", {
-          p_match_id: params.matchId,
-        })
-        if(error) throw new Error(error.message)
-
-        if (!error && data) {
-          return data as MultiplayerMatchRow
-        }
-      }
-    } catch (err) {
-      throw err
-    }
-  }
+  if(!params.matchId.startsWith('match_')) return backend('matches',{action:'cancel',matchId:params.matchId})
 
   const match = localMatchesStore.get(params.matchId)
   if (!match) throw new Error("Match not found")
@@ -642,28 +481,12 @@ export async function cancelMatch(
 }
 
 /**
- * Retrieves match by ID from Supabase or local store.
+ * Retrieves match by ID from backend or local store.
  */
 export async function getMatchById(
   matchId: string
 ): Promise<MultiplayerMatchRow | null> {
-  const supabase = getSupabaseClient()
-
-  if (supabase) {
-    try {
-      const { data, error } = await supabase
-        .from("multiplayer_matches")
-        .select("*")
-        .eq("id", matchId)
-        .single()
-
-      if (!error && data) {
-        return data as MultiplayerMatchRow
-      }
-    } catch {
-      // Fallback
-    }
-  }
+  if(!matchId.startsWith('match_')) return backend('matches/'+encodeURIComponent(matchId))
 
   return localMatchesStore.get(matchId) || null
 }
@@ -679,29 +502,13 @@ export function saveLocalMatch(match: MultiplayerMatchRow): void {
 }
 
 /**
- * Retrieves match by room code from Supabase or local store.
+ * Retrieves match by room code from backend or local store.
  */
 export async function getMatchByCode(
   roomCode: string
 ): Promise<MultiplayerMatchRow | null> {
-  const supabase = getSupabaseClient()
-  const norm = roomCode.trim().toUpperCase()
-
-  if (supabase) {
-    try {
-      const { data, error } = await supabase
-        .from("multiplayer_matches")
-        .select("*")
-        .eq("room_code", norm)
-        .single()
-
-      if (!error && data) {
-        return data as MultiplayerMatchRow
-      }
-    } catch {
-      // Fallback
-    }
-  }
+  if(!getStoredUser().isGuest) return backend('rooms/'+encodeURIComponent(roomCode.trim().toUpperCase()))
+  const norm=roomCode.trim().toUpperCase()
 
   return localMatchesStore.get(norm) || null
 }
@@ -748,156 +555,20 @@ export function subscribeToMatchBattle(
   broadcastMatchFinished: (winnerId: string | null, isDraw: boolean) => Promise<void>
   unsubscribe: () => void
 } {
-  const supabase = getSupabaseClient()
-
-  if (!supabase) {
-    return {
-      broadcastTelemetry: async () => {},
-      broadcastAttack: async () => {},
-      broadcastMatchFinished: async () => {},
-      unsubscribe: () => {},
-    }
-  }
-
-  const channel = supabase.channel(`match:${matchId}`, {
-    config: {
-      broadcast: { self: false },
-      presence: { key: currentUserId || "anon" },
-    },
-  })
-
-  // Telemetry stream
-  channel.on("broadcast", { event: "telemetry" }, ({ payload }) => {
-    if (payload && callbacks.onOpponentTelemetry) {
-      callbacks.onOpponentTelemetry(payload as MatchTelemetryPayload)
-    }
-  })
-
-  // Live attack animations
-  channel.on("broadcast", { event: "attack" }, ({ payload }) => {
-    if (payload && callbacks.onAttackEvent) {
-      callbacks.onAttackEvent(payload as { attackerId: string; damage: number; isUlt?: boolean })
-    }
-  })
-
-  // Match finished broadcast
-  channel.on("broadcast", { event: "finished" }, ({ payload }) => {
-    if (payload && callbacks.onMatchFinished) {
-      callbacks.onMatchFinished(payload as { winnerId: string | null; isDraw: boolean })
-    }
-  })
-
-  // Authoritative Postgres DB table changes
-  channel.on(
-    "postgres_changes",
-    {
-      event: "UPDATE",
-      schema: "public",
-      table: "multiplayer_matches",
-      filter: `id=eq.${matchId}`,
-    },
-    (payload) => {
-      if (payload.new && callbacks.onMatchUpdate) {
-        callbacks.onMatchUpdate(payload.new as MultiplayerMatchRow)
-      }
-    }
-  )
-
-  // Presence tracking for opponent disconnect detection
-  channel.on("presence", { event: "sync" }, () => {
-    const presenceState = channel.presenceState()
-    let oppFound = false
-    for (const key in presenceState) {
-      const presences = presenceState[key] as Array<{ playerId?: string }>
-      if (presences.some((p) => p.playerId && p.playerId !== currentUserId)) {
-        oppFound = true
-        break
-      }
-    }
-    callbacks.onOpponentPresenceChange?.(oppFound)
-  })
-
-  channel.on("presence", { event: "join" }, ({ newPresences }) => {
-    const oppJoined = (newPresences as Array<{ playerId?: string }>).some(
-      (p) => p.playerId && p.playerId !== currentUserId
-    )
-    if (oppJoined) {
-      callbacks.onOpponentPresenceChange?.(true)
-    }
-  })
-
-  channel.on("presence", { event: "leave" }, ({ leftPresences }) => {
-    const oppLeft = (leftPresences as Array<{ playerId?: string }>).some(
-      (p) => p.playerId && p.playerId !== currentUserId
-    )
-    if (oppLeft) {
-      callbacks.onOpponentPresenceChange?.(false)
-    }
-  })
-
-  channel.subscribe(async (status) => {
-    if (status === "SUBSCRIBED" && currentUserId) {
-      try {
-        await channel.track({
-          playerId: currentUserId,
-          onlineAt: new Date().toISOString(),
-        })
-      } catch {
-        // Suppress presence track error
-      }
-    }
-  })
 
 
-  const broadcastTelemetry = async (telemetry: MatchTelemetryPayload) => {
-    try {
-      await channel.send({
-        type: "broadcast",
-        event: "telemetry",
-        payload: telemetry,
-      })
-    } catch {
-      // Ignore broadcast errors
-    }
-  }
-
-  const broadcastAttack = async (attackerId: string, damage: number) => {
-    try {
-      await channel.send({
-        type: "broadcast",
-        event: "attack",
-        payload: { attackerId, damage },
-      })
-    } catch {
-      // Ignore broadcast errors
-    }
-  }
-
-  const broadcastMatchFinished = async (winnerId: string | null, isDraw: boolean) => {
-    try {
-      await channel.send({
-        type: "broadcast",
-        event: "finished",
-        payload: { winnerId, isDraw },
-      })
-    } catch {
-      // Ignore broadcast errors
-    }
-  }
-
-  const unsubscribe = () => {
-    try {
-      supabase.removeChannel(channel)
-    } catch {
-      // Ignore
-    }
-  }
-
-  return {
-    broadcastTelemetry,
-    broadcastAttack,
-    broadcastMatchFinished,
-    unsubscribe,
-  }
+  let previous:MultiplayerMatchRow|undefined
+  const unsubscribe=matchId.startsWith('match_')?()=>{}:subscribeRealtime(message=>{
+    if(message.type==='match') {
+      const match=message.match as MultiplayerMatchRow
+      callbacks.onMatchUpdate?.(match)
+      const side=match.player_1_id===currentUserId?'player_2':'player_1'
+      const own=side==='player_2'?'player_1':'player_2'
+      callbacks.onOpponentTelemetry?.({playerId:match[`${side}_id`] as string,wordIndex:match[`${side}_word_index`],wpm:match[`${side}_wpm`],accuracy:match[`${side}_accuracy`],combo:match[`${side}_combo`],attackEnergy:match[`${side}_attack_energy`],hp:match[`${side}_hp`]})
+      if(previous) {const damage=previous[`${own}_hp`]-match[`${own}_hp`];if(damage>0) callbacks.onAttackEvent?.({attackerId:match[`${side}_id`] as string,damage})}
+      if(match.status==='finished') callbacks.onMatchFinished?.({winnerId:match.winner_id,isDraw:match.is_draw})
+      previous=match
+    } else if(message.type==='opponentPresence') callbacks.onOpponentPresenceChange?.(Boolean(message.online))
+  },matchId)
+  return {broadcastTelemetry:async()=>{},broadcastAttack:async()=>{},broadcastMatchFinished:async()=>{},unsubscribe}
 }
-

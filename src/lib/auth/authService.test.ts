@@ -2,8 +2,6 @@ import assert from "node:assert/strict"
 import { test } from "node:test"
 
 // This worker deliberately tests the unconfigured/offline branch, without network requests.
-process.env.NEXT_PUBLIC_SUPABASE_URL = ""
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = ""
 const service = import("./authService")
 const cosmetics = import("../../hooks/useCosmetics")
 

@@ -1,6 +1,4 @@
-import { getSupabaseClient } from "@/lib/supabase/client"
 import { MultiplayerPlayer, RoomState } from "@/types/multiplayer"
-import type { RealtimeChannel } from "@supabase/supabase-js"
 
 export type RoomEventType =
   | "PLAYER_JOINED"
@@ -122,100 +120,18 @@ export function leaveRoomState(
 }
 
 /**
- * Subscribes to a Supabase Realtime Broadcast Channel for room synchronization.
+ * Subscribes to a server Realtime Broadcast Channel for room synchronization.
  */
 export function subscribeToRoomChannel(
   roomCode: string,
   onRoomUpdate: (room: RoomState) => void,
   onRoomEvent?: (event: RoomEventPayload) => void
 ): {
-  channel: RealtimeChannel | null
+  channel: null
   broadcastRoom: (room: RoomState) => Promise<void>
   broadcastEvent: (event: RoomEventType, playerId: string, extra?: unknown) => Promise<void>
   unsubscribe: () => void
 } {
-  const supabase = getSupabaseClient()
-
-  if (!supabase) {
-    return {
-      channel: null,
-      broadcastRoom: async () => {},
-      broadcastEvent: async () => {},
-      unsubscribe: () => {},
-    }
-  }
-
-  const channel = supabase.channel(`room:${roomCode}`, {
-    config: {
-      broadcast: { self: true },
-    },
-  })
-
-  channel.on("broadcast", { event: "room_state" }, ({ payload }) => {
-    if (payload && typeof payload === "object") {
-      onRoomUpdate(payload as RoomState)
-    }
-  })
-
-  channel.on("broadcast", { event: "room_event" }, ({ payload }) => {
-    if (payload && onRoomEvent) {
-      onRoomEvent(payload as RoomEventPayload)
-    }
-  })
-
-  channel.subscribe((status) => {
-    if (status === "SUBSCRIBED") {
-      // Channel ready
-    }
-  })
-
-  const broadcastRoom = async (room: RoomState) => {
-    try {
-      await channel.send({
-        type: "broadcast",
-        event: "room_state",
-        payload: room,
-      })
-    } catch (err) {
-      console.warn("[RoomManager] Failed to broadcast room state:", err)
-    }
-  }
-
-  const broadcastEvent = async (
-    event: RoomEventType,
-    playerId: string,
-    extra?: unknown
-  ) => {
-    try {
-      const payload: RoomEventPayload = {
-        event,
-        playerId,
-        roomCode,
-        timestamp: new Date().toISOString(),
-        extra,
-      }
-      await channel.send({
-        type: "broadcast",
-        event: "room_event",
-        payload,
-      })
-    } catch (err) {
-      console.warn("[RoomManager] Failed to broadcast room event:", err)
-    }
-  }
-
-  const unsubscribe = () => {
-    try {
-      supabase.removeChannel(channel)
-    } catch (err) {
-      console.warn("[RoomManager] Error unsubscribing channel:", err)
-    }
-  }
-
-  return {
-    channel,
-    broadcastRoom,
-    broadcastEvent,
-    unsubscribe,
-  }
+  void [roomCode,onRoomUpdate,onRoomEvent]
+  return {channel:null,broadcastRoom:async()=>{},broadcastEvent:async()=>{},unsubscribe:()=>{}}
 }

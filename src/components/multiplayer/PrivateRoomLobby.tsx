@@ -20,7 +20,7 @@ import {
   leaveRoomState,
 } from "@/lib/multiplayer/roomManager"
 import { setPlayerReady,getMatchById,cancelMatch,forfeitMatch } from "@/lib/multiplayer/matchService"
-import { getSupabaseClient } from "@/lib/supabase/client"
+import { backend } from "@/lib/backend/client"
 import { useI18n } from "@/lib/i18n/i18nContext"
 import { ConnectionStateBadge } from "./ConnectionStateBadge"
 import { getSkinById, RARITY_DETAILS } from "@/data/keyboardSkins"
@@ -90,16 +90,15 @@ export function PrivateRoomLobby({
     }, 1000)
   }
 
-  // Supabase Realtime channel subscription
+  // server Realtime channel subscription
   useEffect(() => {
     if(initialRoom.matchId&&!initialRoom.matchId.startsWith('match_')) {
       let active=true,started=false
       const profiles=new Map<string,{id:string;username:string;level:number;rank:string}>()
       const identity=async(id:string)=>{
         if(!profiles.has(id)) {
-          const result=await getSupabaseClient()?.rpc('get_public_player',{p_user_id:id})
-          if(result?.error||!result?.data) throw new Error('Verified identity unavailable')
-          profiles.set(id,result.data)
+          const result=await backend<{id:string;username:string;level:number;rank:string}>('players/'+encodeURIComponent(id))
+          profiles.set(id,result)
         }
         return profiles.get(id)!
       }

@@ -1,5 +1,5 @@
 import { AuthUser, LoginCredentials, RegisterCredentials } from "@/types/auth"
-import { getSupabaseClient } from "@/lib/supabase/client"
+import { backend, BackendError } from "@/lib/backend/client"
 
 const AUTH_USER_KEY = "keyforge_auth_user"
 const USERNAME_REGEX = /^[a-zA-Z0-9_-]{3,20}$/
@@ -18,26 +18,6 @@ export async function checkUsernameAvailability(username: string): Promise<boole
   const trimmed = username.trim()
   if (!isValidUsername(trimmed)) return false
 
-  const client = getSupabaseClient()
-  if (client) {
-    try {
-      const { data, error } = await client
-        .from("profiles")
-        .select("id")
-        .ilike("username", trimmed)
-        .maybeSingle()
-
-      if (error) {
-        console.warn("Could not query remote profiles for username:", error.message)
-        return true
-      }
-      return !data
-    } catch {
-      return true
-    }
-  }
-
-  // Offline / local validation
   return true
 }
 
@@ -111,123 +91,34 @@ export function clearStoredUser(): AuthUser {
   return freshGuest
 }
 
-/**
- * Signs the user out from Supabase (if connected) and resets local session to guest.
- */
-export async function logoutUser(): Promise<AuthUser> {
-  const client = getSupabaseClient()
-  if (client) {
-    try {
-      await client.auth.signOut()
-    } catch (err) {
-      console.warn("Supabase signOut error:", err)
-    }
-  }
-  return clearStoredUser()
+
+export interface SessionIdentity { id:string; name:string; email:string; createdAt:string }
+export function storeSessionUser(identity:SessionIdentity):AuthUser {
+ const user:AuthUser={id:identity.id,username:identity.name,email:identity.email,isGuest:false,createdAt:identity.createdAt,lastLoginAt:new Date().toISOString()}
+ saveStoredUser(user);return user
 }
-
-/**
- * Real / Service layer for user login.
- */
-export async function loginWithCredentials(
-  credentials: LoginCredentials
-): Promise<AuthUser> {
-  const client = getSupabaseClient()
-  if (client) {
-    const { data, error } = await client.auth.signInWithPassword({
-      email: credentials.email.trim(),
-      password: credentials.password || "",
-    })
-
-    if (error) {
-      const msg = error.message.toLowerCase()
-      if (msg.includes("invalid") || msg.includes("credentials") || error.status === 400) {
-        throw new Error("INVALID_CREDENTIALS")
-      }
-      throw error
-    }
-
-    if (!data.user) {
-      throw new Error("Login failed: no user returned")
-    }
-
-    const username =
-      (data.user.user_metadata?.username as string) ||
-      credentials.email.split("@")[0] ||
-      "Shinobi"
-
-    const timestamp = new Date().toISOString()
-    const authenticatedUser: AuthUser = {
-      id: data.user.id,
-      username,
-      email: data.user.email || credentials.email,
-      isGuest: false,
-      createdAt: data.user.created_at || timestamp,
-      lastLoginAt: timestamp,
-    }
-
-    saveStoredUser(authenticatedUser)
-    return authenticatedUser
-  }
-
-  throw new Error("AUTH_UNAVAILABLE")
+export async function refreshSessionUser():Promise<AuthUser> {
+ const session=await backend<{user:SessionIdentity}|null>('auth/get-session')
+ return session?.user?storeSessionUser(session.user):getStoredUser().isGuest?getStoredUser():clearStoredUser()
 }
-
-/**
- * Real / Service layer for user registration.
- */
-export async function registerWithCredentials(
-  credentials: RegisterCredentials
-): Promise<AuthUser> {
-  const trimmedUser = credentials.username.trim()
-  if (!isValidUsername(trimmedUser)) {
-    throw new Error("INVALID_USERNAME_FORMAT")
+export async function logoutUser():Promise<AuthUser> {
+ await backend('auth/sign-out',{});return clearStoredUser()
+}
+async function credentialsRequest(path:string,payload:unknown):Promise<AuthUser> {
+ try {const data=await backend<{user:SessionIdentity}>(path,payload);return storeSessionUser(data.user)}
+ catch(error) {
+  if(error instanceof BackendError) {
+   if(error.code==='USERNAME_TAKEN') throw new Error('USERNAME_TAKEN')
+   if(error.code?.includes('USER_ALREADY_EXISTS')) throw new Error('EMAIL_EXISTS')
+   throw new Error(error.status===401||error.status===400||error.status===422?'INVALID_CREDENTIALS':'AUTH_UNAVAILABLE')
   }
-
-  const client = getSupabaseClient()
-  if (client) {
-    const isAvailable = await checkUsernameAvailability(trimmedUser)
-    if (!isAvailable) {
-      throw new Error("USERNAME_TAKEN")
-    }
-
-    const { data, error } = await client.auth.signUp({
-      email: credentials.email.trim(),
-      password: credentials.password || "",
-      options: {
-        data: {
-          username: trimmedUser,
-        },
-      },
-    })
-
-    if (error) {
-      const msg = error.message.toLowerCase()
-      if (msg.includes("already registered") || msg.includes("already exists")) {
-        throw new Error("EMAIL_EXISTS")
-      }
-      throw error
-    }
-
-    if (!data.user) {
-      throw new Error("Registration failed: no user returned")
-    }
-
-    if (!data.session) throw new Error("EMAIL_CONFIRMATION_REQUIRED")
-
-    const timestamp = new Date().toISOString()
-    const newUser: AuthUser = {
-      id: data.user.id,
-      username: trimmedUser,
-      email: data.user.email || credentials.email.trim(),
-      isGuest: false,
-      createdAt: data.user.created_at || timestamp,
-      lastLoginAt: timestamp,
-    }
-
-    saveStoredUser(newUser)
-    return newUser
-  }
-
-  throw new Error("AUTH_UNAVAILABLE")
+  throw new Error('AUTH_UNAVAILABLE')
+ }
+}
+export function loginWithCredentials(credentials:LoginCredentials):Promise<AuthUser> {
+ return credentialsRequest('auth/sign-in/email',{email:credentials.email.trim(),password:credentials.password||''})
+}
+export function registerWithCredentials(credentials:RegisterCredentials):Promise<AuthUser> {
+ if(!isValidUsername(credentials.username)) return Promise.reject(new Error('INVALID_USERNAME_FORMAT'))
+ return credentialsRequest('auth/sign-up/email',{name:credentials.username.trim(),email:credentials.email.trim(),password:credentials.password||''})
 }

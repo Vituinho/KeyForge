@@ -1,6 +1,6 @@
-import { getSupabaseClient } from "@/lib/supabase/client"
+import { backend } from "@/lib/backend/client"
+import { getStoredUser } from "@/lib/auth/authService"
 import { createMatch, saveLocalMatch } from "@/lib/multiplayer/matchService"
-import type { RealtimeChannel } from "@supabase/supabase-js"
 
 export interface QueueEntryParams {
   userId: string
@@ -88,54 +88,12 @@ export function createShadowOpponent(params: QueueEntryParams): MatchedOpponent 
 
 /**
  * Enters the casual quick match queue.
- * Checks for waiting human players via Supabase RPC or local fallback.
+ * Checks for waiting human players via backend RPC or local fallback.
  */
 export async function enterMatchmakingQueue(
   params: QueueEntryParams
 ): Promise<MatchmakingResult> {
-  const supabase = getSupabaseClient()
-
-  if (supabase) {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-
-      if (session?.user?.id) {
-        const { data, error } = await supabase.rpc("find_or_create_quick_match", {
-          p_language: params.language,
-          p_skin_id: params.skinId,
-        })
-
-        if(error) throw new Error(error.message)
-        if (!error && data) {
-          const res = data as {
-            status: string
-            match_id?: string
-            opponent_id?: string
-            opponent_username?: string
-          }
-          if (res.status === "matched" && res.match_id) {
-            return {
-              status: "matched",
-              matchId: res.match_id,
-              opponent: {
-                id: res.opponent_id || "opponent_player",
-                username: res.opponent_username || "Shinobi Rival",
-                level: params.level,
-                rank: params.rank,
-                skinId: "default_forge",
-                isShadow: false,
-              },
-            }
-          }
-          return { status: "searching" }
-        }
-      }
-    } catch (err) {
-      return {status:"error",error:err instanceof Error?err.message:"Matchmaking unavailable"}
-    }
-  }
+  if(!getStoredUser().isGuest) {try {return await backend<MatchmakingResult>('queue',{action:'enter',language:params.language})} catch(error) {return {status:'error',error:error instanceof Error?error.message:'Matchmaking unavailable'}}}
 
   // Local Queue Fallback
   for (const [waitingId, entry] of localQueueStore.entries()) {
@@ -198,22 +156,7 @@ export async function enterMatchmakingQueue(
  * Removes player from the matchmaking queue.
  */
 export async function leaveMatchmakingQueue(userId: string): Promise<void> {
-  const supabase = getSupabaseClient()
-
-  if (supabase) {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-
-      if (session?.user?.id) {
-        await supabase.rpc("leave_multiplayer_queue")
-      }
-    } catch {
-      // Suppress cleanup warning
-    }
-  }
-
+  if(!getStoredUser().isGuest) {try {await backend('queue',{action:'leave'})} catch {}}
   localQueueStore.delete(userId)
 }
 
@@ -224,12 +167,7 @@ export async function createShadowMatch(
   params: QueueEntryParams
 ): Promise<MatchmakingResult> {
   // Atomically close searching: a human match won by the queue must not be replaced by a bot.
-  const client=getSupabaseClient()
-  if(client&&(await client.auth.getSession()).data.session) {
-    const {data,error}=await client.rpc('exit_queue_for_practice')
-    if(error) throw new Error(error.message)
-    if(data) return {status:'matched',matchId:data as string}
-  }
+  if(!getStoredUser().isGuest) {const result=await backend<MatchmakingResult>('queue',{action:'practice'});if(result.status==='matched') return result}
   const shadow = createShadowOpponent(params)
 
   const match = await createMatch({
@@ -280,136 +218,19 @@ export function pollOrListenForMatch({
   timeoutSeconds = 5,
   onStatusChange,
 }: PollMatchParams): () => void {
-  let isCancelled = false
-  let elapsed = 0
-  const supabase = getSupabaseClient()
 
-  // Initial searching notification
-  onStatusChange({
-    status: "searching",
-    elapsedSeconds: 0,
-  })
-
-  // Realtime subscription if Supabase is active
-  let realtimeChannel: RealtimeChannel | null = null
-  if (supabase) {
+  let cancelled=false,busy=false,elapsed=0
+  onStatusChange({status:'searching',elapsedSeconds:0})
+  const timer=setInterval(async()=>{
+    if(cancelled||busy) return
+    busy=true;elapsed++
     try {
-      realtimeChannel = supabase
-        .channel(`queue_${userId}`)
-        .on(
-          "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "multiplayer_queue",
-            filter: `user_id=eq.${userId}`,
-          },
-          (payload) => {
-            if (isCancelled) return
-            const row = payload.new as { status?: string; matched_match_id?: string }
-            if (row.status === "matched" && row.matched_match_id) {
-              isCancelled = true
-              onStatusChange({
-                status: "matched",
-                matchedMatchId: row.matched_match_id,
-                elapsedSeconds: elapsed,
-              })
-            }
-          }
-        )
-        .subscribe()
-    } catch {
-      // Realtime fallback to polling
-    }
-  }
-
-  // Interval timer: polls every 1000ms & enforces shadow timeout
-  const timer = setInterval(async () => {
-    if (isCancelled) return
-
-    elapsed += 1
-
-    // Check timeout for Shadow Shinobi fallback
-    if (elapsed >= timeoutSeconds) {
-      isCancelled = true
-      clearInterval(timer)
-      if (realtimeChannel && supabase) {
-        supabase.removeChannel(realtimeChannel)
-      }
-
-      try {
-        const shadowResult = await createShadowMatch(queueParams)
-        onStatusChange({
-          status: "matched",
-          matchedMatchId: shadowResult.matchId,
-          opponent: shadowResult.opponent,
-          elapsedSeconds: elapsed,
-        })
-      } catch (err) {
-        onStatusChange({
-          status: "error",
-          error: err instanceof Error ? err.message : "Match creation failed",
-          elapsedSeconds: elapsed,
-        })
-      }
-      return
-    }
-
-    // Check local queue status
-    const localEntry = localQueueStore.get(userId)
-    if (localEntry && localEntry.status === "matched" && localEntry.matchedMatchId) {
-      isCancelled = true
-      clearInterval(timer)
-      if (realtimeChannel && supabase) {
-        supabase.removeChannel(realtimeChannel)
-      }
-      onStatusChange({
-        status: "matched",
-        matchedMatchId: localEntry.matchedMatchId,
-        elapsedSeconds: elapsed,
-      })
-      return
-    }
-
-    // Check Supabase RPC if active
-    if (supabase) {
-      try {
-        const { data, error } = await supabase.rpc("check_multiplayer_queue")
-        if (!error && data) {
-          const res = data as { status?: string; matched_match_id?: string }
-          if (res.status === "matched" && res.matched_match_id) {
-            isCancelled = true
-            clearInterval(timer)
-            if (realtimeChannel && supabase) {
-              supabase.removeChannel(realtimeChannel)
-            }
-            onStatusChange({
-              status: "matched",
-              matchedMatchId: res.matched_match_id,
-              elapsedSeconds: elapsed,
-            })
-            return
-          }
-        }
-      } catch {
-        // Continue polling
-      }
-    }
-
-    // Still searching: report tick
-    onStatusChange({
-      status: "searching",
-      elapsedSeconds: elapsed,
-    })
-  }, 1000)
-
-  // Return cancellation callback
-  return () => {
-    isCancelled = true
-    clearInterval(timer)
-    if (realtimeChannel && supabase) {
-      supabase.removeChannel(realtimeChannel)
-    }
-    leaveMatchmakingQueue(userId).catch(() => {})
-  }
+      const result=elapsed>=timeoutSeconds?await createShadowMatch(queueParams):!getStoredUser().isGuest?await backend<MatchmakingResult>('queue',{action:'check'}):localQueueStore.get(userId)?.matchedMatchId?{status:'matched',matchId:localQueueStore.get(userId)?.matchedMatchId} as MatchmakingResult:{status:'searching'} as MatchmakingResult
+      if(cancelled) return
+      if(result.status==='matched') {cancelled=true;clearInterval(timer);onStatusChange({status:'matched',matchedMatchId:result.matchId,opponent:result.opponent,elapsedSeconds:elapsed})}
+      else onStatusChange({status:'searching',elapsedSeconds:elapsed})
+    } catch(error) {if(!cancelled) onStatusChange({status:'error',error:error instanceof Error?error.message:'Matchmaking unavailable',elapsedSeconds:elapsed})}
+    finally {busy=false}
+  },1000)
+  return()=>{cancelled=true;clearInterval(timer);void leaveMatchmakingQueue(userId)}
 }

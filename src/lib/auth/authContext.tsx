@@ -22,9 +22,8 @@ import {
   registerWithCredentials,
   logoutUser,
   getStoredUser,
-  clearStoredUser,
+  refreshSessionUser,
 } from "./authService"
-import { getSupabaseClient } from "@/lib/supabase/client"
 
 const DEFAULT_GUEST: AuthUser = {
   id: "guest_initial",
@@ -96,24 +95,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Stored display metadata is not proof of a live authenticated session.
-  useEffect(() => {
-    const client = getSupabaseClient()
-    if (!client) return
-    const { data: { subscription } } = client.auth.onAuthStateChange((event, session) => {
-      if (!session && (event === "SIGNED_OUT" || event === "INITIAL_SESSION")) {
-        if (!getStoredUser().isGuest) { clearStoredUser(); notifyAuthListeners() }
-      } else if (session?.user) {
-        const current = getStoredUser()
-        if (current.id !== session.user.id || current.isGuest) {
-          saveStoredUser({ id: session.user.id, username: session.user.user_metadata?.username || session.user.email?.split("@")[0] || "Player",
-            email: session.user.email, isGuest: false, createdAt: session.user.created_at, lastLoginAt: new Date().toISOString() })
-          notifyAuthListeners()
-        }
-      }
-    })
-    return () => subscription.unsubscribe()
-  }, [])
+  // Cookies are verified by the backend on hydration and when this tab regains focus.
+  useEffect(()=>{
+    let active=true
+    const refresh=()=>{void refreshSessionUser().then(()=>{if(active) notifyAuthListeners()}).catch(()=>{})}
+    refresh();window.addEventListener('focus',refresh)
+    return()=>{active=false;window.removeEventListener('focus',refresh)}
+  },[])
 
   const login = useCallback(async (credentials: LoginCredentials) => {
     setIsLoading(true)

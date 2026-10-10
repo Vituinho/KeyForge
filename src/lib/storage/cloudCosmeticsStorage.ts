@@ -1,26 +1,16 @@
-import { getSupabaseClient } from '@/lib/supabase/client'
+import { backend,BackendError } from '@/lib/backend/client'
+import { getStoredUser } from '@/lib/auth/authService'
 import { CosmeticUnlockResult,KeyboardAccessibilitySettings,PlayerCosmeticsState } from '@/types/cosmetics'
 import { getSkinById } from '@/data/keyboardSkins'
 import { preserveLegacyLocal } from './progressionTrust'
 export async function fetchCloudCosmetics(userId:string):Promise<PlayerCosmeticsState|null> {
- const client=getSupabaseClient()
- if(!client) return null
- const {data:{session}}=await client.auth.getSession()
- if(session?.user.id!==userId) return null
- const {data,error}=await client.rpc('get_verified_cosmetics')
- return !error&&data ? data as PlayerCosmeticsState : null
+ if(getStoredUser().id!==userId) return null;try {return await backend<PlayerCosmeticsState>('inventory')} catch {return null}
 }
 export async function saveEquippedSkinCloud(_userId:string,skinId:string):Promise<boolean> {
- const client=getSupabaseClient()
- if(!client) return false
- const {error}=await client.rpc('equip_verified_skin',{p_skin_id:skinId})
- return !error
+ void _userId;try {await backend('inventory',{action:'equip',skinId});return true} catch {return false}
 }
 export async function saveAccessibilitySettingsCloud(userId:string,settings:KeyboardAccessibilitySettings):Promise<boolean> {
- const client=getSupabaseClient()
- if(!client) return false
- const {error}=await client.from('profiles').update({keyboard_settings:settings}).eq('id',userId)
- return !error
+ void userId;try {await backend('preferences',{keyboardSettings:settings},'PATCH');return true} catch {return false}
 }
 // Offline compatibility helpers never mint verified inventory.
 export async function unlockCosmeticCloud(_userId:string,_cosmeticId:string):Promise<boolean>{
@@ -39,11 +29,8 @@ export async function syncLocalToCloud(userId:string,local:PlayerCosmeticsState)
  return cloud
 }
 export async function openCrateCloud(crateId:string):Promise<CosmeticUnlockResult|null> {
- const client=getSupabaseClient()
- if(!client) return null
- const {data:{session}}=await client.auth.getSession()
- if(!session) return null
- const key='keyforge_crate_intent:'+session.user.id
+ const user=getStoredUser();if(user.isGuest) return null
+ const key='keyforge_crate_intent:'+user.id
  let intent:{crateId:string;requestId:string}
  try {
   const saved=localStorage.getItem(key)
@@ -51,21 +38,15 @@ export async function openCrateCloud(crateId:string):Promise<CosmeticUnlockResul
   if(intent.crateId!==crateId) return null
   localStorage.setItem(key,JSON.stringify(intent))
  } catch {return null}
- const {data,error}=await client.rpc('open_verified_crate',{p_crate_id:crateId,p_request_id:intent.requestId})
- if(error||!data?.success) {
-  // Definite SQL exceptions roll back; ambiguous transport failures retain their transaction ID.
-  if(error?.code&&/^[0-9A-Z]{5}$/.test(error.code)) localStorage.removeItem(key)
-  return null
- }
+ let data:{skin_id:string;is_duplicate:boolean;shards_awarded:number}
+ try {data=await backend('inventory',{action:'open',crateId,requestId:intent.requestId})}
+ catch(error) {if(error instanceof BackendError&&error.status<500) localStorage.removeItem(key);return null}
  localStorage.removeItem(key)
  return {skin:getSkinById(data.skin_id),isDuplicate:data.is_duplicate,shardsAwarded:data.shards_awarded}
 }
 export async function purchaseCrateCloud(crateId:string):Promise<boolean> {
- const client=getSupabaseClient()
- if(!client) return false
- const {data:{session}}=await client.auth.getSession()
- if(!session) return false
- const key='keyforge_purchase_intent:'+session.user.id
+ const user=getStoredUser();if(user.isGuest) return false
+ const key='keyforge_purchase_intent:'+user.id
  let intent:{crateId:string;requestId:string}
  try {
   const saved=localStorage.getItem(key)
@@ -73,11 +54,8 @@ export async function purchaseCrateCloud(crateId:string):Promise<boolean> {
   if(intent.crateId!==crateId) return false
   localStorage.setItem(key,JSON.stringify(intent))
  } catch {return false}
- const {data,error}=await client.rpc('purchase_verified_crate',{p_crate_id:crateId,p_request_id:intent.requestId})
- if(error||!data?.success) {
-  if(error?.code&&/^[0-9A-Z]{5}$/.test(error.code)) localStorage.removeItem(key)
-  return false
- }
+ try {await backend('inventory',{action:'purchase',crateId,requestId:intent.requestId})}
+ catch(error) {if(error instanceof BackendError&&error.status<500) localStorage.removeItem(key);return false}
  localStorage.removeItem(key)
  return true
 }
