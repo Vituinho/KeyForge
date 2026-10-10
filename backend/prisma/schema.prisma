@@ -8,6 +8,7 @@ datasource db {
 model User {
   id String @id
   name String
+  usernameKey String @unique
   email String @unique
   emailVerified Boolean @default(false)
   image String?
@@ -16,6 +17,12 @@ model User {
   sessions Session[]
   accounts Account[]
   player Player?
+  hostedMatches Match[] @relation("Host")
+  joinedMatches Match[] @relation("Guest")
+  matchEvents MatchEvent[]
+  queue Queue?
+  tickets WsTicket[]
+  legacy LegacyRecord[]
 }
 model Session {
   id String @id
@@ -27,6 +34,7 @@ model Session {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tickets WsTicket[]
   @@index([userId])
 }
 model Account {
@@ -104,6 +112,9 @@ model Match {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   events MatchEvent[]
+  host User @relation("Host", fields: [player1], references: [id], onDelete: Restrict)
+  guest User? @relation("Guest", fields: [player2], references: [id], onDelete: Restrict)
+  queued Queue[]
   @@index([player1])
   @@index([player2])
 }
@@ -116,6 +127,7 @@ model MatchEvent {
   data Json
   createdAt DateTime @default(now())
   match Match @relation(fields: [matchId], references: [id], onDelete: Restrict)
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
   @@unique([matchId, userId, eventId])
 }
 model Queue {
@@ -123,12 +135,16 @@ model Queue {
   language String
   matchId String?
   updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  match Match? @relation(fields: [matchId], references: [id], onDelete: Restrict)
 }
 model WsTicket {
   hash String @id
   userId String
   sessionId String
   expiresAt DateTime
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }
 model LegacyRecord {
   sourceId String @id
@@ -136,4 +152,5 @@ model LegacyRecord {
   classification String
   snapshot Json
   importedAt DateTime @default(now())
+  user User? @relation(fields: [userId], references: [id], onDelete: Restrict)
 }

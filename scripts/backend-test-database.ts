@@ -14,6 +14,11 @@ export function backendTestDatabase() {
   const close = () => run("pg_ctl", ["-D", dir, "-w", "stop", "-m", "fast"])
   try {
     execFileSync(process.execPath, ["node_modules/prisma/build/index.js", "migrate", "deploy"], { env: { ...process.env, DATABASE_URL: url }, stdio: "pipe", windowsHide: true, timeout: 60000 })
-    return { url, close, dir }
+    const sql = (query: string) => run("psql", ["-X", "-v", "ON_ERROR_STOP=1", "-h", "127.0.0.1", "-p", String(port), "-U", "postgres", "-d", "postgres", "-At", "-c", query]).trim()
+    sql(`CREATE ROLE keyforge_app LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT;
+      GRANT CONNECT ON DATABASE postgres TO keyforge_app; GRANT USAGE ON SCHEMA public TO keyforge_app;
+      GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA public TO keyforge_app;
+      REVOKE ALL ON "_prisma_migrations" FROM keyforge_app;`)
+    return { url: url.replace("postgres@", "keyforge_app@"), ownerUrl: url, sql, close, dir }
   } catch (error) { close(); throw error }
 }

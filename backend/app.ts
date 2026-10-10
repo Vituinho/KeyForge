@@ -11,24 +11,39 @@ import { progression } from "./progression"
 import { inventoryAction } from "./inventory"
 import { matchAction, matchFor, resultOf, stateOf, queueAction } from "./matches"
 import { realtime } from "./realtime"
+import { timingSafeEqual } from "node:crypto"
+import { isIP } from "node:net"
 export async function createApp(config: BackendConfig) {
   const db = database(config.databaseUrl)
   const auth = authentication(db, config)
   const app = Fastify({ logger: config.production, bodyLimit: 1048576, trustProxy: false })
   await app.register(cors, { origin: config.frontendOrigin, credentials: true })
   await app.register(helmet)
-  await app.register(rateLimit, { max: 300, timeWindow: 60000 })
   app.addHook("onRequest", async (request, reply) => {
     reply.header("Cache-Control", "no-store")
+    if (request.url.startsWith("/api/") && config.proxySecret) {
+      const supplied = Buffer.from(String(request.headers["x-keyforge-proxy"] ?? ""))
+      const expected = Buffer.from(config.proxySecret)
+      if (supplied.length !== expected.length || !timingSafeEqual(supplied, expected)) return reply.code(403).send({ error: "Proxy authentication required" })
+    }
+    const suppliedIp = config.proxySecret ? String(request.headers["x-keyforge-client-ip"] ?? "") : request.ip
+    request.headers["x-keyforge-client-ip"] = isIP(suppliedIp) ? suppliedIp : request.ip
     if (!["GET", "HEAD", "OPTIONS"].includes(request.method) && request.headers.origin !== config.frontendOrigin) return reply.code(403).send({ error: "Forbidden origin" })
   })
+  await app.register(rateLimit, { max: 300, timeWindow: 60000, keyGenerator: request => String(request.headers["x-keyforge-client-ip"] ?? request.ip) })
   app.setErrorHandler((error, request, reply) => {
     request.log.error({ err: error }, "Request rejected")
-    const status = (error as { statusCode?: number }).statusCode
-    reply.code(status && status >= 400 && status < 500 ? status : 422).send({ error: "Request could not be verified" })
+    const { statusCode, code } = error as { statusCode?: number; code?: string }
+    const status = statusCode && statusCode >= 400 && statusCode < 500 ? statusCode : code === "P2002" ? 409 : code === "P2025" ? 422 : code?.startsWith("P") || code?.startsWith("ECONN") ? 503 : 422
+    reply.code(status).send({ error: "Request could not be verified" })
   })
   app.get("/health", async () => { await db.$queryRaw`SELECT 1`; return { ok: true } })
   app.route({ method: ["GET", "POST"], url: "/api/auth/*", handler: async (request, reply) => {
+    const endpoint = request.url.split("?")[0].slice("/api/auth/".length)
+    const allowed = ["sign-up/email", "sign-in/email", "sign-out", "get-session"]
+    if (!allowed.includes(endpoint)) return reply.code(404).send({ error: "Unknown endpoint" })
+    if (endpoint === "sign-up/email") exact(request.body, ["name", "email", "password", "rememberMe", "callbackURL"])
+    if (endpoint === "sign-in/email") exact(request.body, ["email", "password", "rememberMe", "callbackURL"])
     const url = config.frontendOrigin + request.url.replace("/api/auth/", "/api/backend/auth/")
     const response = await auth.handler(new Request(url, { method: request.method, headers: fromNodeHeaders(request.headers), body: request.method === "GET" ? undefined : JSON.stringify(request.body) }))
     reply.code(response.status)
@@ -88,6 +103,7 @@ export async function createApp(config: BackendConfig) {
     }
     await transaction(db, async tx => {
       const row = await player(tx, user.id)
+      if (typeof username === "string") await tx.user.update({ where: { id: user.id }, data: { name: username, usernameKey: username.toLowerCase() } })
       await tx.player.update({ where: { userId: user.id }, data: { ...(typeof username === "string" ? { username, usernameKey: username.toLowerCase() } : {}), ...(keyboardSettings ? { preferences: json({ ...(row.preferences as object), keyboardSettings }) } : {}) } })
     })
     return { success: true }

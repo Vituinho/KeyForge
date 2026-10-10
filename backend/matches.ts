@@ -123,7 +123,7 @@ export async function matchAction(db: Database, userId: string, input: unknown) 
       match[`${side}_last_active_at`] = now
       await tx.matchEvent.create({ data: { matchId: match.id, userId, eventId: input.eventId, binding: digest, data: json({ attempts: typed.totalChars, correct: typed.correctChars, errors: typed.errors, combo: typed.combo, damage, wordIndex: input.wordIndex, keys: input.attempts }) } })
       if (match[`${opponent}_hp`] === 0) finish(match, userId)
-      else if (match.player_1_word_index >= match.word_count && match.player_2_word_index >= match.word_count) finish(match, match.player_1_hp === match.player_2_hp ? null : match.player_1_hp > match.player_2_hp ? match.player_1_id : match.player_2_id)
+      else if (match[`${side}_word_index`] >= match.word_count) finish(match, match.player_1_hp === match.player_2_hp ? null : match.player_1_hp > match.player_2_hp ? match.player_1_id : match.player_2_id)
     } else if (input.action === "ready") {
       exact(input, ["action", "matchId", "isReady"])
       if (typeof input.isReady !== "boolean" || !["waiting", "ready"].includes(match.status)) throw new Error("Invalid ready")
@@ -154,7 +154,14 @@ export async function queueAction(db: Database, userId: string, input: unknown) 
     // Serialize pairing, cancellation and bot handoff across processes.
     await tx.$executeRaw`SELECT pg_advisory_xact_lock(743612)`
     const own = await tx.queue.findUnique({ where: { userId } })
-    if (own?.matchId) return { status: "matched", matchId: own.matchId }
+    if (own?.matchId) {
+      const linked = await tx.match.findUnique({ where: { id: own.matchId } })
+      if (linked && !["finished", "cancelled"].includes(stateOf(linked).status)) {
+        if (input.action === "leave") await tx.queue.delete({ where: { userId } })
+        return { status: "matched", matchId: own.matchId }
+      }
+      await tx.queue.delete({ where: { userId } })
+    }
     if (input.action === "leave" || input.action === "practice") {
       await tx.queue.deleteMany({ where: { userId } }); return { status: "searching" }
     }
