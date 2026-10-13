@@ -21,12 +21,14 @@ export async function createApp(config: BackendConfig) {
   await app.register(helmet)
   app.addHook("onRequest", async (request, reply) => {
     reply.header("Cache-Control", "no-store")
+    let trustedProxy = false
     if (request.url.startsWith("/api/") && config.proxySecret) {
       const supplied = Buffer.from(String(request.headers["x-keyforge-proxy"] ?? ""))
       const expected = Buffer.from(config.proxySecret)
       if (supplied.length !== expected.length || !timingSafeEqual(supplied, expected)) return reply.code(403).send({ error: "Proxy authentication required" })
+      trustedProxy = true
     }
-    const suppliedIp = config.proxySecret ? String(request.headers["x-keyforge-client-ip"] ?? "") : request.ip
+    const suppliedIp = trustedProxy ? String(request.headers["x-keyforge-client-ip"] ?? "") : request.ip
     request.headers["x-keyforge-client-ip"] = isIP(suppliedIp) ? suppliedIp : request.ip
     if (!["GET", "HEAD", "OPTIONS"].includes(request.method) && request.headers.origin !== config.frontendOrigin) return reply.code(403).send({ error: "Forbidden origin" })
   })

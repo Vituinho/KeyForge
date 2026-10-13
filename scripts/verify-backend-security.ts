@@ -283,9 +283,14 @@ async function main() {
   const productionOrigin='https://staging.example.test',proxySecret='secure-test-proxy-secret-1234567890123456'
   const secure=await createApp({...config,production:true,frontendOrigin:productionOrigin,proxySecret})
   try {
+   let observedIp:unknown
+   secure.app.addHook('onResponse',async request=>{observedIp=request.headers['x-keyforge-client-ip']})
+   equal((await secure.app.inject({url:'/health',headers:{'x-keyforge-client-ip':'1.2.3.4'}})).statusCode,200,'public health does not require proxy credentials')
+   equal(observedIp,'127.0.0.1','public endpoint cannot spoof trusted client IP')
    equal((await secure.app.inject({url:'/api/player',headers:{cookie:alice.cookie,'x-forwarded-for':'1.2.3.4'}})).statusCode,403,'untrusted direct proxy headers rejected')
    const secureLogin=await secure.app.inject({method:'POST',url:'/api/auth/sign-in/email',headers:{origin:productionOrigin,'x-keyforge-proxy':proxySecret},payload:{email:'alice@example.test',password:'Strong-password-123'}})
    equal(secureLogin.statusCode,200,'production session login')
+   equal(observedIp,'127.0.0.1','missing trusted IP falls back to transport')
    const setCookie=secureLogin.headers['set-cookie'] as string[]
    const sessionCookie=setCookie.find(value=>value.includes('session_token'))!
    equal(/; Secure/i.test(sessionCookie),true,'production Secure cookie')
