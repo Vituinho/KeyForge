@@ -10,7 +10,18 @@ import { matchFor, matchAction } from "./matches"
 import type { MultiplayerMatchRow } from "../src/types/database"
 type Peer = { socket: WebSocket; userId: string; sessionId: string; matchId?: string; status: string }
 export async function realtime(app: FastifyInstance, db: Database, auth: ReturnType<typeof authentication>, config: BackendConfig) {
-  await app.register(websocket, { options: { maxPayload: 16384 } })
+  await app.register(websocket, {
+    options: { maxPayload: 16384 },
+    async preClose(this: FastifyInstance) {
+      clearInterval(timer)
+      const server = this.websocketServer
+      for (const socket of server.clients) socket.close(1012, "Server restarting")
+      const deadline = setTimeout(() => { for (const socket of server.clients) socket.terminate() }, 2000)
+      deadline.unref()
+      try { await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve())) }
+      finally { clearTimeout(deadline) }
+    },
+  })
   const peers = new Set<Peer>()
   const send = (socket: WebSocket, data: unknown) => { if (socket.readyState === 1) socket.send(JSON.stringify(data)) }
   const presence = async () => {
@@ -42,7 +53,6 @@ export async function realtime(app: FastifyInstance, db: Database, auth: ReturnT
       }
     })().catch(error => app.log.error(error))
   }, 5000)
-  app.addHook("onClose", async () => { clearInterval(timer); for (const peer of peers) peer.socket.close(1001, "Server restarting") })
   app.post("/api/ws-ticket", async request => {
     const { fromNodeHeaders } = await import("better-auth/node")
     const session = await auth.api.getSession({ headers: fromNodeHeaders(request.headers) })

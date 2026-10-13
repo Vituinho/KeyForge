@@ -5,7 +5,7 @@ export type Database = PrismaClient
 export type Transaction = Prisma.TransactionClient
 export const json = (value: unknown): Prisma.InputJsonValue => JSON.parse(JSON.stringify(value))
 export function database(connectionString: string) {
-  return new PrismaClient({ adapter: new PrismaPg({ connectionString, max: 10 }) })
+  return new PrismaClient({ adapter: new PrismaPg({ connectionString, max: 10, connectionTimeoutMillis: 5000 }) })
 }
 export async function transaction<T>(db: Database, run: (tx: Transaction) => Promise<T>): Promise<T> {
   for (let attempt = 0; ; attempt++) {

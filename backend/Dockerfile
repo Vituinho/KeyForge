@@ -15,5 +15,6 @@ COPY --from=build /app/backend/dist ./backend/dist
 COPY --from=build /app/backend/prisma ./backend/prisma
 COPY --from=build /app/prisma.config.ts ./prisma.config.ts
 USER node
+STOPSIGNAL SIGTERM
 EXPOSE 4000
 CMD ["node", "backend/dist/server.mjs"]

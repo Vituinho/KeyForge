@@ -37,7 +37,10 @@ export async function createApp(config: BackendConfig) {
     const status = statusCode && statusCode >= 400 && statusCode < 500 ? statusCode : code === "P2002" ? 409 : code === "P2025" ? 422 : code?.startsWith("P") || code?.startsWith("ECONN") ? 503 : 422
     reply.code(status).send({ error: "Request could not be verified" })
   })
-  app.get("/health", async () => { await db.$queryRaw`SELECT 1`; return { ok: true } })
+  app.get("/health", async (_request, reply) => {
+    try { await db.$queryRaw`SELECT 1`; return { ok: true } }
+    catch { return reply.code(503).send({ ok: false }) }
+  })
   app.route({ method: ["GET", "POST"], url: "/api/auth/*", handler: async (request, reply) => {
     const endpoint = request.url.split("?")[0].slice("/api/auth/".length)
     const allowed = ["sign-up/email", "sign-in/email", "sign-out", "get-session"]
