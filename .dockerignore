@@ -2,7 +2,15 @@ node_modules
 .next
 .git
 .env*
+**/.env*
 backend/dist
 backend/generated
 coverage
 *.tsbuildinfo
+.vercel
+.railway
+.backups
+*.dump
+*.backup
+**/*.dump
+**/*.backup

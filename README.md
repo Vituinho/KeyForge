@@ -109,6 +109,8 @@ Prisma migrations live in `backend/prisma/migrations`. Browser clients have no d
 
 See [deployment and migration instructions](docs/BACKEND_DEPLOYMENT.md), [security boundaries](docs/SECURITY_HARDENING.md) and the [migration report](docs/BACKEND_MIGRATION_REPORT.md).
 
+The [first staging procedure](docs/STAGING_DEPLOYMENT.md) covers isolated Railway/Vercel setup, backups and rollback. Actual services remain unverified until the [two-account evidence checklist](docs/STAGING_VERIFICATION.md) is completed.
+
 ## 🌐 Localization
 
 KeyForge provides 100% synchronized bilingual localization:

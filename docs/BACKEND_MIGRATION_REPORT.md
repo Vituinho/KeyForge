@@ -1,5 +1,7 @@
 # KeyForge backend migration report
 
+This records the completed local migration. Subsequent first-deployment preparation, current Railway configuration instructions and pending real-service evidence are in [STAGING_DEPLOYMENT.md](STAGING_DEPLOYMENT.md) and [STAGING_VERIFICATION.md](STAGING_VERIFICATION.md).
+
 ## Result
 
 The local repository now uses Next.js with a server-only HTTP proxy, a Node 24/Fastify TypeScript backend, Better Auth database sessions, PostgreSQL 18/Prisma and authenticated WebSocket. The previous provider dependency, browser client, environment variables, database API routes, schema scripts and deployment instructions have been removed. The six preceding security commits remain in Git history. No push, deployment, external schema change or production-data deletion was performed.

@@ -35,6 +35,11 @@ yarn-error.log*
 # env files
 .env*
 !.env.example
+!.env.staging.backend.example
+!.env.staging.frontend.example
+.backups/
+*.dump
+*.backup
 
 # vercel
 .vercel

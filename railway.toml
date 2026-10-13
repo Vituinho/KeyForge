@@ -1,3 +1,5 @@
+# Legacy-service compatibility only. New Railway services require explicit dashboard
+# settings; see docs/STAGING_DEPLOYMENT.md. Do not rely on this file for first staging.
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "backend/Dockerfile"
@@ -7,3 +9,5 @@ healthcheckTimeout = 120
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 5
 numReplicas = 1
+overlapSeconds = "0"
+drainingSeconds = "30"

@@ -2,6 +2,8 @@
 
 The current local history preserves the six security commits and replaces their infrastructure with Fastify, Better Auth, Prisma and PostgreSQL. The existing Next.js app remains the frontend. No external deployment, production SQL, push or deletion of player data has been performed. Local verification is distinct from Railway/Vercel staging verification.
 
+For the first real deployment, follow [STAGING_DEPLOYMENT.md](STAGING_DEPLOYMENT.md) and complete [STAGING_VERIFICATION.md](STAGING_VERIFICATION.md). They add explicit isolated-resource setup, backups, rollback and real two-account acceptance; preparing these files does not approve staging.
+
 ## Architecture
 
 Browser HTTP requests use `/api/backend/*` on the frontend origin. A small Next route forwards to the Railway API with a server-only proxy secret. Better Auth uses database sessions and first-party HttpOnly cookies (Secure in production, SameSite=Lax). Neither credentials nor session tokens are stored in localStorage. Local auth metadata is display/cache information only.
@@ -10,7 +12,7 @@ The backend derives the authenticated account from the session, rejects extra pr
 
 WebSocket connects directly to Railway `/ws`. The browser first requests a 60-second, one-use ticket over authenticated HTTP, then sends it in the first WebSocket frame. The ticket is stored hashed and bound to a live database session. Origin, membership, message size/rate and active sessions are checked. Reconnection requests a new ticket and a persisted snapshot. Combat mutations go through the authoritative API; WebSocket only publishes server snapshots/presence. Word submissions queue locally so key feedback and the next word do not await network acknowledgements. Failed events retain their IDs for ordered retry.
 
-Run **one backend replica** for staging. The supplied Railway configuration sets this explicitly. Database transactions remain correct across processes, but socket fanout/presence are process-local; multiple replicas require a shared event bus and cross-process presence before they can be supported.
+Run **one backend replica** for staging. Set this explicitly in new-service settings as described in the staging runbook; the retained legacy Railway file also specifies one replica. Database transactions remain correct across processes, but socket fanout/presence are process-local; multiple replicas require a shared event bus and cross-process presence before they can be supported.
 
 ## Required variables
 
@@ -71,7 +73,7 @@ For records already verified by the preceding trusted implementation, the owner 
 
 ## Railway setup (requires deployment authorization)
 
-Create a separate staging project with PostgreSQL and one backend service. Use repository root as build context; `railway.toml` selects `backend/Dockerfile`. The image builds TypeScript to `backend/dist/server.mjs`, prunes dev dependencies, runs as an unprivileged OS user and listens on Railway's `PORT`. The database connection uses private networking and the runtime role above.
+Create a separate staging project with PostgreSQL and one backend service. Use repository root as build context and set `RAILWAY_DOCKERFILE_PATH=backend/Dockerfile`. Set one replica, healthcheck and shutdown budgets explicitly in the service settings per the staging runbook: new Railway services cannot rely on deprecated `railway.toml`. The image builds TypeScript to `backend/dist/server.mjs`, prunes dev dependencies, runs as an unprivileged OS user and listens on Railway's `PORT`. The database connection uses private networking and the runtime role above.
 
 Apply reviewed migrations with the operator credential **before** deploying the service. Migrations are deliberately not run automatically on server startup or deployment. Docker runtime does not include the Prisma migration CLI after pruning; use an authorized operator checkout/job with `npm ci` for migrations.
 
@@ -79,7 +81,7 @@ Configure backend variables, generate an HTTPS public backend domain, and verify
 
 ## Vercel setup
 
-Use the existing Next preset and repository root, install `npm ci`, build `npm run backend:generate` followed by `npm run build`. Prisma generation is needed for the repository-wide TypeScript check, although the Next app does not import database services into browser bundles. Set server-only `BACKEND_URL`, `BACKEND_PROXY_SECRET`, `FRONTEND_ORIGIN`, and the two public frontend variables above. Use staging-specific secrets/databases, distinct from production. Rebuild when public variables change.
+Use the existing Next preset and repository root. The checked-in `vercel.json` installs `npm ci` and builds `npm run backend:generate` followed by `npm run build`; Node 24.x is required by `package.json`. Prisma generation is needed for the repository-wide TypeScript check, although the Next app does not import database services into browser bundles. Set server-only `BACKEND_URL`, `BACKEND_PROXY_SECRET`, `FRONTEND_ORIGIN`, and the two public frontend variables above. Use staging-specific secrets/databases, distinct from production. Rebuild when public variables change.
 
 Use one exact frontend hostname on staging; preview domains are not automatically trusted. Configure a separate staging backend/origin for a preview deployment rather than accepting wildcard origins. Verify cookies are Secure/HttpOnly/SameSite=Lax/host-only and that logout invalidates the database session and WebSocket access. No database or auth secret may appear in frontend bundles.
 
