@@ -1,0 +1,8 @@
+node_modules
+.next
+.git
+.env*
+backend/dist
+backend/generated
+coverage
+*.tsbuildinfo

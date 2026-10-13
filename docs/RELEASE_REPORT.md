@@ -1,13 +1,13 @@
 # KeyForge — final release pass
 
-Release status: **BLOCKED**. Local implementation and production build are usable; competitive public release still requires server-authority hardening, external-service verification and content rights decisions. See [deployment gate](RELEASE_DEPLOYMENT.md).
+Historical report for the 27-commit frontend pass. Subsequent security/backend migrations supersede the original infrastructure and security findings below; current status and deployment requirements are in [BACKEND_DEPLOYMENT.md](BACKEND_DEPLOYMENT.md).
 
 ## Completed changes
 
 - Premium dark landing with a real interactive typing preview, accurate seven-world roster, responsive header/footer, app navigation and active-route indicators. Removed unsupported ranked-season UI and relabeled the existing level/rank-derived matchmaking estimate; presence stays unknown until synchronized.
 - Preserved validated Academy mastery/adaptive algorithms, manual keys, ABNT2/ANSI, finger guidance and daily goals. Added actual error counts to adaptive recaps and removed blocking delays from legacy/general training and single-player battle sentence changes.
 - Completed free practice and 15/30/60-second benchmarks using the existing attempt-based engine, with per-player/layout local history and statistics. Timed WPM includes the full measurement window. Benchmarks do not award combat XP.
-- Stabilized SSR snapshots, removed fabricated offline authentication, handled confirmation-required signup, restricted return URLs, fixed initial guest state/logout/session reconciliation and reused one Supabase Auth client.
+- Stabilized SSR snapshots, removed fabricated offline authentication, handled confirmation-required signup, restricted return URLs, fixed initial guest state/logout/session reconciliation and reused one persistent authentication client.
 - Moved completion rewards out of render and deduplicated them for the same completion, guarded simultaneous crate opens, kept authenticated opening server-dependent, included the final hit in battle results, stopped render-driven attack-timer restarts and captured exact typing telemetry at battle termination despite sampled HUD updates.
 - Repaired cloud campaign serialization for all seven worlds without schema changes. Local RPG rewards, combat formulas and server-authoritative PvP damage were preserved.
 - Added 56 independent soundtrack mappings, lightweight looping HTMLAudio playback, fades/crossfades, result ducking, cleanup, genuine-interaction autoplay recovery, licensed fallback support, failure caching and persisted master/music/SFX controls. Repaired SFX master-volume routing and disconnected finished oscillator nodes.
@@ -33,7 +33,7 @@ Release status: **BLOCKED**. Local implementation and production build are usabl
 | ef89def | fix: capture complete typing telemetry when battles end |
 | ff59ea3 | style: expose victory coaching and finish mobile navigation |
 | 9092856 | test: make balance simulations deterministic |
-| 05c5dd2 | fix(auth): share a single Supabase session client |
+| 05c5dd2 | fix(auth): share a single persistent session client |
 | 7b08b97 | fix(audio): preserve paused playback when changing volume |
 | c25c2b2 | style(battle): fit combat cards to mobile screens |
 | 4da3279 | fix(i18n): translate all campaign typing focus labels |
@@ -100,18 +100,4 @@ Not verified: real signup/email delivery/login/logout/refresh, cross-device clou
 
 [SOUNDTRACK_MANIFEST.md](SOUNDTRACK_MANIFEST.md) contains the complete 56-character table: actual ID, name, exact filename, intended style, presence and licensing fields. Place assets in `public/audio/bgm/`, complete evidence in `src/lib/audio/battleMusic.ts`, verify actual playback, then enable mappings. No official recordings or third-party character images were added.
 
-Required environment names: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEXT_PUBLIC_SITE_URL`. Supabase policy/RPC staging verification and hosting steps are in [RELEASE_DEPLOYMENT.md](RELEASE_DEPLOYMENT.md). No push, deployment or production database/configuration change was performed.
-
-## Remaining release gates
-
-| Severity | Evidence / exact next action |
-|---|---|
-| P0 — competitive integrity | Owner-writable profile XP/rank/stats and client-controlled campaign/reward data; implement validated eligibility/award ledger and restrict sensitive writes before public competition |
-| P0 — inventory integrity | Owner-inserted cosmetics/crates and trusted local/cloud maximum merge; restrict authoritative awards and verified import, then test replay/concurrency/account isolation |
-| P1 — external verification | Configure staging Auth/Realtime and use two real accounts for login, cloud saves and live PvP end-to-end testing |
-| Content gate | Supply playable licensed/original files for the desired 56-character soundtrack roster; obtain documented permission/clearance or original replacements for franchise content |
-| Production setup | Configure real canonical origin, host and Auth redirects, rebuild and rerun smoke checks on that origin |
-| Non-critical tooling limitation | Full npm audit has five high-severity dev-tool findings; runtime-only audit reports zero. Track a compatible tooling patch without force-downgrading Next ESLint |
-| Persistence limitation | Cloud schema stores world summaries, while some rich campaign milestone/best-score data remain local; validate cross-device expectations |
-
-Do not declare the public release ready until the P0 server-authority gate and the intended content/service requirements have been resolved.
+Current environment names, PostgreSQL migrations and service verification steps are in [BACKEND_DEPLOYMENT.md](BACKEND_DEPLOYMENT.md). The original security blockers were addressed locally by the subsequent six security commits and backend migration; actual deployed staging remains unverified. Existing content rights and soundtrack gates above remain applicable.

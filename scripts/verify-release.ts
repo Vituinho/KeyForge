@@ -10,11 +10,13 @@ function tests(directory: string): string[] {
 const unit = ["node_modules/tsx/dist/cli.mjs", "--test", "--test-concurrency=4", "--test-reporter=spec", ...tests("src").sort()]
 const script = (name: string) => ["node_modules/tsx/dist/cli.mjs", `scripts/${name}.ts`]
 const steps: [string, string[]][] = process.argv.includes("--unit") ? [["unit", unit]] : [
-  ["unit", unit], ["security", script("verify-multiplayer-security")], ["security-database", script("verify-production-security")], ["campaign", script("verify-world-campaign")],
+  ["prisma-client", ["node_modules/prisma/build/index.js", "generate"]],
+  ["unit", unit], ["security", script("verify-multiplayer-security")], ["auth-database", script("verify-backend-auth")], ["security-database", script("verify-production-security")], ["campaign", script("verify-world-campaign")],
   ["progression", script("verify-progression-polish")], ["balance", script("test-balance-profiles")], ["pvp", script("simulate-pvp-battle")],
   ["i18n", script("audit-i18n")], ["audio-assets", script("audit-audio")],
+  ["next-types", ["node_modules/next/dist/bin/next", "typegen"]],
   ["typescript", ["node_modules/typescript/bin/tsc", "--noEmit", "--incremental", "false"]],
-  ["eslint", ["node_modules/eslint/bin/eslint.js"]], ["build", ["node_modules/next/dist/bin/next", "build"]],
+  ["eslint", ["node_modules/eslint/bin/eslint.js"]], ["backend-build", script("build-backend")], ["build", ["node_modules/next/dist/bin/next", "build"]],
   ["security-http", script("verify-security-http")],
 ]
 const logs = mkdtempSync(join(tmpdir(), "keyforge-release-"))

@@ -17,7 +17,14 @@
     "i18n:audit": "tsx scripts/audit-i18n.ts",
     "test": "tsx scripts/verify-release.ts --unit",
     "verify:release": "tsx scripts/verify-release.ts",
-    "audit:audio": "tsx scripts/audit-audio.ts"
+    "audit:audio": "tsx scripts/audit-audio.ts",
+    "backend:generate": "prisma generate",
+    "backend:build": "prisma generate && tsx scripts/build-backend.ts",
+    "backend:start": "node backend/dist/server.mjs",
+    "backend:dev": "tsx watch backend/server.ts",
+    "db:migrate": "prisma migrate deploy",
+    "test:auth": "tsx scripts/verify-backend-auth.ts",
+    "db:import": "tsx scripts/import-legacy.ts"
   },
   "dependencies": {
     "@better-auth/prisma-adapter": "1.7.7",
@@ -27,7 +34,6 @@
     "@fastify/websocket": "11.3.4",
     "@prisma/adapter-pg": "7.10.0",
     "@prisma/client": "7.10.0",
-    "@supabase/supabase-js": "^2.115.0",
     "bcryptjs": "3.0.3",
     "better-auth": "1.7.7",
     "fastify": "5.12.5",
@@ -54,5 +60,9 @@
     "tailwindcss": "^4",
     "tsx": "^4.23.13",
     "typescript": "^5"
+  },
+  "overrides": {
+    "deepmerge-ts": "8.0.2",
+    "mysql2": "3.24.5"
   }
 }

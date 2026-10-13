@@ -1,5 +1,5 @@
 /**
- * Supabase Database TypeScript Schema Definitions for KeyForge
+ * Transport row definitions retained for existing KeyForge gameplay components.
  */
 
 export interface ProfileRow {
@@ -190,61 +190,3 @@ export interface MultiplayerQueueRow {
   queued_at: string
   updated_at: string
 }
-
-export interface Database {
-  public: {
-    Tables: {
-      profiles: {
-        Row: ProfileRow
-        Insert: Partial<ProfileRow> & { id: string; username: string }
-        Update: Partial<ProfileRow>
-      }
-      player_stats: {
-        Row: PlayerStatsRow
-        Insert: Partial<PlayerStatsRow> & { user_id: string }
-        Update: Partial<PlayerStatsRow>
-      }
-      campaign_progress: {
-        Row: CampaignProgressRow
-        Insert: Partial<CampaignProgressRow> & { user_id: string; world_id: string }
-        Update: Partial<CampaignProgressRow>
-      }
-      battle_history: {
-        Row: BattleHistoryRow
-        Insert: Omit<BattleHistoryRow, 'id' | 'played_at'> & { id?: string; played_at?: string }
-        Update: Partial<BattleHistoryRow>
-      }
-      user_cosmetics: {
-        Row: UserCosmeticRow
-        Insert: Partial<UserCosmeticRow> & { user_id: string; cosmetic_id: string }
-        Update: Partial<UserCosmeticRow>
-      }
-      player_crates: {
-        Row: PlayerCrateRow
-        Insert: Partial<PlayerCrateRow> & { user_id: string; crate_id: string }
-        Update: Partial<PlayerCrateRow>
-      }
-      multiplayer_matches: {
-        Row: MultiplayerMatchRow
-        Insert: Partial<MultiplayerMatchRow> & { player_1_id: string; seed: number; mode: "quick" | "private" }
-        Update: Partial<MultiplayerMatchRow>
-      }
-      multiplayer_match_events: {
-        Row: MultiplayerMatchEventRow
-        Insert: Omit<MultiplayerMatchEventRow, 'id' | 'created_at'> & { id?: string; created_at?: string }
-        Update: Partial<MultiplayerMatchEventRow>
-      }
-      multiplayer_match_results: {
-        Row: MultiplayerMatchResultRow
-        Insert: Omit<MultiplayerMatchResultRow, 'id' | 'created_at'> & { id?: string; created_at?: string }
-        Update: Partial<MultiplayerMatchResultRow>
-      }
-      multiplayer_queue: {
-        Row: MultiplayerQueueRow
-        Insert: Partial<MultiplayerQueueRow> & { user_id: string; username: string }
-        Update: Partial<MultiplayerQueueRow>
-      }
-    }
-  }
-}
-

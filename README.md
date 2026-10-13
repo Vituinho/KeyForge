@@ -1,6 +1,6 @@
 # KeyForge ⚔️ — Anime Typing Battle Arena & Academy
 
-> A high-octane, anime-inspired competitive typing game built with Next.js, React 19, TypeScript, Tailwind CSS, Supabase Realtime, and PostgreSQL.
+> A high-octane, anime-inspired competitive typing game built with Next.js, React 19, TypeScript, Tailwind CSS, Fastify, Better Auth, WebSocket, Prisma, and PostgreSQL.
 
 KeyForge turns touch typing into an adrenaline-fueled combat sport. Master keystrokes, charge your attack energy, trigger devastating jutsu ultimates, unlock rare keyboard skins, and clash in synchronized 1v1 PvP anime battles.
 
@@ -43,13 +43,13 @@ KeyForge turns touch typing into an adrenaline-fueled combat sport. Master keyst
 
 ## 🛠️ Tech Stack
 
-- **Framework**: [Next.js 16.3.4](https://nextjs.org/) (App Router, Turbopack)
+- **Framework**: [Next.js 16.3.8](https://nextjs.org/) (App Router, Turbopack)
 - **UI Library**: [React 19](https://react.dev/)
 - **Language**: [TypeScript 5](https://www.typescriptlang.org/)
 - **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
 - **Animation**: [Framer Motion](https://www.framer.com/motion/)
 - **Icons**: [Lucide React](https://lucide.dev/)
-- **Backend / Database**: [Supabase](https://supabase.com/) (PostgreSQL, Row Level Security, Realtime Presence & Broadcast)
+- **Backend / Database**: Node.js + Fastify on Railway, PostgreSQL + Prisma, Better Auth sessions, authenticated WebSocket.
 - **Internationalization**: Native i18n with full parity between English (`en`) and Portuguese (`pt-BR`)
 
 ---
@@ -57,7 +57,7 @@ KeyForge turns touch typing into an adrenaline-fueled combat sport. Master keyst
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+ (Node v24 recommended)
+- Node.js 24 and PostgreSQL 18 for local database tests
 - npm / pnpm / yarn
 
 ### Installation
@@ -73,13 +73,7 @@ cd KeyForge
 npm install
 ```
 
-3. Configure environment variables:
-Create a `.env.local` file in the root directory:
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
-*(Note: KeyForge includes full offline/guest mode fallback when Supabase credentials are not provided.)*
+3. Copy `.env.example` to your local environment and follow [backend setup](docs/BACKEND_DEPLOYMENT.md). Start the backend with its environment loaded, then start the frontend. Guest play remains available without a backend.
 
 4. Run the development server:
 ```bash
@@ -91,13 +85,13 @@ Open [http://localhost:3000](http://localhost:3000) with your browser.
 
 ## 🧪 Testing & Verification
 
-KeyForge includes automated verification suites for security, RLS, and PvP battle simulation:
+KeyForge includes automated verification suites for security, PostgreSQL transactions, and PvP battle simulation:
 
 ```bash
 # Run ESLint validation
 npm run lint
 
-# Run Multiplayer Security & RLS Invariant Audit (10 Invariants)
+# Run Multiplayer Security Invariant Audit (10 Invariants)
 npm run test:security
 
 # Run Autonomous 1v1 PvP Battle Simulation (Quick & Private Duels)
@@ -109,22 +103,11 @@ npm run build
 
 ---
 
-## 📜 Database Schema & Security (Supabase / PostgreSQL)
+## 📜 Database and security
 
-The multiplayer backend is defined in `supabase/multiplayer_schema.sql` and includes:
-- `multiplayer_matches`: Authoritative match state, HP, energy, and telemetry.
-- `multiplayer_match_results`: Immutable match logs and reward distributions.
-- `multiplayer_match_events`: Idempotent event ledger preventing duplicate damage submissions.
-- **Authoritative RPC Functions**:
-  - `create_multiplayer_match`
-  - `join_multiplayer_match`
-  - `set_player_ready`
-  - `submit_word_completion` (Damage calculation, anti-cheat checks, combo scaling)
-  - `trigger_ultimate` (100% threshold check, 160 dmg)
-  - `forfeit_match`
-  - `claim_disconnect_forfeit` (15s inactive grace period verification)
+Prisma migrations live in `backend/prisma/migrations`. Browser clients have no database credentials or direct database access. Authenticated backend services validate typing evidence and match membership before committing progression and inventory in idempotent PostgreSQL transactions.
 
----
+See [deployment and migration instructions](docs/BACKEND_DEPLOYMENT.md), [security boundaries](docs/SECURITY_HARDENING.md) and the [migration report](docs/BACKEND_MIGRATION_REPORT.md).
 
 ## 🌐 Localization
 
