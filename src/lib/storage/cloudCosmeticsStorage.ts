@@ -4,7 +4,8 @@ import { CosmeticUnlockResult,KeyboardAccessibilitySettings,PlayerCosmeticsState
 import { getSkinById } from '@/data/keyboardSkins'
 import { preserveLegacyLocal } from './progressionTrust'
 export async function fetchCloudCosmetics(userId:string):Promise<PlayerCosmeticsState|null> {
- if(getStoredUser().id!==userId) return null;try {return await backend<PlayerCosmeticsState>('inventory')} catch {return null}
+ if(getStoredUser().id!==userId) return null
+ try {const {ownerId,...inventory}=await backend<PlayerCosmeticsState&{ownerId:string}>('inventory');return ownerId===userId?inventory:null} catch {return null}
 }
 export async function saveEquippedSkinCloud(_userId:string,skinId:string):Promise<boolean> {
  void _userId;try {await backend('inventory',{action:'equip',skinId});return true} catch {return false}

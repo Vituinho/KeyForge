@@ -17,7 +17,7 @@ async function proxy(request: Request, context: { params: Promise<{ path: string
   // Vercel overwrites this header. Local development deliberately shares a loopback bucket.
   const ip = process.env.VERCEL ? request.headers.get("x-forwarded-for")?.split(",")[0].trim() : "127.0.0.1"
   if (ip && isIP(ip)) headers.set("x-keyforge-client-ip", ip)
-  for (const name of ["cookie", "content-type", "origin", "user-agent", "accept"]) {
+  for (const name of ["cookie", "content-type", "origin", "user-agent", "accept", "x-keyforge-account"]) {
     const value = request.headers.get(name)
     if (value) headers.set(name, value)
   }

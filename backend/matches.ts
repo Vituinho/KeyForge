@@ -14,6 +14,8 @@ export async function matchFor(tx: Transaction, id: string, userId: string) {
   if (!uuid(id)) throw new Error("Invalid match")
   const match = stateOf(await tx.match.findUniqueOrThrow({ where: { id } }))
   member(match, userId)
+  // Derive the elapsed countdown on reads without overwriting concurrent combat state.
+  if (match.status === "countdown" && match.started_at && Date.parse(match.started_at) <= Date.now()) match.status = "playing"
   return match
 }
 export async function saveMatch(tx: Transaction, match: MultiplayerMatchRow) {
@@ -136,7 +138,10 @@ export async function matchAction(db: Database, userId: string, input: unknown) 
         if (match.status === "countdown" && Date.parse(match.started_at!) <= Date.now()) match.status = "playing"
       } else if (input.action === "forfeit") {
         if (["playing", "countdown"].includes(match.status) && match.player_2_id) finish(match, match[`${opponent}_id`])
-        else if (!["finished", "cancelled"].includes(match.status)) match.status = "cancelled"
+        else if (!["finished", "cancelled"].includes(match.status)) {
+          if (side === "player_2") { match.player_2_id = null; match.player_2_ready = false; match.player_1_ready = false; match.player_2_last_active_at = null; match.status = "waiting" }
+          else match.status = "cancelled"
+        }
       } else if (input.action === "disconnect") {
         if (!["playing", "countdown"].includes(match.status) || !match[`${opponent}_last_active_at`] || Date.now() - Date.parse(match[`${opponent}_last_active_at`]!) < 15000) throw new Error("Opponent still active")
         finish(match, userId)
@@ -173,7 +178,8 @@ export async function queueAction(db: Database, userId: string, input: unknown) 
       const match = await create(tx, waiting.userId, "quick", input.language as "en" | "pt-BR")
       const row = await player(tx, userId)
       match.player_2_id = userId; match.player_2_skin_id = inventoryOf(row).equippedSkinId
-      match.player_1_ready = true; match.player_2_ready = true; match.player_2_last_active_at = new Date().toISOString(); start(match)
+      match.player_1_ready = true; match.player_2_ready = true; match.player_2_last_active_at = new Date().toISOString()
+      match.status = "playing"; match.started_at = new Date().toISOString()
       await saveMatch(tx, match)
       await tx.queue.update({ where: { userId: waiting.userId }, data: { matchId: match.id } })
       await tx.queue.upsert({ where: { userId }, create: { userId, language: match.language, matchId: match.id }, update: { matchId: match.id } })

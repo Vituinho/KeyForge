@@ -55,6 +55,8 @@ export async function createApp(config: BackendConfig) {
   const authenticated = async (request: { headers: Parameters<typeof fromNodeHeaders>[0] }) => {
     const session = await auth.api.getSession({ headers: fromNodeHeaders(request.headers) })
     if (!session) throw Object.assign(new Error("Authentication required"), { statusCode: 401 })
+    const expectedAccount = new Headers(fromNodeHeaders(request.headers)).get("x-keyforge-account")
+    if (expectedAccount && expectedAccount !== session.user.id) throw Object.assign(new Error("Account changed"), { statusCode: 409 })
     await transaction(db, tx => player(tx, session.user.id))
     return session
   }
@@ -87,7 +89,7 @@ export async function createApp(config: BackendConfig) {
   })
   app.post("/api/queue", async request => { const { user } = await authenticated(request); return queueAction(db, user.id, request.body) })
   app.get("/api/player", async request => { const { user } = await authenticated(request); return profileOf(await db.player.findUniqueOrThrow({ where: { userId: user.id } })) })
-  app.get("/api/inventory", async request => { const { user } = await authenticated(request); return inventoryOf(await db.player.findUniqueOrThrow({ where: { userId: user.id } })) })
+  app.get("/api/inventory", async request => { const { user } = await authenticated(request); return { ...inventoryOf(await db.player.findUniqueOrThrow({ where: { userId: user.id } })), ownerId: user.id } })
   app.post("/api/progression", async request => { const { user } = await authenticated(request); return progression(db, user.id, request.body as Record<string, unknown>) })
   app.post("/api/inventory", async request => { const { user } = await authenticated(request); return inventoryAction(db, user.id, request.body) })
   app.patch("/api/preferences", async request => {
@@ -98,7 +100,8 @@ export async function createApp(config: BackendConfig) {
     if (keyboardSettings !== undefined) {
       exact(keyboardSettings, ["showKeyboard", "showHandsGuide", "showHomeRowAnchors", "showFingerName", "effectIntensity", "fingerColors", "handGuide", "keyboardLayout"])
       for (const [key, value] of Object.entries(keyboardSettings)) {
-        if (key.startsWith("show") ? typeof value !== "boolean" : !["full", "subtle", "off", "ABNT2", "ANSI", "auto"].includes(String(value))) throw new Error("Invalid preference")
+        const choices = key === "keyboardLayout" ? ["ABNT2", "ANSI", "auto"] : key === "effectIntensity" ? ["full", "reduced", "off"] : ["full", "subtle", "off"]
+        if (key.startsWith("show") ? typeof value !== "boolean" : !choices.includes(String(value))) throw new Error("Invalid preference")
       }
     }
     await transaction(db, async tx => {

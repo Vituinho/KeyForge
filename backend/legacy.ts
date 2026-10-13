@@ -26,7 +26,7 @@ export async function importLegacy(db: Database, records: unknown, archiveHash: 
         // An audit reference is retained; browser/local snapshots belong in legacy.
         exact(record.verified, ["profile", "inventory", "auditReference", "receipts"])
         if (typeof record.verified.auditReference !== "string" || record.verified.auditReference.length < 8 || !Array.isArray(record.verified.receipts)) throw new Error("Missing verified provenance")
-        exact(record.verified.profile, Object.keys(profile))
+        exact(record.verified.profile, [...Object.keys(profile), "academyProgress", "title", "titles", "skillProfile"])
         if (record.verified.profile.id !== id || typeof record.verified.profile.level !== "number" || !Number.isInteger(record.verified.profile.level) || record.verified.profile.level < 1 || typeof record.verified.profile.totalXp !== "number" || record.verified.profile.totalXp < 0) throw new Error("Invalid verified profile")
         exact(record.verified.inventory, ["unlockedSkinIds", "equippedSkinId", "crates", "forgeShards", "updatedAt"])
         inventory = record.verified.inventory as unknown as PlayerCosmeticsState
@@ -38,8 +38,12 @@ export async function importLegacy(db: Database, records: unknown, archiveHash: 
       await tx.player.create({ data: { userId: id, username: record.username, usernameKey: record.username.toLowerCase(), profile: json(verifiedProfile), inventory: json(inventory) } })
       if (record.verified) for (const receipt of record.verified.receipts as unknown[]) {
         exact(receipt, ["source", "receipt"])
-        if (typeof receipt.source !== "string" || !/^(battle|practice|pvp|inventory):[0-9a-f-]{36}$/i.test(receipt.source) || receipt.receipt === undefined) throw new Error("Invalid archived receipt")
+        if (typeof receipt.source !== "string" || !/^(battle|practice|pvp|inventory|crate|purchase):[0-9a-f-]{36}$/i.test(receipt.source) || receipt.receipt === undefined) throw new Error("Invalid archived receipt")
         await tx.receipt.create({ data: { userId: id, source: receipt.source, binding: "owner-imported-historical-receipt", receipt: json(receipt.receipt) } })
+        if (/^(crate|purchase):/.test(receipt.source)) {
+          const source = receipt.source.replace(/^(crate|purchase):/, "inventory:")
+          await tx.receipt.upsert({ where: { userId_source: { userId: id, source } }, create: { userId: id, source, binding: "owner-imported-historical-receipt", receipt: json(receipt.receipt) }, update: {} })
+        }
       }
       await tx.legacyRecord.create({ data: { sourceId, userId: id, classification: record.verified ? "owner-verified-export" : "unverified-legacy", snapshot: json(record) } })
       imported++

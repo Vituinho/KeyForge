@@ -136,6 +136,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const loginAsGuest = useCallback((customUsername?: string) => {
+    if(!getStoredUser().isGuest) {
+      void logoutUser().then(()=>{
+        saveStoredUser(createGuestUser(customUsername));notifyAuthListeners();setError(null)
+      }).catch(()=>setError('AUTH_UNAVAILABLE'))
+      return
+    }
     const guest = createGuestUser(customUsername)
     saveStoredUser(guest)
     notifyAuthListeners()

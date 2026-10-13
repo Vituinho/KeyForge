@@ -565,7 +565,12 @@ export function subscribeToMatchBattle(
       const side=match.player_1_id===currentUserId?'player_2':'player_1'
       const own=side==='player_2'?'player_1':'player_2'
       callbacks.onOpponentTelemetry?.({playerId:match[`${side}_id`] as string,wordIndex:match[`${side}_word_index`],wpm:match[`${side}_wpm`],accuracy:match[`${side}_accuracy`],combo:match[`${side}_combo`],attackEnergy:match[`${side}_attack_energy`],hp:match[`${side}_hp`]})
-      if(previous) {const damage=previous[`${own}_hp`]-match[`${own}_hp`];if(damage>0) callbacks.onAttackEvent?.({attackerId:match[`${side}_id`] as string,damage})}
+      if(previous) {
+        const damage=previous[`${own}_hp`]-match[`${own}_hp`]
+        if(damage>0) callbacks.onAttackEvent?.({attackerId:match[`${side}_id`] as string,damage})
+        const ownDamage=previous[`${side}_hp`]-match[`${side}_hp`]
+        if(ownDamage>0) callbacks.onAttackEvent?.({attackerId:match[`${own}_id`] as string,damage:ownDamage})
+      }
       if(match.status==='finished') callbacks.onMatchFinished?.({winnerId:match.winner_id,isDraw:match.is_draw})
       previous=match
     } else if(message.type==='opponentPresence') callbacks.onOpponentPresenceChange?.(Boolean(message.online))

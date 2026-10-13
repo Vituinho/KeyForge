@@ -257,6 +257,11 @@ export function MultiplayerArena({
           })
         },
         onAttackEvent: (event) => {
+          if (event.attackerId === currentUserId) {
+            triggerDamageFloat(event.damage,isP1?"p2":"p1",false,t("multiplayerArena.comboFloatLabel",{combo:typingRef.current.combo}))
+            setActiveAttackBeam(isP1?"p1_to_p2":"p2_to_p1")
+            setTimeout(()=>setActiveAttackBeam(null),600)
+          }
           if (event.attackerId !== currentUserId) {
             triggerDamageFloat(
               event.damage,

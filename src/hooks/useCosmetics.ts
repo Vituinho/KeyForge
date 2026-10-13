@@ -1,6 +1,6 @@
 /**
  * KeyForge useCosmetics Hook
- * Unifies local guest cosmetics with Supabase cloud persistence.
+ * Unifies local guest cosmetics with authenticated backend persistence.
  * Reactive across components and tabs via useSyncExternalStore.
  */
 

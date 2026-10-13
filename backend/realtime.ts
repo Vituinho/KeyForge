@@ -21,6 +21,7 @@ export async function realtime(app: FastifyInstance, db: Database, auth: ReturnT
   }
   const publish = async (match: MultiplayerMatchRow) => {
     for (const peer of peers) if (peer.matchId === match.id) {
+      if (![match.player_1_id,match.player_2_id].includes(peer.userId)) { peer.socket.close(1008,"Membership ended"); continue }
       send(peer.socket, { type: "match", match })
       const opponent = peer.userId === match.player_1_id ? match.player_2_id : match.player_1_id
       send(peer.socket, { type: "opponentPresence", online: [...peers].some(other => other.matchId === match.id && other.userId === opponent) })
@@ -29,13 +30,15 @@ export async function realtime(app: FastifyInstance, db: Database, auth: ReturnT
   const timer = setInterval(() => {
     void (async () => {
       for (const peer of peers) {
-        const session = await db.session.findUnique({ where: { id: peer.sessionId } })
-        if (!session || session.expiresAt.getTime() <= Date.now()) { peer.socket.close(1008, "Session expired"); continue }
-        if (peer.matchId) {
-          const match = await matchAction(db, peer.userId, { action: "heartbeat", matchId: peer.matchId })
-          await publish(match)
-        }
-        peer.socket.ping()
+        try {
+          const session = await db.session.findUnique({ where: { id: peer.sessionId } })
+          if (!session || session.expiresAt.getTime() <= Date.now()) { peer.socket.close(1008, "Session expired"); continue }
+          if (peer.matchId) {
+            const match = await matchAction(db, peer.userId, { action: "heartbeat", matchId: peer.matchId })
+            await publish(match)
+          }
+          peer.socket.ping()
+        } catch { peer.socket.close(1008,"Session or membership unavailable") }
       }
     })().catch(error => app.log.error(error))
   }, 5000)

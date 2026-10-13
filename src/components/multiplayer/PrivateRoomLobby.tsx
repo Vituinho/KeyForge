@@ -21,6 +21,8 @@ import {
 } from "@/lib/multiplayer/roomManager"
 import { setPlayerReady,getMatchById,cancelMatch,forfeitMatch } from "@/lib/multiplayer/matchService"
 import { backend } from "@/lib/backend/client"
+import { subscribeRealtime } from "@/lib/backend/realtime"
+import type { MultiplayerMatchRow } from "@/types/database"
 import { useI18n } from "@/lib/i18n/i18nContext"
 import { ConnectionStateBadge } from "./ConnectionStateBadge"
 import { getSkinById, RARITY_DETAILS } from "@/data/keyboardSkins"
@@ -102,8 +104,8 @@ export function PrivateRoomLobby({
         }
         return profiles.get(id)!
       }
-      const refresh=async()=>{
-        const match=await getMatchById(initialRoom.matchId!)
+      const refresh=async(incoming?:MultiplayerMatchRow)=>{
+        const match=incoming??await getMatchById(initialRoom.matchId!)
         if(!match) throw new Error('Match unavailable')
         const [host,guest]=await Promise.all([identity(match.player_1_id),match.player_2_id?identity(match.player_2_id):null])
         if(!active) return
@@ -117,7 +119,8 @@ export function PrivateRoomLobby({
       }
       const poll=()=>{void refresh().catch(()=>{if(active) setVerificationFailed(true)})}
       poll();const timer=setInterval(poll,1000)
-      return()=>{active=false;clearInterval(timer)}
+      const unsubscribe=subscribeRealtime(message=>{if(message.type==='match') void refresh(message.match as MultiplayerMatchRow).catch(()=>{if(active) setVerificationFailed(true)})},initialRoom.matchId)
+      return()=>{active=false;clearInterval(timer);unsubscribe()}
     }
     const { broadcastRoom, unsubscribe } = subscribeToRoomChannel(
       room.code,

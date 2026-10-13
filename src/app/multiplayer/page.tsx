@@ -166,7 +166,9 @@ function MultiplayerContent() {
         skinId: equippedSkin.id,
         guestPlayerId: user?.id || "player_local",
       })
-      setActiveRoom({...newRoom,matchId:match.id})
+      const roomCode=match.room_code??newRoom.code
+      setCreatedRoomCode(roomCode)
+      setActiveRoom({...newRoom,code:roomCode,matchId:match.id})
     } catch (err) {
       console.warn("[PrivateRoom] Authoritative match creation notice:", err)
       setActiveRoom(null);setErrorMessage(t('security.unavailable'))

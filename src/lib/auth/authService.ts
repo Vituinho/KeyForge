@@ -98,7 +98,9 @@ export function storeSessionUser(identity:SessionIdentity):AuthUser {
  saveStoredUser(user);return user
 }
 export async function refreshSessionUser():Promise<AuthUser> {
+ const previous=getStoredUser()
  const session=await backend<{user:SessionIdentity}|null>('auth/get-session')
+ if(getStoredUser().id!==previous.id) return getStoredUser()
  return session?.user?storeSessionUser(session.user):getStoredUser().isGuest?getStoredUser():clearStoredUser()
 }
 export async function logoutUser():Promise<AuthUser> {
