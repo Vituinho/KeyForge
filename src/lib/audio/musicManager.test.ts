@@ -50,12 +50,16 @@ test("fade-in, loop and same-enemy requests preserve playback through sentences 
   assert.equal(audios.length, 1); assert.equal(audios[0].plays, 1)
   manager.cleanup()
 })
-test("crossfade releases the old track, while results duck smoothly and exit cleans resources", async () => {
+test("sequential fades never overlap recordings; results duck smoothly and exit cleans resources", async () => {
   const { manager, audios, advance, frames } = harness()
   manager.play(track("r")); await settle(); advance(650)
-  manager.play(track("t")); await settle(); advance(400)
-  assert.ok(audios[0].volume > 0 && audios[1].volume > 0)
-  advance(400); assert.equal(audios[0].removed, true)
+  manager.play(track("t")); await settle(); advance(125)
+  assert.equal(audios.length, 1)
+  assert.ok(audios[0].volume > 0)
+  advance(125); await settle(); advance(650)
+  assert.equal(audios[0].removed, true)
+  assert.equal(audios[0].paused, true)
+  assert.equal(audios[1].paused, false)
   manager.setResultMode(true); advance(250)
   assert.ok(audios[1].volume < .245 && audios[1].volume > .073)
   advance(250); assert.ok(Math.abs(audios[1].volume - .0735) < .00001)
@@ -117,4 +121,63 @@ test("playback rejection uses the licensed fallback without retrying failed medi
   manager.play(track("r"), track("fallback"))
   assert.equal(audios.length, 2)
   manager.cleanup()
+})
+
+test("local Blob tracks loop with existing volumes and release object URLs on exit", async () => {
+  const { manager, audios, advance } = harness()
+  let revoked = 0
+  manager.play({ kind: "local", enemyId: "naruto", name: "personal.mp3", file: "blob:personal", dispose: () => { revoked++ } })
+  await settle(); advance(650)
+  assert.equal(audios[0].loop, true)
+  assert.equal(audios[0].volume, .7 * .35)
+  assert.equal(manager.getStatus(), "playing")
+  manager.cleanup()
+  assert.equal(revoked, 1)
+  assert.equal(manager.getStatus(), "idle")
+})
+
+test("rapid encounter changes cancel queued tracks without overlapping or leaking local URLs", async () => {
+  const { manager, audios, advance } = harness()
+  let revoked = 0
+  manager.play(track("r")); await settle(); advance(650)
+  manager.play({ kind: "local", enemyId: "pain", name: "boss.mp3", file: "blob:boss", dispose: () => { revoked++ } })
+  manager.play(track("goku"))
+  assert.equal(revoked, 1)
+  assert.equal(audios.length, 1)
+  advance(250); await settle()
+  assert.equal(audios.length, 2)
+  assert.equal(audios[0].paused, true)
+  assert.equal(audios[1].paused, false)
+  manager.cleanup()
+})
+
+test("autoplay status recovers, unsupported local audio fails safely, and remote local-track URLs are rejected", async () => {
+  const { manager, audios } = harness()
+  manager.play({ kind: "local", enemyId: "r", name: "invalid", file: "https://example.test/audio.mp3", dispose: () => {} })
+  assert.equal(audios.length, 0)
+  manager.play(track("r")); await settle()
+  audios[0].blocked = true; manager.pause(); manager.resume(); await settle()
+  assert.equal(manager.getStatus(), "blocked")
+  audios[0].blocked = false; manager.resume(); await settle()
+  assert.equal(manager.getStatus(), "playing")
+  manager.cleanup()
+  let revoked = 0
+  manager.play({ kind: "local", enemyId: "r", name: "unsupported", file: "blob:unsupported", dispose: () => { revoked++ } })
+  await settle(); audios[1].unsupported = true
+  manager.pause(); manager.resume(); await settle()
+  assert.equal(manager.getStatus(), "failed")
+  assert.equal(revoked, 1)
+  manager.cleanup()
+})
+
+test("exit during an encounter transition cancels the incoming recording and releases its Blob URL", async () => {
+  const { manager, audios, advance, frames } = harness()
+  let revoked = 0
+  manager.play(track("r")); await settle(); advance(650)
+  manager.play({ kind: "local", enemyId: "pain", name: "boss.mp3", file: "blob:boss", dispose: () => { revoked++ } })
+  manager.cleanup(); advance(1000); await settle()
+  assert.equal(audios.length, 1)
+  assert.equal(audios[0].paused, true)
+  assert.equal(revoked, 1)
+  assert.equal(frames.size, 0)
 })
