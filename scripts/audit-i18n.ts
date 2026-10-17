@@ -7,6 +7,7 @@ import { readFileSync, readdirSync, statSync } from "fs"
 import { join, extname } from "path"
 import { en } from "../src/locales/en"
 import { ptBR } from "../src/locales/pt-BR"
+import ts from "typescript"
 
 // ─── 1. Key parity check ─────────────────────────────────────────────────────
 
@@ -91,9 +92,20 @@ interface SuspiciousHit {
 }
 
 const suspiciousHits: SuspiciousHit[] = []
+const missingReferences: { file: string; key: string }[] = []
 
 for (const file of tsxFiles) {
-  const lines = readFileSync(file, "utf-8").split("\n")
+  const content = readFileSync(file, "utf-8")
+  const source = ts.createSourceFile(file, content, ts.ScriptTarget.Latest, true)
+  const inspect = (node: ts.Node) => {
+    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === "t") {
+      const key = node.arguments[0]
+      if (key && ts.isStringLiteral(key) && !enKeys.has(key.text)) missingReferences.push({ file, key: key.text })
+    }
+    ts.forEachChild(node, inspect)
+  }
+  inspect(source)
+  const lines = content.split("\n")
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]
     if (isSafeLine(line)) continue
@@ -114,6 +126,11 @@ for (const file of tsxFiles) {
 // ─── 3. Report ────────────────────────────────────────────────────────────────
 
 let hasErrors = false
+if (missingReferences.length) {
+  hasErrors = true
+  console.log("❌ Translation references without dictionary entries:")
+  missingReferences.forEach(({ file, key }) => console.log(`  ${file}: ${key}`))
+}
 
 console.log("\n╔═══════════════════════════════════════════════╗")
 console.log("║      KeyForge i18n Audit — Results            ║")
@@ -155,11 +172,12 @@ console.log(`  en.ts keys       : ${enKeys.size}`)
 console.log(`  pt-BR.ts keys    : ${ptBRKeys.size}`)
 console.log(`  Missing in pt-BR : ${missingInPtBR.length}`)
 console.log(`  Missing in en    : ${missingInEn.length}`)
+console.log(`  Missing references: ${missingReferences.length}`)
 console.log(`  Suspicious hits  : ${suspiciousHits.length} (manual review)`)
 console.log()
 
 if (hasErrors) {
-  console.error("❌  Audit FAILED — fix key parity errors before committing.\n")
+  console.error("❌  Audit FAILED — fix missing keys and translation parity before committing.\n")
   process.exit(1)
 } else {
   console.log("✅  Audit PASSED — key parity is 100%.\n")

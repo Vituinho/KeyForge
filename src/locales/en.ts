@@ -43,8 +43,9 @@ export const en = {
       "glitch_singularity": "Corrupted reality layer leaking raw assembler memory and flickering green code streams.",
       "void_god_entity": "The primordial origin before keystrokes existed. A blinding event horizon of pure creation."
   },
-  release: { onboardingCombat: "Typing combat", onboardingPrecision: "Accuracy first", "practiceHistory": "Free practice & speed tests", "practiceEmpty": "Finish a free practice or a speed test to see your real performance here.", "practiceDate": "Date", "notFound": "This route is outside the arena.", "notFoundDescription": "The page does not exist. Return to your dashboard or start from the homepage.", "error": "We could not load this screen.", "errorDescription": "Try again. Your saved progress has not been reset.", "retry": "Try again", "saving": "Saving completed activity…", "practiceSaved": "Saved locally for this player and keyboard layout. This practice benchmark does not award combat XP.", "presenceUnknown": "Connecting to presence…", "matchEstimate": "Matchmaking estimate", "practice": {"duration": "Duration", "freeHint": "Practice at your pace. Finish whenever you want.", "timedHint": "The timer starts with your first character.", "finish": "Finish practice", "drill1": "Small steps build a steady rhythm and a stronger skill.", "drill2": "Keep your hands relaxed and let accuracy guide your speed.", "drill3": "Every honest attempt helps you learn what to practice next."}, "pvp": "PvP", "skip": "Skip to content", "navigation": "Main navigation", "signOut": "Sign out", "worldsTitle": "Seven worlds. A stronger typist.", "worldsDescription": "Progress through 56 encounters, each with its own typing focus and combat mechanics. Clear worlds to unlock the next challenge.", "worldStages": "{count} stages", "hero": {"tag": "Practice with purpose. Play with skill.", "title": "Forge your speed.", "accent": "Master every key.", "description": "Improve your typing through battles, focused training and real progression. Let Academy find your next challenge, or face the campaign and live PvP.", "guest": "Start as a guest. Your practice and progress stay on this device.", "adaptive": "Adaptive Academy", "battles": "Campaign + live PvP", "preview": "Try the typing engine", "live": "Interactive practice", "drill": "Train your aim. Build your rhythm.", "keyboardHint": "Use a physical keyboard. A typo counts once; keep typing.", "try": "Try it", "complete": "Drill complete. Ready for your next challenge?"}, "audio": {"encounter": "Encounter soundtrack", "chooseLocal": "Choose an audio file", "noLocalTrack": "No local track assigned", "removeLocal": "Remove local assignment", "localSaved": "Saved in this browser.", "localSession": "Playing from this session only. Browser storage is unavailable or full.", "localRemoved": "Local assignment removed.", "localRemoveSession": "Removed for this session. Browser storage could not be updated; the saved assignment may return after reload.", "localSize": "Choose a non-empty audio file up to 100 MB.", "localFormat": "Choose a supported audio file such as MP3, Ogg, WAV or M4A.", "localFailed": "Could not read this file. Try selecting it again.", "localPrivacy": "Your file stays on this device and is never uploaded. Browser data cleanup may remove saved tracks; select the file again if needed.", "status_idle": "Battle music is stopped.", "status_loading": "Preparing battle music…", "status_playing": "Battle music is playing.", "status_blocked": "Click or press a key to allow audio playback.", "status_unavailable": "No playable licensed or local track is available.", "status_failed": "Playback failed. Reselect the file or try another format.", "status_paused": "Battle music is paused.", "settings": "Battle audio", "masterVolume": "Master", "musicVolume": "Music", "sfxVolume": "Sound effects", "mute": "Mute all audio", "unmute": "Enable audio", "availability": "Music plays when a licensed encounter track is available."}, authUnavailable: "Online accounts are unavailable. You can still play as a guest.", confirmEmail: "Check your email to confirm your account, then sign in.", close: "Close", crateError: "The crate could not be opened. Your inventory was preserved. Check your connection and try again." },
+  release: { onboardingCombat: "Typing combat", onboardingPrecision: "Accuracy first", "practiceHistory": "Free practice & speed tests", "practiceEmpty": "Finish a free practice or a speed test to see your real performance here.", "practiceDate": "Date", "notFound": "This route is outside the arena.", "notFoundDescription": "The page does not exist. Return to your dashboard or start from the homepage.", "error": "We could not load this screen.", "errorDescription": "Try again. Your saved progress has not been reset.", "retry": "Try again", "saving": "Saving completed activity…", "practiceSaved": "Saved locally for this player and keyboard layout. This practice benchmark does not award combat XP.", "presenceUnknown": "Connecting to presence…", "matchEstimate": "Matchmaking estimate", "practice": {"duration": "Duration", "freeHint": "Practice at your pace. Finish whenever you want.", "timedHint": "The timer starts with your first character.", "finish": "Finish practice", "drill1": "Small steps build a steady rhythm and a stronger skill.", "drill2": "Keep your hands relaxed and let accuracy guide your speed.", "drill3": "Every honest attempt helps you learn what to practice next."}, "pvp": "PvP", "skip": "Skip to content", "navigation": "Main navigation", "signOut": "Sign out", "worldsTitle": "Seven worlds. A stronger typist.", "worldsDescription": "Progress through 56 encounters, each with its own typing focus and combat mechanics. Clear worlds to unlock the next challenge.", "worldStages": "{count} stages", "hero": {"tag": "Practice with purpose. Play with skill.", "title": "Forge your speed.", "accent": "Master every key.", "description": "Improve your typing through battles, focused training and real progression. Let Academy find your next challenge, or face the campaign and live PvP.", "guest": "Start as a guest. Your practice and progress stay on this device.", "adaptive": "Adaptive Academy", "battles": "Campaign + live PvP", "preview": "Try the typing engine", "live": "Interactive practice", "drill": "Train your aim. Build your rhythm.", "keyboardHint": "Use a physical keyboard. A typo counts once; keep typing.", "try": "Try it", "complete": "Drill complete. Ready for your next challenge?"}, "audio": {"encounter": "Encounter soundtrack", "chooseLocal": "Choose an audio file", "noLocalTrack": "No local track assigned", "removeLocal": "Remove local assignment", "localSaved": "Saved in this browser.", "localSession": "Playing from this session only. Browser storage is unavailable or full.", "localRemoved": "Local assignment removed.", "localRemoveSession": "Removed for this session. Browser storage could not be updated; the saved assignment may return after reload.", "localSize": "Choose a non-empty audio file up to 100 MB.", "localFormat": "Choose a supported audio file such as MP3, Ogg, WAV or M4A.", "localFailed": "Could not read this file. Try selecting it again.", "localPrivacy": "Your file stays on this device and is never uploaded. Browser data cleanup may remove saved tracks; select the file again if needed.", "status_idle": "Battle music is stopped.", "status_loading": "Preparing battle music…", "status_playing": "Battle music is playing.", "status_blocked": "Click or press a key to allow audio playback.", "status_unavailable": "No playable licensed or local track is available.", "status_failed": "Playback failed. Reselect the file or try another format.", "status_paused": "Battle music is paused.", "settings": "Battle audio", "masterVolume": "Master", "musicVolume": "Music", "sfxVolume": "Sound effects", "mute": "Mute all audio", "unmute": "Enable audio", "availability": "Use the licensed encounter track or choose a file from this device."}, authUnavailable: "Online accounts are unavailable. You can still play as a guest.", confirmEmail: "Check your email to confirm your account, then sign in.", close: "Close", crateError: "The crate could not be opened. Your inventory was preserved. Check your connection and try again." },
   common: {
+    crate: "Crate",
     playNow: "Play Now",
     startPlaying: "Start Playing",
     login: "Login",
@@ -1228,7 +1229,7 @@ export const en = {
   auth: {
     loginTitle: "Welcome Back, Shinobi",
     loginSub: "Sign in to sync your progress and join real-time duels.",
-    registerTitle: "Join the Ninja Academy",
+    registerTitle: "Create your account",
     registerSub: "Create your KeyForge account to start your typing legend.",
     emailLabel: "Email Address",
     passwordLabel: "Password",
@@ -1241,7 +1242,7 @@ export const en = {
     forgotPassword: "Forgot Password?",
     noAccount: "Don't have an account?",
     haveAccount: "Already have an account?",
-    passwordRequirements: "At least 8 characters with numbers and letters",
+    passwordRequirements: "At least 8 characters. Letters and numbers are recommended.",
     passwordsMismatch: "Passwords do not match",
     emailInvalid: "Please enter a valid email address",
     usernameTooShort: "Username must be at least 3 characters",
@@ -1269,7 +1270,7 @@ export const en = {
     loading: "Loading...",
     allRightsReserved: "All rights reserved",
     min8Chars: "At least 8 characters",
-    lettersAndNumbers: "Letters and numbers",
+    lettersAndNumbers: "Letters and numbers (recommended)",
     passwordsMatch: "Passwords match",
     synchronizingChakra: "SYNCHRONIZING CHAKRA...",
   },
@@ -1454,6 +1455,8 @@ export const en = {
     comboFloatLabel: "{combo}x COMBO!",
   },
   lockerModule: {
+    noResults: "No skins match these filters.",
+    clearFilters: "Clear filters",
     title: "KEYBOARD LOCKER",
     subtitle: "Customize chassis, keycaps, and visual auras. 100% cosmetic.",
     backToDashboard: "Dashboard",
@@ -1569,6 +1572,8 @@ export const en = {
     retryBtn: "Reconnect",
   },
   keyboard: {
+    leftShort: "LEFT",
+    rightShort: "RIGHT",
     showKeyboard: "Show Visual Keyboard",
     hideKeyboard: "Hide Keyboard",
     hide: "Hide",
@@ -1665,6 +1670,7 @@ export const en = {
     levelReward: "Level {level}", scoreHint: "This session · presentation only", target: "Target key",
   },
   onboarding: {
+    goToStep: "Go to step {step}",
     title: "Welcome to KeyForge",
     step1Title: "Type to Attack",
     step1Desc: "In KeyForge, every keystroke is an attack. There are no attack buttons, items, or mana—your typing speed and accuracy directly determine your combat damage.",
