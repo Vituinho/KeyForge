@@ -52,7 +52,7 @@ export function ProgressConflictModal({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           transition={{ duration: 0.3 }}
-          className="relative w-full max-w-2xl rounded-3xl border border-orange-500/30 bg-neutral-950 p-6 sm:p-8 shadow-[0_0_50px_rgba(249,115,22,0.2)] text-white space-y-6"
+          className="relative my-auto max-h-[calc(100dvh-2rem)] overflow-y-auto w-full max-w-2xl rounded-3xl border border-orange-500/30 bg-neutral-950 p-6 sm:p-8 shadow-[0_0_50px_rgba(249,115,22,0.2)] text-white space-y-6"
         >
           {/* Glowing anime background light */}
           <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-48 bg-orange-500/15 blur-3xl pointer-events-none" />

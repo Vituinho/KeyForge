@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, BookOpen, Crosshair, Keyboard, Sparkles } from "
 import { useAuth } from "@/lib/auth/authContext"
 import { getStoredUser } from "@/lib/auth/authService"
 import { useI18n } from "@/lib/i18n/i18nContext"
+import { formatDecimal } from "@/lib/i18n/formatNumber"
 import { useTypingEngine } from "@/hooks/useTypingEngine"
 import { useVerifiedPractice } from "@/hooks/useVerifiedPractice"
 import { processAcademyLessonRewards } from "@/lib/progression/processActivityRewards"
@@ -84,7 +85,7 @@ export function KeyMasteryAcademy({ onOpenModule }: { onOpenModule: (id: string)
 }
 
 function MasteryWorkspace({ storageKey, layout, onOpenModule }: { storageKey: string; layout: KeyboardLayoutId; onOpenModule: (id: string) => void }) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [progress, setProgress] = useState(() => loadMasteryProgress(storageKey))
   const progressRef = useRef(progress)
   const [telemetry, setTelemetry] = useState(() => recordLearningTelemetry(loadLearningTelemetry(storageKey), [], progress, layout))
@@ -168,10 +169,10 @@ function MasteryWorkspace({ storageKey, layout, onOpenModule }: { storageKey: st
   const current = progress.keys[selectedKey] ?? emptyKeyMastery()
   return <>
     <section aria-label={t(copy("liveMetrics"))} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px overflow-hidden rounded-xl border border-white/10 bg-white/10">
-      <Metric label={t(copy("speed"))} value={`${(responseTime ? timedCorrect * 12000 / responseTime : 0).toFixed(1)} WPM`} delta={signed(trend.speedDelta)} />
-      <Metric label={t(copy("accuracy"))} value={`${(attempts ? correct / attempts * 100 : 100).toFixed(1)}%`} delta={signed(trend.accuracyDelta, "%")} />
+      <Metric label={t(copy("speed"))} value={`${formatDecimal(responseTime ? timedCorrect * 12000 / responseTime : 0, locale)} WPM`} delta={signed(trend.speedDelta)} />
+      <Metric label={t(copy("accuracy"))} value={`${formatDecimal(attempts ? correct / attempts * 100 : 100, locale)}%`} delta={signed(trend.accuracyDelta, "%")} />
       <Metric label={t(copy("score"))} value={String(trainingScore(session))} detail={t(copy("scoreHint"))} />
-      <Metric label={t(copy("overall"))} value={`${mastery.toFixed(1)}%`} />
+      <Metric label={t(copy("overall"))} value={`${formatDecimal(mastery, locale)}%`} />
       <DailyPractice seconds={practice.days[localPracticeDate()] ?? 0} lessons={today.lessons} />
     </section>
     {focused ? <div className="grid lg:grid-cols-[minmax(0,1fr)_300px] gap-4 items-start">
@@ -207,11 +208,11 @@ const Metric = memo(function Metric({ label, value, delta, detail }: { label: st
   return <div className="bg-neutral-950 px-3 py-2 min-w-0"><p className="text-[10px] font-mono uppercase tracking-wide text-white/45">{label}</p><p className="text-lg font-bold font-mono text-white tabular-nums mt-0.5">{value} {delta && <span title={t(copy("recentDelta"))} className={`text-[11px] ${delta.startsWith("-") ? "text-rose-300" : "text-emerald-300"}`}>({delta})</span>}</p>{detail && <p className="text-[9px] text-white/35 truncate">{detail}</p>}</div>
 })
 const DailyPractice = memo(function DailyPractice({ seconds, lessons }: { seconds: number; lessons: number }) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const goal = dailyGoal(seconds)
-  return <div className="bg-neutral-950 px-3 py-2 col-span-2 sm:col-span-1" title={t(copy("dailyHint"), { lessons })}>
+  return <div className="bg-neutral-950 px-3 py-2 col-span-2 lg:col-span-1" title={t(copy("dailyHint"), { lessons })}>
     <p className="text-[10px] font-mono uppercase tracking-wide text-white/45">{t(copy("daily"))}</p>
-    <p className="font-mono text-lg tabular-nums text-emerald-300">{t(copy("dailyValue"), { minutes: goal.minutes.toFixed(1) })}</p>
+    <p className="font-mono text-lg tabular-nums text-emerald-300">{t(copy("dailyValue"), { minutes: formatDecimal(goal.minutes, locale) })}</p>
     <div role="progressbar" aria-label={t(copy("daily"))} aria-valuenow={Math.round(goal.percent)} aria-valuemin={0} aria-valuemax={100} className="h-1 rounded-full bg-white/10 mt-1"><div className="h-full rounded-full bg-emerald-400 motion-safe:transition-[width]" style={{ width: `${goal.percent}%` }} /></div>
   </div>
 })
@@ -261,9 +262,9 @@ const CurrentKeyPanel = memo(function CurrentKeyPanel({ targetKey, record, layou
   const trend = performanceTrend(record.recentPerformance)
   const entries = [
     [t(copy("finger")), palette?.name[locale] ?? "—"],
-    [t(copy("speed")), `${record.averageSpeed.toFixed(1)} WPM`],
-    [t(copy("bestSpeed")), `${record.bestSpeed.toFixed(1)} WPM`],
-    [t(copy("accuracy")), `${record.accuracy.toFixed(1)}%`],
+    [t(copy("speed")), `${formatDecimal(record.averageSpeed, locale)} WPM`],
+    [t(copy("bestSpeed")), `${formatDecimal(record.bestSpeed, locale)} WPM`],
+    [t(copy("accuracy")), `${formatDecimal(record.accuracy, locale)}%`],
     [t(copy("response")), `${Math.round(record.averageResponseTime)} ms`],
     [t(copy("attempts")), String(record.attempts)],
     [t(copy("correct")), `${record.correctAttempts} · ${record.errors} ${t(copy("errors"))}`],
@@ -274,7 +275,7 @@ const CurrentKeyPanel = memo(function CurrentKeyPanel({ targetKey, record, layou
     <div className="flex items-center justify-between"><div><p className="text-[10px] text-white/45 uppercase font-mono">{t(copy("currentKey"))}</p><h2 className="text-3xl font-black font-mono" style={{ color: palette?.hex }}>{targetKey.toUpperCase()}</h2></div><span className={`text-[10px] border rounded px-2 py-1 ${STATUS_STYLE[record.status]}`}>{t(copy(record.status))}</span></div>
     <div><div className="flex items-center justify-between text-xs font-mono mb-1.5"><span className="text-white/55">{t(copy("mastery"))}</span><span className="text-emerald-300 tabular-nums motion-safe:transition-colors">{record.mastery}% <span className="inline-block w-7 text-[10px]">{gain > 0 ? `+${gain}` : ""}</span></span></div>
       <div role="progressbar" aria-label={t(copy("mastery"))} aria-valuenow={record.mastery} aria-valuemin={0} aria-valuemax={100} className="h-2 bg-white/10 rounded-full overflow-hidden"><div className="h-full bg-emerald-400 rounded-full motion-safe:transition-[width] motion-safe:duration-300" style={{ width: `${record.mastery}%` }} /></div></div>
-    <dl className="space-y-1.5 text-xs">{entries.map(([label, value]) => <div key={label} className="flex justify-between gap-3"><dt className="text-white/45">{label}</dt><dd className="font-mono text-right text-white/85 tabular-nums">{value}</dd></div>)}</dl>
+    <dl className="space-y-2 text-sm">{entries.map(([label, value]) => <div key={label} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-3"><dt className="text-white/60">{label}</dt><dd className="font-mono text-right text-white/85 tabular-nums">{value}</dd></div>)}</dl>
     {review && <p title={t("academyPath.reviewHint")} className={`text-[10px] ${review === "healthy" ? "text-emerald-300" : review === "reviewSoon" ? "text-amber-300" : "text-rose-300"}`}>{t(`academyPath.${review}`)}</p>}
     {trend.rate === "uncertain" && <p className="text-[10px] text-white/35">{t(copy("insufficient"))}</p>}
     <div className="border-t border-white/10 pt-2"><p className="text-[9px] text-white/40 uppercase font-mono mb-2">{t(copy("recent"))}</p>

@@ -15,7 +15,7 @@ export function BattleHud({ wpm, accuracy, combo, errors, themeColor = "#f97316"
   const { t } = useI18n()
 
   return (
-    <div className="flex items-center justify-center gap-4 flex-wrap">
+    <div className="grid w-full grid-cols-2 min-[420px]:grid-cols-4 gap-2">
       <StatPill
         icon={<Gauge size={14} />}
         label={t("common.wpm")}
@@ -61,12 +61,12 @@ function StatPill({
 }) {
   return (
     <div
-      className="flex flex-col items-center px-4 py-2 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm min-w-[72px]"
+      className="flex min-w-0 flex-col items-center justify-center px-2 py-2 rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm"
       style={glow ? { boxShadow: `0 0 12px ${color}55` } : undefined}
     >
       <div className="flex items-center gap-1 mb-0.5" style={{ color }}>
         {icon}
-        <span className="text-[10px] font-bold tracking-widest uppercase">{label}</span>
+        <span className="text-xs font-semibold leading-snug">{label}</span>
       </div>
       <span className="text-lg font-black text-white tabular-nums">{value}</span>
     </div>

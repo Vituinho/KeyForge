@@ -28,7 +28,6 @@ import { computeSkillProfile } from "@/lib/progression/skillProfile"
 import { OnboardingModal } from "@/components/onboarding/OnboardingModal"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
 import { getAllWorlds, getWorldProgress } from "@/data/worlds"
 import { useI18n } from "@/lib/i18n/i18nContext"
 
@@ -162,7 +161,6 @@ export default function ProfilePage() {
         </Link>
 
         <div className="flex items-center gap-3">
-          <LanguageSwitcher />
           <Link
             href="/statistics"
             className="inline-flex items-center gap-2 text-xs font-bold text-pink-400 hover:text-pink-300 transition-colors bg-pink-500/10 hover:bg-pink-500/15 px-3 py-1.5 rounded-lg border border-pink-500/20"
@@ -182,7 +180,7 @@ export default function ProfilePage() {
 
         {/* Identity & Avatar Section */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative z-10">
-          <div className="flex items-center gap-5">
+          <div className="flex w-full min-w-0 items-center gap-3 sm:gap-5">
             {/* Rank Avatar Shield */}
             <div
               className="w-20 h-20 rounded-2xl flex items-center justify-center font-black text-3xl border shadow-xl shrink-0"
@@ -197,9 +195,9 @@ export default function ProfilePage() {
             </div>
 
             {/* Username display / edit */}
-            <div className="space-y-1">
+            <div className="min-w-0 space-y-1">
               {isEditingUsername ? (
-                <form onSubmit={handleSaveUsername} className="flex items-center gap-2">
+                <form onSubmit={handleSaveUsername} className="flex flex-wrap items-center gap-2">
                   <input
                     type="text"
                     value={usernameInput}
@@ -210,7 +208,7 @@ export default function ProfilePage() {
                     placeholder={t("profile.usernamePlaceholder")}
                     maxLength={20}
                     autoFocus
-                    className="px-3 py-1 rounded-xl bg-black/60 border border-orange-500/50 text-white font-bold text-lg focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+                    className="w-full min-h-11 px-3 py-1 rounded-xl bg-black/60 border border-orange-500/50 text-white font-bold text-lg focus:outline-none focus:ring-2 focus:ring-orange-500/50"
                   />
                   <button
                     type="submit"
@@ -232,8 +230,8 @@ export default function ProfilePage() {
                   </button>
                 </form>
               ) : (
-                <div className="flex items-center gap-2.5">
-                  <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                <div className="flex min-w-0 flex-wrap items-center gap-2">
+                  <h1 className="min-w-0 text-2xl sm:text-3xl font-black text-white tracking-tight [overflow-wrap:anywhere]">
                     {player.username}
                   </h1>
                   <button
@@ -241,7 +239,7 @@ export default function ProfilePage() {
                       setUsernameInput(player.username)
                       setIsEditingUsername(true)
                     }}
-                    className="p-1.5 rounded-lg text-white/30 hover:text-white hover:bg-white/10 transition-colors"
+                    className="min-h-11 min-w-11 grid place-items-center rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors"
                     title={t("profile.editUsername")}
                   >
                     <Edit2 size={14} />

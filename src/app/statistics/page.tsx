@@ -29,7 +29,6 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
 import { getAllWorlds, getWorldProgress } from "@/data/worlds"
 import { useI18n } from "@/lib/i18n/i18nContext"
 import { computeSkillProfile } from "@/lib/progression/skillProfile"
@@ -91,7 +90,6 @@ export default function StatisticsPage() {
             <Activity size={14} className="text-orange-400" />
             <span>{t("statistics.realTimeTelemetry")}</span>
           </div>
-          <LanguageSwitcher />
         </div>
       </div>
 
@@ -116,9 +114,9 @@ export default function StatisticsPage() {
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative z-10">
             {/* User & Level */}
-            <div className="flex items-center gap-4">
+            <div className="flex w-full min-w-0 items-center gap-4">
               <div
-                className="w-16 h-16 rounded-2xl flex items-center justify-center font-black text-2xl border shadow-lg"
+                className="w-16 h-16 shrink-0 rounded-2xl flex items-center justify-center font-black text-2xl border shadow-lg"
                 style={{
                   backgroundColor: `${rankMeta.color}22`,
                   borderColor: rankMeta.color,
@@ -127,9 +125,9 @@ export default function StatisticsPage() {
               >
                 {player.rank}
               </div>
-              <div>
-                <div className="flex items-center gap-2.5">
-                  <h2 className="text-2xl font-black text-white">{player.username}</h2>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <h2 className="min-w-0 text-2xl font-black text-white [overflow-wrap:anywhere]">{player.username}</h2>
                   <span
                     className="px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider border"
                     style={{

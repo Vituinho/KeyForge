@@ -15,6 +15,7 @@ import {
 } from "lucide-react"
 import { useCosmetics } from "@/hooks/useCosmetics"
 import { useI18n } from "@/lib/i18n/i18nContext"
+import { useDialogFocus } from "@/hooks/useDialogFocus"
 import {
   ALL_KEYBOARD_SKINS,
   RARITY_DETAILS,
@@ -77,6 +78,7 @@ export default function KeyboardLockerPage() {
 
   // Modals
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const settingsDialogRef = useDialogFocus(isSettingsOpen, () => setIsSettingsOpen(false))
 
   // Interactive Live Typing Test on preview keyboard
   const testSample =
@@ -432,6 +434,12 @@ export default function KeyboardLockerPage() {
 
         {/* SKINS CATALOG GRID */}
         <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {!filteredSkins.length && <div role="status" className="col-span-full rounded-2xl border border-white/10 bg-white/5 p-6 text-center space-y-3">
+            <p className="text-sm text-white/70">{t("lockerModule.noResults")}</p>
+            <button type="button" className="kf-button" onClick={() => {
+              setSearchQuery(""); setSelectedRarity("all"); setSelectedCollection("all"); setStatusFilter("all")
+            }}>{t("lockerModule.clearFilters")}</button>
+          </div>}
           {filteredSkins.map((skin) => {
             const isUnlocked = unlockedSkinIds.includes(skin.id)
             const isEquipped = equippedSkinId === skin.id
@@ -549,7 +557,8 @@ export default function KeyboardLockerPage() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-md p-6 rounded-3xl bg-neutral-900 border border-white/15 space-y-6 shadow-2xl relative"
+              ref={settingsDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={t("lockerModule.accessibilityModal.title")}
+              className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto my-auto p-5 sm:p-6 rounded-3xl bg-neutral-900 border border-white/15 space-y-6 shadow-2xl relative"
             >
               <div className="flex items-center justify-between border-b border-white/10 pb-4">
                 <div className="flex items-center gap-2 font-black text-base text-white">
@@ -559,7 +568,8 @@ export default function KeyboardLockerPage() {
                 <button
                   type="button"
                   onClick={() => setIsSettingsOpen(false)}
-                  className="p-1 rounded-lg text-white/40 hover:text-white"
+                  aria-label={t("release.close")}
+                  className="min-h-11 min-w-11 shrink-0 grid place-items-center rounded-lg text-white/60 hover:text-white"
                 >
                   <X size={18} />
                 </button>
@@ -578,6 +588,7 @@ export default function KeyboardLockerPage() {
                 <button
                   type="button"
                   onClick={() => updateSettings({ showKeyboard: !settings.showKeyboard })}
+                  role="switch" aria-checked={settings.showKeyboard} aria-label={t("lockerModule.accessibilityModal.showKeyboard")}
                   className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
                     settings.showKeyboard ? "bg-orange-500" : "bg-white/20"
                   }`}
@@ -628,6 +639,7 @@ export default function KeyboardLockerPage() {
                   onClick={() =>
                     updateSettings({ showHomeRowAnchors: !settings.showHomeRowAnchors })
                   }
+                  role="switch" aria-checked={settings.showHomeRowAnchors} aria-label={t("lockerModule.accessibilityModal.homeRowGuides")}
                   className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
                     settings.showHomeRowAnchors ? "bg-orange-500" : "bg-white/20"
                   }`}
@@ -743,6 +755,7 @@ export default function KeyboardLockerPage() {
                   onClick={() =>
                     updateSettings({ showFingerName: !settings.showFingerName })
                   }
+                  role="switch" aria-checked={settings.showFingerName} aria-label={t("settings.showFingerName")}
                   className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
                     settings.showFingerName ? "bg-orange-500" : "bg-white/20"
                   }`}

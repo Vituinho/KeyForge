@@ -733,10 +733,10 @@ function StatBox({
   color?: string
 }) {
   return (
-    <div className="flex flex-col items-center p-3 rounded-xl bg-white/5 border border-white/10">
-      <div className="flex items-center gap-1 text-white/40 mb-1">
+    <div className="flex min-w-0 flex-col items-center p-3 rounded-xl bg-white/5 border border-white/10 text-center">
+      <div className="flex items-center gap-1 text-white/65 mb-1">
         {icon}
-        <span className="text-[10px] uppercase tracking-widest">{label}</span>
+        <span className="text-xs font-medium leading-snug">{label}</span>
       </div>
       <span className="text-2xl font-black tabular-nums" style={{ color }}>
         {value}

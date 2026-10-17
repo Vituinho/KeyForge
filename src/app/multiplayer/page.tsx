@@ -20,10 +20,10 @@ import {
 } from "lucide-react"
 import { MultiplayerAuthGuard } from "@/components/multiplayer/MultiplayerAuthGuard"
 import { PrivateRoomLobby } from "@/components/multiplayer/PrivateRoomLobby"
-import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
 import { useAuth } from "@/lib/auth/authContext"
 import { usePlayer } from "@/hooks/usePlayer"
 import { useI18n } from "@/lib/i18n/i18nContext"
+import { RARITY_DETAILS } from "@/data/keyboardSkins"
 import { createInitialRoomState, joinRoomState } from "@/lib/multiplayer/roomManager"
 import { RoomState, MultiplayerPlayer } from "@/types/multiplayer"
 import { useMultiplayerPresence } from "@/hooks/useMultiplayerPresence"
@@ -248,7 +248,6 @@ function MultiplayerContent() {
         </Link>
 
         <div className="flex items-center gap-4">
-          <LanguageSwitcher />
           <Link
             href="/game"
             className="inline-flex items-center gap-1.5 text-xs text-white/60 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/10 font-bold"
@@ -292,7 +291,7 @@ function MultiplayerContent() {
                 </span>
               </div>
               <div className="flex items-center gap-3 text-xs text-white/50 font-mono">
-                <span>Lv. {player.level}</span>
+                <span>{t("dashboard.quickWidget.level")} {player.level}</span>
                 <span>•</span>
                 <span className="text-amber-400/90 font-bold">
                   {t("release.matchEstimate")}: {eloRating}
@@ -305,12 +304,12 @@ function MultiplayerContent() {
             <Link
               href="/locker"
               className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-xs font-mono"
-              title={t("dashboard.quickWidget.locker")}
+              title={t("dashboard.quickWidget.lockerBtn")}
             >
               <span>⌨️</span>
               <span className="font-bold text-white/90">{equippedSkin.name}</span>
               <span className="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-white/10 text-white/60">
-                {equippedSkin.rarity}
+                {RARITY_DETAILS[equippedSkin.rarity].name[locale]}
               </span>
             </Link>
 
@@ -331,7 +330,7 @@ function MultiplayerContent() {
             <span>{t("multiplayerHub.badge")}</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
-            MULTIPLAYER <span className="text-orange-500">ARENA</span>
+            {t("multiplayerHub.title")}
           </h1>
           <p className="text-xs sm:text-sm text-white/50 max-w-xl mx-auto">
             {t("multiplayerHub.subtitle")}

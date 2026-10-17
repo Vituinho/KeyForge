@@ -26,7 +26,7 @@ export function RankUpModal({ prevRank, newRank, isOpen, onClose }: RankUpModalP
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
         <motion.div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label={t("rankUpModal.title")}
-          className="relative w-full max-w-sm p-6 rounded-3xl border border-white/20 bg-gradient-to-b from-neutral-900 to-black text-center shadow-[0_0_50px_rgba(249,115,22,0.3)] space-y-5"
+          className="relative my-auto max-h-[calc(100dvh-2rem)] overflow-y-auto w-full max-w-sm p-6 rounded-3xl border border-white/20 bg-gradient-to-b from-neutral-900 to-black text-center shadow-[0_0_50px_rgba(249,115,22,0.3)] space-y-5"
           initial={{ scale: 0.8, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.8, opacity: 0, y: 20 }}

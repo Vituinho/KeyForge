@@ -33,7 +33,7 @@ export function LandingHeader() {
         </Link>
 
         {/* Desktop Nav Links */}
-        <nav className="hidden lg:flex items-center gap-6 text-xs font-bold uppercase tracking-wider text-white/60">
+        <nav aria-label={t("release.navigation")} className="hidden xl:flex items-center gap-4 text-sm font-semibold text-white/70">
           {navLinks.map((link) => (
             <a
               key={link.label}
@@ -46,7 +46,7 @@ export function LandingHeader() {
         </nav>
 
         {/* Right Action buttons */}
-        <div className="hidden lg:flex items-center gap-3">
+        <div className="hidden xl:flex shrink-0 items-center gap-2">
           <LanguageSwitcher />
 
           <Link
@@ -75,7 +75,7 @@ export function LandingHeader() {
         {/* Mobile menu toggle button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-colors"
+          className="xl:hidden min-h-11 min-w-11 grid place-items-center rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-colors"
           aria-label={t("nav.toggleMenu")}
           aria-expanded={mobileMenuOpen}
           aria-controls="landing-mobile-nav"
@@ -89,7 +89,7 @@ export function LandingHeader() {
         {mobileMenuOpen && (
           <motion.div
             id="landing-mobile-nav"
-            className="lg:hidden max-h-[80dvh] overflow-y-auto border-b border-white/10 bg-neutral-950/95 px-6 py-6 space-y-4 backdrop-blur-xl"
+            className="xl:hidden max-h-[80dvh] overflow-y-auto border-b border-white/10 bg-neutral-950/95 px-6 py-6 space-y-4 backdrop-blur-xl"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}

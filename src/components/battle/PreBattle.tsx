@@ -115,14 +115,14 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
 
       {/* VS Layout */}
       <motion.div
-        className="relative z-10 flex items-center gap-8 sm:gap-16 flex-wrap justify-center"
+        className="relative z-10 grid w-full max-w-2xl grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 sm:gap-10"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, ease: "backOut" }}
       >
         {/* Player side */}
         <motion.div
-          className="text-center"
+          className="min-w-0 text-center"
           initial={{ x: -80, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.6 }}
@@ -130,7 +130,7 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
           <div className="w-24 h-24 rounded-full bg-gradient-to-br from-violet-500 to-indigo-700 flex items-center justify-center text-3xl font-black mb-4 mx-auto border-2 border-violet-400/50 shadow-[0_0_30px_rgba(139,92,246,0.5)]">
             {player.username[0]?.toUpperCase() ?? "P"}
           </div>
-          <p className="font-black text-xl tracking-wider text-white truncate max-w-[150px]">
+          <p className="font-black text-base sm:text-xl tracking-wide text-white [overflow-wrap:anywhere]">
             {player.username.toUpperCase()}
           </p>
           <p className="text-sm text-white/40 font-mono">
@@ -151,7 +151,7 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
 
         {/* Enemy side */}
         <motion.div
-          className="text-center"
+          className="min-w-0 text-center"
           initial={{ x: 80, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.6 }}
@@ -168,7 +168,7 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
             {enemy.name[0]}
           </div>
           <p
-            className="font-black text-xl tracking-wider"
+            className="font-black text-base sm:text-xl tracking-wide break-words"
             style={{ color: enemy.themeColor }}
           >
             {enemy.name.toUpperCase()}
@@ -179,7 +179,7 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
 
       {/* Enemy stats */}
       <motion.div
-        className="relative z-10 mt-12 flex gap-6"
+        className="relative z-10 mt-8 grid w-full max-w-2xl grid-cols-2 sm:grid-cols-4 gap-3"
         initial={{ y: 30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.6, duration: 0.5 }}
@@ -248,7 +248,7 @@ export function PreBattle({ enemy, onFight }: PreBattleProps) {
             {stage?.firstClearRewards?.crateId && !isCleared && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
                 <Package size={12} />
-                +1 Crate
+                +1 {t("common.crate")}
               </span>
             )}
             {stage?.firstClearRewards?.title && !isCleared && (
@@ -358,13 +358,13 @@ function StatChip({
 }) {
   return (
     <div
-      className="flex flex-col items-center px-5 py-3 rounded-xl border"
+      className="flex min-w-0 flex-col items-center justify-between gap-1 px-3 py-3 rounded-xl border text-center"
       style={{
         borderColor: `${color}33`,
         background: `${color}0f`,
       }}
     >
-      <span className="text-[10px] font-bold tracking-widest text-white/40 uppercase">
+      <span className="text-xs font-semibold leading-snug text-white/65">
         {label}
       </span>
       <span className="text-lg font-black mt-0.5" style={{ color }}>

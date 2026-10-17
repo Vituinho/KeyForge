@@ -772,12 +772,12 @@ export function MultiplayerArena({
         {/* Combo & Telemetry Ribbon */}
         <div className="flex items-center justify-between w-full max-w-xl px-4 py-2 rounded-2xl bg-white/[0.03] border border-white/10 text-xs font-mono">
           <div className="flex items-center gap-2">
-            <span className="text-orange-400 font-bold">{t("game.wpm")}:</span>
+            <span className="text-orange-400 font-bold">{t("common.wpm")}:</span>
             <span className="text-white font-black text-sm">{liveWpm}</span>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-emerald-400 font-bold">{t("game.accuracy")}:</span>
+            <span className="text-emerald-400 font-bold">{t("common.accuracy")}:</span>
             <span className="text-white font-black text-sm">{liveAccuracy}%</span>
           </div>
 

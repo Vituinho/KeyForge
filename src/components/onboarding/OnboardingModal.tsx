@@ -87,7 +87,7 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ duration: 0.35, ease: "backOut" }}
-          className="relative w-full max-w-lg rounded-3xl border border-white/15 bg-neutral-950/95 p-6 sm:p-8 shadow-2xl text-center space-y-6 overflow-hidden"
+          className="relative my-auto max-h-[calc(100dvh-2rem)] w-full max-w-lg rounded-3xl border border-white/15 bg-neutral-950/95 p-6 sm:p-8 shadow-2xl text-center space-y-6 overflow-y-auto"
           style={{
             boxShadow: `0 0 50px ${current.color}44`,
           }}
@@ -96,7 +96,8 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
           <button
             type="button"
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-full text-white/40 hover:text-white hover:bg-white/10 transition-colors"
+            aria-label={t("release.close")}
+            className="absolute top-3 right-3 min-h-11 min-w-11 grid place-items-center rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-colors"
           >
             <X size={16} />
           </button>
@@ -139,12 +140,16 @@ export function OnboardingModal({ isOpen, onClose }: OnboardingModalProps) {
                 key={i}
                 type="button"
                 onClick={() => setStep(i)}
-                className={`h-2 rounded-full transition-all ${
+                aria-label={t("onboarding.goToStep", { step: i + 1 })}
+                aria-current={i === step ? "step" : undefined}
+                className="h-8 min-w-8 flex items-center justify-center rounded-full"
+              >
+                <span aria-hidden="true" className={`h-2 rounded-full transition-colors ${
                   i === step
                     ? "w-8 bg-white"
                     : "w-2 bg-white/20 hover:bg-white/40"
-                }`}
-              />
+                }`} />
+              </button>
             ))}
           </div>
 

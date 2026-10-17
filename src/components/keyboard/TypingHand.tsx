@@ -153,7 +153,7 @@ export const TypingHand = React.memo(function TypingHand({
           fontSize={16}
           fill="rgba(255, 255, 255, 0.12)"
         >
-          {isLeft ? "LEFT" : "RIGHT"}
+          {t(isLeft ? "keyboard.leftShort" : "keyboard.rightShort")}
         </text>
 
         {/* 5 Distinct Touch Typing Fingers */}

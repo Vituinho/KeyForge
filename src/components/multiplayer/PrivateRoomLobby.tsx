@@ -40,7 +40,7 @@ export function PrivateRoomLobby({
   onLeaveRoom,
   onStartMatch,
 }: PrivateRoomLobbyProps) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const [room, setRoom] = useState<RoomState>(initialRoom)
   const [copiedCode, setCopiedCode] = useState(false)
   const [countdown, setCountdown] = useState<number | null>(null)
@@ -278,7 +278,7 @@ export function PrivateRoomLobby({
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <ConnectionStateBadge
             state={
               bothReady
@@ -303,7 +303,7 @@ export function PrivateRoomLobby({
       <div className="relative z-10 grid grid-cols-1 md:grid-cols-5 gap-6 items-center">
         {/* HOST CARD (Left 2 cols) */}
         <div className="md:col-span-2 p-5 rounded-3xl border border-orange-500/30 bg-orange-950/20 relative overflow-hidden space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="px-2.5 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[10px] font-mono font-bold uppercase">
               {t("multiplayerHub.lobbyHostTitle")}
             </span>
@@ -321,13 +321,13 @@ export function PrivateRoomLobby({
           </div>
 
           <div className="flex items-center gap-3 pt-2">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center font-black text-xl text-black shadow-lg">
+            <div className="w-14 h-14 shrink-0 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center font-black text-xl text-black shadow-lg">
               {room.host.username.charAt(0).toUpperCase()}
             </div>
-            <div>
-              <h4 className="text-lg font-black text-white">{room.host.username}</h4>
+            <div className="min-w-0">
+              <h4 className="text-lg font-black text-white [overflow-wrap:anywhere]">{room.host.username}</h4>
               <div className="flex items-center gap-2 text-xs text-white/50 font-mono">
-                <span>Lv. {room.host.level}</span>
+                <span>{t("dashboard.quickWidget.level")} {room.host.level}</span>
                 <span>•</span>
                 <span className="text-orange-400 font-bold">Rank {room.host.rank}</span>
               </div>
@@ -350,7 +350,7 @@ export function PrivateRoomLobby({
             <span
               className={`px-2 py-0.5 rounded-md text-[9px] font-mono font-bold uppercase border ${hostRarity.bgBadge}`}
             >
-              {hostSkin.rarity}
+              {hostRarity.name[locale]}
             </span>
           </div>
         </div>
@@ -377,7 +377,7 @@ export function PrivateRoomLobby({
         <div className="md:col-span-2 p-5 rounded-3xl border border-white/10 bg-white/[0.02] relative overflow-hidden space-y-4">
           {room.guest ? (
             <>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[10px] font-mono font-bold uppercase">
                   {t("multiplayerHub.lobbyChallengerTitle")}
                 </span>
@@ -395,13 +395,13 @@ export function PrivateRoomLobby({
               </div>
 
               <div className="flex items-center gap-3 pt-2">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center font-black text-xl text-black shadow-lg">
+                <div className="w-14 h-14 shrink-0 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center font-black text-xl text-black shadow-lg">
                   {room.guest.username.charAt(0).toUpperCase()}
                 </div>
-                <div>
-                  <h4 className="text-lg font-black text-white">{room.guest.username}</h4>
+                <div className="min-w-0">
+                  <h4 className="text-lg font-black text-white [overflow-wrap:anywhere]">{room.guest.username}</h4>
                   <div className="flex items-center gap-2 text-xs text-white/50 font-mono">
-                    <span>Lv. {room.guest.level}</span>
+                    <span>{t("dashboard.quickWidget.level")} {room.guest.level}</span>
                     <span>•</span>
                     <span className="text-blue-400 font-bold">Rank {room.guest.rank}</span>
                   </div>
@@ -425,7 +425,7 @@ export function PrivateRoomLobby({
                   <span
                     className={`px-2 py-0.5 rounded-md text-[9px] font-mono font-bold uppercase border ${guestRarity.bgBadge}`}
                   >
-                    {guestSkin.rarity}
+                    {guestRarity.name[locale]}
                   </span>
                 </div>
               )}

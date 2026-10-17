@@ -49,7 +49,7 @@ export default function CratesWorkshopPage() {
       <div className="max-w-6xl mx-auto relative z-10 space-y-8">
         {/* TOP HEADER */}
         <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
-          <div className="flex items-center gap-4">
+          <div className="flex min-w-0 flex-col sm:flex-row items-start sm:items-center gap-4">
             <Link
               href="/locker"
               className="p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white transition-all flex items-center gap-2 text-xs font-mono font-bold"
@@ -58,8 +58,8 @@ export default function CratesWorkshopPage() {
               <span>{t("lockerModule.workshop.backToLocker")}</span>
             </Link>
 
-            <div>
-              <div className="flex items-center gap-2">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2.5">
                   <Package className="text-purple-400" size={24} />
                   <span>{t("lockerModule.workshop.title")}</span>
@@ -86,7 +86,7 @@ export default function CratesWorkshopPage() {
 
         {/* Guest Mode Notice */}
         {isGuest && (
-          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono flex items-center justify-between gap-4">
+          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <Info size={16} />
               <span>

@@ -80,7 +80,7 @@ export function BossIntroModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 30 }}
             transition={{ duration: 0.4, ease: "backOut" }}
-            className="relative w-full max-w-lg rounded-3xl border-2 bg-neutral-950/95 p-6 sm:p-8 text-center shadow-2xl overflow-hidden"
+            className="relative my-auto max-h-[calc(100dvh-2rem)] w-full max-w-lg rounded-3xl border-2 bg-neutral-950/95 p-6 sm:p-8 text-center shadow-2xl overflow-y-auto"
             style={{
               borderColor: `${enemy.themeColor}80`,
               boxShadow: `0 0 60px ${enemy.themeColor}55`,

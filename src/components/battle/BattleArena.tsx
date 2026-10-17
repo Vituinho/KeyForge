@@ -310,7 +310,7 @@ export function BattleArena({ enemy, texts, onRematch, verifiedSessionId }: Batt
       <div className="relative z-10 flex flex-col min-h-screen sm:h-screen justify-between max-w-4xl mx-auto w-full px-4 py-4 sm:py-6 gap-4">
         <header className="flex items-center justify-between gap-3"><Link href={enemy.world ? `/anime-world/${enemy.world}` : "/game"} className="text-xs font-semibold text-white/55 hover:text-white">← {t("battle.preBattle.exitBattle")}</Link><BattleAudioControls enemyId={enemy.id} /></header>
         {/* Top row: Enemy card + HUD + Player card */}
-        <div className="grid grid-cols-2 sm:grid-cols-[auto_1fr_auto] items-start gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3">
           <StableEnemyCard
             enemy={enemy}
             currentHp={battleState.enemyHp}
@@ -330,7 +330,7 @@ export function BattleArena({ enemy, texts, onRematch, verifiedSessionId }: Batt
           />
 
           {/* Center HUD */}
-          <div className="order-last sm:order-none col-span-2 sm:col-span-1 flex flex-col items-center justify-center gap-2 pt-2">
+          <div className="order-last lg:order-none col-span-2 lg:col-span-1 flex flex-col items-center justify-center gap-2 pt-2">
             {phase === "fighting" && (
               <SampledBattleHud
                 wpm={stats.currentWpm}

@@ -119,14 +119,14 @@ export default function GameDashboardPage() {
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
         <motion.h1
-          className="text-7xl sm:text-8xl font-black tracking-tighter bg-gradient-to-r from-orange-400 via-orange-300 to-yellow-300 bg-clip-text text-transparent"
+          className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter bg-gradient-to-r from-orange-400 via-orange-300 to-yellow-300 bg-clip-text text-transparent"
           animate={{ backgroundPosition: ["0%", "100%", "0%"] }}
           transition={{ duration: 6, repeat: Infinity }}
         >
           KEYFORGE
         </motion.h1>
         <motion.p
-          className="mt-3 text-lg font-bold tracking-[0.3em] text-white/30 uppercase"
+          className="mt-3 text-sm sm:text-base font-bold tracking-[0.16em] text-white/60 uppercase"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
@@ -134,7 +134,7 @@ export default function GameDashboardPage() {
           {t("landing.footer.tagline")}
         </motion.p>
         <motion.p
-          className="mt-2 text-sm text-white/20 max-w-sm mx-auto"
+          className="mt-2 text-sm leading-relaxed text-white/55 max-w-sm mx-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
@@ -146,7 +146,7 @@ export default function GameDashboardPage() {
       {/* Recommended Next Campaign Stage */}
       {nextRecommendation && (
         <motion.div
-          className="relative z-10 w-full max-w-2xl mb-4 p-4 rounded-2xl border border-orange-500/30 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent backdrop-blur-md flex items-center justify-between gap-4"
+          className="relative z-10 w-full max-w-2xl mb-4 p-4 rounded-2xl border border-orange-500/30 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent backdrop-blur-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4"
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
@@ -163,7 +163,7 @@ export default function GameDashboardPage() {
               {nextRecommendation.stage.stageNumber}
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-orange-400">
                   {t("animeWorld.continueCampaign")}
                 </span>
@@ -182,7 +182,7 @@ export default function GameDashboardPage() {
 
           <Link
             href={`/battle?enemy=${nextRecommendation.stage.enemyId}`}
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-black font-black text-xs uppercase tracking-wider transition-all shrink-0 shadow-[0_0_20px_rgba(249,115,22,0.4)]"
+            className="flex items-center justify-center gap-1.5 min-h-11 px-4 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-black font-black text-sm transition-colors shrink-0 shadow-[0_0_20px_rgba(249,115,22,0.4)]"
           >
             <span>{t("animeWorld.startBattle")}</span>
             <ChevronRight size={14} />

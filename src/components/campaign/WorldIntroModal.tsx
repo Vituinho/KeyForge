@@ -84,7 +84,7 @@ export function WorldIntroModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.35, ease: "easeOut" }}
-            className={`relative w-full max-w-2xl rounded-3xl border ${world.theme.borderClass} bg-neutral-950/95 p-6 sm:p-8 shadow-2xl overflow-hidden`}
+            className={`relative my-auto max-h-[calc(100dvh-2rem)] w-full max-w-2xl rounded-3xl border ${world.theme.borderClass} bg-neutral-950/95 p-6 sm:p-8 shadow-2xl overflow-y-auto`}
             style={{
               boxShadow: `0 0 50px ${world.theme.glowColor}`,
             }}

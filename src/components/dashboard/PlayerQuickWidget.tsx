@@ -6,7 +6,6 @@ import { User, Home, Sparkles } from "lucide-react"
 import { usePlayer } from "@/hooks/usePlayer"
 import { RANK_METADATA } from "@/lib/progression/calculateRank"
 import { getXpRequiredForLevel } from "@/lib/progression/calculateLevel"
-import { LanguageSwitcher } from "@/components/common/LanguageSwitcher"
 import { useI18n } from "@/lib/i18n/i18nContext"
 
 export function PlayerQuickWidget() {
@@ -18,12 +17,12 @@ export function PlayerQuickWidget() {
 
   return (
     <motion.div
-      className="relative z-20 w-full max-w-2xl mb-8 p-3 sm:p-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md flex items-center justify-between gap-4"
+      className="relative z-20 w-full max-w-2xl mb-8 p-3 sm:p-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md flex flex-col items-stretch sm:flex-row sm:items-center justify-between gap-4"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex items-center gap-3">
+      <div className="flex min-w-0 items-center gap-3">
         <div
           className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm border shrink-0"
           style={{
@@ -34,9 +33,9 @@ export function PlayerQuickWidget() {
         >
           {player.rank}
         </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-white">{player.username}</span>
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm font-bold text-white break-all">{player.username}</span>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20 font-bold">
               {t("dashboard.quickWidget.level")} {player.level}
             </span>
@@ -46,7 +45,7 @@ export function PlayerQuickWidget() {
               </span>
             )}
           </div>
-          <div className="flex items-center gap-2 text-[11px] text-white/40 font-mono mt-0.5">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-white/60 font-mono mt-1">
             <span>
               {t("common.rank")} {player.rank} · {t(`ranks.${player.rank}`)}
             </span>
@@ -64,15 +63,14 @@ export function PlayerQuickWidget() {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 shrink-0">
-        <LanguageSwitcher />
+      <div className="flex flex-wrap items-center gap-2 shrink-0 border-t border-white/10 pt-3 sm:border-0 sm:pt-0">
         <Link
           href="/"
           title={t("dashboard.quickWidget.homeTooltip")}
           className="p-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white/50 hover:text-white transition-colors text-xs font-bold flex items-center gap-1"
         >
           <Home size={14} />
-          <span className="hidden sm:inline">{t("common.home")}</span>
+          <span>{t("common.home")}</span>
         </Link>
         <Link
           href="/locker"
@@ -80,7 +78,7 @@ export function PlayerQuickWidget() {
           className="p-2 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 text-orange-400 hover:text-orange-300 transition-colors text-xs font-bold flex items-center gap-1"
         >
           <Sparkles size={14} />
-          <span className="hidden sm:inline">{t("dashboard.quickWidget.lockerBtn")}</span>
+          <span>{t("dashboard.quickWidget.lockerBtn")}</span>
         </Link>
         <Link
           href="/profile"

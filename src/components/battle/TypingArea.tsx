@@ -15,7 +15,7 @@ const STATE_CLASSES: Record<string, string> = {
   correct: "text-white",
   incorrect: "text-red-400 bg-red-500/20 rounded-sm",
   current: "text-white",
-  untyped: "text-white/30",
+  untyped: "text-white/50",
 }
 
 export function TypingArea({ chars, inputRef, onFocus, themeColor = "#f97316" }: TypingAreaProps) {
@@ -37,7 +37,7 @@ export function TypingArea({ chars, inputRef, onFocus, themeColor = "#f97316" }:
 
   return (
     <div
-      className="relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm p-6 cursor-text"
+      className="relative rounded-2xl border border-white/10 focus-within:border-orange-400/60 focus-within:ring-1 focus-within:ring-orange-400/20 bg-white/5 backdrop-blur-sm p-4 sm:p-6 cursor-text"
       onClick={handleClick}
       ref={containerRef}
     >
