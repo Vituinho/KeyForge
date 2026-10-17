@@ -6,59 +6,59 @@ Place files in `public/audio/bgm/` using the exact filenames below. Each enemy c
 
 | Enemy ID | Character | Filename | Intended musical style | Asset | License | Source / creator | Commercial use | Attribution |
 |---|---|---|---|---|---|---|---|---|
-| naruto | Naruto Uzumaki | naruto.mp3 | Percussive strings and restrained drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| sakura | Sakura Haruno | sakura.mp3 | Percussive strings and restrained drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| rock-lee | Rock Lee | rock-lee.mp3 | Percussive strings and restrained drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| kakashi | Kakashi Hatake | kakashi.mp3 | Percussive strings and restrained drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| sasuke | Sasuke Uchiha | sasuke.mp3 | Percussive strings and restrained drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| itachi | Itachi Uchiha | itachi.mp3 | Percussive strings and restrained drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| pain | Pain (Nagato) | pain.mp3 | Percussive strings and restrained drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| madara | Madara Uchiha | madara.mp3 | Percussive strings and restrained drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| yuji | Yuji Itadori | yuji.mp3 | Dark electronic pulses and syncopated percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| nobara | Nobara Kugisaki | nobara.mp3 | Dark electronic pulses and syncopated percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| megumi | Megumi Fushiguro | megumi.mp3 | Dark electronic pulses and syncopated percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| todo | Aoi Todo | todo.mp3 | Dark electronic pulses and syncopated percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| nanami | Kento Nanami | nanami.mp3 | Dark electronic pulses and syncopated percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| toji | Toji Fushiguro | toji.mp3 | Dark electronic pulses and syncopated percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| sukuna | Ryomen Sukuna | sukuna.mp3 | Dark electronic pulses and syncopated percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| gojo | Satoru Gojo | gojo.mp3 | Dark electronic pulses and syncopated percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| krillin | Krillin | krillin.mp3 | Energetic rock and orchestral percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| piccolo | Piccolo | piccolo.mp3 | Energetic rock and orchestral percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| vegeta | Vegeta | vegeta.mp3 | Energetic rock and orchestral percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| frieza | Frieza | frieza.mp3 | Energetic rock and orchestral percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| cell | Cell | cell.mp3 | Energetic rock and orchestral percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| gohan | Gohan | gohan.mp3 | Energetic rock and orchestral percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| broly | Broly | broly.mp3 | Energetic rock and orchestral percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| goku | Son Goku | goku.mp3 | Energetic rock and orchestral percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| usopp | Usopp | usopp.mp3 | Adventurous brass and rhythmic strings | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| sanji | Sanji | sanji.mp3 | Adventurous brass and rhythmic strings | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| zoro | Roronoa Zoro | zoro.mp3 | Adventurous brass and rhythmic strings | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| law | Trafalgar Law | law.mp3 | Adventurous brass and rhythmic strings | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| doflamingo | Donquixote Doflamingo | doflamingo.mp3 | Adventurous brass and rhythmic strings | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| katakuri | Charlotte Katakuri | katakuri.mp3 | Adventurous brass and rhythmic strings | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| kaido | Kaido | kaido.mp3 | Adventurous brass and rhythmic strings | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| luffy | Monkey D. Luffy | luffy.mp3 | Adventurous brass and rhythmic strings | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| dungeon_guardian | Dungeon Guardian | dungeon_guardian.mp3 | Atmospheric synths and deep percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| cerberus | Cerberus | cerberus.mp3 | Atmospheric synths and deep percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| igris | Blood-Red Commander Igris | igris.mp3 | Atmospheric synths and deep percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| iron | Iron | iron.mp3 | Atmospheric synths and deep percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| tusk | Tusk | tusk.mp3 | Atmospheric synths and deep percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| beru | Beru | beru.mp3 | Atmospheric synths and deep percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| bellion | Bellion | bellion.mp3 | Atmospheric synths and deep percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| jinwoo | Sung Jin-Woo | jinwoo.mp3 | Atmospheric synths and deep percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| zenitsu | Zenitsu Agatsuma | zenitsu.mp3 | Japanese-inspired strings and cinematic drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| inosuke | Inosuke Hashibira | inosuke.mp3 | Japanese-inspired strings and cinematic drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| shinobu | Shinobu Kocho | shinobu.mp3 | Japanese-inspired strings and cinematic drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| rengoku | Kyojuro Rengoku | rengoku.mp3 | Japanese-inspired strings and cinematic drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| akaza | Akaza | akaza.mp3 | Japanese-inspired strings and cinematic drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| gyutaro | Gyutaro & Daki | gyutaro.mp3 | Japanese-inspired strings and cinematic drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| kokushibo | Kokushibo | kokushibo.mp3 | Japanese-inspired strings and cinematic drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| muzan | Muzan Kibutsuji | muzan.mp3 | Japanese-inspired strings and cinematic drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| cipher_initiate | Cipher Initiate | cipher_initiate.mp3 | Original futuristic synths and precise electronic rhythms | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| lexicon_warden | Lexicon Warden | lexicon_warden.mp3 | Original futuristic synths and precise electronic rhythms | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| rhythm_weaver | Rhythm Weaver | rhythm_weaver.mp3 | Original futuristic synths and precise electronic rhythms | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| accuracy_arbiter | Accuracy Arbiter | accuracy_arbiter.mp3 | Original futuristic synths and precise electronic rhythms | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| velocity_phantom | Velocity Phantom | velocity_phantom.mp3 | Original futuristic synths and precise electronic rhythms | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| endurance_colossus | Endurance Colossus | endurance_colossus.mp3 | Original futuristic synths and precise electronic rhythms | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| keystroke_sovereign | Keystroke Sovereign | keystroke_sovereign.mp3 | Original futuristic synths and precise electronic rhythms | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
-| nexus_mirror | The Nexus Mirror | nexus_mirror.mp3 | Original futuristic synths and precise electronic rhythms | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| naruto | Naruto Uzumaki | naruto.mp3 | Naruto: determined heroic strings, taiko and rising flute motifs | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| sakura | Sakura Haruno | sakura.mp3 | Naruto: agile percussion and bright, forceful strings for Sakura | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| rock-lee | Rock Lee | rock-lee.mp3 | Naruto: fast taijutsu percussion and relentless rhythmic momentum | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| kakashi | Kakashi Hatake | kakashi.mp3 | Naruto: tactical tension, restrained drums and cool electric textures | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| sasuke | Sasuke Uchiha | sasuke.mp3 | Naruto / Shippuden: tense rival motifs and sharp electric guitar | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| itachi | Itachi Uchiha | itachi.mp3 | Naruto Shippuden: ominous choral textures and restrained tragic strings | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| pain | Pain (Nagato) | pain.mp3 | Naruto Shippuden: solemn choir, heavy ritual drums and invasion tension | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| madara | Madara Uchiha | madara.mp3 | Naruto Shippuden: final-boss scale orchestra, war drums and dark brass | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| yuji | Yuji Itadori | yuji.mp3 | Jujutsu Kaisen: energetic urban percussion and defiant electronic pulses | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| nobara | Nobara Kugisaki | nobara.mp3 | Jujutsu Kaisen: sharp hammer-like beats and confident jagged riffs | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| megumi | Megumi Fushiguro | megumi.mp3 | Jujutsu Kaisen: shadowy ambient textures and measured tactical pulses | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| todo | Aoi Todo | todo.mp3 | Jujutsu Kaisen: heavy groove, syncopated percussion and explosive accents | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| nanami | Kento Nanami | nanami.mp3 | Jujutsu Kaisen: precise steady pulse, low strings and controlled intensity | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| toji | Toji Fushiguro | toji.mp3 | Jujutsu Kaisen: predatory bass, sudden percussion and relentless pursuit | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| sukuna | Ryomen Sukuna | sukuna.mp3 | Jujutsu Kaisen: malevolent ritual percussion and overwhelming dissonant brass | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| gojo | Satoru Gojo | gojo.mp3 | Jujutsu Kaisen: climactic spatial synths and triumphant high-energy rhythm | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| krillin | Krillin | krillin.mp3 | Dragon Ball: nimble martial-arts percussion and upbeat heroic brass | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| piccolo | Piccolo | piccolo.mp3 | Dragon Ball: disciplined low brass and meditative martial percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| vegeta | Vegeta | vegeta.mp3 | Dragon Ball: proud rival fanfare, driving guitar and escalating drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| frieza | Frieza | frieza.mp3 | Dragon Ball: sinister imperial strings, cold brass and ominous tension | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| cell | Cell | cell.mp3 | Dragon Ball: calculated menace, mechanical pulse and escalating orchestra | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| gohan | Gohan | gohan.mp3 | Dragon Ball: emotional heroic strings building into explosive orchestral rock | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| broly | Broly | broly.mp3 | Dragon Ball: berserk heavy percussion, distorted riffs and relentless power | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| goku | Son Goku | goku.mp3 | Dragon Ball: ultimate duel fanfare, triumphant orchestra and fast rock drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| usopp | Usopp | usopp.mp3 | One Piece: playful adventurous brass and nervous rhythmic percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| sanji | Sanji | sanji.mp3 | One Piece: stylish fast groove and elegant kick-like percussive accents | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| zoro | Roronoa Zoro | zoro.mp3 | One Piece: disciplined sword-duel strings and forceful low percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| law | Trafalgar Law | law.mp3 | One Piece: surgical rhythmic precision, mysterious strings and restrained bass | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| doflamingo | Donquixote Doflamingo | doflamingo.mp3 | One Piece: sinister theatrical strings and manipulative waltz-like tension | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| katakuri | Charlotte Katakuri | katakuri.mp3 | One Piece: relentless duel ostinato, heavy drums and dignified brass | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| kaido | Kaido | kaido.mp3 | One Piece: emperor-scale war drums, thunderous brass and crushing intensity | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| luffy | Monkey D. Luffy | luffy.mp3 | One Piece: liberating triumphant brass and exuberant climactic percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| dungeon_guardian | Dungeon Guardian | dungeon_guardian.mp3 | Solo Leveling: claustrophobic dungeon drones and approaching low percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| cerberus | Cerberus | cerberus.mp3 | Solo Leveling: ferocious pursuit rhythm, distorted bass and sharp attacks | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| igris | Blood-Red Commander Igris | igris.mp3 | Solo Leveling: knightly duel strings, metallic accents and solemn martial drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| iron | Iron | iron.mp3 | Solo Leveling: armored low brass and heavy, deliberate percussive strikes | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| tusk | Tusk | tusk.mp3 | Solo Leveling: ritual choral layers, magical pulses and cavernous drums | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| beru | Beru | beru.mp3 | Solo Leveling: predatory rapid strings and monstrous, relentless percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| bellion | Bellion | bellion.mp3 | Solo Leveling: grand shadow-army brass and disciplined apocalyptic march | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| jinwoo | Sung Jin-Woo | jinwoo.mp3 | Solo Leveling: monarch-scale dark orchestra and ascending shadow synths | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| zenitsu | Zenitsu Agatsuma | zenitsu.mp3 | Demon Slayer: quiet anticipation erupting into lightning-fast strings | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| inosuke | Inosuke Hashibira | inosuke.mp3 | Demon Slayer: wild taiko patterns, rough string attacks and charging rhythm | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| shinobu | Shinobu Kocho | shinobu.mp3 | Demon Slayer: delicate high strings, deceptive calm and precise sharp accents | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| rengoku | Kyojuro Rengoku | rengoku.mp3 | Demon Slayer: fiery heroic orchestra, warm brass and unwavering taiko | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| akaza | Akaza | akaza.mp3 | Demon Slayer: tragic duel strings and relentless martial percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| gyutaro | Gyutaro & Daki | gyutaro.mp3 | Demon Slayer: intertwined sibling motifs, frantic strings and urban night tension | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| kokushibo | Kokushibo | kokushibo.mp3 | Demon Slayer: moonlit ancient strings, layered dissonance and six-beat menace | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| muzan | Muzan Kibutsuji | muzan.mp3 | Demon Slayer: final-boss choral darkness, urgent taiko and overwhelming orchestra | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| cipher_initiate | Cipher Initiate | cipher_initiate.mp3 | KeyForge original: introductory cipher pulses and restrained precise synths | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| lexicon_warden | Lexicon Warden | lexicon_warden.mp3 | KeyForge original: lexical clockwork arpeggios and measured defensive rhythm | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| rhythm_weaver | Rhythm Weaver | rhythm_weaver.mp3 | KeyForge original: interwoven syncopated melodies and shifting rhythmic patterns | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| accuracy_arbiter | Accuracy Arbiter | accuracy_arbiter.mp3 | KeyForge original: sparse precision pulses and sharply defined percussive accents | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| velocity_phantom | Velocity Phantom | velocity_phantom.mp3 | KeyForge original: high-speed arpeggios and accelerating electronic percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| endurance_colossus | Endurance Colossus | endurance_colossus.mp3 | KeyForge original: sustained low synths and a patient, unyielding rhythmic build | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| keystroke_sovereign | Keystroke Sovereign | keystroke_sovereign.mp3 | KeyForge original: royal synthetic brass and climactic keystroke-like percussion | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |
+| nexus_mirror | The Nexus Mirror | nexus_mirror.mp3 | KeyForge original: mirrored motifs, evolving synth layers and final-trial intensity | Missing | Unknown — evidence required | Not supplied | Unknown | Not documented |

@@ -280,7 +280,7 @@ export function BattleArena({ enemy, texts, onRematch, verifiedSessionId }: Batt
   // Render battle result if battle has completed
   if (battleResultData !== null && (phase === "victory" || phase === "defeat")) {
     return (
-      <div><div className="flex justify-between items-center max-w-4xl mx-auto px-4 pt-3"><Link href="/game" className="kf-nav-link">KEYFORGE</Link><BattleAudioControls /></div><BattleResult
+      <div><div className="flex justify-between items-center max-w-4xl mx-auto px-4 pt-3"><Link href="/game" className="kf-nav-link">KEYFORGE</Link><BattleAudioControls enemyId={enemy.id} /></div><BattleResult
         victory={battleResultData.victory}
         enemy={enemy}
         result={battleResultData}
@@ -308,7 +308,7 @@ export function BattleArena({ enemy, texts, onRematch, verifiedSessionId }: Batt
       />
 
       <div className="relative z-10 flex flex-col min-h-screen sm:h-screen justify-between max-w-4xl mx-auto w-full px-4 py-4 sm:py-6 gap-4">
-        <header className="flex items-center justify-between gap-3"><Link href={enemy.world ? `/anime-world/${enemy.world}` : "/game"} className="text-xs font-semibold text-white/55 hover:text-white">← {t("battle.preBattle.exitBattle")}</Link><BattleAudioControls /></header>
+        <header className="flex items-center justify-between gap-3"><Link href={enemy.world ? `/anime-world/${enemy.world}` : "/game"} className="text-xs font-semibold text-white/55 hover:text-white">← {t("battle.preBattle.exitBattle")}</Link><BattleAudioControls enemyId={enemy.id} /></header>
         {/* Top row: Enemy card + HUD + Player card */}
         <div className="grid grid-cols-2 sm:grid-cols-[auto_1fr_auto] items-start gap-3">
           <StableEnemyCard

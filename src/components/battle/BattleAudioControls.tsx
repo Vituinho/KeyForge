@@ -4,8 +4,9 @@ import { memo, useSyncExternalStore } from "react"
 import { Volume2, VolumeX, SlidersHorizontal } from "lucide-react"
 import { getAudioSettings, getServerAudioSettings, saveAudioSettings, subscribeAudioSettings } from "@/lib/audio/audioSettings"
 import { useI18n } from "@/lib/i18n/i18nContext"
+import { EncounterAudioPicker } from "./EncounterAudioPicker"
 
-export const BattleAudioControls = memo(function BattleAudioControls() {
+export const BattleAudioControls = memo(function BattleAudioControls({ enemyId }: { enemyId: string }) {
   const { t } = useI18n()
   const settings = useSyncExternalStore(subscribeAudioSettings, getAudioSettings, getServerAudioSettings)
   return (
@@ -16,7 +17,7 @@ export const BattleAudioControls = memo(function BattleAudioControls() {
       </button>
       <details className="relative">
         <summary className="list-none p-2 rounded-lg cursor-pointer hover:bg-white/10" aria-label={t("release.audio.settings")}><SlidersHorizontal size={18} /></summary>
-        <div className="absolute right-0 top-full mt-2 z-40 w-60 rounded-xl border border-white/15 bg-neutral-950 shadow-xl p-4 space-y-3">
+        <div className="absolute right-0 top-full mt-2 z-40 w-72 max-h-[75vh] overflow-y-auto rounded-xl border border-white/15 bg-neutral-950 shadow-xl p-4 space-y-3">
           <p className="text-sm font-semibold text-white">{t("release.audio.settings")}</p>
           {(["masterVolume", "musicVolume", "sfxVolume"] as const).map(key => (
             <label key={key} className="block text-xs space-y-1">
@@ -26,6 +27,7 @@ export const BattleAudioControls = memo(function BattleAudioControls() {
             </label>
           ))}
           <p className="text-xs text-white/50">{t("release.audio.availability")}</p>
+          <EncounterAudioPicker key={enemyId} enemyId={enemyId} />
         </div>
       </details>
     </div>
