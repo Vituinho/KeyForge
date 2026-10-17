@@ -47,6 +47,7 @@ import {
 import { requestProgression,cacheVerifiedReward } from "@/lib/security/progressionClient"
 import { SubmissionQueue } from "@/lib/multiplayer/submissionQueue"
 import { backend } from "@/lib/backend/client"
+import { arenaPlayerName, loadArenaUsernames } from "@/lib/multiplayer/arenaPlayerNames"
 
 interface FloatingDamage {
   id: number
@@ -146,15 +147,21 @@ export function MultiplayerArena({
     ? Boolean(currentMatch.player_2_id?.startsWith("shadow_"))
     : Boolean(currentMatch.player_1_id?.startsWith("shadow_"))
 
-  const opponentShadowName = useMemo(() => {
-    const oppId = isP1 ? currentMatch.player_2_id : currentMatch.player_1_id
-    if (!oppId || !oppId.startsWith("shadow_")) return null
-    const raw = oppId.replace("shadow_", "").replace(/_/g, " ")
-    return raw
-      .split(" ")
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(" ")
-  }, [isP1, currentMatch.player_1_id, currentMatch.player_2_id])
+  const [arenaUsernames, setArenaUsernames] = useState<Record<string, string>>({})
+  const { id: matchId, player_1_id: player1Id, player_2_id: player2Id } = currentMatch
+  useEffect(() => {
+    let active = true
+    void loadArenaUsernames({ id: matchId, player_1_id: player1Id, player_2_id: player2Id }).then(names => {
+      if (active) setArenaUsernames(names)
+    })
+    return () => { active = false }
+  }, [matchId, player1Id, player2Id, user?.id])
+
+  const localPractice = matchId.startsWith("match_")
+  const p1Name = arenaPlayerName(player1Id, arenaUsernames,
+    localPractice && isP1 ? (user?.username || player.username) : t("multiplayerArena.hostShinobi"))
+  const p2Name = arenaPlayerName(player2Id, arenaUsernames,
+    localPractice && !isP1 ? (user?.username || player.username) : t("multiplayerArena.rivalShinobi"))
 
   // Match timer for pure WPM calculation
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
@@ -604,7 +611,7 @@ export function MultiplayerArena({
                   </div>
                   <div>
                     <span className="text-sm font-black text-white block leading-tight">
-                      {isP1 ? (user?.username || player.username) : (opponentShadowName || t("multiplayerArena.hostShinobi"))}
+                      {p1Name}
                     </span>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <span className="text-[10px] font-mono text-orange-400 font-bold">
@@ -686,7 +693,7 @@ export function MultiplayerArena({
                 <div className="flex items-center gap-2.5 text-right">
                   <div>
                     <span className="text-sm font-black text-white block leading-tight">
-                      {!isP1 ? (user?.username || player.username) : (opponentShadowName || t("multiplayerArena.rivalShinobi"))}
+                      {p2Name}
                     </span>
                     <div className="flex items-center justify-end gap-1.5 mt-0.5">
                       <span
@@ -1207,7 +1214,7 @@ export function MultiplayerArena({
                 <div className="space-y-1.5 border-b sm:border-b-0 sm:border-r border-white/10 pb-2.5 sm:pb-0 sm:pr-2">
                   <div className="flex items-center justify-between">
                     <span className="font-black text-white truncate max-w-[120px]">
-                      {isP1 ? (user?.username || player.username) : t("multiplayerArena.hostShinobi")}
+                      {p1Name}
                     </span>
                     <span className="text-[10px] text-orange-400 font-bold">{p1Hp} HP</span>
                   </div>
@@ -1227,7 +1234,7 @@ export function MultiplayerArena({
                 <div className="space-y-1.5 pt-1 sm:pt-0 sm:pl-1">
                   <div className="flex items-center justify-between">
                     <span className="font-black text-white truncate max-w-[120px]">
-                      {!isP1 ? (user?.username || player.username) : t("multiplayerArena.rivalShinobi")}
+                      {p2Name}
                     </span>
                     <span className="text-[10px] text-blue-400 font-bold">{p2Hp} HP</span>
                   </div>
