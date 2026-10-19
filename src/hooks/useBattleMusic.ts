@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react"
 import { getBattleMusic, BATTLE_MUSIC_FALLBACK } from "@/lib/audio/battleMusic"
+import { selectBattleMusic } from "@/lib/audio/officialBattleMusic"
 import { musicManager } from "@/lib/audio/musicManager"
 import { soundManager } from "@/lib/audio/soundManager"
 import { localBattleTracks } from "@/lib/audio/localBattleTracks"
@@ -15,10 +16,11 @@ export function useBattleMusic(enemyId: string, result: boolean) {
       const local = await localBattleTracks.get(enemyId)
       if (!active || request !== revision) return
       const licensed = getBattleMusic(enemyId)
+      const selection = selectBattleMusic(enemyId)
       if (local) {
         const url = URL.createObjectURL(local.file)
         musicManager.play({ kind: "local", enemyId, name: local.name, file: url, dispose: () => URL.revokeObjectURL(url) }, licensed)
-      } else musicManager.play(licensed, BATTLE_MUSIC_FALLBACK)
+      } else musicManager.play(selection.primary, selection.fallback ?? BATTLE_MUSIC_FALLBACK)
       musicManager.setResultMode(resultRef.current)
       if (document.hidden) musicManager.pause()
     }

@@ -5,6 +5,8 @@ const require = createRequire(import.meta.url)
 const { chromium } = require(process.env.KEYFORGE_PLAYWRIGHT_MODULE || "playwright")
 require("tsx/cjs")
 const { BATTLE_MUSIC } = require("../src/lib/audio/battleMusic.ts")
+const { selectBattleMusic, OFFICIAL_RECORDINGS } = require("../src/lib/audio/officialBattleMusic.ts")
+const defaults = Object.fromEntries(Object.keys(BATTLE_MUSIC).map(id => [id, selectBattleMusic(id).primary]))
 const { createDefaultPlayerProfile } = require("../src/types/player.ts")
 const port = Number(process.env.KEYFORGE_UI_PORT || 3137)
 assert.ok(Number.isInteger(port) && port > 0 && port <= 65535)
@@ -47,18 +49,20 @@ try {
       results.push({ id: track.enemyId, seconds: buffer.duration, contentType: response.headers.get("content-type") })
     }
     return results
-  }, Object.values(BATTLE_MUSIC))
+  }, Object.values(defaults))
   assert.equal(decoded.length, 56)
-  assert.ok(decoded.every(track => /audio\/(wav|wave|x-wav)/.test(track.contentType)))
-  console.log("56 default recordings: HTTP 200, audio MIME, browser decode, duration and audible PCM energy verified")
+  assert.ok(decoded.every(track => /audio\/(wav|wave|x-wav|mpeg|ogg|mp4|x-m4a)/.test(track.contentType)))
+  console.log(`56 default recordings (${Object.keys(OFFICIAL_RECORDINGS).length} official): HTTP 200, audio MIME, browser decode, duration and audible PCM energy verified`)
   for (const id of ["naruto", "yuji", "krillin", "usopp", "dungeon_guardian", "zenitsu", "cipher_initiate"]) {
     await page.goto(`${origin}/battle?enemy=${id}`, { waitUntil: "networkidle" })
     await page.getByRole("button", { name: "START BATTLE", exact: true }).click()
-    await page.waitForFunction(file => window.__battleAudios.some(audio => audio.getAttribute("src") === file && !audio.paused && audio.currentTime > .1), BATTLE_MUSIC[id].file)
+    await page.waitForFunction(file => window.__battleAudios.some(audio => audio.getAttribute("src") === file && !audio.paused && audio.currentTime > .1), defaults[id].file)
     assert.equal(await page.evaluate(() => window.__battleAudios.filter(audio => !audio.paused).length), 1)
     assert.equal(await page.evaluate(() => window.__battleAudios.find(audio => !audio.paused).loop), true)
     if (id === "naruto") {
-      await page.waitForTimeout((decoded.find(track => track.id === id).seconds + .3) * 1000)
+      // Exercise the real loop boundary without waiting several minutes for an OST.
+      await page.evaluate(() => { const audio = window.__battleAudios.find(audio => !audio.paused); audio.currentTime = audio.duration - .2 })
+      await page.waitForFunction(() => window.__battleAudios.some(audio => !audio.paused && audio.currentTime < 2 && !audio.ended))
       assert.equal(await page.evaluate(() => window.__battleAudios.find(audio => !audio.paused)?.ended), false)
     }
     await page.locator('a[href^="/anime-world/"]').first().click()
