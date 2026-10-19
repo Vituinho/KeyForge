@@ -1,0 +1,18 @@
+KeyForge Original Audio License v1
+
+Scope: the original compositions and synthesized WAV recordings in this directory,
+and their reproduction from scripts/audio/renderBattleTrack.ts. This permission
+does not apply to third-party anime music, names, artwork or trademarks.
+
+To the extent copyright or related rights subsist in these newly authored assets,
+permission is granted, free of charge, to any person obtaining a copy to use, copy,
+modify, perform, host, publish, distribute, sublicense and sell the compositions
+and recordings, including commercial use in KeyForge and its distributions.
+No royalty, subscription, attribution or separate audio setup is required.
+Retain this notice in redistributed asset collections and substantial copies.
+
+The assets are supplied AS IS, without warranty of any kind. No endorsement by or
+affiliation with any anime studio, composer, performer or rights holder is implied.
+These are original synthetic game loops, not official anime recordings, covers,
+remixes, transcriptions or sampled performances. The complete generation source
+and deterministic asset hashes are included for provenance and verification.
