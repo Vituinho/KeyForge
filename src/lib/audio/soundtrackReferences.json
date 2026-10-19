@@ -10,7 +10,7 @@
     "narutoOriginal": {
       "referenceUrl": "https://open.spotify.com/playlist/7wkGN40FnYhlmKNMNMc5Ng",
       "titleSourceUrl": "https://open.spotify.com/intl-ja/album/6NrJzDuBPZvp3ZRXnIqs1P",
-      "creditSourceUrl": "https://www.tv-tokyo.co.jp/anime/naruto2002/goods/cd_suntra.html"
+      "creditSourceUrl": "https://www.qobuz.com/jp-ja/album/naruto-original-soundtrack-toshio-masuda-musashi-project/hzo4nmt7x3lyc"
     },
     "jjk": {
       "referenceUrl": "https://open.spotify.com/album/5QYGsl05fLEEE4fUjz4rkt",
@@ -40,17 +40,17 @@
     "demon": {
       "referenceUrl": "https://kimetsu.com/anime/soundtrack/",
       "titleSourceUrl": "https://kimetsu.com/anime/package/?id=4790",
-      "creditSourceUrl": "https://kimetsu.com/anime/package/?id=4790"
+      "creditSourceUrl": "https://www.qobuz.com/jp-ja/album/anime-kimetsu-no-yaiba-tanjiro-kamado-unwavering-resolve-arc-original-soundtrack-various-artists/ofhan1doxjnpb"
     },
     "demonTrain": {
       "referenceUrl": "https://kimetsu.com/anime/soundtrack/",
       "titleSourceUrl": "https://kimetsu.com/anime/package/?id=4787",
-      "creditSourceUrl": "https://kimetsu.com/anime/package/?id=4787"
+      "creditSourceUrl": "https://www.qobuz.com/us-en/album/-yuki-kajiurago-shiinalisa/n1cz9ay2xkv8b"
     },
     "demonDistrict": {
       "referenceUrl": "https://kimetsu.com/anime/soundtrack/",
       "titleSourceUrl": "https://kimetsu.com/anime/yukakuhen/music/?page=ost",
-      "creditSourceUrl": "https://kimetsu.com/anime/yukakuhen/music/?page=ost"
+      "creditSourceUrl": "https://www.qobuz.com/us-en/album/-yuki-kajiurago-shiinaaimer/uiq8z8nfwkmqc"
     },
     "narutoOriginalPlaylist": {
       "referenceUrl": "https://open.spotify.com/playlist/7wkGN40FnYhlmKNMNMc5Ng",
@@ -71,6 +71,61 @@
       "referenceUrl": "https://avexnet.jp/contents/DBSOS-XXXX-XXXX/discography/1016232",
       "titleSourceUrl": "https://avexnet.jp/contents/DBSOS-XXXX-XXXX/discography/1016232",
       "creditSourceUrl": "https://www.animatetimes.com/news/details.php?id=1547195920"
+    },
+    "naruto2": {
+      "referenceUrl": "https://open.spotify.com/intl-ja/album/6dfygmKJzKiTCJJY7qpTnA",
+      "titleSourceUrl": "https://open.spotify.com/intl-ja/album/6dfygmKJzKiTCJJY7qpTnA",
+      "creditSourceUrl": "https://www.qobuz.com/us-en/album/naruto-original-soundtrack-2-toshio-masuda-musashi-project/d297t6o6npcaa"
+    },
+    "naruto3": {
+      "referenceUrl": "https://naruto.lnk.to/ost3",
+      "titleSourceUrl": "https://www.qobuz.com/us-en/album/naruto-original-soundtrack-3-toshio-masuda-musashi-project/ooqfofayjo74a",
+      "creditSourceUrl": "https://www.qobuz.com/us-en/album/naruto-original-soundtrack-3-toshio-masuda-musashi-project/ooqfofayjo74a"
+    },
+    "narutoShippuden2": {
+      "referenceUrl": "https://www.qobuz.com/jp-ja/album/naruto-shippuden-original-soundtrack-2-yasuharu-takanashi-yaiba/avpwu0fzamwob",
+      "titleSourceUrl": "https://www.qobuz.com/jp-ja/album/naruto-shippuden-original-soundtrack-2-yasuharu-takanashi-yaiba/avpwu0fzamwob",
+      "creditSourceUrl": "https://www.qobuz.com/jp-ja/album/naruto-shippuden-original-soundtrack-2-yasuharu-takanashi-yaiba/avpwu0fzamwob"
+    },
+    "narutoRoadToNinja": {
+      "referenceUrl": "https://music.apple.com/us/song/1584793589",
+      "titleSourceUrl": "https://music.apple.com/us/song/1584793589",
+      "creditSourceUrl": "https://www.qobuz.com/se-en/album/naruto-shippuden-the-movie-road-to-ninja-original-soundtrack-yasuharu-takanashi-yaiba/xxv2zke72rx0a"
+    },
+    "jjk_yuji": {
+      "referenceUrl": "https://open.spotify.com/album/5QYGsl05fLEEE4fUjz4rkt",
+      "titleSourceUrl": "https://jujutsukaisen.jp/music/1st_02.php",
+      "creditSourceUrl": "https://www.shazam.com/song/1565564103/put-it-in-this-fist"
+    },
+    "jjk_nanami": {
+      "referenceUrl": "https://open.spotify.com/album/5QYGsl05fLEEE4fUjz4rkt",
+      "titleSourceUrl": "https://jujutsukaisen.jp/music/1st_02.php",
+      "creditSourceUrl": "https://www.shazam.com/song/1565564256/7-to-3"
+    },
+    "jjk_sukuna": {
+      "referenceUrl": "https://open.spotify.com/album/5QYGsl05fLEEE4fUjz4rkt",
+      "titleSourceUrl": "https://jujutsukaisen.jp/music/1st_02.php",
+      "creditSourceUrl": "https://www.shazam.com/song/1565564082/ryomen-sukuna"
+    },
+    "jjk_gojo": {
+      "referenceUrl": "https://open.spotify.com/album/5QYGsl05fLEEE4fUjz4rkt",
+      "titleSourceUrl": "https://jujutsukaisen.jp/music/1st_02.php",
+      "creditSourceUrl": "https://www.shazam.com/en-us/song/1565564438/hollow-purple"
+    },
+    "onepieceNewWorld": {
+      "referenceUrl": "https://avex.jp/onepiece/products/musicDetail.php?id=1014035",
+      "titleSourceUrl": "https://avex.jp/onepiece/products/musicDetail.php?id=1014035",
+      "creditSourceUrl": "https://ototoy.jp/_/default/p/64202"
+    },
+    "onepieceWanokuni": {
+      "referenceUrl": "https://avex.jp/onepiece/products/musicDetail.php?id=1018758",
+      "titleSourceUrl": "https://avex.jp/onepiece/products/musicDetail.php?id=1018758",
+      "creditSourceUrl": "https://music.apple.com/us/song/1612230552"
+    },
+    "onepieceFirstVoyage": {
+      "referenceUrl": "https://columbia.jp/prod-info/COKM-45398/",
+      "titleSourceUrl": "https://columbia.jp/prod-info/COKM-45398/",
+      "creditSourceUrl": "https://www.qobuz.com/jp-ja/album/tvone-piece-first-voyage-ort-kohei-tanaka-shiro-hamaguchi/hav01q859y4hb"
     }
   },
   "encounters": [
@@ -79,211 +134,274 @@
       "character": "Naruto Uzumaki",
       "series": "Naruto",
       "kind": "official-reference",
-      "status": "unresolved",
+      "status": "verified",
       "title": "NARUTO Main Theme",
       "titleVerified": true,
       "composers": [
-        "MUSASHI PROJECT",
-        "Toshio Masuda"
+        "MUSASHI PROJECT"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [
         "MUSASHI PROJECT"
       ],
       "sourceId": "narutoOriginal",
       "trackLocation": "OST 1, digital track 20",
       "assignmentBasis": "Editorial heroic lead selection; not a claim of exclusive character ownership.",
-      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "sakura",
       "character": "Sakura Haruno",
       "series": "Naruto",
       "kind": "official-reference",
-      "status": "unresolved",
+      "status": "verified",
       "title": "サクラのテーマ",
       "titleVerified": true,
       "composers": [
-        "MUSASHI PROJECT",
         "Toshio Masuda"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [
         "Toshio Masuda"
       ],
       "sourceId": "narutoOriginal",
       "trackLocation": "OST 1, digital track 9",
       "assignmentBasis": "Character is named in the official track title.",
-      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "rock-lee",
       "character": "Rock Lee",
       "series": "Naruto",
       "kind": "official-reference",
-      "status": "unresolved",
-      "title": "美しき碧い野獣",
+      "status": "verified",
+      "title": "Rock Lee's Theme",
       "titleVerified": true,
       "composers": [
-        "MUSASHI PROJECT",
         "Toshio Masuda"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [
         "Toshio Masuda"
       ],
-      "sourceId": "narutoOriginalPlaylist",
-      "trackLocation": "Sony playlist item 27",
-      "assignmentBasis": "Editorial taijutsu encounter selection.",
-      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "sourceId": "naruto3",
+      "trackLocation": "Digital OST 3, track 5",
+      "assignmentBasis": "Official original-series character theme explicitly named for Rock Lee; supersedes the general taijutsu cue.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "kakashi",
       "character": "Kakashi Hatake",
       "series": "Naruto",
       "kind": "official-reference",
-      "status": "unresolved",
+      "status": "verified",
       "title": "カカシのテーマ",
       "titleVerified": true,
       "composers": [
-        "MUSASHI PROJECT",
         "Toshio Masuda"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [
         "Toshio Masuda"
       ],
       "sourceId": "narutoOriginal",
       "trackLocation": "OST 1, digital track 10",
       "assignmentBasis": "Character is named in the official track title.",
-      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "sasuke",
       "character": "Sasuke Uchiha",
       "series": "Naruto",
       "kind": "official-reference",
-      "status": "unresolved",
+      "status": "verified",
       "title": "サスケのテーマ",
       "titleVerified": true,
       "composers": [
-        "MUSASHI PROJECT",
         "Toshio Masuda"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [
         "Toshio Masuda"
       ],
-      "sourceId": "narutoOriginalPlaylist",
-      "trackLocation": "Sony playlist item 26",
+      "sourceId": "naruto2",
+      "trackLocation": "OST 2, track 4",
       "assignmentBasis": "Character is named in the official track title.",
-      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "itachi",
       "character": "Itachi Uchiha",
       "series": "Naruto Shippuden",
       "kind": "official-reference",
-      "status": "unresolved",
+      "status": "verified",
       "title": "千夜",
       "titleVerified": true,
       "composers": [
-        "Yasuharu Takanashi",
-        "YAIBA"
+        "Yasuharu Takanashi"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [
         "Yasuharu Takanashi",
         "YAIBA"
       ],
-      "sourceId": "naruto",
-      "trackLocation": "Sony playlist item 3",
-      "assignmentBasis": "Editorial sombre rival selection; canonical Itachi theme association unverified.",
-      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "sourceId": "narutoShippuden2",
+      "trackLocation": "Aniplex/Qobuz digital OST 2, track 23",
+      "assignmentBasis": "Senya (千夜), the widely recognized Itachi selection. Track composition credit verified in label-delivered metadata; not exclusive ownership of this character theme.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "pain",
       "character": "Pain (Nagato)",
       "series": "Naruto Shippuden",
       "kind": "official-reference",
-      "status": "unresolved",
-      "title": "闘神",
+      "status": "verified",
+      "title": "儀礼",
       "titleVerified": true,
       "composers": [
-        "Yasuharu Takanashi",
-        "YAIBA"
+        "Yasuharu Takanashi"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [
         "Yasuharu Takanashi",
         "YAIBA"
       ],
-      "sourceId": "naruto",
-      "trackLocation": "Sony playlist item 8",
-      "assignmentBasis": "Editorial boss selection; not represented as a named Pain theme.",
-      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "sourceId": "narutoShippuden2",
+      "trackLocation": "Aniplex/Qobuz digital OST 2, track 20",
+      "assignmentBasis": "Girei (儀礼), selected for Pain rather than the previous generic boss cue. Original Aniplex recording; not a cover.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "madara",
       "character": "Madara Uchiha",
       "series": "Naruto Shippuden",
       "kind": "official-reference",
-      "status": "unresolved",
-      "title": "憤怒",
+      "status": "verified",
+      "title": "難攻不落",
       "titleVerified": true,
       "composers": [
-        "Yasuharu Takanashi",
         "YAIBA"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [
         "Yasuharu Takanashi",
         "YAIBA"
       ],
-      "sourceId": "naruto",
-      "trackLocation": "Sony playlist item 31",
-      "assignmentBasis": "Editorial final-boss selection; canonical Madara theme association unverified.",
-      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "sourceId": "narutoShippuden2",
+      "trackLocation": "Aniplex/Qobuz digital OST 2, track 13",
+      "assignmentBasis": "Impregnable (難攻不落), an editorial war-boss selection. This verified Aniplex cue is not represented as an exclusive or canonically named Madara theme.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "researchNote": "The official ROAD TO NINJA cue MADARA is verified separately, but that movie uses the masked Madara identity. It is not asserted to be the canonical war-arc Madara Uchiha theme. Fan-titled uploads are not accepted as official masters.",
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "yuji",
       "character": "Yuji Itadori",
       "series": "Jujutsu Kaisen",
       "kind": "official-reference",
-      "status": "unresolved",
+      "status": "verified",
       "title": "拳にのせろ",
       "titleVerified": true,
       "composers": [
-        "Hiroaki Tsutsumi",
-        "Yoshimasa Terui",
-        "Alisa Okehazama"
+        "Hiroaki Tsutsumi"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [
         "Hiroaki Tsutsumi"
       ],
-      "sourceId": "jjk",
+      "sourceId": "jjk_yuji",
       "trackLocation": "DISC1 22",
       "assignmentBasis": "Character or technique association is an editorial encounter assignment.",
-      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "nobara",
@@ -307,7 +425,15 @@
       "assignmentBasis": "Character or technique association is an editorial encounter assignment.",
       "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "megumi",
@@ -331,7 +457,15 @@
       "assignmentBasis": "Character or technique association is an editorial encounter assignment.",
       "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "todo",
@@ -355,31 +489,45 @@
       "assignmentBasis": "Character or technique association is an editorial encounter assignment.",
       "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "nanami",
       "character": "Kento Nanami",
       "series": "Jujutsu Kaisen",
       "kind": "official-reference",
-      "status": "unresolved",
+      "status": "verified",
       "title": "7:3",
       "titleVerified": true,
       "composers": [
-        "Hiroaki Tsutsumi",
-        "Yoshimasa Terui",
         "Alisa Okehazama"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [
         "Alisa Okehazama"
       ],
-      "sourceId": "jjk",
+      "sourceId": "jjk_nanami",
       "trackLocation": "DISC2 5",
       "assignmentBasis": "Character or technique association is an editorial encounter assignment.",
-      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "toji",
@@ -399,55 +547,75 @@
       "assignmentBasis": "Character is named in the official track title; season 2 reference, outside the supplied season 1 album.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "sukuna",
       "character": "Ryomen Sukuna",
       "series": "Jujutsu Kaisen",
       "kind": "official-reference",
-      "status": "unresolved",
+      "status": "verified",
       "title": "両面宿儺",
       "titleVerified": true,
       "composers": [
-        "Hiroaki Tsutsumi",
-        "Yoshimasa Terui",
-        "Alisa Okehazama"
+        "Hiroaki Tsutsumi"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [
         "Hiroaki Tsutsumi"
       ],
-      "sourceId": "jjk",
+      "sourceId": "jjk_sukuna",
       "trackLocation": "DISC1 8",
       "assignmentBasis": "Character or technique association is an editorial encounter assignment.",
-      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "gojo",
       "character": "Satoru Gojo",
       "series": "Jujutsu Kaisen",
       "kind": "official-reference",
-      "status": "unresolved",
+      "status": "verified",
       "title": "虚式「茈」",
       "titleVerified": true,
       "composers": [
-        "Hiroaki Tsutsumi",
-        "Yoshimasa Terui",
         "Alisa Okehazama"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [
         "Alisa Okehazama"
       ],
-      "sourceId": "jjk",
+      "sourceId": "jjk_gojo",
       "trackLocation": "DISC2 27",
       "assignmentBasis": "Character or technique association is an editorial encounter assignment.",
-      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "krillin",
@@ -467,7 +635,15 @@
       "assignmentBasis": "Editorial team-warrior selection; not an exclusive Krillin theme.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "piccolo",
@@ -487,7 +663,15 @@
       "assignmentBasis": "Editorial tactical warrior selection; not an exclusive Piccolo theme.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "vegeta",
@@ -507,7 +691,15 @@
       "assignmentBasis": "Character is named in the official title.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "frieza",
@@ -527,7 +719,15 @@
       "assignmentBasis": "Golden Frieza reference selected for Frieza; no claim that the encounter uses this form.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "cell",
@@ -547,7 +747,15 @@
       "assignmentBasis": "Editorial threatening opponent selection; not a canonical Cell theme.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "gohan",
@@ -567,7 +775,15 @@
       "assignmentBasis": "Editorial heroic warrior selection; not an exclusive Gohan theme.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "broly",
@@ -587,7 +803,15 @@
       "assignmentBasis": "Named Broly battle cue; composer credit corroborated by a direct interview with Norihito Sumitomo.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "goku",
@@ -607,7 +831,15 @@
       "assignmentBasis": "Character is named in the official title.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "usopp",
@@ -615,19 +847,28 @@
       "series": "One Piece",
       "kind": "official-reference",
       "status": "unresolved",
-      "title": null,
-      "titleVerified": false,
+      "title": "ウソップ、やばいぞ!",
+      "titleVerified": true,
       "composers": [
-        "Kohei Tanaka"
+        "Kohei Tanaka",
+        "Shiro Hamaguchi"
       ],
-      "composerCreditScope": "score",
+      "composerCreditScope": "release",
       "creditedArtists": [],
-      "sourceId": "onepiece",
-      "trackLocation": null,
-      "assignmentBasis": "No unrelated GEAR5 character theme substituted.",
-      "unresolvedReason": "GEAR5 tracklist verified, but no suitable character-specific cue established for this earlier encounter. Await an official earlier-arc soundtrack source.",
+      "sourceId": "onepieceFirstVoyage",
+      "trackLocation": "First Voyage, track 46",
+      "assignmentBasis": "Official individual title names this character; supersedes the previous empty GEAR5-only selection.",
+      "unresolvedReason": "Individual title verified in publisher catalog. Individual composition credit for the selected master is not fully verified; release/artist credits retained separately.",
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "sanji",
@@ -647,7 +888,15 @@
       "assignmentBasis": "Named Sanji fight cue.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "zoro",
@@ -667,7 +916,15 @@
       "assignmentBasis": "Named Zoro fight cue.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "law",
@@ -687,7 +944,15 @@
       "assignmentBasis": "Editorial selection for Law using his named technique.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "doflamingo",
@@ -695,19 +960,28 @@
       "series": "One Piece",
       "kind": "official-reference",
       "status": "unresolved",
-      "title": null,
-      "titleVerified": false,
+      "title": "ドンキホーテ・ドフラミンゴ",
+      "titleVerified": true,
       "composers": [
-        "Kohei Tanaka"
+        "Kohei Tanaka",
+        "Shiro Hamaguchi"
       ],
-      "composerCreditScope": "score",
+      "composerCreditScope": "release",
       "creditedArtists": [],
-      "sourceId": "onepiece",
-      "trackLocation": null,
-      "assignmentBasis": "No unrelated GEAR5 character theme substituted.",
-      "unresolvedReason": "GEAR5 tracklist verified, but no suitable character-specific cue established for this earlier encounter. Await an official earlier-arc soundtrack source.",
+      "sourceId": "onepieceNewWorld",
+      "trackLocation": "NEW WORLD, DISC2 track 16",
+      "assignmentBasis": "Official individual title names this character; supersedes the previous empty GEAR5-only selection.",
+      "unresolvedReason": "Individual title verified in publisher catalog. Individual composition credit for the selected master is not fully verified; release/artist credits retained separately.",
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "katakuri",
@@ -715,19 +989,27 @@
       "series": "One Piece",
       "kind": "official-reference",
       "status": "unresolved",
-      "title": null,
-      "titleVerified": false,
+      "title": "カタクリのテーマ",
+      "titleVerified": true,
       "composers": [
         "Kohei Tanaka"
       ],
-      "composerCreditScope": "score",
+      "composerCreditScope": "release",
       "creditedArtists": [],
-      "sourceId": "onepiece",
-      "trackLocation": null,
-      "assignmentBasis": "No unrelated GEAR5 character theme substituted.",
-      "unresolvedReason": "GEAR5 tracklist verified, but no suitable character-specific cue established for this earlier encounter. Await an official earlier-arc soundtrack source.",
+      "sourceId": "onepieceWanokuni",
+      "trackLocation": "WANOKUNI, DISC2 track 26",
+      "assignmentBasis": "Official individual title names this character; supersedes the previous empty GEAR5-only selection.",
+      "unresolvedReason": "Individual title verified in publisher catalog. Individual composition credit for the selected master is not fully verified; release/artist credits retained separately.",
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "kaido",
@@ -747,7 +1029,15 @@
       "assignmentBasis": "Named Kaido boss-fight cue.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "luffy",
@@ -767,7 +1057,15 @@
       "assignmentBasis": "Official announcement associates this release with Gear 5 Luffy.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "dungeon_guardian",
@@ -787,7 +1085,15 @@
       "assignmentBasis": "Editorial dungeon tension.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "cerberus",
@@ -807,7 +1113,15 @@
       "assignmentBasis": "Editorial monster battle.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "igris",
@@ -827,7 +1141,15 @@
       "assignmentBasis": "Editorial knight duel; scene-specific usage not verified.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "iron",
@@ -847,7 +1169,15 @@
       "assignmentBasis": "Editorial heavy combat.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "tusk",
@@ -867,7 +1197,15 @@
       "assignmentBasis": "Editorial magic encounter.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "beru",
@@ -887,7 +1225,15 @@
       "assignmentBasis": "Editorial boss encounter, reusing the verified first-season score.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "bellion",
@@ -907,7 +1253,15 @@
       "assignmentBasis": "Editorial climax, not a claim that Bellion has an anime character theme.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "jinwoo",
@@ -927,133 +1281,183 @@
       "assignmentBasis": "Editorial lead encounter. Exact album title; not substituted with the distinct DARK ARIA <LV2> release.",
       "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "zenitsu",
       "character": "Zenitsu Agatsuma",
       "series": "Demon Slayer",
       "kind": "official-reference",
-      "status": "unresolved",
+      "status": "verified",
       "title": "霹靂一閃 六連～鬼殺隊として",
       "titleVerified": true,
       "composers": [
-        "Yuki Kajiura",
         "Go Shiina"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [],
       "sourceId": "demon",
       "trackLocation": "DISC2 3",
       "assignmentBasis": "Character or technique is named in the official title.",
-      "unresolvedReason": "Individual title verified; official page gives joint album music credits only. Track-level composer remains unresolved.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "inosuke",
       "character": "Inosuke Hashibira",
       "series": "Demon Slayer",
       "kind": "official-reference",
-      "status": "unresolved",
+      "status": "verified",
       "title": "嘴平伊之助",
       "titleVerified": true,
       "composers": [
-        "Yuki Kajiura",
         "Go Shiina"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [],
       "sourceId": "demon",
       "trackLocation": "DISC1 18",
       "assignmentBasis": "Character or technique is named in the official title.",
-      "unresolvedReason": "Individual title verified; official page gives joint album music credits only. Track-level composer remains unresolved.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "shinobu",
       "character": "Shinobu Kocho",
       "series": "Demon Slayer",
       "kind": "official-reference",
-      "status": "unresolved",
+      "status": "verified",
       "title": "蟲柱のテーマ -OST ver.-",
       "titleVerified": true,
       "composers": [
-        "Yuki Kajiura",
         "Go Shiina"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [],
       "sourceId": "demon",
       "trackLocation": "DISC2 12",
       "assignmentBasis": "Character or technique is named in the official title.",
-      "unresolvedReason": "Individual title verified; official page gives joint album music credits only. Track-level composer remains unresolved.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "rengoku",
       "character": "Kyojuro Rengoku",
       "series": "Demon Slayer",
       "kind": "official-reference",
-      "status": "unresolved",
+      "status": "verified",
       "title": "煉󠄁獄の死闘",
       "titleVerified": true,
       "composers": [
-        "Yuki Kajiura",
         "Go Shiina"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [],
       "sourceId": "demonTrain",
       "trackLocation": "DISC2 12",
       "assignmentBasis": "Named Mugen Train confrontation.",
-      "unresolvedReason": "Individual title verified; official page gives joint album music credits only. Track-level composer remains unresolved.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "akaza",
       "character": "Akaza",
       "series": "Demon Slayer",
       "kind": "official-reference",
-      "status": "unresolved",
+      "status": "verified",
       "title": "煉󠄁獄と猗窩座の戦い",
       "titleVerified": true,
       "composers": [
-        "Yuki Kajiura",
         "Go Shiina"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [],
       "sourceId": "demonTrain",
       "trackLocation": "DISC2 11",
       "assignmentBasis": "Named Mugen Train confrontation.",
-      "unresolvedReason": "Individual title verified; official page gives joint album music credits only. Track-level composer remains unresolved.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "gyutaro",
       "character": "Gyutaro & Daki",
       "series": "Demon Slayer",
       "kind": "official-reference",
-      "status": "unresolved",
+      "status": "verified",
       "title": "妓夫太郎の猛攻～譜面の完成",
       "titleVerified": true,
       "composers": [
-        "Yuki Kajiura",
         "Go Shiina"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [],
       "sourceId": "demonDistrict",
       "trackLocation": "DISC2 13",
       "assignmentBasis": "Named Gyutaro fight cue.",
-      "unresolvedReason": "Individual title verified; official page gives joint album music credits only. Track-level composer remains unresolved.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "kokushibo",
@@ -1074,28 +1478,43 @@
       "assignmentBasis": "Await an official release containing this encounter.",
       "unresolvedReason": "No individual Kokushibo cue verified in the supplied soundtrack catalog. Do not label an unreleased/fan-titled cue as official.",
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "muzan",
       "character": "Muzan Kibutsuji",
       "series": "Demon Slayer",
       "kind": "official-reference",
-      "status": "unresolved",
+      "status": "verified",
       "title": "鬼舞辻無惨 -OST ver.-",
       "titleVerified": true,
       "composers": [
-        "Yuki Kajiura",
         "Go Shiina"
       ],
-      "composerCreditScope": "release",
+      "composerCreditScope": "track",
       "creditedArtists": [],
       "sourceId": "demon",
       "trackLocation": "DISC1 13",
       "assignmentBasis": "Character or technique is named in the official title.",
-      "unresolvedReason": "Individual title verified; official page gives joint album music credits only. Track-level composer remains unresolved.",
+      "unresolvedReason": null,
       "playbackAuthorization": "not-granted",
-      "playbackFile": null
+      "playbackFile": null,
+      "availability": {
+        "status": "unavailable",
+        "reason": "No official master asset or synchronization/master-use/public-hosting license for KeyForge was supplied or found. Listening and retail references do not grant these rights.",
+        "missing": [
+          "licensed-master",
+          "game-and-hosting-permission"
+        ]
+      }
     },
     {
       "enemyId": "cipher_initiate",
@@ -1115,7 +1534,15 @@
       "assignmentBasis": "Original composition and synthetic recording created for this encounter; no named human composer or official anime association claimed.",
       "unresolvedReason": null,
       "playbackAuthorization": "bundled-original-license",
-      "playbackFile": "/audio/bgm/original/cipher_initiate.wav"
+      "playbackFile": "/audio/bgm/original/cipher_initiate.wav",
+      "availability": {
+        "status": "original-only",
+        "reason": "KeyForge-original enemy; no official anime composition is associated with this character. No licensed external recording supplied.",
+        "missing": [
+          "official-assignment",
+          "licensed-master"
+        ]
+      }
     },
     {
       "enemyId": "lexicon_warden",
@@ -1135,7 +1562,15 @@
       "assignmentBasis": "Original composition and synthetic recording created for this encounter; no named human composer or official anime association claimed.",
       "unresolvedReason": null,
       "playbackAuthorization": "bundled-original-license",
-      "playbackFile": "/audio/bgm/original/lexicon_warden.wav"
+      "playbackFile": "/audio/bgm/original/lexicon_warden.wav",
+      "availability": {
+        "status": "original-only",
+        "reason": "KeyForge-original enemy; no official anime composition is associated with this character. No licensed external recording supplied.",
+        "missing": [
+          "official-assignment",
+          "licensed-master"
+        ]
+      }
     },
     {
       "enemyId": "rhythm_weaver",
@@ -1155,7 +1590,15 @@
       "assignmentBasis": "Original composition and synthetic recording created for this encounter; no named human composer or official anime association claimed.",
       "unresolvedReason": null,
       "playbackAuthorization": "bundled-original-license",
-      "playbackFile": "/audio/bgm/original/rhythm_weaver.wav"
+      "playbackFile": "/audio/bgm/original/rhythm_weaver.wav",
+      "availability": {
+        "status": "original-only",
+        "reason": "KeyForge-original enemy; no official anime composition is associated with this character. No licensed external recording supplied.",
+        "missing": [
+          "official-assignment",
+          "licensed-master"
+        ]
+      }
     },
     {
       "enemyId": "accuracy_arbiter",
@@ -1175,7 +1618,15 @@
       "assignmentBasis": "Original composition and synthetic recording created for this encounter; no named human composer or official anime association claimed.",
       "unresolvedReason": null,
       "playbackAuthorization": "bundled-original-license",
-      "playbackFile": "/audio/bgm/original/accuracy_arbiter.wav"
+      "playbackFile": "/audio/bgm/original/accuracy_arbiter.wav",
+      "availability": {
+        "status": "original-only",
+        "reason": "KeyForge-original enemy; no official anime composition is associated with this character. No licensed external recording supplied.",
+        "missing": [
+          "official-assignment",
+          "licensed-master"
+        ]
+      }
     },
     {
       "enemyId": "velocity_phantom",
@@ -1195,7 +1646,15 @@
       "assignmentBasis": "Original composition and synthetic recording created for this encounter; no named human composer or official anime association claimed.",
       "unresolvedReason": null,
       "playbackAuthorization": "bundled-original-license",
-      "playbackFile": "/audio/bgm/original/velocity_phantom.wav"
+      "playbackFile": "/audio/bgm/original/velocity_phantom.wav",
+      "availability": {
+        "status": "original-only",
+        "reason": "KeyForge-original enemy; no official anime composition is associated with this character. No licensed external recording supplied.",
+        "missing": [
+          "official-assignment",
+          "licensed-master"
+        ]
+      }
     },
     {
       "enemyId": "endurance_colossus",
@@ -1215,7 +1674,15 @@
       "assignmentBasis": "Original composition and synthetic recording created for this encounter; no named human composer or official anime association claimed.",
       "unresolvedReason": null,
       "playbackAuthorization": "bundled-original-license",
-      "playbackFile": "/audio/bgm/original/endurance_colossus.wav"
+      "playbackFile": "/audio/bgm/original/endurance_colossus.wav",
+      "availability": {
+        "status": "original-only",
+        "reason": "KeyForge-original enemy; no official anime composition is associated with this character. No licensed external recording supplied.",
+        "missing": [
+          "official-assignment",
+          "licensed-master"
+        ]
+      }
     },
     {
       "enemyId": "keystroke_sovereign",
@@ -1235,7 +1702,15 @@
       "assignmentBasis": "Original composition and synthetic recording created for this encounter; no named human composer or official anime association claimed.",
       "unresolvedReason": null,
       "playbackAuthorization": "bundled-original-license",
-      "playbackFile": "/audio/bgm/original/keystroke_sovereign.wav"
+      "playbackFile": "/audio/bgm/original/keystroke_sovereign.wav",
+      "availability": {
+        "status": "original-only",
+        "reason": "KeyForge-original enemy; no official anime composition is associated with this character. No licensed external recording supplied.",
+        "missing": [
+          "official-assignment",
+          "licensed-master"
+        ]
+      }
     },
     {
       "enemyId": "nexus_mirror",
@@ -1255,7 +1730,15 @@
       "assignmentBasis": "Original composition and synthetic recording created for this encounter; no named human composer or official anime association claimed.",
       "unresolvedReason": null,
       "playbackAuthorization": "bundled-original-license",
-      "playbackFile": "/audio/bgm/original/nexus_mirror.wav"
+      "playbackFile": "/audio/bgm/original/nexus_mirror.wav",
+      "availability": {
+        "status": "original-only",
+        "reason": "KeyForge-original enemy; no official anime composition is associated with this character. No licensed external recording supplied.",
+        "missing": [
+          "official-assignment",
+          "licensed-master"
+        ]
+      }
     }
   ]
 }

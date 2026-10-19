@@ -80,3 +80,29 @@ and `src/lib/audio/soundtrackReferences.json` for exact publisher titles, compos
 credit scope, source URLs, character assignments and unresolved choices. These are
 metadata only. No official recording is installed or authorized by those links;
 original defaults and optional browser-local overrides continue to provide playback.
+
+## Cleared official recording preference
+
+`src/lib/audio/officialBattleMusic.ts` now selects a cleared official recording
+automatically before the original encounter fallback. The existing player still
+handles autoplay, loops, transitions, result volume and cleanup. Local personal
+assignments keep their existing precedence. **The registry is empty: zero official
+recordings are installed or playing.**
+
+For a recording with actual written game and public-hosting permission, place its
+master at `/audio/bgm/official/<id>.mp3` (WAV/OGG/M4A also supported), record its
+SHA-256, and add its matching title, composition credits, source, permission document
+path and all four permission flags to `OFFICIAL_RECORDINGS`. Store a non-confidential
+permission summary in `docs/audio-rights/<id>.md`; retain the private grant outside
+public assets and verify it covers KeyForge, Vercel/CDN delivery, looping, territories
+and duration. A source URL, purchase receipt or subscription is insufficient.
+
+Run the strict audit before release: it rejects missing masters/evidence and hash
+mismatches, and generates [per-encounter playback gaps](../../../docs/OFFICIAL_AUDIO_AVAILABILITY.md).
+Then run the local browser playback verifier against the updated production build.
+The audit checks declared evidence; it cannot establish legal authority itself. No
+new environment variables, visitor accounts or streaming SDK setup are required.
+
+`npm run audit:audio -- --require-assets --require-official` is the separate
+official-music readiness gate. It currently exits 1 for all 48 anime encounters;
+a passing bundled-original asset audit does not mean official OSTs are installed.

@@ -57,9 +57,26 @@ origin remains unrelated to audio. No push or deployment is included.
 
 ## Official reference catalog follow-up
 
-[OFFICIAL_SOUNDTRACK_CATALOG.md](OFFICIAL_SOUNDTRACK_CATALOG.md) records 22 verified
-references, 26 unresolved references and eight KeyForge originals across all 56
+[OFFICIAL_SOUNDTRACK_CATALOG.md](OFFICIAL_SOUNDTRACK_CATALOG.md) records 41 verified
+references, seven unresolved references and eight KeyForge originals across all 56
 encounters. Verification concerns metadata, not distribution rights. No official
 recording is installed or enabled. Three additional catalog tests bring the local
 unit/regression suite to 152 passing tests; TypeScript, targeted ESLint, i18n, the
 production build and strict audio audit also pass.
+
+## Official recording selector
+
+The battle hook now prefers an entry in the cleared official-recording registry and
+falls back to the corresponding original on media failure. No official grant or master
+has been supplied, so no official music was enabled. See the generated
+[actual availability report](OFFICIAL_AUDIO_AVAILABILITY.md) for every encounter
+and the real licensing routes. Unit fixtures test selector/failure behavior without
+pretending to be licensed assets. Browser checks cover actual original fallback audio.
+
+Latest verification: 156 unit/regression tests pass. The production build, standalone
+TypeScript, targeted ESLint and strict bundled-asset audit pass. The updated real
+Chromium verifier decodes all 56 actual defaults and exercises seven battle starts,
+loop boundary, single active track and SPA cleanup. These are original fallbacks,
+not official-master playback tests. The explicit `--require-official` audit exits 1
+for 48 missing cleared anime masters. No Vercel deployment or official playback is
+claimed. The existing metadataBase build warning remains.

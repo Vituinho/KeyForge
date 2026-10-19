@@ -45,16 +45,29 @@ test("listening references never authorize or configure official in-game recordi
 })
 
 test("catalog does not invent unavailable character cues or confuse distinct Solo Leveling releases", () => {
-  for (const id of ["usopp", "doflamingo", "katakuri", "kokushibo"]) {
+  for (const id of ["usopp", "doflamingo", "katakuri"]) {
     const entry = catalog.encounters.find(entry => entry.enemyId === id)!
     assert.equal(entry.status, "unresolved")
-    assert.equal(entry.title, null)
+    assert.equal(entry.titleVerified, true)
+    assert.ok(entry.title)
   }
+  assert.equal(catalog.encounters.find(entry => entry.enemyId === "kokushibo")!.title, null)
+  assert.equal(catalog.encounters.find(entry => entry.enemyId === "pain")!.title, "儀礼")
+  assert.deepEqual(catalog.encounters.find(entry => entry.enemyId === "itachi")!.composers, ["Yasuharu Takanashi"])
   assert.equal(catalog.encounters.find(entry => entry.enemyId === "jinwoo")!.title, "DARK ARIA")
   assert.equal(catalog.encounters.find(entry => entry.enemyId === "toji")!.sourceId, "jjk2")
   for (const id of ["krillin", "piccolo", "vegeta", "frieza", "cell", "gohan", "broly", "goku"]) {
     const entry = catalog.encounters.find(entry => entry.enemyId === id)!
     assert.equal(entry.status, "verified")
     assert.deepEqual(entry.composers, ["Norihito Sumitomo"])
+  }
+})
+
+test("every encounter explains the official playback gap independently of metadata verification", () => {
+  for (const entry of catalog.encounters) {
+    assert.ok(entry.availability.reason)
+    assert.ok(entry.availability.missing.includes("licensed-master"))
+    assert.equal(entry.availability.status, entry.kind === "original" ? "original-only" : "unavailable")
+    if (entry.kind !== "original") assert.ok(entry.availability.missing.includes("game-and-hosting-permission"))
   }
 })
