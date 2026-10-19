@@ -1,0 +1,396 @@
+{
+  "reviewedAt": "2026-10-19",
+  "method": "Public Spotify release metadata checked against the existing official soundtrack catalog. Links only; no Web API, SDK, media extraction, preview URLs or playback authorization.",
+  "encounters": {
+    "naruto": {
+      "url": "https://open.spotify.com/track/5kKloaKFvAuDNFi8m52hxy",
+      "type": "track",
+      "title": "NARUTO Main Theme",
+      "artists": "MUSASHI PROJECT",
+      "album": "NARUTO -ナルト-　オリジナルサウンドトラック",
+      "albumUrl": "https://open.spotify.com/album/6NrJzDuBPZvp3ZRXnIqs1P",
+      "evidenceUrl": "https://open.spotify.com/embed/album/6NrJzDuBPZvp3ZRXnIqs1P",
+      "verifiedAt": "2026-10-19"
+    },
+    "sakura": {
+      "url": "https://open.spotify.com/track/2MrkabAji7QUZRtiCieEbd",
+      "type": "track",
+      "title": "サクラのテーマ",
+      "artists": "Toshio Masuda",
+      "album": "NARUTO -ナルト-　オリジナルサウンドトラック",
+      "albumUrl": "https://open.spotify.com/album/6NrJzDuBPZvp3ZRXnIqs1P",
+      "evidenceUrl": "https://open.spotify.com/embed/album/6NrJzDuBPZvp3ZRXnIqs1P",
+      "verifiedAt": "2026-10-19"
+    },
+    "rock-lee": {
+      "url": "https://open.spotify.com/track/6eETsNH5bpHYj86duqpNOo",
+      "type": "track",
+      "title": "ロック・リーのテーマ",
+      "artists": "Toshio Masuda",
+      "album": "NARUTO -ナルト-　オリジナルサウンドトラック Ⅲ",
+      "albumUrl": "https://open.spotify.com/album/1HObVU42QE1DcypM59MBFS",
+      "evidenceUrl": "https://open.spotify.com/embed/album/1HObVU42QE1DcypM59MBFS",
+      "verifiedAt": "2026-10-19"
+    },
+    "kakashi": {
+      "url": "https://open.spotify.com/track/72k3g6bzRrapRO8D1C2GjL",
+      "type": "track",
+      "title": "カカシのテーマ",
+      "artists": "Toshio Masuda",
+      "album": "NARUTO -ナルト-　オリジナルサウンドトラック",
+      "albumUrl": "https://open.spotify.com/album/6NrJzDuBPZvp3ZRXnIqs1P",
+      "evidenceUrl": "https://open.spotify.com/embed/album/6NrJzDuBPZvp3ZRXnIqs1P",
+      "verifiedAt": "2026-10-19"
+    },
+    "sasuke": {
+      "url": "https://open.spotify.com/track/3EJhFCuGZf23tMqhMQeLNL",
+      "type": "track",
+      "title": "サスケのテーマ",
+      "artists": "Toshio Masuda",
+      "album": "NARUTO -ナルト-　オリジナルサウンドトラック Ⅱ",
+      "albumUrl": "https://open.spotify.com/album/6dfygmKJzKiTCJJY7qpTnA",
+      "evidenceUrl": "https://open.spotify.com/embed/album/6dfygmKJzKiTCJJY7qpTnA",
+      "verifiedAt": "2026-10-19"
+    },
+    "itachi": {
+      "url": "https://open.spotify.com/track/2VWDk6GcnMaysTpVQH121M",
+      "type": "track",
+      "title": "千夜",
+      "artists": "Yasuharu Takanashi, YAIBA",
+      "album": "NARUTO-ナルト- 疾風伝　オリジナル・サウンドトラック Ⅱ",
+      "albumUrl": "https://open.spotify.com/album/1GoWJc6XFiHW1ewHcY1Xqm",
+      "evidenceUrl": "https://open.spotify.com/embed/album/1GoWJc6XFiHW1ewHcY1Xqm",
+      "verifiedAt": "2026-10-19"
+    },
+    "pain": {
+      "url": "https://open.spotify.com/track/6MBB1w8rl9XEGqrfWcBq4I",
+      "type": "track",
+      "title": "儀礼",
+      "artists": "Yasuharu Takanashi, YAIBA",
+      "album": "NARUTO-ナルト- 疾風伝　オリジナル・サウンドトラック Ⅱ",
+      "albumUrl": "https://open.spotify.com/album/1GoWJc6XFiHW1ewHcY1Xqm",
+      "evidenceUrl": "https://open.spotify.com/embed/album/1GoWJc6XFiHW1ewHcY1Xqm",
+      "verifiedAt": "2026-10-19"
+    },
+    "madara": {
+      "url": "https://open.spotify.com/track/7uxsHnD9Xcy7H0x7pQG9Rc",
+      "type": "track",
+      "title": "難攻不落",
+      "artists": "Yasuharu Takanashi, YAIBA",
+      "album": "NARUTO-ナルト- 疾風伝　オリジナル・サウンドトラック Ⅱ",
+      "albumUrl": "https://open.spotify.com/album/1GoWJc6XFiHW1ewHcY1Xqm",
+      "evidenceUrl": "https://open.spotify.com/embed/album/1GoWJc6XFiHW1ewHcY1Xqm",
+      "verifiedAt": "2026-10-19"
+    },
+    "yuji": {
+      "url": "https://open.spotify.com/track/6Ibty0iH00R5cqZxL9MjID",
+      "type": "track",
+      "title": "Put It In This Fist",
+      "artists": "Hiroaki Tsutsumi",
+      "album": "Jujutsu Kaisen (Original Television Soundtrack)",
+      "albumUrl": "https://open.spotify.com/album/5QYGsl05fLEEE4fUjz4rkt",
+      "evidenceUrl": "https://open.spotify.com/embed/album/5QYGsl05fLEEE4fUjz4rkt",
+      "verifiedAt": "2026-10-19"
+    },
+    "nobara": {
+      "url": "https://open.spotify.com/track/3UUMOv0BGV1QQCyoQBkpGF",
+      "type": "track",
+      "title": "Straw Doll Technique Resonance",
+      "artists": "RIN, 照井順政",
+      "album": "Jujutsu Kaisen (Original Television Soundtrack)",
+      "albumUrl": "https://open.spotify.com/album/5QYGsl05fLEEE4fUjz4rkt",
+      "evidenceUrl": "https://open.spotify.com/embed/album/5QYGsl05fLEEE4fUjz4rkt",
+      "verifiedAt": "2026-10-19"
+    },
+    "megumi": {
+      "url": "https://open.spotify.com/track/7JkakKNpZ1iPgisu6mXEwP",
+      "type": "track",
+      "title": "Jujutsu Sorcerer Megumi Fushiguro",
+      "artists": "照井順政",
+      "album": "Jujutsu Kaisen (Original Television Soundtrack)",
+      "albumUrl": "https://open.spotify.com/album/5QYGsl05fLEEE4fUjz4rkt",
+      "evidenceUrl": "https://open.spotify.com/embed/album/5QYGsl05fLEEE4fUjz4rkt",
+      "verifiedAt": "2026-10-19"
+    },
+    "todo": {
+      "url": "https://open.spotify.com/track/1XNBIkDz9JsqdJq2VAlIGs",
+      "type": "track",
+      "title": "The Man Aoi Todo",
+      "artists": "Hiroaki Tsutsumi",
+      "album": "Jujutsu Kaisen (Original Television Soundtrack)",
+      "albumUrl": "https://open.spotify.com/album/5QYGsl05fLEEE4fUjz4rkt",
+      "evidenceUrl": "https://open.spotify.com/embed/album/5QYGsl05fLEEE4fUjz4rkt",
+      "verifiedAt": "2026-10-19"
+    },
+    "nanami": {
+      "url": "https://open.spotify.com/track/3FkHIhQdbqwX736X3gCYx3",
+      "type": "track",
+      "title": "7 to 3",
+      "artists": "Alisa Okehazama",
+      "album": "Jujutsu Kaisen (Original Television Soundtrack)",
+      "albumUrl": "https://open.spotify.com/album/5QYGsl05fLEEE4fUjz4rkt",
+      "evidenceUrl": "https://open.spotify.com/embed/album/5QYGsl05fLEEE4fUjz4rkt",
+      "verifiedAt": "2026-10-19"
+    },
+    "toji": {
+      "url": "https://open.spotify.com/track/1iQLOGuozZAEuEHkmv7F7K",
+      "type": "track",
+      "title": "伏黒甚爾",
+      "artists": "照井順政",
+      "album": "呪術廻戦 懐玉・玉折 / 渋谷事変 ORIGINAL SOUNDTRACK",
+      "albumUrl": "https://open.spotify.com/album/0qypgV8wXEhhZyW5AExUUR",
+      "evidenceUrl": "https://open.spotify.com/embed/album/0qypgV8wXEhhZyW5AExUUR",
+      "verifiedAt": "2026-10-19"
+    },
+    "sukuna": {
+      "url": "https://open.spotify.com/track/7qiMofuY7Is9wbaiLuDnFb",
+      "type": "track",
+      "title": "Ryomen Sukuna",
+      "artists": "Hiroaki Tsutsumi",
+      "album": "Jujutsu Kaisen (Original Television Soundtrack)",
+      "albumUrl": "https://open.spotify.com/album/5QYGsl05fLEEE4fUjz4rkt",
+      "evidenceUrl": "https://open.spotify.com/embed/album/5QYGsl05fLEEE4fUjz4rkt",
+      "verifiedAt": "2026-10-19"
+    },
+    "gojo": {
+      "url": "https://open.spotify.com/track/4P7pNVKPrgNFWEOzkQZCQH",
+      "type": "track",
+      "title": "Hollow Purple",
+      "artists": "Alisa Okehazama",
+      "album": "Jujutsu Kaisen (Original Television Soundtrack)",
+      "albumUrl": "https://open.spotify.com/album/5QYGsl05fLEEE4fUjz4rkt",
+      "evidenceUrl": "https://open.spotify.com/embed/album/5QYGsl05fLEEE4fUjz4rkt",
+      "verifiedAt": "2026-10-19"
+    },
+    "usopp": {
+      "url": "https://open.spotify.com/track/4bmn3M5NfQ2ehaT3TasiwD",
+      "type": "track",
+      "title": "ウソップ、やばいぞ!",
+      "artists": "田中公平, 浜口史郎",
+      "album": "TVアニメ『ONE PIECE』オリジナル・サウンドトラック 〜First Voyage〜",
+      "albumUrl": "https://open.spotify.com/album/7Lk0o398lb15OoYHWjk6M8",
+      "evidenceUrl": "https://open.spotify.com/embed/album/7Lk0o398lb15OoYHWjk6M8",
+      "verifiedAt": "2026-10-19"
+    },
+    "sanji": {
+      "url": "https://open.spotify.com/track/3Zs4BiussNzA2uQps7gguN",
+      "type": "track",
+      "title": "サンジVS.クイーン",
+      "artists": "Kohei Tanaka",
+      "album": "ONE PIECE Original Soundtrack\"GEAR5\"",
+      "albumUrl": "https://open.spotify.com/album/1jmR8jrRGykXMhptwhyUY0",
+      "evidenceUrl": "https://open.spotify.com/embed/album/1jmR8jrRGykXMhptwhyUY0",
+      "verifiedAt": "2026-10-19"
+    },
+    "zoro": {
+      "url": "https://open.spotify.com/track/5nX5fZLYwBUxYhiye6m4VJ",
+      "type": "track",
+      "title": "ゾロVS.キング",
+      "artists": "Kohei Tanaka",
+      "album": "ONE PIECE Original Soundtrack\"GEAR5\"",
+      "albumUrl": "https://open.spotify.com/album/1jmR8jrRGykXMhptwhyUY0",
+      "evidenceUrl": "https://open.spotify.com/embed/album/1jmR8jrRGykXMhptwhyUY0",
+      "verifiedAt": "2026-10-19"
+    },
+    "law": {
+      "url": "https://open.spotify.com/track/6g5kATV3yQ6Igda2gb3gJ5",
+      "type": "track",
+      "title": "KROOM",
+      "artists": "Kohei Tanaka",
+      "album": "ONE PIECE Original Soundtrack\"GEAR5\"",
+      "albumUrl": "https://open.spotify.com/album/1jmR8jrRGykXMhptwhyUY0",
+      "evidenceUrl": "https://open.spotify.com/embed/album/1jmR8jrRGykXMhptwhyUY0",
+      "verifiedAt": "2026-10-19"
+    },
+    "doflamingo": {
+      "url": "https://open.spotify.com/track/5ZRKVBg6DHniB4joIsey4y",
+      "type": "track",
+      "title": "ドンキホーテ・ドフラミンゴ",
+      "artists": "浜口史郎",
+      "album": "ONE PIECE オリジナルサウンドトラック\"NEW WORLD\"",
+      "albumUrl": "https://open.spotify.com/album/7wb108DhaMEAfKbmr5kk62",
+      "evidenceUrl": "https://open.spotify.com/embed/album/7wb108DhaMEAfKbmr5kk62",
+      "verifiedAt": "2026-10-19"
+    },
+    "katakuri": {
+      "url": "https://open.spotify.com/track/2WWc5nAx3baWLnZRH251SA",
+      "type": "track",
+      "title": "カタクリのテーマ",
+      "artists": "Kohei Tanaka",
+      "album": "ONE PIECE オリジナルサウンドトラック\"WANOKUNI\"",
+      "albumUrl": "https://open.spotify.com/album/0DyIQWyWWthQ3f9xRP1hXa",
+      "evidenceUrl": "https://open.spotify.com/embed/album/0DyIQWyWWthQ3f9xRP1hXa",
+      "verifiedAt": "2026-10-19"
+    },
+    "kaido": {
+      "url": "https://open.spotify.com/track/4i9PGXuJl9DMq6lcxGw7PD",
+      "type": "track",
+      "title": "終結、ルフィVS.カイドウ",
+      "artists": "Kohei Tanaka",
+      "album": "ONE PIECE Original Soundtrack\"GEAR5\"",
+      "albumUrl": "https://open.spotify.com/album/1jmR8jrRGykXMhptwhyUY0",
+      "evidenceUrl": "https://open.spotify.com/embed/album/1jmR8jrRGykXMhptwhyUY0",
+      "verifiedAt": "2026-10-19"
+    },
+    "luffy": {
+      "url": "https://open.spotify.com/track/0chKjPMdnbJ1KXiSjbb267",
+      "type": "track",
+      "title": "おれの最高地点",
+      "artists": "浜口史郎, Kohei Tanaka",
+      "album": "ONE PIECE Original Soundtrack\"GEAR5\"",
+      "albumUrl": "https://open.spotify.com/album/1jmR8jrRGykXMhptwhyUY0",
+      "evidenceUrl": "https://open.spotify.com/embed/album/1jmR8jrRGykXMhptwhyUY0",
+      "verifiedAt": "2026-10-19"
+    },
+    "dungeon_guardian": {
+      "url": "https://open.spotify.com/track/3h5Hxi8qKMNHxwniRljrcB",
+      "type": "track",
+      "title": "DunGeoN",
+      "artists": "Sawano Hiroyuki",
+      "album": "俺だけレベルアップな件 Original Soundtrack",
+      "albumUrl": "https://open.spotify.com/album/1XtpQSucGXigcvW8qmfZHn",
+      "evidenceUrl": "https://open.spotify.com/embed/album/1XtpQSucGXigcvW8qmfZHn",
+      "verifiedAt": "2026-10-19"
+    },
+    "cerberus": {
+      "url": "https://open.spotify.com/track/48sQeZIatG6jC0kD7zgzHs",
+      "type": "track",
+      "title": "Hunter→Monster",
+      "artists": "Sawano Hiroyuki",
+      "album": "俺だけレベルアップな件 Original Soundtrack",
+      "albumUrl": "https://open.spotify.com/album/1XtpQSucGXigcvW8qmfZHn",
+      "evidenceUrl": "https://open.spotify.com/embed/album/1XtpQSucGXigcvW8qmfZHn",
+      "verifiedAt": "2026-10-19"
+    },
+    "igris": {
+      "url": "https://open.spotify.com/track/6TfXn99pKgQoXiJ7mmueoZ",
+      "type": "track",
+      "title": "[Solo-Leveling]SymphonicSuite-Lv.6",
+      "artists": "Sawano Hiroyuki",
+      "album": "俺だけレベルアップな件 Original Soundtrack",
+      "albumUrl": "https://open.spotify.com/album/1XtpQSucGXigcvW8qmfZHn",
+      "evidenceUrl": "https://open.spotify.com/embed/album/1XtpQSucGXigcvW8qmfZHn",
+      "verifiedAt": "2026-10-19"
+    },
+    "iron": {
+      "url": "https://open.spotify.com/track/3tmFLWU24qez75dl9WCx8o",
+      "type": "track",
+      "title": "[Solo-Leveling]SymphonicSuite-Lv.2",
+      "artists": "Sawano Hiroyuki",
+      "album": "俺だけレベルアップな件 Original Soundtrack",
+      "albumUrl": "https://open.spotify.com/album/1XtpQSucGXigcvW8qmfZHn",
+      "evidenceUrl": "https://open.spotify.com/embed/album/1XtpQSucGXigcvW8qmfZHn",
+      "verifiedAt": "2026-10-19"
+    },
+    "tusk": {
+      "url": "https://open.spotify.com/track/6oiDEdfAOo0dFqoq5o5t5N",
+      "type": "track",
+      "title": "[Solo-Leveling]SymphonicSuite-Lv.7",
+      "artists": "Sawano Hiroyuki",
+      "album": "俺だけレベルアップな件 Original Soundtrack",
+      "albumUrl": "https://open.spotify.com/album/1XtpQSucGXigcvW8qmfZHn",
+      "evidenceUrl": "https://open.spotify.com/embed/album/1XtpQSucGXigcvW8qmfZHn",
+      "verifiedAt": "2026-10-19"
+    },
+    "beru": {
+      "url": "https://open.spotify.com/track/5F3RJKpdeoqQivMWetb7ma",
+      "type": "track",
+      "title": "[Solo-Leveling]SymphonicSuite-Lv.8",
+      "artists": "Sawano Hiroyuki",
+      "album": "俺だけレベルアップな件 Original Soundtrack",
+      "albumUrl": "https://open.spotify.com/album/1XtpQSucGXigcvW8qmfZHn",
+      "evidenceUrl": "https://open.spotify.com/embed/album/1XtpQSucGXigcvW8qmfZHn",
+      "verifiedAt": "2026-10-19"
+    },
+    "bellion": {
+      "url": "https://open.spotify.com/track/6XK5JS7DDlVdzkHqd7rmnT",
+      "type": "track",
+      "title": "[Solo-Leveling]SymphonicSuite-Lv.10",
+      "artists": "Sawano Hiroyuki",
+      "album": "俺だけレベルアップな件 Original Soundtrack",
+      "albumUrl": "https://open.spotify.com/album/1XtpQSucGXigcvW8qmfZHn",
+      "evidenceUrl": "https://open.spotify.com/embed/album/1XtpQSucGXigcvW8qmfZHn",
+      "verifiedAt": "2026-10-19"
+    },
+    "jinwoo": {
+      "url": "https://open.spotify.com/track/3SR85l1lZDNPr68rkAlYOy",
+      "type": "track",
+      "title": "DARK ARIA",
+      "artists": "Sawano Hiroyuki",
+      "album": "俺だけレベルアップな件 Original Soundtrack",
+      "albumUrl": "https://open.spotify.com/album/1XtpQSucGXigcvW8qmfZHn",
+      "evidenceUrl": "https://open.spotify.com/embed/album/1XtpQSucGXigcvW8qmfZHn",
+      "verifiedAt": "2026-10-19"
+    },
+    "zenitsu": {
+      "url": "https://open.spotify.com/track/7ALIqX1PdZ1awygO2Ixlxm",
+      "type": "track",
+      "title": "霹靂一閃 六連～鬼殺隊として",
+      "artists": "Go Shiina\t",
+      "album": "「鬼滅の刃」竈門炭治郎 立志編 オリジナルサウンドトラック",
+      "albumUrl": "https://open.spotify.com/album/2NTJua5Rhkszhg6b99TK78",
+      "evidenceUrl": "https://open.spotify.com/embed/album/2NTJua5Rhkszhg6b99TK78",
+      "verifiedAt": "2026-10-19"
+    },
+    "inosuke": {
+      "url": "https://open.spotify.com/track/3xRMIECOYhIsD8aJ0Oryd5",
+      "type": "track",
+      "title": "嘴平伊之助",
+      "artists": "Go Shiina\t",
+      "album": "「鬼滅の刃」竈門炭治郎 立志編 オリジナルサウンドトラック",
+      "albumUrl": "https://open.spotify.com/album/2NTJua5Rhkszhg6b99TK78",
+      "evidenceUrl": "https://open.spotify.com/embed/album/2NTJua5Rhkszhg6b99TK78",
+      "verifiedAt": "2026-10-19"
+    },
+    "shinobu": {
+      "url": "https://open.spotify.com/track/1PNF5KhgKk0tZOZ7EGzaFd",
+      "type": "track",
+      "title": "蟲柱のテーマ -OST ver.-",
+      "artists": "Go Shiina\t",
+      "album": "「鬼滅の刃」竈門炭治郎 立志編 オリジナルサウンドトラック",
+      "albumUrl": "https://open.spotify.com/album/2NTJua5Rhkszhg6b99TK78",
+      "evidenceUrl": "https://open.spotify.com/embed/album/2NTJua5Rhkszhg6b99TK78",
+      "verifiedAt": "2026-10-19"
+    },
+    "gyutaro": {
+      "url": "https://open.spotify.com/track/0POXT5xS0X7GzhfrRtGZT0",
+      "type": "track",
+      "title": "妓夫太郎の猛攻～譜面の完成",
+      "artists": "Go Shiina\t",
+      "album": "「鬼滅の刃」遊郭編 オリジナルサウンドトラック",
+      "albumUrl": "https://open.spotify.com/album/5czFPP3dehjE4C3PeP4HO4",
+      "evidenceUrl": "https://open.spotify.com/embed/album/5czFPP3dehjE4C3PeP4HO4",
+      "verifiedAt": "2026-10-19"
+    },
+    "muzan": {
+      "url": "https://open.spotify.com/track/5LRPNc9ajuHiAOV1Xrzaws",
+      "type": "track",
+      "title": "鬼舞辻無惨 -OST ver.-",
+      "artists": "Go Shiina\t",
+      "album": "「鬼滅の刃」竈門炭治郎 立志編 オリジナルサウンドトラック",
+      "albumUrl": "https://open.spotify.com/album/2NTJua5Rhkszhg6b99TK78",
+      "evidenceUrl": "https://open.spotify.com/embed/album/2NTJua5Rhkszhg6b99TK78",
+      "verifiedAt": "2026-10-19"
+    },
+    "rengoku": {
+      "url": "https://open.spotify.com/track/1cEqOb78f1El1ErhQj8jeQ",
+      "type": "track",
+      "title": "煉獄の死闘",
+      "artists": "Go Shiina\t",
+      "album": "「鬼滅の刃」無限列車編 オリジナルサウンドトラック",
+      "albumUrl": "https://open.spotify.com/album/319uh4R4DZ2oEIEaGSFyAF",
+      "evidenceUrl": "https://open.spotify.com/embed/album/319uh4R4DZ2oEIEaGSFyAF",
+      "verifiedAt": "2026-10-19"
+    },
+    "akaza": {
+      "url": "https://open.spotify.com/track/19XwEQeVwyeXrNsaETN0bx",
+      "type": "track",
+      "title": "煉獄と猗窩座の戦い",
+      "artists": "Go Shiina\t",
+      "album": "「鬼滅の刃」無限列車編 オリジナルサウンドトラック",
+      "albumUrl": "https://open.spotify.com/album/319uh4R4DZ2oEIEaGSFyAF",
+      "evidenceUrl": "https://open.spotify.com/embed/album/319uh4R4DZ2oEIEaGSFyAF",
+      "verifiedAt": "2026-10-19"
+    }
+  }
+}
