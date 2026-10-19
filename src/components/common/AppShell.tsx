@@ -18,6 +18,7 @@ const Navigation = memo(function Navigation() {
     ["/game", "common.dashboard"], ["/academy", "nav.academy"], ["/training", "nav.training"],
     ["/anime-world", "nav.animeWorlds"], ["/multiplayer", "release.pvp"],
     ["/statistics", "nav.statistics"], ["/locker", "nav.locker"],
+    ["/soundtracks", "soundtracks.nav"],
   ]
   const navLinks = links.map(([href, label]) => <Link key={href} href={href}
     onClick={event => event.currentTarget.closest("details")?.removeAttribute("open")}
