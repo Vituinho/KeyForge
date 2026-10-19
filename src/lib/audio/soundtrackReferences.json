@@ -1,0 +1,1261 @@
+{
+  "reviewedAt": "2026-10-19",
+  "policy": "Metadata only. Official listening references grant no in-game playback, synchronization, master-use or redistribution rights. Never pass these URLs to Audio. Actual defaults remain in battleMusic.ts.",
+  "sources": {
+    "naruto": {
+      "referenceUrl": "https://open.spotify.com/playlist/7wkGN40FnYhlmKNMNMc5Ng",
+      "titleSourceUrl": "https://open.spotify.com/embed/playlist/7wkGN40FnYhlmKNMNMc5Ng",
+      "creditSourceUrl": "https://www.aniplex.co.jp/naruto/cd/02.html"
+    },
+    "narutoOriginal": {
+      "referenceUrl": "https://open.spotify.com/playlist/7wkGN40FnYhlmKNMNMc5Ng",
+      "titleSourceUrl": "https://open.spotify.com/intl-ja/album/6NrJzDuBPZvp3ZRXnIqs1P",
+      "creditSourceUrl": "https://www.tv-tokyo.co.jp/anime/naruto2002/goods/cd_suntra.html"
+    },
+    "jjk": {
+      "referenceUrl": "https://open.spotify.com/album/5QYGsl05fLEEE4fUjz4rkt",
+      "titleSourceUrl": "https://jujutsukaisen.jp/music/1st_02.php",
+      "creditSourceUrl": "https://open.spotify.com/embed/album/5QYGsl05fLEEE4fUjz4rkt"
+    },
+    "jjk2": {
+      "referenceUrl": "https://open.spotify.com/album/5QYGsl05fLEEE4fUjz4rkt",
+      "titleSourceUrl": "https://jujutsukaisen.jp/music/2nd_01.php",
+      "creditSourceUrl": "https://jujutsukaisen.jp/music/2nd_01.php"
+    },
+    "dragonball": {
+      "referenceUrl": "https://columbia.jp/prod-info/COCX-33564-6/",
+      "titleSourceUrl": "https://columbia.jp/prod-info/COCC-72061/",
+      "creditSourceUrl": "https://columbia.jp/prod-info/COCC-72061/"
+    },
+    "onepiece": {
+      "referenceUrl": "https://open.spotify.com/album/1jmR8jrRGykXMhptwhyUY0",
+      "titleSourceUrl": "https://avex.jp/onepiece/products/musicDetail.php?id=1019892",
+      "creditSourceUrl": "https://one-piece.com/news/63274/index.html"
+    },
+    "solo": {
+      "referenceUrl": "https://music.apple.com/cd/album/solo-leveling-original-soundtrack/1735890882",
+      "titleSourceUrl": "https://sololeveling-anime.net/1st/music/ost.html",
+      "creditSourceUrl": "https://music.apple.com/cd/album/solo-leveling-original-soundtrack/1735890882"
+    },
+    "demon": {
+      "referenceUrl": "https://kimetsu.com/anime/soundtrack/",
+      "titleSourceUrl": "https://kimetsu.com/anime/package/?id=4790",
+      "creditSourceUrl": "https://kimetsu.com/anime/package/?id=4790"
+    },
+    "demonTrain": {
+      "referenceUrl": "https://kimetsu.com/anime/soundtrack/",
+      "titleSourceUrl": "https://kimetsu.com/anime/package/?id=4787",
+      "creditSourceUrl": "https://kimetsu.com/anime/package/?id=4787"
+    },
+    "demonDistrict": {
+      "referenceUrl": "https://kimetsu.com/anime/soundtrack/",
+      "titleSourceUrl": "https://kimetsu.com/anime/yukakuhen/music/?page=ost",
+      "creditSourceUrl": "https://kimetsu.com/anime/yukakuhen/music/?page=ost"
+    },
+    "narutoOriginalPlaylist": {
+      "referenceUrl": "https://open.spotify.com/playlist/7wkGN40FnYhlmKNMNMc5Ng",
+      "titleSourceUrl": "https://open.spotify.com/embed/playlist/7wkGN40FnYhlmKNMNMc5Ng",
+      "creditSourceUrl": "https://open.spotify.com/intl-ja/album/6dfygmKJzKiTCJJY7qpTnA"
+    },
+    "dragonballSuper": {
+      "referenceUrl": "https://shop.columbia.jp/shop/g/gE7121/",
+      "titleSourceUrl": "https://shop.columbia.jp/shop/g/gE7121/",
+      "creditSourceUrl": "https://columbia.jp/prod-info/COCX-39463-4/"
+    },
+    "dragonballSuper2": {
+      "referenceUrl": "https://columbia.jp/prod-info/COCX-40280-1/",
+      "titleSourceUrl": "https://columbia.jp/prod-info/COCX-40280-1/",
+      "creditSourceUrl": "https://columbia.jp/prod-info/COCX-40280-1/"
+    },
+    "dragonballBroly": {
+      "referenceUrl": "https://avexnet.jp/contents/DBSOS-XXXX-XXXX/discography/1016232",
+      "titleSourceUrl": "https://avexnet.jp/contents/DBSOS-XXXX-XXXX/discography/1016232",
+      "creditSourceUrl": "https://www.animatetimes.com/news/details.php?id=1547195920"
+    }
+  },
+  "encounters": [
+    {
+      "enemyId": "naruto",
+      "character": "Naruto Uzumaki",
+      "series": "Naruto",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "NARUTO Main Theme",
+      "titleVerified": true,
+      "composers": [
+        "MUSASHI PROJECT",
+        "Toshio Masuda"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [
+        "MUSASHI PROJECT"
+      ],
+      "sourceId": "narutoOriginal",
+      "trackLocation": "OST 1, digital track 20",
+      "assignmentBasis": "Editorial heroic lead selection; not a claim of exclusive character ownership.",
+      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "sakura",
+      "character": "Sakura Haruno",
+      "series": "Naruto",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "サクラのテーマ",
+      "titleVerified": true,
+      "composers": [
+        "MUSASHI PROJECT",
+        "Toshio Masuda"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [
+        "Toshio Masuda"
+      ],
+      "sourceId": "narutoOriginal",
+      "trackLocation": "OST 1, digital track 9",
+      "assignmentBasis": "Character is named in the official track title.",
+      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "rock-lee",
+      "character": "Rock Lee",
+      "series": "Naruto",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "美しき碧い野獣",
+      "titleVerified": true,
+      "composers": [
+        "MUSASHI PROJECT",
+        "Toshio Masuda"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [
+        "Toshio Masuda"
+      ],
+      "sourceId": "narutoOriginalPlaylist",
+      "trackLocation": "Sony playlist item 27",
+      "assignmentBasis": "Editorial taijutsu encounter selection.",
+      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "kakashi",
+      "character": "Kakashi Hatake",
+      "series": "Naruto",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "カカシのテーマ",
+      "titleVerified": true,
+      "composers": [
+        "MUSASHI PROJECT",
+        "Toshio Masuda"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [
+        "Toshio Masuda"
+      ],
+      "sourceId": "narutoOriginal",
+      "trackLocation": "OST 1, digital track 10",
+      "assignmentBasis": "Character is named in the official track title.",
+      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "sasuke",
+      "character": "Sasuke Uchiha",
+      "series": "Naruto",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "サスケのテーマ",
+      "titleVerified": true,
+      "composers": [
+        "MUSASHI PROJECT",
+        "Toshio Masuda"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [
+        "Toshio Masuda"
+      ],
+      "sourceId": "narutoOriginalPlaylist",
+      "trackLocation": "Sony playlist item 26",
+      "assignmentBasis": "Character is named in the official track title.",
+      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "itachi",
+      "character": "Itachi Uchiha",
+      "series": "Naruto Shippuden",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "千夜",
+      "titleVerified": true,
+      "composers": [
+        "Yasuharu Takanashi",
+        "YAIBA"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [
+        "Yasuharu Takanashi",
+        "YAIBA"
+      ],
+      "sourceId": "naruto",
+      "trackLocation": "Sony playlist item 3",
+      "assignmentBasis": "Editorial sombre rival selection; canonical Itachi theme association unverified.",
+      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "pain",
+      "character": "Pain (Nagato)",
+      "series": "Naruto Shippuden",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "闘神",
+      "titleVerified": true,
+      "composers": [
+        "Yasuharu Takanashi",
+        "YAIBA"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [
+        "Yasuharu Takanashi",
+        "YAIBA"
+      ],
+      "sourceId": "naruto",
+      "trackLocation": "Sony playlist item 8",
+      "assignmentBasis": "Editorial boss selection; not represented as a named Pain theme.",
+      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "madara",
+      "character": "Madara Uchiha",
+      "series": "Naruto Shippuden",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "憤怒",
+      "titleVerified": true,
+      "composers": [
+        "Yasuharu Takanashi",
+        "YAIBA"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [
+        "Yasuharu Takanashi",
+        "YAIBA"
+      ],
+      "sourceId": "naruto",
+      "trackLocation": "Sony playlist item 31",
+      "assignmentBasis": "Editorial final-boss selection; canonical Madara theme association unverified.",
+      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "yuji",
+      "character": "Yuji Itadori",
+      "series": "Jujutsu Kaisen",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "拳にのせろ",
+      "titleVerified": true,
+      "composers": [
+        "Hiroaki Tsutsumi",
+        "Yoshimasa Terui",
+        "Alisa Okehazama"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [
+        "Hiroaki Tsutsumi"
+      ],
+      "sourceId": "jjk",
+      "trackLocation": "DISC1 22",
+      "assignmentBasis": "Character or technique association is an editorial encounter assignment.",
+      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "nobara",
+      "character": "Nobara Kugisaki",
+      "series": "Jujutsu Kaisen",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "芻霊呪法「共鳴り」",
+      "titleVerified": true,
+      "composers": [
+        "Hiroaki Tsutsumi",
+        "Yoshimasa Terui",
+        "Alisa Okehazama"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [
+        "Yoshimasa Terui"
+      ],
+      "sourceId": "jjk",
+      "trackLocation": "DISC1 19",
+      "assignmentBasis": "Character or technique association is an editorial encounter assignment.",
+      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "megumi",
+      "character": "Megumi Fushiguro",
+      "series": "Jujutsu Kaisen",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "呪術師・伏黒恵",
+      "titleVerified": true,
+      "composers": [
+        "Hiroaki Tsutsumi",
+        "Yoshimasa Terui",
+        "Alisa Okehazama"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [
+        "Yoshimasa Terui"
+      ],
+      "sourceId": "jjk",
+      "trackLocation": "DISC1 25",
+      "assignmentBasis": "Character or technique association is an editorial encounter assignment.",
+      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "todo",
+      "character": "Aoi Todo",
+      "series": "Jujutsu Kaisen",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "漢・東堂葵",
+      "titleVerified": true,
+      "composers": [
+        "Hiroaki Tsutsumi",
+        "Yoshimasa Terui",
+        "Alisa Okehazama"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [
+        "Hiroaki Tsutsumi"
+      ],
+      "sourceId": "jjk",
+      "trackLocation": "DISC2 1",
+      "assignmentBasis": "Character or technique association is an editorial encounter assignment.",
+      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "nanami",
+      "character": "Kento Nanami",
+      "series": "Jujutsu Kaisen",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "7:3",
+      "titleVerified": true,
+      "composers": [
+        "Hiroaki Tsutsumi",
+        "Yoshimasa Terui",
+        "Alisa Okehazama"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [
+        "Alisa Okehazama"
+      ],
+      "sourceId": "jjk",
+      "trackLocation": "DISC2 5",
+      "assignmentBasis": "Character or technique association is an editorial encounter assignment.",
+      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "toji",
+      "character": "Toji Fushiguro",
+      "series": "Jujutsu Kaisen",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "伏黒甚爾",
+      "titleVerified": true,
+      "composers": [
+        "Yoshimasa Terui"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "jjk2",
+      "trackLocation": "Hidden Inventory / Premature Death, track 5",
+      "assignmentBasis": "Character is named in the official track title; season 2 reference, outside the supplied season 1 album.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "sukuna",
+      "character": "Ryomen Sukuna",
+      "series": "Jujutsu Kaisen",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "両面宿儺",
+      "titleVerified": true,
+      "composers": [
+        "Hiroaki Tsutsumi",
+        "Yoshimasa Terui",
+        "Alisa Okehazama"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [
+        "Hiroaki Tsutsumi"
+      ],
+      "sourceId": "jjk",
+      "trackLocation": "DISC1 8",
+      "assignmentBasis": "Character or technique association is an editorial encounter assignment.",
+      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "gojo",
+      "character": "Satoru Gojo",
+      "series": "Jujutsu Kaisen",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "虚式「茈」",
+      "titleVerified": true,
+      "composers": [
+        "Hiroaki Tsutsumi",
+        "Yoshimasa Terui",
+        "Alisa Okehazama"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [
+        "Alisa Okehazama"
+      ],
+      "sourceId": "jjk",
+      "trackLocation": "DISC2 27",
+      "assignmentBasis": "Character or technique association is an editorial encounter assignment.",
+      "unresolvedReason": "Track title and recording artist verified; sources do not explicitly identify the individual composition credit. Release music credits are retained without asserting sole authorship.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "krillin",
+      "character": "Krillin",
+      "series": "Dragon Ball",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "チームドラゴンのテーマ",
+      "titleVerified": true,
+      "composers": [
+        "Norihito Sumitomo"
+      ],
+      "composerCreditScope": "track",
+      "creditedArtists": [],
+      "sourceId": "dragonballSuper",
+      "trackLocation": "DISC1 16",
+      "assignmentBasis": "Editorial team-warrior selection; not an exclusive Krillin theme.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "piccolo",
+      "character": "Piccolo",
+      "series": "Dragon Ball",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "自分を信じて",
+      "titleVerified": true,
+      "composers": [
+        "Norihito Sumitomo"
+      ],
+      "composerCreditScope": "track",
+      "creditedArtists": [],
+      "sourceId": "dragonballSuper",
+      "trackLocation": "DISC1 3",
+      "assignmentBasis": "Editorial tactical warrior selection; not an exclusive Piccolo theme.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "vegeta",
+      "character": "Vegeta",
+      "series": "Dragon Ball",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "ベジータの強さ",
+      "titleVerified": true,
+      "composers": [
+        "Norihito Sumitomo"
+      ],
+      "composerCreditScope": "track",
+      "creditedArtists": [],
+      "sourceId": "dragonballSuper",
+      "trackLocation": "DISC1 15",
+      "assignmentBasis": "Character is named in the official title.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "frieza",
+      "character": "Frieza",
+      "series": "Dragon Ball",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "ゴールデンフリーザのテーマ",
+      "titleVerified": true,
+      "composers": [
+        "Norihito Sumitomo"
+      ],
+      "composerCreditScope": "track",
+      "creditedArtists": [],
+      "sourceId": "dragonballSuper",
+      "trackLocation": "DISC2 14",
+      "assignmentBasis": "Golden Frieza reference selected for Frieza; no claim that the encounter uses this form.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "cell",
+      "character": "Cell",
+      "series": "Dragon Ball",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "手強い敵",
+      "titleVerified": true,
+      "composers": [
+        "Norihito Sumitomo"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "dragonballSuper2",
+      "trackLocation": "DISC2 12",
+      "assignmentBasis": "Editorial threatening opponent selection; not a canonical Cell theme.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "gohan",
+      "character": "Gohan",
+      "series": "Dragon Ball",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "戦士の魂",
+      "titleVerified": true,
+      "composers": [
+        "Norihito Sumitomo"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "dragonballSuper2",
+      "trackLocation": "DISC1 3",
+      "assignmentBasis": "Editorial heroic warrior selection; not an exclusive Gohan theme.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "broly",
+      "character": "Broly",
+      "series": "Dragon Ball",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "ブロリー戦闘開始",
+      "titleVerified": true,
+      "composers": [
+        "Norihito Sumitomo"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "dragonballBroly",
+      "trackLocation": "AVCD-96065 track 19",
+      "assignmentBasis": "Named Broly battle cue; composer credit corroborated by a direct interview with Norihito Sumitomo.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "goku",
+      "character": "Son Goku",
+      "series": "Dragon Ball",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "我らがヒーロー、孫悟空",
+      "titleVerified": true,
+      "composers": [
+        "Norihito Sumitomo"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "dragonballSuper2",
+      "trackLocation": "DISC2 27",
+      "assignmentBasis": "Character is named in the official title.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "usopp",
+      "character": "Usopp",
+      "series": "One Piece",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": null,
+      "titleVerified": false,
+      "composers": [
+        "Kohei Tanaka"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "onepiece",
+      "trackLocation": null,
+      "assignmentBasis": "No unrelated GEAR5 character theme substituted.",
+      "unresolvedReason": "GEAR5 tracklist verified, but no suitable character-specific cue established for this earlier encounter. Await an official earlier-arc soundtrack source.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "sanji",
+      "character": "Sanji",
+      "series": "One Piece",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "サンジVS.クイーン",
+      "titleVerified": true,
+      "composers": [
+        "Kohei Tanaka"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "onepiece",
+      "trackLocation": "GEAR5, track 3",
+      "assignmentBasis": "Named Sanji fight cue.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "zoro",
+      "character": "Roronoa Zoro",
+      "series": "One Piece",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "ゾロVS.キング",
+      "titleVerified": true,
+      "composers": [
+        "Kohei Tanaka"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "onepiece",
+      "trackLocation": "GEAR5, track 4",
+      "assignmentBasis": "Named Zoro fight cue.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "law",
+      "character": "Trafalgar Law",
+      "series": "One Piece",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "KROOM",
+      "titleVerified": true,
+      "composers": [
+        "Kohei Tanaka"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "onepiece",
+      "trackLocation": "GEAR5, track 6",
+      "assignmentBasis": "Editorial selection for Law using his named technique.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "doflamingo",
+      "character": "Donquixote Doflamingo",
+      "series": "One Piece",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": null,
+      "titleVerified": false,
+      "composers": [
+        "Kohei Tanaka"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "onepiece",
+      "trackLocation": null,
+      "assignmentBasis": "No unrelated GEAR5 character theme substituted.",
+      "unresolvedReason": "GEAR5 tracklist verified, but no suitable character-specific cue established for this earlier encounter. Await an official earlier-arc soundtrack source.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "katakuri",
+      "character": "Charlotte Katakuri",
+      "series": "One Piece",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": null,
+      "titleVerified": false,
+      "composers": [
+        "Kohei Tanaka"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "onepiece",
+      "trackLocation": null,
+      "assignmentBasis": "No unrelated GEAR5 character theme substituted.",
+      "unresolvedReason": "GEAR5 tracklist verified, but no suitable character-specific cue established for this earlier encounter. Await an official earlier-arc soundtrack source.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "kaido",
+      "character": "Kaido",
+      "series": "One Piece",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "終結、ルフィVSカイドウ",
+      "titleVerified": true,
+      "composers": [
+        "Kohei Tanaka"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "onepiece",
+      "trackLocation": "GEAR5, track 22",
+      "assignmentBasis": "Named Kaido boss-fight cue.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "luffy",
+      "character": "Monkey D. Luffy",
+      "series": "One Piece",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "おれの最高地点",
+      "titleVerified": true,
+      "composers": [
+        "Kohei Tanaka"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "onepiece",
+      "trackLocation": "GEAR5, track 15",
+      "assignmentBasis": "Official announcement associates this release with Gear 5 Luffy.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "dungeon_guardian",
+      "character": "Dungeon Guardian",
+      "series": "Solo Leveling",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "DunGeoN",
+      "titleVerified": true,
+      "composers": [
+        "Hiroyuki Sawano"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "solo",
+      "trackLocation": "SVWC-70650, track 12",
+      "assignmentBasis": "Editorial dungeon tension.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "cerberus",
+      "character": "Cerberus",
+      "series": "Solo Leveling",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "Hunter→Monster",
+      "titleVerified": true,
+      "composers": [
+        "Hiroyuki Sawano"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "solo",
+      "trackLocation": "SVWC-70650, track 14",
+      "assignmentBasis": "Editorial monster battle.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "igris",
+      "character": "Blood-Red Commander Igris",
+      "series": "Solo Leveling",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "[Solo-Leveling]SymphonicSuite-Lv.6",
+      "titleVerified": true,
+      "composers": [
+        "Hiroyuki Sawano"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "solo",
+      "trackLocation": "SVWC-70650, track 7",
+      "assignmentBasis": "Editorial knight duel; scene-specific usage not verified.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "iron",
+      "character": "Iron",
+      "series": "Solo Leveling",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "[Solo-Leveling]SymphonicSuite-Lv.2",
+      "titleVerified": true,
+      "composers": [
+        "Hiroyuki Sawano"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "solo",
+      "trackLocation": "SVWC-70650, track 3",
+      "assignmentBasis": "Editorial heavy combat.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "tusk",
+      "character": "Tusk",
+      "series": "Solo Leveling",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "[Solo-Leveling]SymphonicSuite-Lv.7",
+      "titleVerified": true,
+      "composers": [
+        "Hiroyuki Sawano"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "solo",
+      "trackLocation": "SVWC-70650, track 8",
+      "assignmentBasis": "Editorial magic encounter.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "beru",
+      "character": "Beru",
+      "series": "Solo Leveling",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "[Solo-Leveling]SymphonicSuite-Lv.8",
+      "titleVerified": true,
+      "composers": [
+        "Hiroyuki Sawano"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "solo",
+      "trackLocation": "SVWC-70650, track 9",
+      "assignmentBasis": "Editorial boss encounter, reusing the verified first-season score.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "bellion",
+      "character": "Bellion",
+      "series": "Solo Leveling",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "[Solo-Leveling]SymphonicSuite-Lv.10",
+      "titleVerified": true,
+      "composers": [
+        "Hiroyuki Sawano"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "solo",
+      "trackLocation": "SVWC-70650, track 11",
+      "assignmentBasis": "Editorial climax, not a claim that Bellion has an anime character theme.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "jinwoo",
+      "character": "Sung Jin-Woo",
+      "series": "Solo Leveling",
+      "kind": "official-reference",
+      "status": "verified",
+      "title": "DARK ARIA",
+      "titleVerified": true,
+      "composers": [
+        "Hiroyuki Sawano"
+      ],
+      "composerCreditScope": "score",
+      "creditedArtists": [],
+      "sourceId": "solo",
+      "trackLocation": "SVWC-70650, track 1",
+      "assignmentBasis": "Editorial lead encounter. Exact album title; not substituted with the distinct DARK ARIA <LV2> release.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "zenitsu",
+      "character": "Zenitsu Agatsuma",
+      "series": "Demon Slayer",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "霹靂一閃 六連～鬼殺隊として",
+      "titleVerified": true,
+      "composers": [
+        "Yuki Kajiura",
+        "Go Shiina"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [],
+      "sourceId": "demon",
+      "trackLocation": "DISC2 3",
+      "assignmentBasis": "Character or technique is named in the official title.",
+      "unresolvedReason": "Individual title verified; official page gives joint album music credits only. Track-level composer remains unresolved.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "inosuke",
+      "character": "Inosuke Hashibira",
+      "series": "Demon Slayer",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "嘴平伊之助",
+      "titleVerified": true,
+      "composers": [
+        "Yuki Kajiura",
+        "Go Shiina"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [],
+      "sourceId": "demon",
+      "trackLocation": "DISC1 18",
+      "assignmentBasis": "Character or technique is named in the official title.",
+      "unresolvedReason": "Individual title verified; official page gives joint album music credits only. Track-level composer remains unresolved.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "shinobu",
+      "character": "Shinobu Kocho",
+      "series": "Demon Slayer",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "蟲柱のテーマ -OST ver.-",
+      "titleVerified": true,
+      "composers": [
+        "Yuki Kajiura",
+        "Go Shiina"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [],
+      "sourceId": "demon",
+      "trackLocation": "DISC2 12",
+      "assignmentBasis": "Character or technique is named in the official title.",
+      "unresolvedReason": "Individual title verified; official page gives joint album music credits only. Track-level composer remains unresolved.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "rengoku",
+      "character": "Kyojuro Rengoku",
+      "series": "Demon Slayer",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "煉󠄁獄の死闘",
+      "titleVerified": true,
+      "composers": [
+        "Yuki Kajiura",
+        "Go Shiina"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [],
+      "sourceId": "demonTrain",
+      "trackLocation": "DISC2 12",
+      "assignmentBasis": "Named Mugen Train confrontation.",
+      "unresolvedReason": "Individual title verified; official page gives joint album music credits only. Track-level composer remains unresolved.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "akaza",
+      "character": "Akaza",
+      "series": "Demon Slayer",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "煉󠄁獄と猗窩座の戦い",
+      "titleVerified": true,
+      "composers": [
+        "Yuki Kajiura",
+        "Go Shiina"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [],
+      "sourceId": "demonTrain",
+      "trackLocation": "DISC2 11",
+      "assignmentBasis": "Named Mugen Train confrontation.",
+      "unresolvedReason": "Individual title verified; official page gives joint album music credits only. Track-level composer remains unresolved.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "gyutaro",
+      "character": "Gyutaro & Daki",
+      "series": "Demon Slayer",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "妓夫太郎の猛攻～譜面の完成",
+      "titleVerified": true,
+      "composers": [
+        "Yuki Kajiura",
+        "Go Shiina"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [],
+      "sourceId": "demonDistrict",
+      "trackLocation": "DISC2 13",
+      "assignmentBasis": "Named Gyutaro fight cue.",
+      "unresolvedReason": "Individual title verified; official page gives joint album music credits only. Track-level composer remains unresolved.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "kokushibo",
+      "character": "Kokushibo",
+      "series": "Demon Slayer",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": null,
+      "titleVerified": false,
+      "composers": [
+        "Yuki Kajiura",
+        "Go Shiina"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [],
+      "sourceId": "demon",
+      "trackLocation": null,
+      "assignmentBasis": "Await an official release containing this encounter.",
+      "unresolvedReason": "No individual Kokushibo cue verified in the supplied soundtrack catalog. Do not label an unreleased/fan-titled cue as official.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "muzan",
+      "character": "Muzan Kibutsuji",
+      "series": "Demon Slayer",
+      "kind": "official-reference",
+      "status": "unresolved",
+      "title": "鬼舞辻無惨 -OST ver.-",
+      "titleVerified": true,
+      "composers": [
+        "Yuki Kajiura",
+        "Go Shiina"
+      ],
+      "composerCreditScope": "release",
+      "creditedArtists": [],
+      "sourceId": "demon",
+      "trackLocation": "DISC1 13",
+      "assignmentBasis": "Character or technique is named in the official title.",
+      "unresolvedReason": "Individual title verified; official page gives joint album music credits only. Track-level composer remains unresolved.",
+      "playbackAuthorization": "not-granted",
+      "playbackFile": null
+    },
+    {
+      "enemyId": "cipher_initiate",
+      "character": "Cipher Initiate",
+      "series": "KeyForge",
+      "kind": "original",
+      "status": "original",
+      "title": "Cipher Initiate — Original Battle Loop",
+      "titleVerified": true,
+      "composers": [
+        "KeyForge procedural score generator"
+      ],
+      "composerCreditScope": "generator",
+      "creditedArtists": [],
+      "sourceId": null,
+      "trackLocation": null,
+      "assignmentBasis": "Original composition and synthetic recording created for this encounter; no named human composer or official anime association claimed.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "bundled-original-license",
+      "playbackFile": "/audio/bgm/original/cipher_initiate.wav"
+    },
+    {
+      "enemyId": "lexicon_warden",
+      "character": "Lexicon Warden",
+      "series": "KeyForge",
+      "kind": "original",
+      "status": "original",
+      "title": "Lexicon Warden — Original Battle Loop",
+      "titleVerified": true,
+      "composers": [
+        "KeyForge procedural score generator"
+      ],
+      "composerCreditScope": "generator",
+      "creditedArtists": [],
+      "sourceId": null,
+      "trackLocation": null,
+      "assignmentBasis": "Original composition and synthetic recording created for this encounter; no named human composer or official anime association claimed.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "bundled-original-license",
+      "playbackFile": "/audio/bgm/original/lexicon_warden.wav"
+    },
+    {
+      "enemyId": "rhythm_weaver",
+      "character": "Rhythm Weaver",
+      "series": "KeyForge",
+      "kind": "original",
+      "status": "original",
+      "title": "Rhythm Weaver — Original Battle Loop",
+      "titleVerified": true,
+      "composers": [
+        "KeyForge procedural score generator"
+      ],
+      "composerCreditScope": "generator",
+      "creditedArtists": [],
+      "sourceId": null,
+      "trackLocation": null,
+      "assignmentBasis": "Original composition and synthetic recording created for this encounter; no named human composer or official anime association claimed.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "bundled-original-license",
+      "playbackFile": "/audio/bgm/original/rhythm_weaver.wav"
+    },
+    {
+      "enemyId": "accuracy_arbiter",
+      "character": "Accuracy Arbiter",
+      "series": "KeyForge",
+      "kind": "original",
+      "status": "original",
+      "title": "Accuracy Arbiter — Original Battle Loop",
+      "titleVerified": true,
+      "composers": [
+        "KeyForge procedural score generator"
+      ],
+      "composerCreditScope": "generator",
+      "creditedArtists": [],
+      "sourceId": null,
+      "trackLocation": null,
+      "assignmentBasis": "Original composition and synthetic recording created for this encounter; no named human composer or official anime association claimed.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "bundled-original-license",
+      "playbackFile": "/audio/bgm/original/accuracy_arbiter.wav"
+    },
+    {
+      "enemyId": "velocity_phantom",
+      "character": "Velocity Phantom",
+      "series": "KeyForge",
+      "kind": "original",
+      "status": "original",
+      "title": "Velocity Phantom — Original Battle Loop",
+      "titleVerified": true,
+      "composers": [
+        "KeyForge procedural score generator"
+      ],
+      "composerCreditScope": "generator",
+      "creditedArtists": [],
+      "sourceId": null,
+      "trackLocation": null,
+      "assignmentBasis": "Original composition and synthetic recording created for this encounter; no named human composer or official anime association claimed.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "bundled-original-license",
+      "playbackFile": "/audio/bgm/original/velocity_phantom.wav"
+    },
+    {
+      "enemyId": "endurance_colossus",
+      "character": "Endurance Colossus",
+      "series": "KeyForge",
+      "kind": "original",
+      "status": "original",
+      "title": "Endurance Colossus — Original Battle Loop",
+      "titleVerified": true,
+      "composers": [
+        "KeyForge procedural score generator"
+      ],
+      "composerCreditScope": "generator",
+      "creditedArtists": [],
+      "sourceId": null,
+      "trackLocation": null,
+      "assignmentBasis": "Original composition and synthetic recording created for this encounter; no named human composer or official anime association claimed.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "bundled-original-license",
+      "playbackFile": "/audio/bgm/original/endurance_colossus.wav"
+    },
+    {
+      "enemyId": "keystroke_sovereign",
+      "character": "Keystroke Sovereign",
+      "series": "KeyForge",
+      "kind": "original",
+      "status": "original",
+      "title": "Keystroke Sovereign — Original Battle Loop",
+      "titleVerified": true,
+      "composers": [
+        "KeyForge procedural score generator"
+      ],
+      "composerCreditScope": "generator",
+      "creditedArtists": [],
+      "sourceId": null,
+      "trackLocation": null,
+      "assignmentBasis": "Original composition and synthetic recording created for this encounter; no named human composer or official anime association claimed.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "bundled-original-license",
+      "playbackFile": "/audio/bgm/original/keystroke_sovereign.wav"
+    },
+    {
+      "enemyId": "nexus_mirror",
+      "character": "The Nexus Mirror",
+      "series": "KeyForge",
+      "kind": "original",
+      "status": "original",
+      "title": "The Nexus Mirror — Original Battle Loop",
+      "titleVerified": true,
+      "composers": [
+        "KeyForge procedural score generator"
+      ],
+      "composerCreditScope": "generator",
+      "creditedArtists": [],
+      "sourceId": null,
+      "trackLocation": null,
+      "assignmentBasis": "Original composition and synthetic recording created for this encounter; no named human composer or official anime association claimed.",
+      "unresolvedReason": null,
+      "playbackAuthorization": "bundled-original-license",
+      "playbackFile": "/audio/bgm/original/nexus_mirror.wav"
+    }
+  ]
+}

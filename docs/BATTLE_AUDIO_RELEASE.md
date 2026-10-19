@@ -54,3 +54,12 @@ blocks external requests. It does not verify Railway, Vercel/CDN caching, physic
 speakers, every device or browser. Browser user-activation rules and saved mute must
 still be respected. The existing build warning about an unset deployment metadata
 origin remains unrelated to audio. No push or deployment is included.
+
+## Official reference catalog follow-up
+
+[OFFICIAL_SOUNDTRACK_CATALOG.md](OFFICIAL_SOUNDTRACK_CATALOG.md) records 22 verified
+references, 26 unresolved references and eight KeyForge originals across all 56
+encounters. Verification concerns metadata, not distribution rights. No official
+recording is installed or enabled. Three additional catalog tests bring the local
+unit/regression suite to 152 passing tests; TypeScript, targeted ESLint, i18n, the
+production build and strict audio audit also pass.

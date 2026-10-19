@@ -72,3 +72,11 @@ Only then supply the asset, replace that encounter's file and license/source fie
 set commercialUse and available, and run the existing audit. Keep the bundled original
 as the default until the official replacement's file and permissions are verified.
 Do not download, scrape or embed unofficial recordings as a fallback.
+
+## Official recording references
+
+See [the 56-encounter reference catalog](../../../docs/OFFICIAL_SOUNDTRACK_CATALOG.md)
+and `src/lib/audio/soundtrackReferences.json` for exact publisher titles, composer
+credit scope, source URLs, character assignments and unresolved choices. These are
+metadata only. No official recording is installed or authorized by those links;
+original defaults and optional browser-local overrides continue to provide playback.
